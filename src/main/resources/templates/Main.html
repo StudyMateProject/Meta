@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        html, body {
+            height: 100%;
+            //overflow: hidden;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/ul.css">
+</head>
+<body>
+    <a href="/">SOJU</a>
+    <div style="float:right;">
+        <input type="button" value="로그인 및 회원가입" sec:authorize="isAnonymous()" onclick="location.href='/loginform'">
+        <input type="button" value="로그아웃" sec:authorize="isAuthenticated()" onclick="/logout">
+    </div>
+
+    <div style="float:right;">알림</div>
+
+    <br><br>
+
+    <!-- 상단 메뉴바 구역 -->
+    <div style="display: flex; border: 2px solid green; justify-content:space-evenly; height:5%;">
+        <a href="/recruitstudy" >소중한 친구들 구하기</a>
+        <a href="/meta">모임 공간</a>
+        <a href="/noticeroom">게시판</a>
+        <a href="/checklist">체크리스트</a>
+        <a href="/store">스토어</a>
+        <a href="/mypage">마이페이지</a>
+    </div>
+
+    <br>
+
+    <div style="display: flex; height:35%;">
+        <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:100%;">
+    </div>
+
+    <br>
+
+    <div style="text-align: center; display:flex;">
+        <div>
+            <img src="/imagePath/employment.png" style="width:25%;">
+            <br>
+            <a href="">취업</a>
+        </div>
+        <div>
+            <img src="/imagePath/entrance.png" style="width:25%;">
+            <br>
+            <a href="">입시</a>
+        </div>
+        <div>
+            <img src="/imagePath/computer.png" style="width:25%;">
+            <br>
+            <a href="">컴퓨터 / IT</a>
+        </div>
+        <div>
+            <img src="/imagePath/language.png" style="width:25%;">
+            <br>
+            <a href="">언어</a>
+        </div>
+        <div>
+            <img src="/imagePath/management.png" style="width:25%;">
+            <br>
+            <a href="">경영 / 마케팅</a>
+        </div>
+        <div>
+            <img src="/imagePath/math.png" style="width:25%;">
+            <br>
+            <a href="">수학</a>
+        </div>
+        <div>
+            <img src="/imagePath/engineer.png" style="width:25%;">
+            <br>
+            <a href="">공학</a>
+        </div>
+        <div>
+            <img src="/imagePath/game.png" style="width:25%;">
+            <br>
+            <a href="">게임</a>
+        </div>
+        <div>
+            <img src="/imagePath/design.png" style="width:25%;">
+            <br>
+            <a href="">디자인</a>
+        </div>
+        <div>
+            <img src="/imagePath/education.png" style="width:25%;">
+            <br>
+            <a href="">교육</a>
+        </div>
+        <div>
+            <img src="/imagePath/etc.png" style="width:25%;">
+            <br>
+            <a href="">기타</a>
+        </div>
+    </div>
+
+    <br><br>
+    <span style="border-bottom: 2px solid green">가장 핫한 스터디</span>
+    <br><br>
+    <div style="display:flex;">
+        <div style="float:left;">
+            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
+            <br>
+            <a href="">백엔드 스터디</a>
+        </div>
+        <div style="float:left;">
+            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
+            <br>
+            <a href="">프론트엔드 스터디</a>
+        </div>
+        <div style="float:left;">
+            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
+            <br>
+            <a href="">경제 공부방</a>
+        </div>
+        <div style="float:left;">
+            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
+            <br>
+            <a href="">시사 토론방</a>
+        </div>
+    </div>
+
+    <br><br>
+    <span style="border-bottom: 2px solid green">인기 있는 멘토님</span>
+    <br><br>
+    <div style="display:flex;">
+        <div style="float:left;">
+            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
+            <br>
+            <a href="">홍길동 멘토님 - 자바 / 백엔드</a>
+        </div>
+        <div style="float:left;">
+            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
+            <br>
+            <a href="">일길동 멘토님 - 포토샵</a>
+        </div>
+        <div style="float:left;">
+            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
+            <br>
+            <a href="">이길동 멘토님 - GSAT</a>
+        </div>
+        <div style="float:left;">
+            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
+            <br>
+            <a href="">삼길동 멘토님 - 프론트엔드</a>
+        </div>
+    </div>
+
+    <br><br>
+    <span style="border-bottom: 2px solid green">내가 관심있는 분야의 멘토님</span>
+    <br><br>
+    <div style="display:flex;">
+        <div style="float:left;">
+            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
+            <br>
+            <a href="">홍길동 멘토님 - 자바</a>
+        </div>
+        <div style="float:left;">
+            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
+            <br>
+            <a href="">일길동 멘토님 - 프론트엔드</a>
+        </div>
+        <div style="float:left;">
+            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
+            <br>
+            <a href="">이길동 멘토님 - 백엔드</a>
+        </div>
+        <div style="float:left;">
+            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
+            <br>
+            <a href="">삼길동 멘토님 - 풀스택</a>
+        </div>
+    </div>
+
+    <div id="notice" style="float:left;">
+        <br><br>
+        <ul>
+            <li><span>공지사항</span></li>
+            <li><a href="">다 나가주세요</a></li>
+            <li><a href="">혼자있고 싶네요</a></li>
+            <li><a href="">제 통장에 100만원만</a></li>
+            <li><a href="">꽂아주세 계좌는 국민..</a></li>
+        </ul>
+    </div>
+    <div style="float:right;">
+        <br><br>
+        <ul>
+            <li><span>가장 인기있는 게시글</span><li></li>
+            <li><a href="">요즘 공부할거 추천좀...</a></li>
+            <li><a href="">요즘 너무 춥지않냐?!?!?!?!?!</a></li>
+            <li><a href="">점메추 부탁드려요</a></li>
+            <li><a href="">홍길동 멘토님 후기다</a></li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body onkeydown="keyDown()" onkeyup="keyUp()" onbeforeunload="close()">
+    <!-- 메뉴바 -->
+    <div style="border: 2px solid black; width: 80%; height: 50px; margin-bottom: 5px; float: left;">
+        <b th:text="'방 제목 : ' + ${meta.metaTitle}"></b>
+    </div>
+    <div style="border: 2px solid black; width: 18%; height: 50px; margin-bottom: 5px; margin-left: 1%; float: right;">
+        <input type="button" value="나가기" onclick="location.href='/meta'" style="width: 25%; height: 50px;">
+    </div>
+
+    <!-- 메타버스 -->
+    <canvas style="border: 2px solid black; width: 80%; height: 80%; float: left;" id="canvas"></canvas>
+
+    <!-- 채팅 작성란 -->
+    <div id="chatArea" style="text-align: center; float: right; border: 2px solid black; width: 18%; height: 80%; margin-left: 1%; overflow-y: scroll;">
+        <div style="text-align: center;">채팅</div><br>
+        <!-- 메세지 작성 코드 -->
+        <div style="text-align: left;"></div>
+    </div>
+
+    <!-- 채팅 입력란 -->
+    <div>
+        <input id="btn_send" type="button" value="보내기" onclick="send()" style="width: 3%; height: 15%; margin-top: 1%; margin-left: 1%; float: right;">
+        <input id="message" type="text" style="width: 13.5%; height: 15%; margin-top: 1%; float: right;" placeholder = "채팅 입력란">
+    </div>
+<!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!-- sockjs 사용을 위한 js를 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <!-- stomp 사용을 위한 js를 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <!-- Ajax 사용을 위한 js를 추가 -->
+    <script src="/js/httpRequest.js"></script>
+
+    <script th:inline="javascript">
+        var metaIdx = [[${meta.metaIdx}]]; // 방 번호
+        var nickname = [[${nickname.nickname}]]; // 로그인 유저의 닉네임
+
+        // 1. SockJS를 생성한다. (StompWebSocketConfig에서 설정한 Endpoint와 동일하게 맞춰준다.)
+        var sockJs = new SockJS("/ws/meta");
+        // 2. 생성된 SockJS를 Stomp에 전달한다.
+        var stomp = Stomp.over(sockJs);
+
+        // 3. connect가 이뤄지면 실행한다.
+        stomp.connect({}, function () {
+            // connect가 이뤄지면 콘솔에 로그를 찍는다.
+            console.log("STOMP Connection");
+
+            // 5. subscribe(path, callback)으로 메세지를 받을 수 있다.
+            //    StompChatController에서 SimpMessagingTemplate를 통해 전달한 DTO를 여기서 콜백 메소드 파라미터로 전달 받는다.
+            stomp.subscribe("/sub/meta/studyRoom/" + metaIdx, function (chat) {
+                // 6. JSON.parse(변환 대상) - JSON 문자열을 JavaScript 값이나 객체로 변환한다.
+                //    JSON형식으로 넘어온 DTO를 JavaScript형식으로 변환한다.
+                var content = JSON.parse(chat.body);
+                // 6-1. 변환된 DTO를 사용하기 편하게 각각 변수에 나눠놓는다.
+                var writer = content.writer; // 작성자
+                var message = content.message; // 메세지
+
+                var str = ""; // 메세지 코드가 작성될 변수
+                var chatArea = document.getElementById("chatArea"); // 메세지가 작성될 구역
+
+                // 작성자가 로그인 유저와 같을 경우 (본인)
+                if ( writer === nickname ) {
+                    // 7. 메세지 코드를 작성한다.
+                    str = '<div style="text-align: left;">';
+                    str += '<b>' + writer + ' : ' + message + '</b>';
+                    str += '</div>'
+                    // 8. 작성된 메세지 코드를 메세지 구역에 올린다.
+                    //    insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                    //    position에는 총 4가지의 옵션이 있다.
+                    //    1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                    //    2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                    //    3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                    //    4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                    chatArea.insertAdjacentHTML("beforeend", str);
+                    // 메세지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
+                    chatArea.scrollTop = scroll.scrollHeight;
+                // 작성자가 로그인 유저와 다를 경우 (타 유저)
+                } else {
+                    // 7. 메세지 코드를 작성한다.
+                    str = '<div style="text-align: left;">';
+                    str += '<b>' + writer + ' : ' + message + '</b>';
+                    str += '</div>'
+                    // 8. 작성된 메세지 코드를 메세지 구역에 올린다.
+                    //    insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                    //    position에는 총 4가지의 옵션이 있다.
+                    //    1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                    //    2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                    //    3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                    //    4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                    chatArea.insertAdjacentHTML("beforeend", str);
+                    // 메세지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
+                    chatArea.scrollTop = scroll.scrollHeight;
+                }
+            });
+
+            // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메세지를 제대로 전달받지 못하는 경우가 존재한다.
+            // 4. send(path, header, message)로 메세지를 보낸다. (입장할때 딱 한번만 전달한다.)
+            //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+            //    여기서 보낸 메세지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+            stomp.send('/pub/meta/studyRoom/enter', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname}));
+        });
+
+        // 채팅 메세지 전송
+        function send() {
+            let message = document.getElementById("message"); // id를 통해 작성한 메세지를 가져온다.
+            // 4-1. send(path, header, message)로 메세지를 보낸다. (입장 이후 작성되는 모든 메세지는 여기서 전달한다.)
+            //      JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+            //      여기서 보낸 메세지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+            stomp.send('/pub/meta/studyRoom/message', {}, JSON.stringify({metaIdx : metaIdx, message : message.value, writer : nickname}));
+            message.value = ""; // 메세지를 전송한 뒤 처음으로 초기화 한다.
+        }
+
+        // 방 나가기 (Ajax 사용) - onbeforeunload를 사용하기 위해선 반드시 Ajax를 사용해야 한다.
+        // onbeforeunload (body 태그에 작성) - 탭 닫기, 윈도우 닫기, 뒤로가기, 나가기 버튼 등 해당 페이지를 벗어나는 기능을 실행할 경우 아래 메소드를 항상 실행한다.
+        function close() {
+            // 9. send(path, header, message)로 메세지를 보낸다. (퇴장할때 딱 한번만 전달한다.)
+            //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+            //    여기서 보낸 메세지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+            stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname}));
+
+            var url = "/meta/exit";
+            var param = "metaIdx=" + metaIdx;
+            sendRequest(url, param, resultClose, "get");
+        }
+        // 방 나가기 콜백 메소드
+        function resultClose() {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                // 방에서 나가면 해당 페이지가 아예 사라져 그 뒤 일을 수행하지 못하므로 콜백 메소드를 따로 사용할 일은 없다.
+            }
+        }
+    </script>
+
+    <script th:inline="javascript">
+        let canvas; // 도화지
+        let canvasLeft; // 왼쪽 벽
+        let canvasTop; // 위쪽 벽
+        let canvasRight; // 오른쪽 벽
+        let canvasBottom; // 아래쪽 벽
+        let context; // 화가
+        let imgC = "imgChar2"; // 그림 이름 받는곳
+
+        let dx = 0; // x축 움직임
+        let dy = 0; // y축 움직임
+
+        let keycode; // 키보드 키코드
+
+        let imgChar = new Image(); // 캐릭터 1번 동작 이미지
+        imgChar.src = "/character/mario.png"; // 캐릭터 1번 동작 이미지 주소
+        let imgChar2 = new Image(); // 캐릭터 2번 동작 이미지
+        imgChar2.src = "/character/mario2.png"; // 캐릭터 2번 동작 이미지 주소
+        let imgBg = new Image(); // 배경 이미지
+        imgBg.src = "/map/studyRoom.png"; // 배경 이미지 주소
+
+        let x = 870, y = 850; // 캐릭터 시작 위치 지정
+        let w = 30, h = 30; // 캐릭터 크기 지정 (전체 사이즈의 절반만 작성)
+
+        // 윈도우 시작시 가장 먼저 실행되는 메소드
+        window.onload = function(e) {
+            // canvas id값으로 가져오기
+            canvas = document.getElementById("canvas");
+            // canvas를 2d로 설정
+            context = canvas.getContext("2d");
+            // canvas 크기 설정
+            setCanvasSize();
+
+            // 캔버스 크기의 상대적 위치
+            canvasLeft = canvas.getBoundingClientRect().left; // 왼쪽 벽
+            canvasTop = canvas.getBoundingClientRect().top; // 위쪽 벽
+            canvasRight = canvas.getBoundingClientRect().right; // 오른쪽 벽
+            canvasBottom = canvas.getBoundingClientRect().bottom; // 아래쪽 벽
+
+            // 시작!!
+            //runGame();
+            // 시작 알람
+            alert("스터디룸에 입장하셨습니다");
+            // 실행되고있는 AnimationFrame 삭제 - 이 작업을 먼저 안하면 실행중인 AnimationFrame이 제거되지 않고 계속 쌓이게 된다.
+            cancelAnimationFrame(runGame);
+            // AnimationFrame 실행 (콜백 메소드) - AnimationFrame으로 실행시킬 메소드를 괄호에 넣는다.
+            requestAnimationFrame(runGame);
+            // 구형 프레임 작동방식 - 그림을 수시로 그려내는 방식으로 로직이 복잡해질시 프레임이 밀려 캐릭터가 버벅거린다.
+            // setInterval(runGame);
+        }
+
+        // canvas 크기 설정 메소드 (윈도우 크기게 맞게 설정)
+        function setCanvasSize() {
+            canvas.setAttribute("width", window.innerWidth);
+            canvas.setAttribute("height", window.innerHeight);
+        }
+
+        // 시작 메소드
+        function runGame() {
+            moveAll(); // 캐릭터에 움직임을 주는 메소드
+            drawAll(); // canvas 위에 이미지를 그려주는 메소드
+        }
+
+        // 캐릭터에 움직임을 주는 메소드
+        function moveAll() {
+            x += dx;
+            y += dy;
+        }
+
+        // canvas 위에 이미지를 그려주는 메소드
+        function drawAll() {
+            // 배경 그리기
+            context.drawImage(imgBg, 0, 0, canvas.width, canvas.height);
+            // 캐릭터 동작에 따라 바뀌게 만든다.
+            if (imgC == imgChar) { // 그림 이름이 캐릭터 1번 동작일 경우
+                // 캐릭터 2번 동작을 그려준다.
+                context.drawImage(imgChar2, x-w, y-h, w*2, h*2);
+                // 그림 이름을 캐릭터 2번 동작으로 바꿔준다.
+                imgC = imgChar2;
+            } else { // 그림 이름이 캐릭터 2번 동작일 경우
+                // 캐릭터 1번 동작을 그려준다.
+                context.drawImage(imgChar, x-w, y-h, w*2, h*2);
+                // 그림 이름을 캐릭터 1번 동작으로 바꿔준다.
+                imgC = imgChar;
+            }
+        }
+
+        // 키가 눌렸을때 실행되는 메소드 - 움직임 상태
+        function keyDown() {
+            keycode = event.keyCode; // 키보드 키코드
+            switch(keycode) {
+                // 왼쪽으로 이동
+                case 37:
+                    cancelAnimationFrame(runGame); // 실행되고있는 AnimationFrame 삭제
+                    requestAnimationFrame(runGame); // AnimationFrame 실행
+                    if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
+                        dx = 0;
+                        break;
+                    } else { // 왼쪽 벽이 나오기 전까지 움직인다.
+                        dx = -5;
+                        break;
+                    }
+                // 위로 이동
+                case 38:
+                    cancelAnimationFrame(runGame); // 실행되고있는 AnimationFrame 삭제
+                    requestAnimationFrame(runGame); // AnimationFrame 실행
+                    if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
+                        dy = 0;
+                        break;
+                    } else { // 위쪽 벽이 나오기 전까지 움직인다.
+                        dy = -5;
+                        break;
+                    }
+                // 오른쪽으로 이동
+                case 39:
+                    cancelAnimationFrame(runGame); // 실행되고있는 AnimationFrame 삭제
+                    requestAnimationFrame(runGame); // AnimationFrame 실행
+                    if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
+                        dx = 0;
+                        break;
+                    } else { // 오른쪽 벽이 나오기 전까지 움직인다.
+                        dx = 5;
+                        break;
+                    }
+                // 아래로 이동
+                case 40:
+                    cancelAnimationFrame(runGame); // 실행되고있는 AnimationFrame 삭제
+                    requestAnimationFrame(runGame); // AnimationFrame 실행
+                    if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
+                        dy = 0;
+                        break;
+                    } else { // 아래쪽 벽이 나오기 전까지 움직인다.
+                        dy = 5;
+                        break;
+                    }
+            }
+        }
+
+        // 눌린 키가 떼졌을때 실행되는 메소드 - 멈춤 상태
+        function keyUp() {
+            keycode = event.keyCode; // 키보드 키코드
+            switch(keycode) {
+                // x축 멈춤
+                case 37:
+                case 39:
+                    dx = 0;
+                    break;
+                // y축 멈춤
+                case 38:
+                case 40:
+                    dy = 0;
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>

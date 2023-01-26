@@ -1,0 +1,4 @@
+ul {
+    padding-left: 0; /* 왼쪽 여백 제거 */
+    list-style: none; /* 기호 제거 */
+}

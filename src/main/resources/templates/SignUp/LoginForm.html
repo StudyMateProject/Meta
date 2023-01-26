@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/ul.css">
+</head>
+<body>
+    <!-- Spring Security를 사용하기 위해선 반드시 method는 POST를 사용해야 한다. -->
+    <form action="/loginform/login" method="post">
+        <ul>
+            <!-- name은 하나라도 빠짐없이 다 작성해야하며, 각 name명은 시큐리티에서 잡고있는 아이디 비빌번호 변수명과 반드시 일치해야 한다. -->
+            <li><label>아이디 : </label><input name="emailId" type="text"></li>
+            <li><label>비밀번호 : </label><input name="pwd" type="password"></li>
+            <!-- 직접 로그아웃 하기전까지 로그인을 유지시켜주는 체크박스 -->
+            <li><label>로그인 유지하기</label><input name="remember-me" type="checkbox"></li>
+            <!-- 아이디 및 비밀번호가 틀릴 경우 에러 메세지가 등장하는 구역 -->
+            <li><div th:if="${param.error}">
+                <p th:text="${errorMsg}"></p>
+            </div></li>
+        </ul>
+        <input type="submit" value="로그인">
+        <input name="btnJoin" type="button" value="회원가입" onclick="location.href='/joinform'">
+    </form>
+<!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!-- 아이디 및 비밀번호가 틀릴 경우 에러 알림창이 등장 -->
+    <script th:inline="javascript">
+        // 컨트롤러에서 모델로 바인딩한 에러 체크값
+        let error = [[${error}]];
+        // 컨트롤러에서 모델로 바인딩한 에러 메세지
+        let errorMsg = [[${errorMsg}]];
+
+        // 에러 체크값이 true일 경우 에러 알림창 등장
+        if ( error == "true" ) {
+            alert(errorMsg);
+        }
+    </script>
+
+<!--    &lt;!&ndash; Ajax사용을 위한 js를 추가 &ndash;&gt;-->
+<!--    <script src="/js/httpRequest.js"></script>-->
+<!--    <script th:inline="javascript">-->
+<!--        function login(f) {-->
+<!--            let emailId = f.emailId.value;-->
+<!--            let pwd = f.pwd.value;-->
+
+<!--            let url = "/loginform/login";-->
+<!--            let param = "emailId=" + emailId +-->
+<!--                        "&pwd=" + pwd;-->
+<!--            sendRequest(url, param, resultLogin, "POST");-->
+<!--        }-->
+<!--        function resultLogin() {-->
+<!--            alert(xhr.readyState);-->
+<!--            if ( xhr.readyState == 4 && xhr.status == 200 ) {-->
+<!--                let error = [[${error}]];-->
+<!--                let errorMsg = [[${errorMsg}]];-->
+<!--                if ( error == "true" ) {-->
+<!--                    alert(errorMsg);-->
+<!--                }-->
+<!--            }-->
+<!--        }-->
+<!--    </script>-->
+</body>
+</html>

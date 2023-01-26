@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/ul.css">
+</head>
+<body>
+    <!-- th:object="${바인딩한 객체의 변수명}" - 모델로 바인딩한 객체를 가져온다. -->
+    <form action="/meta/createmetaform/createmeta" method="get" th:object="${metaDTO}">
+        <ul>
+            <!-- th:for="th:field에 작성한 변수명" - label과 input을 연결 해준다. -->
+            <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
+            <li><label th:for="metaTitle">방 제목 : </label><input th:field="*{metaTitle}" type="text"></li>
+            <li><label th:for="metaType">방 분야 : </label><select th:field="*{metaType}"><option value="">방 분야</option>
+                                                                                        <option value="studyRoom">스터디방</option>
+                                                                                        <option value="cafeRoom">카페</option>
+                                                                                        <option value="oneRoom">자습실</option></select></li>
+            <li><label th:for="metaPersonnel">모집 인원 : </label><select th:field="*{metaPersonnel}"><option value="0">모집 인원</option>
+                                                                                                    <option value="1">1명</option>
+                                                                                                    <option value="2">2명</option>
+                                                                                                    <option value="3">3명</option>
+                                                                                                    <option value="4">4명</option>
+                                                                                                    <option value="5">5명</option>
+                                                                                                    <option value="6">6명</option>
+                                                                                                    <option value="7">7명</option>
+                                                                                                    <option value="8">8명</option>
+                                                                                                    <option value="9">9명</option>
+                                                                                                    <option value="10">10명</option></select></li>
+        </ul>
+        <input type="submit" value="방 만들기">
+    </form>
+</body>
+</html>
