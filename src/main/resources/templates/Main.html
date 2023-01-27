@@ -15,7 +15,7 @@
     <a href="/">SOJU</a>
     <div style="float:right;">
         <input type="button" value="로그인 및 회원가입" sec:authorize="isAnonymous()" onclick="location.href='/loginform'">
-        <input type="button" value="로그아웃" sec:authorize="isAuthenticated()" onclick="/logout">
+        <input type="button" value="로그아웃" sec:authorize="isAuthenticated()" onclick="location.href='/logout'">
     </div>
 
     <div style="float:right;">알림</div>
