@@ -9,9 +9,9 @@
 #### ✔ 메타 방 내부 캐릭터 이동 구현
 #### ✔ 웹소켓(STOMP)을 이용한 각 메타 방 내부 채팅 구현
 
-##### 사용된 데이터베이스 : MySQL - soju2
-	CREATE DATABASE soju2;
-	USE soju2;
+##### 사용된 데이터베이스 : MySQL - soju
+	CREATE DATABASE soju;
+	USE soju;
 
 ##### 사용된 테이블 : Member, MetaRoom
 	멤버 테이블
@@ -47,9 +47,9 @@
 ##### 메타 방 내부에 참가자를 작성하기 위해 테이블을 하나 새로 만드는데 이 테이블 이름을 MetaRoom으로 하는것이 적절해보여 MetaRoom테이블을 Meta로 바꿔준뒤, MetaRoom테이블을 새로 만들었다.
 ##### 그리고 Member테이블에 프로필 사진을 추가해주었다.
 
-##### 사용된 데이터베이스 : MySQL - soju2
-	CREATE DATABASE soju2;
-	USE soju2;
+##### 사용된 데이터베이스 : MySQL - soju
+	CREATE DATABASE soju;
+	USE soju;
 
 ##### 사용된 테이블 : Member, MetaRoom
 	멤버 테이블
@@ -84,5 +84,5 @@
 		metaNickname VARCHAR(20) PRIMARY KEY, #방 참가자 닉네임
 		metaProfileImage VARCHAR(100), #방 참가자 프로필 사진
 		metaIdx INT NOT NULL, #방 번호
-		CONSTRAINT fk_metaRoomIdx FOREIGN KEY(metaIdx) REFERENCES MetaRoom(metaIdx) ON DELETE CASCADE ON UPDATE CASCADE #포린키 연결
+		CONSTRAINT fk_metaIdx FOREIGN KEY(metaIdx) REFERENCES Meta(metaIdx) ON DELETE CASCADE ON UPDATE CASCADE #포린키 연결
 	);
