@@ -88,3 +88,8 @@
 		metaIdx INT NOT NULL, #방 번호
 		CONSTRAINT fk_metaIdx FOREIGN KEY(metaIdx) REFERENCES Meta(metaIdx) ON DELETE CASCADE ON UPDATE CASCADE #포린키 연결
 	);
+	
+### 📌 01/29 - PM 5:00
+#### ✔ 메타 방 내부 참가자 표시 구현 2
+##### 참가지 표시에 이제 프로필 사진도 같이 가져와서 프로필 사진과 닉네임이 같이 보일 수 있도록 만들었다.
+##### 그리고 웹소켓(STOMP)을 사용하여 퇴장하면 참가자란에 있는 본인도 같이 실시간으로 삭제되게 만들었다.
