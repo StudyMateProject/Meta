@@ -13,4 +13,5 @@ public class ChatMessageDTO {
     private String message; // 메세지
     private String participant; // 참가자
     private String profileImage; // 참가자 프로필 사진
+    private String exit;
 }

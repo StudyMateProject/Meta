@@ -11,6 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     // 경로의 마지막은 반드시 " / "로 끝나야 하고, 로컬 디스크 경로일 경우 file:/// 접두어를 꼭 붙여야 한다.
     private String imagePath = "file:///Users/p._.sc/Desktop/SojuProject/image/image/";
     private String iconPath = "file:///Users/p._.sc/Desktop/SojuProject/image/icon/";
+    private String profileImage = "file:///Users/p._.sc/Desktop/SojuProject/image/profile/";
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -18,6 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
                 // 실제 리소스가 존재하는 외부 경로를 지정한다.
                 // 경로의 마지막은 반드시 " / "로 끝나야 하고, 로컬 디스크 경로일 경우 file:/// 접두어를 꼭 붙여야 한다.
                 .addResourceLocations(imagePath)
-                .addResourceLocations(iconPath);
+                .addResourceLocations(iconPath)
+                .addResourceLocations(profileImage);
     }
 }

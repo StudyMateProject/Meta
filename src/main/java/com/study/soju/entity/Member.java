@@ -91,7 +91,7 @@ public class Member {
                     .studyType(studyType)
                     .platform("soju") // 가입 플랫폼 설정
                     .roleName("USER") // Spring Security 권한에 USER로 설정
-                    .profileImage("noFile") // 가입할때는 아무 사진도 지정되있지 않다.
+                    .profileImage("noFile.jpeg") // 가입할때는 아무 사진도 지정되있지 않다.
                     .build();
         }
     }

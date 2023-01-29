@@ -11,34 +11,44 @@
     </style>
 </head>
 <body onkeydown="keyDown()" onkeyup="keyUp()" onbeforeunload="close()">
-    <!-- 메뉴바 -->
-    <div style="border: 2px solid black; width: 80%; height: 50px; margin-bottom: 5px; float: left;">
-        <b th:text="'방 제목 : ' + ${meta.metaTitle}"></b> <br>
-        <span id="menuBar" th:each="participant : ${metaRoom}" th:text="${participant.metaNickname} + ${participant.metaProfileImage} + '&nbsp;'"></span>
+    <!-- 방 정보 작성란 -->
+    <div>
+        <b th:text="'방 제목 : ' + ${meta.metaTitle}"></b>
     </div>
-    <div style="border: 2px solid black; width: 18%; height: 50px; margin-bottom: 5px; margin-left: 1%; float: right;">
-        <input type="button" value="나가기" onclick="location.href='/meta'" style="width: 25%; height: 50px;">
+
+    <!-- 상단 왼쪽 참가자 구역 -->
+    <div id="menuBar" style="border: 2px solid black; box-sizing: border-box; width: 80%; height: 50px; margin-bottom: 5px; float: left;">
+        <!-- 참가자 코드 -->
+        <div th:each="participant : ${metaRoom}" th:id="${participant.metaNickname}" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 46px; float: left;">
+            <img th:src="@{/imagePath/} + ${participant.metaProfileImage}" style="width: 44px; height:44px; float: left;">
+            <b th:text="${participant.metaNickname}"></b>
+        </div>
+    </div>
+
+    <!-- 상단 오른쪽 메뉴바 구역 -->
+    <div style="border: 2px solid black; box-sizing: border-box; width: 18%; height: 50px; margin-bottom: 5px; margin-left: 1%; float: right;">
+        <input type="button" value="나가기" onclick="location.href='/meta'" style="width: 25%; height: 46px;">
     </div>
 
     <!-- 메타버스 -->
-    <canvas style="border: 2px solid black; width: 80%; height: 80%; float: left;" id="canvas"></canvas>
+    <canvas id="canvas" style="border: 2px solid black; box-sizing: border-box; width: 80%; height: 80%; float: left;"></canvas>
 
-    <!-- 채팅 작성란 -->
-    <div id="chatArea" style="text-align: center; float: right; border: 2px solid black; width: 18%; height: 80%; margin-left: 1%; overflow-y: scroll;">
+    <!-- 채팅 구역 -->
+    <div id="chatArea" style="text-align: center; border: 2px solid black; box-sizing: border-box; width: 18%; height: 80%; margin-left: 1%; float: right; overflow-y: scroll;">
         <div style="text-align: center;">채팅</div><br>
-        <!-- 메세지 작성 코드 -->
+        <!-- 메세지 코드 -->
         <div style="text-align: left;"></div>
     </div>
 
-    <!-- 채팅 입력란 -->
+    <!-- 메세지 입력란 -->
     <div>
         <input id="btn_send" type="button" value="보내기" onclick="send()" style="width: 3%; height: 15%; margin-top: 1%; margin-left: 1%; float: right;">
         <input id="message" type="text" style="width: 13.5%; height: 15%; margin-top: 1%; float: right;" placeholder = "채팅 입력란">
     </div>
 <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-    <!-- sockjs 사용을 위한 js를 추가 -->
+    <!-- SockJS 사용을 위한 js를 추가 -->
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <!-- stomp 사용을 위한 js를 추가 -->
+    <!-- Stomp 사용을 위한 js를 추가 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <!-- Ajax 사용을 위한 js를 추가 -->
     <script src="/js/httpRequest.js"></script>
@@ -67,12 +77,12 @@
                 // 6-1. 변환된 DTO를 사용하기 편하게 각각 변수에 나눠놓는다.
                 var writer = content.writer; // 작성자
                 var message = content.message; // 메세지
-
-                var participant = content.participant; // 참가자
+                var participant = content.participant; // 참가자 닉네임
                 var profileImage = content.profileImage; // 참가자 프로필 사진
+                var exit = content.exit; // 퇴장자 닉네임
 
                 var str = ""; // 메세지 코드가 작성될 변수
-                var chatArea = document.getElementById("chatArea"); // 메세지가 작성될 구역
+                var chatArea = document.getElementById("chatArea"); // 메세지가 작성될 채팅 구역
 
                 // 작성자가 로그인 유저와 같을 경우 (본인)
                 if ( writer === nickname ) {
@@ -80,7 +90,7 @@
                     str = '<div style="text-align: left;">';
                     str += '<b>' + writer + ' : ' + message + '</b>';
                     str += '</div>'
-                    // 8. 작성된 메세지 코드를 메세지 구역에 올린다.
+                    // 8. 작성된 메세지 코드를 채팅 구역에 올린다.
                     //    insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
                     //    position에는 총 4가지의 옵션이 있다.
                     //    1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
@@ -96,7 +106,7 @@
                     str = '<div style="text-align: left;">';
                     str += '<b>' + writer + ' : ' + message + '</b>';
                     str += '</div>'
-                    // 8. 작성된 메세지 코드를 메세지 구역에 올린다.
+                    // 8. 작성된 메세지 코드를 채팅 구역에 올린다.
                     //    insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
                     //    position에는 총 4가지의 옵션이 있다.
                     //    1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
@@ -104,17 +114,31 @@
                     //    3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
                     //    4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
                     chatArea.insertAdjacentHTML("beforeend", str);
-                    // 메세지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
+                    // 메세지가 채팅 구역 크기를 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                     chatArea.scrollTop = scroll.scrollHeight;
 
+                    // 새로 들어온 참가자가 있는 경우 - 본인이 방에 들어올 경우에는 위에서 th:each로 참가자가 모두 작성되기에 참가자가 본인이 아닌 경우에만 추가로 참가자란에 작성되게 만든다.
                     if ( participant != null ) {
-                        var menuBar = document.getElementById("menuBar"); // 참여자가 작성될 구역
-                        var mtr = "";
-                        mtr = '<span "&nbsp;">';
-                        mtr += writer;
-                        mtr += profileImage;
-                        mtr += '</span>';
-                        menuBar.insertAdjacentHTML("beforeend", mtr);
+                        var menuBar = document.getElementById("menuBar"); // 참가자가 작성될 구역
+                        var mtr = ""; // 참가자 코드가 작성될 변수
+                        // 참가자 코드를 작성한다.
+                        mtr = '<div id="' + writer + '" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 46px; float: left;">';
+                        mtr += '<img src="/imagePath/' + profileImage + '" style="width: 44px; height:44px; float: left;">';
+                        mtr += '<b>' + writer + '</b>';
+                        // 작성된 참가자 코드를 참가자 구역에 올린다.
+                        // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                        // position에는 총 4가지의 옵션이 있다.
+                        // 1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                        // 2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                        // 3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                        // 4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                        menuBar.insertAdjacentHTML("afterbegin", mtr);
+                    }
+
+                    // 해당 방을 나갈 경우 - 본인이 방을 나갈 경우에는 본인은 나가고 없으므로 퇴장자가 본인이 아닌 경우에만 참가자란에서 삭제되게 만든다.
+                    if ( exit != null ) {
+                        var mtr = document.getElementById(writer); // 참가자 코드 id값
+                        mtr.remove(); // id값을 이용하여 코드를 삭제한다.
                     }
                 }
             });
@@ -139,9 +163,9 @@
         // 방 나가기 (Ajax 사용) - onbeforeunload를 사용하기 위해선 반드시 Ajax를 사용해야 한다.
         // onbeforeunload (body 태그에 작성) - 탭 닫기, 윈도우 닫기, 뒤로가기, 나가기 버튼 등 해당 페이지를 벗어나는 기능을 실행할 경우 아래 메소드를 항상 실행한다.
         function close() {
-            // 9. send(path, header, message)로 메세지를 보낸다. (퇴장할때 딱 한번만 전달한다.)
-            //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
-            //    여기서 보낸 메세지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+            // send(path, header, message)로 메세지를 보낸다. (퇴장할때 딱 한번만 전달한다.)
+            // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+            // 여기서 보낸 메세지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
             stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname}));
 
             var url = "/meta/exit";
