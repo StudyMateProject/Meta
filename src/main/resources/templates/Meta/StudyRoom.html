@@ -12,14 +12,14 @@
 </head>
 <body onkeydown="keyDown()" onkeyup="keyUp()" onbeforeunload="close()">
     <!-- 방 정보 작성란 -->
-    <div>
-        <b th:text="'방 제목 : ' + ${meta.metaTitle}"></b>
+    <div id="titleArea">
+        <b id="title" th:text="'방 번호 : ' + ${metaRoom.metaIdx} + '   |   ' + '(스터디)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
     </div>
 
     <!-- 상단 왼쪽 참가자 구역 -->
     <div id="menuBar" style="border: 2px solid black; box-sizing: border-box; width: 80%; height: 50px; margin-bottom: 5px; float: left;">
         <!-- 참가자 코드 -->
-        <div th:each="participant : ${metaRoom}" th:id="${participant.metaNickname}" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 46px; float: left;">
+        <div th:each="participant : ${participantList}" th:id="${participant.metaNickname}" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 46px; float: left;">
             <img th:src="@{/imagePath/} + ${participant.metaProfileImage}" style="width: 44px; height:44px; float: left;">
             <b th:text="${participant.metaNickname}"></b>
         </div>
@@ -54,7 +54,10 @@
     <script src="/js/httpRequest.js"></script>
 
     <script th:inline="javascript">
-        var metaIdx = [[${meta.metaIdx}]]; // 방 번호
+        var metaIdx = [[${metaRoom.metaIdx}]]; // 방 번호
+        var metaTitle = [[${metaRoom.metaTitle}]];
+        var metaRecruitingPersonnel = [[${metaRoom.metaRecruitingPersonnel}]];
+        var metaPersonnel = [[${metaRoom.metaPersonnel}]];
         var nickname = [[${nickImage.nickname}]]; // 로그인 유저의 닉네임
         var profileImage = [[${nickImage.profileImage}]]; // 로그인 유저의 프로필 사진
 
@@ -80,6 +83,8 @@
                 var participant = content.participant; // 참가자 닉네임
                 var profileImage = content.profileImage; // 참가자 프로필 사진
                 var exit = content.exit; // 퇴장자 닉네임
+                var recruitingPersonnel = content.metaRecruitingPersonnel;
+                var personnel = metaPersonnel;
 
                 var str = ""; // 메세지 코드가 작성될 변수
                 var chatArea = document.getElementById("chatArea"); // 메세지가 작성될 채팅 구역
@@ -135,6 +140,26 @@
                         menuBar.insertAdjacentHTML("afterbegin", mtr);
                     }
 
+                    if ( metaRecruitingPersonnel != recruitingPersonnel ) {
+                        var title = document.getElementById("title");
+                        title.remove();
+
+                        var titleArea = document.getElementById("titleArea");
+                        var ptr = "";
+                        prt = '<b id="title">';
+                        prt += '방 번호 : ';
+                        prt += metaIdx;
+                        prt += '   |    (스터디) 방 제목 : ';
+                        prt += metaTitle;
+                        prt += ' ( '
+                        prt += recruitingPersonnel;
+                        prt += ' / ';
+                        prt += metaPersonnel;
+                        prt += ' )';
+                        prt += '</b>';
+                        titleArea.insertAdjacentHTML("afterbegin", prt);
+                    }
+
                     // 해당 방을 나갈 경우 - 본인이 방을 나갈 경우에는 본인은 나가고 없으므로 퇴장자가 본인이 아닌 경우에만 참가자란에서 삭제되게 만든다.
                     if ( exit != null ) {
                         var mtr = document.getElementById(writer); // 참가자 코드 id값
@@ -147,7 +172,7 @@
             // 4. send(path, header, message)로 메세지를 보낸다. (입장할때 딱 한번만 전달한다.)
             //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
             //    여기서 보낸 메세지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-            stomp.send('/pub/meta/studyRoom/enter', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, profileImage : profileImage}));
+            stomp.send('/pub/meta/studyRoom/enter', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, profileImage : profileImage, metaRecruitingPersonnel : metaRecruitingPersonnel}));
         });
 
         // 채팅 메세지 전송

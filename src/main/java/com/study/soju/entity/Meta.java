@@ -130,11 +130,19 @@ public class Meta {
     public static class rpEntrance {
         private long metaIdx;
         private String metaTitle;
+        private String metaType;
+        private int metaPersonnel;
+        private int metaRecruitingPersonnel;
+        private int duplicateCheck;
 
         // Entity를 DTO로 변환 (생성자 방식)
-        public rpEntrance(Meta meta) { // 3. 파라미터로 서비스에서 넘어온 Entity를 받아온다.
+        public rpEntrance(Meta meta, int duplicateCheck) { // 3. 파라미터로 서비스에서 넘어온 Entity와 중복접속 체크값을 받아온다.
             this.metaIdx = meta.getMetaIdx();
             this.metaTitle = meta.getMetaTitle();
+            this.metaType = meta.getMetaType();
+            this.metaPersonnel = meta.getMetaPersonnel();
+            this.metaRecruitingPersonnel = meta.getMetaRecruitingPersonnel();
+            this.duplicateCheck = duplicateCheck; // 중복접속 체크값
         }
 
         // 모집인원이 정원초과일 경우 에러메세지를 DTO로 변환 (생성자 방식)

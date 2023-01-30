@@ -41,12 +41,12 @@ public class SignUpService implements UserDetailsService {
     }
 
     // 로그인 유저 닉네임 및 프로플 사진 조회
-    public Member.rpNickImage memberNickImage(String emailId) { // 9. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
-        // 10. 넘어온 아이디로 로그인 유저를 조회하고, 조회된 값을 받아온다.
+    public Member.rpNickImage memberNickImage(String emailId) { // 3. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
+        // 4. 넘어온 아이디로 로그인 유저를 조회하고, 조회된 값을 받아온다.
         Member member = memberRepository.findByEmailId(emailId);
-        // 11. 조회된 Entity를 DTO로 변환한다.
+        // 5. 조회된 Entity를 DTO로 변환한다.
         Member.rpNickImage rpNickImage = new Member.rpNickImage(member);
-        // 12. 변환된 DTO를 반환한다.
+        // 6. 변환된 DTO를 반환한다.
         return rpNickImage;
     }
 
