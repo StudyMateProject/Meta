@@ -35,8 +35,8 @@
 		metaIdx INT PRIMARY KEY AUTO_INCREMENT, #방 번호
 		metaTitle VARCHAR(50) NOT NULL, #방 제목
 		metaType VARCHAR(10) NOT NULL, #방 분야
-		metaPersonnel INT NOT NULL, #방 모집 인원
-		metaRecruitingPersonnel INT NOT NULL #방 모집된 인원
+		metaPersonnel INT NOT NULL, #방 모집인원
+		metaRecruitingPersonnel INT NOT NULL #방 참여중인 인원
 	);
 
 ### 📌 01/27
@@ -77,8 +77,8 @@
 		metaIdx INT PRIMARY KEY AUTO_INCREMENT, #방 번호
 		metaTitle VARCHAR(50) NOT NULL, #방 제목
 		metaType VARCHAR(10) NOT NULL, #방 분야
-		metaPersonnel INT NOT NULL, #방 모집 인원
-		metaRecruitingPersonnel INT NOT NULL #방 모집된 인원
+		metaPersonnel INT NOT NULL, #방 모집인원
+		metaRecruitingPersonnel INT NOT NULL #방 참여중인 인원
 	);
 
 	메타버스 방 내부
@@ -89,7 +89,24 @@
 		CONSTRAINT fk_metaIdx FOREIGN KEY(metaIdx) REFERENCES Meta(metaIdx) ON DELETE CASCADE ON UPDATE CASCADE #포린키 연결
 	);
 	
-### 📌 01/29 - PM 5:00
+### 📌 01/29
 #### ✔ 메타 방 내부 참가자 표시 구현 2
 ##### 참가지란에 이제 프로필 사진도 같이 가져와서 프로필 사진과 닉네임이 같이 보일 수 있도록 만들었다.
 ##### 그리고 웹소켓(STOMP)을 사용하여 퇴장하면 참가자란에 있는 본인도 같이 실시간으로 삭제되게 만들었다.
+#
+
+### 📌 01/30
+#### ✔ DTO 생성 및 변경
+##### Entity를 사용하여 테스트한 코드들을 각 사용처에 맞게 DTO를 만들어 바꿔주었다.
+#### ✔ 중복접속 차단
+##### 방 접속 후 새로고침시 중복접속으로 방에 참가자 수가 계속 올라가 실질적인 참가자는 한명인데 방에 참여중인 인원은 꽉차는 문제가 발생했다.
+##### 그래서 이 문제를 해결하고자 해당 참가자가 새로 방에 들어온 참가자인지 이미 방에 참여중인 참가자인지를 확인하는 코드를 넣어주었다.
+##### 그러면 이제 방에 접속 후 새로고침을 아무리 해도 더이상 참여중인 인원은 증가하지 않는다.
+#
+
+### 📌 01/31
+#### ✔ 참가 및 퇴장에 따른 참여중인 인원 실시간 변경 및 작성
+##### 메타 방 내부 좌측 상단에는 방 정보가 입력되는데 여기에 참여중인 인원은 해당 방에 유저가 참가하고 퇴장하는것에 따른 숫자가 변해야한다.
+##### 하지만 이는 유저가 처음 들어올때만 작성될뿐 다시 새로고침 하기 전까지는 처음 들어온 그대로 남아있는 문제가 있었다.
+##### 그래서 이 문제를 해결하기 위해 유저가 참가하거나 퇴장할때마다 변경되는 참여중인 인원을 웹소켓(STOMP)에 전달하고 다시 전달받아 실시간으로 참여중인 인원을 변경된 인원으로 수정 작성되도록 만들었다.
+#
