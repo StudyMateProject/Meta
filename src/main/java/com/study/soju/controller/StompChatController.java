@@ -23,12 +23,12 @@ public class StompChatController {
     // 스터디룸 입장
     @MessageMapping(value = "/meta/studyRoom/enter")
     public void enterStudyRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.
-        // 2. 1번에서 받아온 DTO 값중 작성자를 가져와 참여메세지를 작성해 DTO 값중 메세지에 저장한다.
+        // 2. 1에서 받아온 DTO 값중 작성자를 가져와 참여메세지를 작성해 DTO 값중 메세지에 저장한다.
         message.setMessage(message.getWriter() + "님이 채팅방에 참여하였습니다.");
-        // 3. 1번에서 받아온 DTO 값중 작성자를 가져와 참여자로 저장한다.
+        // 3. 1에서 받아온 DTO 값중 작성자를 가져와 참여자로 저장한다.
         message.setParticipant(message.getWriter());
         // 4. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
-        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1번에서 받아온 방 번호가 병합된다.
+        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 받아온 방 번호가 병합된다.
         //    "/sub" + "/meta/studyRoom" + metaIdx = "/sub/meta/studyRoom/1"
         template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
     }
@@ -37,7 +37,7 @@ public class StompChatController {
     @MessageMapping(value = "/meta/studyRoom/message")
     public void messageStudyRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.
         // 2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
-        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1번에서 받아온 방 번호가 병합된다.
+        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 받아온 방 번호가 병합된다.
         //    "/sub" + "/meta/studyRoom" + metaIdx = "/sub/meta/studyRoom/1"
         template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
     }
@@ -47,10 +47,12 @@ public class StompChatController {
     public void exitStudyRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.
         // 2. 받아온 DTO 값중 작성자를 가져와 퇴장메세지를 작성해 DTO 값중 메세지에 저장한다.
         message.setMessage(message.getWriter() + "님이 채팅방에서 탈주하였습니다.");
-        // 3. 1번에서 받아온 DTO 값중 작성자를 가져와 퇴장자로 저장한다.
+        // 3. 1에서 받아온 DTO 값중 작성자를 가져와 퇴장자로 저장한다.
         message.setExit(message.getWriter());
-        // 4. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
-        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1번에서 받아온 방 번호가 병합된다.
+        // 4. 1에서 받아온 DTO 값중 참가중인 인원을 가져와 1을 감소한뒤 다시 참가중인 인원에 저장한다.
+        message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
+        // 5. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 받아온 방 번호가 병합된다.
         //    "/sub" + "/meta/studyRoom" + metaIdx = "/sub/meta/studyRoom/1"
         template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
     }

@@ -72,16 +72,16 @@ public class MetaController {
     public String studyRoom(@RequestParam long metaIdx, Principal principal, Model model) { // 1. 파라미터로 입장한 방 번호를 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 넘겨준다.
         Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
-        // 7. 받아온 방 번호를 서비스에 넘겨준다.
+        // 7. 1에서 파라미터로 받아온 방 번호와 2에서 받아온 DTO를 서비스에 넘겨준다.
         Meta.rpEntrance rpEntrance = metaService.entrance(metaIdx, rpNickImage);
         // 14. 반환받은 DTO가 존재하는지 체크한다.
-        // 14-1. 반환받은 DTO가 없는 경우
+        // 14-1. 반환받은 DTO가 없는 경우 - 해당 방이 없는 경우
         if ( rpEntrance == null ) {
             // 14-1-1. 에러메세지를 바인딩한다.
             model.addAttribute("err", "해당 방의 정보가 없습니다.");
             // 메타 메인 페이지로 이동
             return "Meta/MetaRoom";
-        // 14-2. 반환받은 DTO가 있는 경우
+        // 14-2. 반환받은 DTO가 있는 경우 - 해당 방이 있는 경우
         } else {
             // 15. 반환받은 DTO 값중 metaIdx가 0인지 아닌지 체크한다.
             // 15-1. metaIdx가 0인 경우 - 모집인원이 정원초과
@@ -92,8 +92,8 @@ public class MetaController {
                 return "Meta/MetaRoom";
             // 15-2. metaIdx가 0이 아닌 경우 - 해당 방에 입장
             } else {
-                // 15-2-1. 방 번호와 2에서 반환받은 DTO와 7에서 반환받은 DTO를 서비스에 넘겨준다.
-                List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(metaIdx, rpNickImage, rpEntrance);
+                // 15-2-1. 1에서 파라미터로 받아온 방 번호를 서비스에 넘겨준다.
+                List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(metaIdx);
                 // 20. 15-2-1에서 반환받은 DTO를 바인딩한다.
                 model.addAttribute("participantList", rpMetaRoomIdxList);
                 // 21. 7에서 반환받은 DTO를 바인딩한다.
@@ -181,7 +181,7 @@ public class MetaController {
     public String exitRoom(@RequestParam long metaIdx, Principal principal) { // 1. 파라미터로 입장한 방 번호를 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 넘겨준다.
         Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
-        // 3. 받아온 방 번호를 서비스에 넘겨준다.
+        // 3. 1에서 파라미터로 받아온 방 번호와 2에서 받아온 DTO를 서비스에 넘겨준다.
         metaService.exit(metaIdx, rpNickImage);
         // 메타 메인 페이지로 이동
         return "redirect:/meta";
