@@ -38,6 +38,7 @@
 		metaPersonnel INT NOT NULL, #방 모집인원
 		metaRecruitingPersonnel INT NOT NULL #방 참여중인 인원
 	);
+#
 
 ### 📌 01/27
 #### ✔ 메타 방 내부 참가자 표시 구현
@@ -88,6 +89,7 @@
 		metaIdx INT NOT NULL, #방 번호
 		CONSTRAINT fk_metaIdx FOREIGN KEY(metaIdx) REFERENCES Meta(metaIdx) ON DELETE CASCADE ON UPDATE CASCADE #포린키 연결
 	);
+#
 	
 ### 📌 01/29
 #### ✔ 메타 방 내부 참가자 표시 구현 2
