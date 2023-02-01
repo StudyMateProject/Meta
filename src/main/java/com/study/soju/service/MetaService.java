@@ -48,17 +48,34 @@ public class MetaService {
     public List<Meta.rpSearchMetaList> searchMetaList(Meta.rqSearchMetaList rqSearchMetaList) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO를 받아온다.
         // 4. 받아온 DTO를 Entity로 변환한다.
         Meta meta = rqSearchMetaList.toEntity();
-        // 5. 변환된 Entity에서 필요한 데이터들만 DB로 가져가 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
-        List<Meta> searchMetaList = metaRepository.findByMetaList(meta.getMetaType(), meta.getMetaTitle());
-        // 6. List형식의 Entity를 DTO로 변환하는 방법 (stream 방식)
-        // .stream() - List형식의 Entity --> Entity 스트림 - DB에서 가져온 List형식의 Entity를 스트림으로 변환
-        // .map(DTO::new) - Entity 스트림 --> DTO 스트림 - 변한된 Entity 스트림을 DTO클래스의 생성자메소드를 사용해 요소들을 전달하여 DTO로 바꾼뒤 새로운 스트림으로 변환
-        // .collect(Collectors.toList()); - DTO 스트림 --> List형식의 DTO - 변한된 DTO 스트림을 List로 변환
-        List<Meta.rpSearchMetaList> rpSearchMetaList = searchMetaList.stream()
-                                                                     .map(Meta.rpSearchMetaList::new)
-                                                                     .collect(Collectors.toList());
-        // 7. 변환된 List형태의 DTO를 반환한다.
-        return rpSearchMetaList;
+        // 5. 검색 종류를 체크한다.
+        // 5-1. 검색 종류가 방 번호인 경우
+        if ( meta.getMetaIdx() != null ) {
+            // 5-1-1. 변환된 Entity에서 필요한 데이터들만 DB로 가져가 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
+            List<Meta> searchMetaList = metaRepository.findByMetaIdxList(meta.getMetaType(), meta.getMetaIdx());
+            // 5-1-2. List형식의 Entity를 DTO로 변환하는 방법 (stream 방식)
+            // .stream() - List형식의 Entity --> Entity 스트림 - DB에서 가져온 List형식의 Entity를 스트림으로 변환
+            // .map(DTO::new) - Entity 스트림 --> DTO 스트림 - 변한된 Entity 스트림을 DTO클래스의 생성자메소드를 사용해 요소들을 전달하여 DTO로 바꾼뒤 새로운 스트림으로 변환
+            // .collect(Collectors.toList()); - DTO 스트림 --> List형식의 DTO - 변한된 DTO 스트림을 List로 변환
+            List<Meta.rpSearchMetaList> rpSearchMetaList = searchMetaList.stream()
+                                                                         .map(Meta.rpSearchMetaList::new)
+                                                                         .collect(Collectors.toList());
+            // 5-1-3. 변환된 List형태의 DTO를 반환한다.
+            return rpSearchMetaList;
+        // 5-2. 검색 종류가 방 제목인 경우
+        } else {
+            // 5-2-1. 변환된 Entity에서 필요한 데이터들만 DB로 가져가 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
+            List<Meta> searchMetaList = metaRepository.findByMetaTitleList(meta.getMetaType(), meta.getMetaTitle());
+            // 5-2-2. List형식의 Entity를 DTO로 변환하는 방법 (stream 방식)
+            // .stream() - List형식의 Entity --> Entity 스트림 - DB에서 가져온 List형식의 Entity를 스트림으로 변환
+            // .map(DTO::new) - Entity 스트림 --> DTO 스트림 - 변한된 Entity 스트림을 DTO클래스의 생성자메소드를 사용해 요소들을 전달하여 DTO로 바꾼뒤 새로운 스트림으로 변환
+            // .collect(Collectors.toList()); - DTO 스트림 --> List형식의 DTO - 변한된 DTO 스트림을 List로 변환
+            List<Meta.rpSearchMetaList> rpSearchMetaList = searchMetaList.stream()
+                                                                         .map(Meta.rpSearchMetaList::new)
+                                                                         .collect(Collectors.toList());
+            // 5-2-3. 변환된 List형태의 DTO를 반환한다.
+            return rpSearchMetaList;
+        }
     }
 
     // 입장한 메타 방 조회 후 모집된 인원 증가

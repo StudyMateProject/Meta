@@ -32,6 +32,8 @@ public class MetaController {
         List<Meta.rpMetaList> metaList = metaService.metaList();
         // 5. 반환받은 List형태의 DTO를 바인딩한다.
         model.addAttribute("metaList", metaList);
+        // 6. 검색 체크값을 바인딩한다. - 0 : 검색 안했을 경우
+        model.addAttribute("check", 0);
         // 0. 검색에 사용할 DTO를 바인딩한다.
         model.addAttribute("metaDTO", new Meta.rqSearchMetaList());
         // 메타 메인 페이지로 이동
@@ -61,8 +63,10 @@ public class MetaController {
     public String searchMeta(Meta.rqSearchMetaList rqSearchMetaList, Model model) { // 1. DTO로 form값을 다 받아온다.
         // 2. 받아온 DTO를 서비스에 넘겨준다.
         List<Meta.rpSearchMetaList> rpSearchMetaList = metaService.searchMetaList(rqSearchMetaList);
-        // 8. 반환받은 List형태의 DTO를 바인딩한다.
+        // 6. 반환받은 List형태의 DTO를 바인딩한다.
         model.addAttribute("searchMetaList", rpSearchMetaList);
+        // 7. 검색 체크값을 바인딩한다. - 1 : 검색 했을 경우
+        model.addAttribute("check", 1);
         // 메타 메인 페이지로 이동
         return "Meta/MetaRoom";
     }

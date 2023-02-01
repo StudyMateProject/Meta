@@ -14,37 +14,23 @@
     </script>
 </head>
 <body>
-    <!-- th:object="${바인딩한 객체의 변수명}" - 모델로 바인딩한 객체를 가져온다. -->
-    <form action="/meta/search" method="get" th:object="${metaDTO}">
-        <!-- th:for="th:field에 작성한 변수명" - label과 input을 연결 해준다. -->
-        <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
-        <select th:field="*{metaType}"><option value="">방 분야</option>
-                                       <option value="studyRoom">스터디</option>
-                                       <option value="cafeRoom">카페</option>
-                                       <option value="oneRoom">자습실</option></select>
-        <label th:for="metaTitle">검색 : </label><input th:field="*{metaTitle}" type="text">
-        <input type="submit" value="검색">
-    </form>
+    <!-- 검색 안했을 경우 -->
+    <div th:if="${check == 0}">
+        <!-- th:object="${바인딩한 객체의 변수명}" - 모델로 바인딩한 객체를 가져온다. -->
+        <form action="/meta/search" method="get" th:object="${metaDTO}">
+            <!-- th:for="th:field에 작성한 변수명" - label과 input을 연결 해준다. -->
+            <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
+            <select th:field="*{searchType}"><option value="">검색 종류</option>
+                                             <option value="idx">방 번호</option>
+                                             <option value="title">방 이름</option></select>
+            <select th:field="*{metaType}"><option value="">방 분야</option>
+                                           <option value="studyRoom">스터디</option>
+                                           <option value="cafeRoom">카페</option>
+                                           <option value="oneRoom">자습실</option></select>
+            <input th:field="*{search}" type="text">
+            <input type="button" value="검색" onclick="searchMeta(this.form)">
+        </form>
 
-    <div>
-        <!-- th:each="바인딩한 여러 객체들을 하나씩 꺼내 사용할 별칭 : ${바인딩한 여러 객체들의 통합 변수명}" - 바인딩한 여러 객체를 forEach문으로 하나씩 꺼내온다. -->
-        <ul th:each="typeMeta : ${typeMetaList}">
-            <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
-            <li th:if="${typeMeta.metaType == 'studyRoom'}"><a th:href="@{/meta/studyroom(metaIdx=${typeMeta.metaIdx})}">(스터디)
-                                                                                                                         [[${typeMeta.metaTitle}]]
-                                                                                                                         ([[${typeMeta.metaRecruitingPersonnel}]] / [[${typeMeta.metaPersonnel}]])</a></li>
-            <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
-            <li th:if="${typeMeta.metaType == 'cafeRoom'}"><a th:href="@{/meta/caferoom(metaIdx=${typeMeta.metaIdx})}">(카페)
-                                                                                                                       [[${typeMeta.metaTitle}]]
-                                                                                                                       ([[${typeMeta.metaRecruitingPersonnel}]] / [[${typeMeta.metaPersonnel}]])</a></li>
-            <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
-            <li th:if="${typeMeta.metaType == 'oneRoom'}"><a th:href="@{/meta/oneroom(metaIdx=${typeMeta.metaIdx})}">(자습실)
-                                                                                                                     [[${typeMeta.metaTitle}]]
-                                                                                                                     ([[${typeMeta.metaRecruitingPersonnel}]] / [[${typeMeta.metaPersonnel}]])</a></li>
-        </ul>
-    </div>
-
-    <div>
         <!-- th:each="바인딩한 여러 객체들을 하나씩 꺼내 사용할 별칭 : ${바인딩한 여러 객체들의 통합 변수명}" - 바인딩한 여러 객체를 forEach문으로 하나씩 꺼내온다. -->
         <ul th:each="meta : ${metaList}">
             <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
@@ -62,8 +48,56 @@
         </ul>
     </div>
 
+    <!-- 검색 했을 경우 -->
+    <div th:if="${check == 1}">
+        <!-- th:each="바인딩한 여러 객체들을 하나씩 꺼내 사용할 별칭 : ${바인딩한 여러 객체들의 통합 변수명}" - 바인딩한 여러 객체를 forEach문으로 하나씩 꺼내온다. -->
+        <ul th:each="searchMeta : ${searchMetaList}">
+            <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
+            <li th:if="${searchMeta.metaType == 'studyRoom'}"><a th:href="@{/meta/studyroom(metaIdx=${searchMeta.metaIdx})}">(스터디)
+                                                                                                                             [[${searchMeta.metaTitle}]]
+                                                                                                                             ([[${searchMeta.metaRecruitingPersonnel}]] / [[${searchMeta.metaPersonnel}]])</a></li>
+            <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
+            <li th:if="${searchMeta.metaType == 'cafeRoom'}"><a th:href="@{/meta/caferoom(metaIdx=${searchMeta.metaIdx})}">(카페)
+                                                                                                                           [[${searchMeta.metaTitle}]]
+                                                                                                                           ([[${searchMeta.metaRecruitingPersonnel}]] / [[${searchMeta.metaPersonnel}]])</a></li>
+            <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
+            <li th:if="${searchMeta.metaType == 'oneRoom'}"><a th:href="@{/meta/oneroom(metaIdx=${searchMeta.metaIdx})}">(자습실)
+                                                                                                                         [[${searchMeta.metaTitle}]]
+                                                                                                                         ([[${searchMeta.metaRecruitingPersonnel}]] / [[${searchMeta.metaPersonnel}]])</a></li>
+        </ul>
+    </div>
+
     <input type="button" value="방 만들기" onclick="location.href='/meta/createmetaform'">
     <input type="button" value="새로고침" onclick="location.href='/meta'">
     <input type="button" value="나가기" onclick="location.href='/'">
+<!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <script>
+        function searchMeta(f) {
+            let searchType = f.searchType.value;
+            let search = f.search.value;
+            let metaType = f.metaType.value;
+
+            if ( searchType == "" ) {
+                alert("검색 종류를 선택하세요");
+                return;
+            }
+
+            if ( metaType == "" ) {
+                alert("방 분야를 선택하세요");
+                return;
+            }
+
+            if ( searchType == "idx" ) {
+                if ( search == "" ) {
+                    alert("방 번호를 입력하세요");
+                    return;
+                }
+            }
+
+            f.action = "/meta/search";
+            f.method = "get";
+            f.submit();
+        }
+    </script>
 </body>
 </html>

@@ -86,15 +86,23 @@ public class Meta {
     @NoArgsConstructor
     @ToString
     public static class rqSearchMetaList {
-        private String metaTitle;
+        private String searchType;
+        private String search;
         private String metaType;
 
         // DTO를 Entity로 변환 (빌더 방식)
         public Meta toEntity() {
-            return Meta.builder()
-                    .metaTitle(metaTitle)
-                    .metaType(metaType)
-                    .build();
+            if ( searchType.equals("idx") ) {
+                return Meta.builder()
+                        .metaIdx(Long.valueOf(search))
+                        .metaType(metaType)
+                        .build();
+            } else {
+                return Meta.builder()
+                        .metaTitle(search)
+                        .metaType(metaType)
+                        .build();
+            }
         }
     }
 
@@ -106,6 +114,7 @@ public class Meta {
     @Builder
     @ToString
     public static class rpSearchMetaList {
+        private long metaIdx;
         private String metaTitle;
         private String metaType;
         private int metaPersonnel;
@@ -113,6 +122,7 @@ public class Meta {
 
         // Entity를 DTO로 변환 (생성자 방식)
         public rpSearchMetaList(Meta meta) {
+            this.metaIdx = meta.getMetaIdx();
             this.metaTitle = meta.getMetaTitle();
             this.metaType = meta.getMetaType();
             this.metaPersonnel = meta.getMetaPersonnel();
