@@ -156,6 +156,13 @@
                         var menuBar = document.getElementById("menuBar"); // 참가자가 작성될 구역
                         var mtr = ""; // 참가자 코드가 작성될 변수
 
+                        // 참가자가 새로 들어온게 아닌 새로고침한 경우 - 이전에 작성되있던 참가자 코드랑 중복되지 않게 먼저 삭제한다.
+                        var ptr = document.getElementById(writer); // 이전에 작성되있던 참가자 id
+                        // 이전에 작성되있던 참가자 코드가 있을 경우
+                        if ( ptr != null ) {
+                            ptr.remove(); // 위에서 가져온 id를 이용하여 해당 참가자를 삭제한다.
+                        }
+
                         // 참가자 코드를 작성한다.
                         mtr = '<div id="' + writer + '" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 46px; float: left;">';
                         mtr += '<img src="/imagePath/' + profileImage + '" style="width: 44px; height:44px; float: left;">';
