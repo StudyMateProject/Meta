@@ -53,7 +53,7 @@ public class SignUpService implements UserDetailsService {
     // 로그인시 인증 방식 - Spring Security에서 DB로 변경한다.
     @Override
     public UserDetails loadUserByUsername(String emailId) throws UsernameNotFoundException { // 3. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
-        // 4. 넘어온 아이디로 멤버를 조회하고, 조회된 값을 받아온다.
+        // 4. 넘어온 아이디로 유저를 조회하고, 조회된 값을 받아온다.
         Member member = memberRepository.findByEmailId(emailId);
         // 5. 조회된 값이 있는지 체크한다.
         // 5-1. 조회된 값이 없는 경우
