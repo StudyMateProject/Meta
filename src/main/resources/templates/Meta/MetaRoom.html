@@ -12,64 +12,601 @@
             location.href = "/meta";
         }
     </script>
+    <style>
+        html {
+            height: 100%;
+            width: 100%;
+        }
+        body{
+            width: 90%;
+            height: 100%;
+            margin: 0 auto;
+            padding: 0px;
+        }
+        header{
+            position:fixed;
+            padding-top: 10px;
+            width: 90%;
+            height: 80px;
+            background-color: white;
+            border-bottom: 5px solid #57B862;
+        }
+        ul{
+            padding: 0px;
+            margin: 0px;
+            display:flex;
+            float:right;
+        }
+        li{
+            margin: 0px;
+            padding: 0px 0px 0px 15px;
+            list-style:none;
+            display:inline;
+            height: 30px;
+        }
+        .topDiv{
+            height: 50%;
+        }
+        .navDiv{
+            margin-top: 20px;
+            font-size: 30px;
+            width: 100%;
+            height: 50%;
+            display: flex;
+            line-height : 120%;
+            justify-content:space-evenly;
+            background-color: #57B862;
+        }
+        .rightSpan{
+            text-align: center;
+            float:right;
+            font-size:20px;
+            height: 100%;
+        }
+        .inputButton{
+            height: 35px;
+            font-size: 20px;
+            background-color: #57B862;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .leftSpan{
+            height: 100%;
+            font-size:30px;
+            margin-left: 2%;
+            cursor: pointer;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+        .icon {
+            position: relative;
+            font-size: 30px;
+            color: rgb(156, 153, 153);
+            transform-origin: top;
+            animation: anim 1s forwards infinite;
+        }
+        .icon::before {
+            content: attr(data-number);
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            background-color: #7EFFB2;
+            font-size: 14px;
+            color: #090909;
+            display: grid;
+            place-items: center;
+            border: 2px solid #090909;
+            border-radius: 50%;
+        }
+        @keyframes anim {
+            10% {
+                rotate: 15deg;
+            }
+            20% {
+                rotate: -15deg;
+            }
+            30% {
+                rotate: 15deg;
+            }
+            50% {
+                rotate: 0deg;
+            }
+        }
+        .blankDiv{
+            width: 100%;
+            height: 20%;
+        }
+        .bodyDiv{
+            width: 96%;
+            margin: 0% 0% 0% 2%;
+            height: 80%;
+            display:flex;
+        }
+        .bodyDivLeftSpan{
+            width: 34%;
+            margin: 0% 3% 0% 3%;
+            height: 100%;
+            display: inline-block;
+        }
+        .bodyDivLeftSpanTop{
+            width: 100%;
+            height: 10%;
+            margin: 0% 0% 5% 0%;
+            display: grid;
+            align-items: center;
+        }
+        .bodyDivLeftSpanTopSpan{
+            width: 90%;
+            height: 33.3%;
+            margin: 0% 0% 0% 10%;
+            display: inline-block;
+            font-size: 30px;
+        }
+        .bodyDivLeftSpanMid{
+            width: 100%;
+            height: 35%;
+            margin: 0% 0% 5% 0%;
+            display: flex;
+            background-color: gray;
+            border-radius: 5px;
+        }
+        .bodyDivLeftSpanMidLeft{
+            width: 50%;
+            height: 100%;
+            display: inline-block;
+        }
+        .bodyDivLeftSpanMidLeftImg{
+            width: 80%;
+            height: 80%;
+            margin: 10%;
+            background-color: blue;
+        }
+        .bodyDivLeftSpanMidRight{
+            width: 50%;
+            height: 100%;
+            display: inline-block;
+        }
+        .bodyDivLeftSpanMidRightTop{
+            width: 100%;
+            height: 30%;
+        }
+        .bodyDivLeftSpanMidRightTopText1{
+            width: 90%;
+            height: 20%;
+            margin: 20% 0% 0% 10%;
+            display: grid;
+            align-items: center;
+        }
+        .bodyDivLeftSpanMidRightTopText2{
+            width: 90%;
+            height: 20%;
+            margin: 5% 0% 0% 10%;
+            display: grid;
+            align-items: center;
+        }
+        .bodyDivLeftSpanMidRightTopText3{
+            width: 90%;
+            height: 20%;
+            margin: 5% 0% 0% 10%;
+            display: grid;
+            align-items: center;
+        }
+        .bodyDivLeftSpanMidRightBottom{
+            width: 90%;
+            height: 40%;
+            margin: 5%;
+            text-align: center;
+            background-color: pink;
+            display: grid;
+            align-items: center;
+        }
+        .bodyDivLeftSpanBottom{
+            width: 100%;
+            height: 45%;
+            margin: 0% 0% 0% 0%;
+            background-color: gray;
+        }
+        .bodyDivLeftSpanBottomTop{
+            width: 100%;
+            height: 30%;
+            display: flex;
+        }
+        .bodyDivLeftSpanBottomTopLeft{
+            width: 40%;
+            height: 80%;
+            margin: 1% 5% 0% 5%;
+            background-color: pink;
+            text-align: center;
+            display: grid;
+            align-items: center;
+        }
+        .bodyDivLeftSpanBottomTopRight{
+            width: 40%;
+            height: 80%;
+            margin: 1% 5% 0% 5%;
+            background-color: pink;
+            text-align: center;
+            display: grid;
+            align-items: center;
+        }
+        .bodyDivLeftSpanBottomBottom{
+            width: 100%;
+            height: 70%;
+        }
+        .bodyDivLeftSpanBottomBottomTop{
+            width: 90%;
+            height: 20%;
+            margin: 0% 5% 0% 5%;
+            border-bottom: 1px solid black;
+        }
+        .bodyDivLeftSpanBottomBottomBottom{
+            width: 100%;
+            height: 80%;
+            overflow-y: scroll;
+        }
+        .bodyDivLeftSpanBottomBottomBottom1{
+            width: 90%;
+            height: 18%;
+            margin: 2% 5% 0% 5%;
+            background-color: pink;
+        }
+        .bodyDivLeftSpanBottomBottomBottom2{
+            width: 90%;
+            height: 18%;
+            margin: 2% 5% 0% 5%;
+            background-color: pink;
+        }
+        .bodyDivRightSpan{
+            width: 57%;
+            height: 100%;
+            margin: 0% 3% 0% 0%;
+            display: inline-block;
+        }
+        .bodyDivRightSpanTop{
+            width: 100%;
+            height: 10%;
+            margin: 0% 0% 3% 0%;
+            display: grid;
+            align-items: center;
+        }
+        .bodyDivRightSpanTopSpan{
+            width: 90%;
+            height: 33.3%;
+            margin: 0% 0% 0% 10%;
+            display: inline-block;
+            font-size: 30px;
+        }
+        .bodyDivRightSpanBottom{
+            width: 100%;
+            height: 83.2%;
+            background-color: gray;
+        }
+        .bodyDivRightSpanBottomTop{
+            width: 100%;
+            height: 15%;
+            display: flex;
+        }
+        .bodyDivRightSpanBottomTopLeft{
+            width: 20%;
+            height: 100%;
+            text-align: center;
+            display: grid;
+            align-items: center;
+            font-size: 25px;
+        }
+        .bodyDivRightSpanBottomTopRight{
+            width: 80%;
+            height: 100%;
+            display: flex;
+        }
+        .bodyDivRightSpanBottomTopRightLeft{
+            width: 20%;
+            height: 100%;
+            margin: 0% 2% 0% 2%;
+            text-align: center;
+            display: grid;
+            align-items: center;
+        }
+        .bodyDivRightSpanBottomTopRightLeftSelect{
+            font-size: 25px;
+        }
+        .bodyDivRightSpanBottomTopRightCenter{
+            width: 48%;
+            height: 100%;
+            margin: 0% 2% 0% 2%;
+            text-align: center;
+            display: grid;
+            align-items: center;
+        }
+        .bodyDivRightSpanBottomTopRightCenterText{
+            font-size: 25px;
+        }
+        .bodyDivRightSpanBottomTopRightRight{
+            width: 20%;
+            height: 100%;
+            margin: 0% 2% 0% 2%;
+            text-align: center;
+            display: grid;
+            align-items: center;
+        }
+        .bodyDivRightSpanBottomTopRightRightButton{
+            font-size: 25px;
+        }
+        .bodyDivRightSpanBottomBottom{
+            width: 100%;
+            height: 85%;
+        }
+        .bodyDivRightSpanBottomBottomTop{
+            width: 90%;
+            height: 45%;
+            margin: 0% 5% 0% 5%;
+        }
+        .bodyDivRightSpanBottomBottomTopTop{
+            width: 95%;
+            height: 19.8%;
+            padding: 0% 0% 0% 5%;
+            display: grid;
+            align-items: center;
+            border-bottom: 1px solid black;
+        }
+        .bodyDivRightSpanBottomBottomTopBottom{
+            width: 100%;
+            height: 80%;
+            overflow-y: scroll;
+        }
+        .bodyDivRightSpanBottomBottomTopBottomValue{
+            width: 100%;
+            height: 20%;
+            background-color: pink;
+            margin: 2% 0% 0% 0%;
+        }
+        .bodyDivRightSpanBottomBottomMid{
+            width: 100%;
+            height: 5%;
+        }
+        .bodyDivRightSpanBottomBottomBottom{
+            width: 90%;
+            height: 45%;
+            margin: 0% 5% 0% 5%;
+        }
+        .bodyDivRightSpanBottomBottomBottomTop{
+            width: 95%;
+            height: 19.8%;
+            padding: 0% 0% 0% 5%;
+            display: grid;
+            align-items: center;
+            border-bottom: 1px solid black;
+        }
+        .bodyDivRightSpanBottomBottomBottomBottom{
+            width: 100%;
+            height: 80%;
+            overflow-y: scroll;
+        }
+        .bodyDivRightSpanBottomBottomBottomBottomValue{
+            width: 100%;
+            height: 20%;
+            background-color: pink;
+            margin: 2% 0% 0% 0%;
+        }
+        .footer{
+            width: 100%;
+            height: 5%;
+            background-color: blue;
+        }
+    </style>
 </head>
 <body>
-    <!-- 검색 안했을 경우 -->
-    <div th:if="${check == 0}">
-        <!-- th:object="${바인딩한 객체의 변수명}" - 모델로 바인딩한 객체를 가져온다. -->
-        <form action="/meta/search" method="get" th:object="${metaDTO}">
-            <!-- th:for="th:field에 작성한 변수명" - label과 input을 연결 해준다. -->
-            <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
-            <select th:field="*{searchType}"><option value="">검색 종류</option>
-                                             <option value="idx">방 번호</option>
-                                             <option value="title">방 이름</option></select>
-            <select th:field="*{metaType}"><option value="">방 분야</option>
-                                           <option value="studyRoom">스터디</option>
-                                           <option value="cafeRoom">카페</option>
-                                           <option value="oneRoom">자습실</option></select>
-            <input th:field="*{search}" type="text">
-            <input type="button" value="검색" onclick="searchMeta(this.form)">
-        </form>
+    <header>
+        <div class="topDiv">
+            <span class="leftSpan" onclick="location.href='/'">SOJU</span>
+            <span class = "rightSpan">
+                <ul>
+                    <li class="rightSpanText">이용권이 <span>30</span>일 남았습니다.</li>
+                    <li style="cursor: pointer;">
+                        <div class="icon" data-number="5">
+                            <i class="ri-notification-4-fill"></i>
+                        </div>
+                    </li>
+                    <li>
+                        <input class="inputButton" sec:authorize="isAnonymous()" type="button" value="회원가입/로그인" onclick="location.href='/loginform'">
+                        <input class="inputButton" sec:authorize="isAuthenticated()" type="button" value="로그아웃" onclick="location.href='/logout'">
+                    </li>
+                </ul>
+            </span>
+        </div>
+        <div class="navDiv">
+            <a style="text-decoration:none; color: black;" href="/recruitstudy" >소중한 친구들 구하기</a>
+            <label>|</label>
+            <a style="text-decoration:none; color: black;" href="/meta">모임 공간</a>
+            <label>|</label>
+            <a style="text-decoration:none; color: black;" href="/noticeroom">게시판</a>
+            <label>|</label>
+            <a style="text-decoration:none; color: black;" href="/store">스토어</a>
+            <label>|</label>
+            <a style="text-decoration:none; color: black;" href="/mypage">마이페이지</a>
+        </div>
+    </header>
+    <div class="blankDiv">
 
-        <!-- th:each="바인딩한 여러 객체들을 하나씩 꺼내 사용할 별칭 : ${바인딩한 여러 객체들의 통합 변수명}" - 바인딩한 여러 객체를 forEach문으로 하나씩 꺼내온다. -->
-        <ul th:each="meta : ${metaList}">
-            <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
-            <li th:if="${meta.metaType == 'studyRoom'}"><a th:href="@{/meta/studyroom(metaIdx=${meta.metaIdx})}">(스터디)
-                                                                                                                 [[${meta.metaTitle}]]
-                                                                                                                 ([[${meta.metaRecruitingPersonnel}]] / [[${meta.metaPersonnel}]])</a></li>
-            <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
-            <li th:if="${meta.metaType == 'cafeRoom'}"><a th:href="@{/meta/caferoom(metaIdx=${meta.metaIdx})}">(카페)
-                                                                                                               [[${meta.metaTitle}]]
-                                                                                                               ([[${meta.metaRecruitingPersonnel}]] / [[${meta.metaPersonnel}]])</a></li>
-            <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
-            <li th:if="${meta.metaType == 'oneRoom'}"><a th:href="@{/meta/oneroom(metaIdx=${meta.metaIdx})}">(자습실)
-                                                                                                             [[${meta.metaTitle}]]
-                                                                                                             ([[${meta.metaRecruitingPersonnel}]] / [[${meta.metaPersonnel}]])</a></li>
-        </ul>
     </div>
+    <div class="bodyDiv">
+        <span class="bodyDivLeftSpan">
+            <div class="bodyDivLeftSpanTop">
+                <span class="bodyDivLeftSpanTopSpan">프로필</span>
+            </div>
+            <div class="bodyDivLeftSpanMid" th:each="profile : ${metaProfile}">
+                <span class="bodyDivLeftSpanMidLeft">
+                    <img class="bodyDivLeftSpanMidLeftImg" th:src="@{/imagePath/} + ${profile.profileImage}">
+                </span>
+                <span class="bodyDivLeftSpanMidRight">
+                    <div class="bodyDivLeftSpanMidRightTop">
+                        <div class="bodyDivLeftSpanMidRightTopText1" th:text="${profile.nickname}"></div>
+                        <div class="bodyDivLeftSpanMidRightTopText2" th:text="${profile.studyType}"></div>
+                        <div class="bodyDivLeftSpanMidRightTopText3">
+                            이용권
+                        </div>
+                    </div>
+                    <input class="bodyDivLeftSpanMidRightBottom" type="button" value="체크리스트">
+                </span>
+            </div>
+            <div class="bodyDivLeftSpanBottom">
+                <div class="bodyDivLeftSpanBottomTop">
+                    <input class="bodyDivLeftSpanBottomTopLeft" type="button" value="방 만들기" onclick="location.href='/meta/createmetaform'">
+                    <input class="bodyDivLeftSpanBottomTopRight" type="button" value="혼자 공부방">
+                </div>
+                <div class="bodyDivLeftSpanBottomBottom">
+                    <div class="bodyDivLeftSpanBottomBottomTop">
+                        <span>최근 입장방</span>
+                    </div>
+                    <div class="bodyDivLeftSpanBottomBottomBottom">
+                        <div class="bodyDivLeftSpanBottomBottomBottom1">
+                            목록1
+                        </div>
+                        <div class="bodyDivLeftSpanBottomBottomBottom2">
+                            목록2
+                        </div>
+                        <div class="bodyDivLeftSpanBottomBottomBottom1">
+                            목록3
+                        </div>
+                        <div class="bodyDivLeftSpanBottomBottomBottom2">
+                            목록4
+                        </div>
+                        <div class="bodyDivLeftSpanBottomBottomBottom1">
+                            목록5
+                        </div>
+                        <div class="bodyDivLeftSpanBottomBottomBottom2">
+                            목록6
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </span>
+        <span class="bodyDivRightSpan">
+            <div class="bodyDivRightSpanTop">
+                <span class="bodyDivRightSpanTopSpan">스터디룸 홈</span>
+            </div>
+            <div class="bodyDivRightSpanBottom" th:if="${check == 0}">
+                <div class="bodyDivRightSpanBottomTop">
+                    <span class="bodyDivRightSpanBottomTopLeft">
+                        <span>방목록</span>
+                    </span>
+                    <form class="bodyDivRightSpanBottomTopRight" action="/meta/search" method="get" th:object="${metaDTO}">
+                        <div class="bodyDivRightSpanBottomTopRightLeft">
+                            <select class="bodyDivRightSpanBottomTopRightLeftSelect" th:field="*{searchType}"><option value="">검색 종류</option>
+                                                                                                              <option value="idx">방 번호</option>
+                                                                                                              <option value="title">방 이름</option></select>
+                            <select class="bodyDivRightSpanBottomTopRightLeftSelect" th:field="*{metaType}"><option value="">방 분야</option>
+                                                                                                            <option value="studyRoom">스터디</option>
+                                                                                                            <option value="cafeRoom">카페</option>
+                                                                                                            <option value="oneRoom">자습실</option></select>
+                        </div>
+                        <div class="bodyDivRightSpanBottomTopRightCenter">
+                            <input class="bodyDivRightSpanBottomTopRightCenterText" th:field="*{search}" type="text">
+                        </div>
+                        <div class="bodyDivRightSpanBottomTopRightRight">
+                            <input class="bodyDivRightSpanBottomTopRightRightButton" type="button" value="검색" onclick="searchMeta(this.form)">
+                        </div>
+                    </form>
+                </div>
+                <div class="bodyDivRightSpanBottomBottom">
+                    <div class="bodyDivRightSpanBottomBottomTop">
+                        <div class="bodyDivRightSpanBottomBottomTopTop">
+                            <span>스터디룸</span>
+                        </div>
+                        <div class="bodyDivRightSpanBottomBottomTopBottom">
+                            <div class="bodyDivRightSpanBottomBottomTopBottomValue" th:each="study : ${studyList}">
+                                <a th:href="@{/meta/studyroom(metaIdx=${study.metaIdx})}">
+                                    (스터디)
+                                    [[${study.metaTitle}]]
+                                    [[${study.metaRecruitingPersonnel}]] / [[${study.metaPersonnel}]])
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bodyDivRightSpanBottomBottomMid">
 
-    <!-- 검색 했을 경우 -->
-    <div th:if="${check == 1}">
-        <!-- th:each="바인딩한 여러 객체들을 하나씩 꺼내 사용할 별칭 : ${바인딩한 여러 객체들의 통합 변수명}" - 바인딩한 여러 객체를 forEach문으로 하나씩 꺼내온다. -->
-        <ul th:each="searchMeta : ${searchMetaList}">
-            <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
-            <li th:if="${searchMeta.metaType == 'studyRoom'}"><a th:href="@{/meta/studyroom(metaIdx=${searchMeta.metaIdx})}">(스터디)
-                                                                                                                             [[${searchMeta.metaTitle}]]
-                                                                                                                             ([[${searchMeta.metaRecruitingPersonnel}]] / [[${searchMeta.metaPersonnel}]])</a></li>
-            <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
-            <li th:if="${searchMeta.metaType == 'cafeRoom'}"><a th:href="@{/meta/caferoom(metaIdx=${searchMeta.metaIdx})}">(카페)
-                                                                                                                           [[${searchMeta.metaTitle}]]
-                                                                                                                           ([[${searchMeta.metaRecruitingPersonnel}]] / [[${searchMeta.metaPersonnel}]])</a></li>
-            <!-- th:if="${객체의 별칭.객체의 내부 변수명 == '변수의 데이터값'}" - 바인딩한 객체의 변수와 데이터값을 if문으로 비교한다. -->
-            <li th:if="${searchMeta.metaType == 'oneRoom'}"><a th:href="@{/meta/oneroom(metaIdx=${searchMeta.metaIdx})}">(자습실)
-                                                                                                                         [[${searchMeta.metaTitle}]]
-                                                                                                                         ([[${searchMeta.metaRecruitingPersonnel}]] / [[${searchMeta.metaPersonnel}]])</a></li>
-        </ul>
+                    </div>
+                    <div class="bodyDivRightSpanBottomBottomBottom">
+                        <div class="bodyDivRightSpanBottomBottomBottomTop">
+                            <span>휴식방</span>
+                        </div>
+                        <div class="bodyDivRightSpanBottomBottomBottomBottom">
+                            <div class="bodyDivRightSpanBottomBottomBottomBottomValue" th:each="cafe : ${cafeList}">
+                                <a th:href="@{/meta/caferoom(metaIdx=${cafe.metaIdx})}">
+                                    (카페)
+                                    [[${cafe.metaTitle}]]
+                                    ([[${cafe.metaRecruitingPersonnel}]] / [[${cafe.metaPersonnel}]])
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bodyDivRightSpanBottom" th:if="${check == 1}">
+                <div class="bodyDivRightSpanBottomTop">
+                    <span class="bodyDivRightSpanBottomTopLeft">
+                        <span>방목록</span>
+                    </span>
+                    <form class="bodyDivRightSpanBottomTopRight" action="/meta/search" method="get" th:object="${metaDTO}">
+                        <div class="bodyDivRightSpanBottomTopRightLeft">
+                            <select class="bodyDivRightSpanBottomTopRightLeftSelect" th:field="*{searchType}"><option value="">검색 종류</option>
+                                                                                                              <option value="idx">방 번호</option>
+                                                                                                              <option value="title">방 이름</option></select>
+                            <select class="bodyDivRightSpanBottomTopRightLeftSelect" th:field="*{metaType}"><option value="">방 분야</option>
+                                                                                                            <option value="studyRoom">스터디</option>
+                                                                                                            <option value="cafeRoom">카페</option>
+                                                                                                            <option value="oneRoom">자습실</option></select>
+                        </div>
+                        <div class="bodyDivRightSpanBottomTopRightCenter">
+                            <input class="bodyDivRightSpanBottomTopRightCenterText" th:field="*{search}" type="text">
+                        </div>
+                        <div class="bodyDivRightSpanBottomTopRightRight">
+                            <input class="bodyDivRightSpanBottomTopRightRightButton" type="button" value="검색" onclick="searchMeta(this.form)">
+                        </div>
+                    </form>
+                </div>
+                <div class="bodyDivRightSpanBottomBottom">
+                    <div class="bodyDivRightSpanBottomBottomTop">
+                        <div class="bodyDivRightSpanBottomBottomTopTop">
+                            <span>스터디룸</span>
+                        </div>
+                        <div class="bodyDivRightSpanBottomBottomTopBottom">
+                            <div class="bodyDivRightSpanBottomBottomTopBottomValue" th:each="study : ${studyList}">
+                                <a th:href="@{/meta/studyroom(metaIdx=${study.metaIdx})}">
+                                    (스터디)
+                                    [[${study.metaTitle}]]
+                                    [[${study.metaRecruitingPersonnel}]] / [[${study.metaPersonnel}]])
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bodyDivRightSpanBottomBottomMid">
+
+                    </div>
+                    <div class="bodyDivRightSpanBottomBottomBottom">
+                        <div class="bodyDivRightSpanBottomBottomBottomTop">
+                            <span>휴식방</span>
+                        </div>
+                        <div class="bodyDivRightSpanBottomBottomBottomBottom">
+                            <div class="bodyDivRightSpanBottomBottomBottomBottomValue" th:each="cafe : ${cafeList}">
+                                <a th:href="@{/meta/caferoom(metaIdx=${cafe.metaIdx})}">
+                                    (카페)
+                                    [[${cafe.metaTitle}]]
+                                    ([[${cafe.metaRecruitingPersonnel}]] / [[${cafe.metaPersonnel}]])
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </span>
     </div>
+    <div class="footer">
 
-    <input type="button" value="방 만들기" onclick="location.href='/meta/createmetaform'">
-    <input type="button" value="새로고침" onclick="location.href='/meta'">
-    <input type="button" value="나가기" onclick="location.href='/'">
+    </div>
 <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
     <script>
         function searchMeta(f) {

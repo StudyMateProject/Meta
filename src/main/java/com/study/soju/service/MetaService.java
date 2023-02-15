@@ -94,7 +94,7 @@ public class MetaService {
             // 12. 11에서 조회된 값이 있는지 체크한다.
             // 12-1. 로그인 유저가 참가자로 있는 경우 - 중복접속 - 새로고침
             if ( metaRoom != null ) {
-                // 12-1-1. 9에서 조회하고 받아온 Entity를 DTO로 변환한다.
+                // 12-1-1. 9에서 조회된 Entity를 DTO로 변환한다.
                 Meta.rpEntrance rpEntrance = new Meta.rpEntrance(meta);
                 // 12-1-2. 12-1-1에서 변환된 DTO를 반환한다.
                 return rpEntrance;
@@ -119,7 +119,7 @@ public class MetaService {
                     metaRoomRepository.save(metaRoomParticipate);
                     // 13-2-4. 8에서 파라미터로 받아온 방 번호로 방 내부 참여자 명단 수를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
                     int participantCount = metaRoomRepository.findByParticipantCount(metaIdx);
-                    // 13-2-5. 13-2-4에서 조회하고 받아온 값을 9에서 조회하고 받아온 Entity 값 중 참여중인 인원에 setter를 통해 전달한다.
+                    // 13-2-5. 13-2-4에서 조회된 값을 9에서 조회된 Entity 값 중 참여중인 인원에 setter를 통해 전달한다.
                     meta.setMetaRecruitingPersonnel(participantCount);
                     // 13-2-6. 13-2-5에서 값이 전달된 Entity로 방을 저장하고, 저장된 값을 받아온다.
                     Meta metaIncrease = metaRepository.save(meta);
@@ -161,7 +161,7 @@ public class MetaService {
         Meta meta = metaRepository.findByMetaIdx(metaIdx);
         // 9. 4에서 파라미터로 받아온 방 번호로 방 내부 참여자 명단 수를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
         int participantCount = metaRoomRepository.findByParticipantCount(metaIdx);
-        // 10. 9에서 조회하고 받아온 값을 8에서 조회하고 받아온 Entity 값 중 참여중인 인원에 setter를 통해 전달한다.
+        // 10. 9에서 조회된 값을 8에서 조회된 Entity 값 중 참여중인 인원에 setter를 통해 전달한다.
         meta.setMetaRecruitingPersonnel(participantCount);
         // 11. 10에서 값이 전달된 Entity로 방을 저장한다.
         metaRepository.save(meta);

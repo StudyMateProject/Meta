@@ -56,7 +56,7 @@ public class Member {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // DTO 구역
 
-    // 회원가입 Request DTO
+    // 자사 회원가입 Request DTO
     @Getter // getter 어노테이션
     @Setter // setter 어노테이션
     @NoArgsConstructor // 파라미터가 없는 기본 생성자 어노테이션
@@ -91,12 +91,12 @@ public class Member {
                     .studyType(studyType)
                     .platform("soju") // 가입 플랫폼 설정
                     .roleName("USER") // Spring Security 권한에 USER로 설정
-                    .profileImage("noFile.jpeg") // 가입할때는 아무 사진도 지정되있지 않다.
+                    .profileImage("noImage.jpeg") // 가입할때는 아무 사진도 지정되있지 않다.
                     .build();
         }
     }
 
-    // 회원가입 Response DTO
+    // 자사 회원가입 Response DTO
     @Getter
     @Setter
     @AllArgsConstructor
@@ -142,6 +142,25 @@ public class Member {
         public rpNickImage(Member member) {
             this.nickname = member.getNickname();
             this.profileImage = member.getProfileImage();
+        }
+    }
+
+    // MetaProfile Response DTO
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @ToString
+    public static class rpMetaProfile {
+        private String profileImage;
+        private String nickname;
+        private String studyType;
+
+        // Entity를 DTO로 변환 (생성자 방식)
+        public rpMetaProfile(Member member) {
+            this.profileImage = member.getProfileImage();
+            this.nickname = member.getNickname();
+            this.studyType = member.getStudyType();
         }
     }
 }

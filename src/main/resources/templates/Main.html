@@ -3,198 +3,605 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
-        html, body {
+        .scrolledDown {
+            box-shadow: 0 10px 10px 1px rgba(0, 0, 0, 0.54);
+        }
+        .blankDiv{
+            width: 100%;
+            height: 200px;
+        }
+        .imgDiv{
+            width: 100%;
+            height: 300px;
+            background-color: #aaf;
+        }
+        .attentionDiv{
+            width: 100%;
+            height: 30%;
+        }
+        .attentionDivTitle{
+            width: 95%;
+            height: 15%;
+            padding: 5% 0% 0% 5%;
+            font-size: 30px;
+        }
+        .attentionDivBody{
+            width: 100%;
+            height: 80%;
+            display: flex;
+            justify-content:space-evenly;
+            align-items: center;
+        }
+        .attentionDivBodyDiv1{
+            width: 10%;
             height: 100%;
-            //overflow: hidden;
+        }
+        .attentionDivBodyDiv2{
+            width: 10%;
+            height: 100%;
+        }
+        .attentionDivBodyDiv3{
+            width: 10%;
+            height: 100%;
+        }
+        .attentionDivBodyDiv4{
+            width: 10%;
+            height: 100%;
+        }
+        .attentionDivBodyDiv5{
+            width: 10%;
+            height: 100%;
+        }
+        .attentionDivBodyDiv6{
+            width: 10%;
+            height: 100%;
+        }
+        .attentionDivBodyDiv7{
+            width: 10%;
+            height: 100%;
+        }
+        .attentionDivBodyDiv8{
+            width: 10%;
+            height: 100%;
+        }
+        .attentionDivBodyDiv9{
+            width: 10%;
+            height: 100%;
+        }
+        .attentionDivBodyDiv10{
+            width: 10%;
+            height: 100%;
+        }
+        .attentionDivBodyDiv11{
+            width: 10%;
+            height: 100%;
+        }
+        .attentionDivBodyDivCircle{
+            margin: 40% 0% 0% 20%;
+            width: 60%;
+            height: 30%;
+            cursor: pointer;
+        }
+        img{
+            width: 100%;
+            height: 100%;
+            object-fit:cover;
+        }
+        .attentionDivBodyDivText{
+            text-align: center;
+            cursor: pointer;
+        }
+        .hotDiv{
+            width: 100%;
+            height: 30%;
+        }
+        .hotDivTitle{
+            width: 95%;
+            height: 15%;
+            padding: 5% 0% 0% 5%;
+            font-size: 30px;
+            border-bottom: 2px solid black;
+        }
+        .hotDivBody{
+            width: 100%;
+            height: 80%;
+            display: flex;
+            justify-content:space-evenly;
+            align-items: center;
+        }
+        .hotDivBodyDivImg1{
+            width: 10%;
+            height: 40%;
+            visibility: hidden;
+        }
+        .hotDivBodyDivImg1Button{
+            width: 50%;
+            height: 70%;
+            margin: 0% 0% 0% 30%;
+        }
+        .hotDivBodyDivImg2Button{
+            width: 50%;
+            height: 70%;
+            margin: 0% 0% 0% 30%;
+        }
+        .hotDivBodyDivImg2{
+            width: 10%;
+            height: 40%;
+        }
+        .hotDivBodyDiv1{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+        }
+        .hotDivBodyDiv2{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+        }
+        .hotDivBodyDiv3{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+        }
+        .hotDivBodyDiv4{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+        }
+        .hotDivBodyDiv5{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+            display:none;
+        }
+        .hotDivBodyDiv6{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+            display:none;
+        }
+        .hotDivBodyDiv7{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+            display:none;
+        }
+        .hotDivBodyDiv8{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+            display:none;
+        }
+        .hotDivBodyDiv9{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+            display:none;
+        }
+        .hotDivBodyDiv10{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+            display:none;
+        }
+        .hotDivBodyDiv11{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+            display:none;
+        }
+        .hotDivBodyDiv12{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+            display:none;
+        }
+        .rankDiv{
+            width: 100%;
+            height: 30%;
+        }
+        .rankDivTitle{
+            width: 95%;
+            height: 15%;
+            padding: 5% 0% 0% 5%;
+            font-size: 30px;
+            border-bottom: 2px solid black;
+        }
+        .rankDivBody{
+            width: 100%;
+            height: 80%;
+            display: flex;
+            justify-content:space-evenly;
+            align-items: center;
+        }
+        .rankDivBodyDiv1{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+        }
+        .rankDivBodyDiv2{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+        }
+        .rankDivBodyDiv3{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+        }
+        .rankDivBodyDiv4{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+        }
+        .likeDiv{
+            width: 100%;
+            height: 30%;
+        }
+        .likeDivTitle{
+            width: 95%;
+            height: 15%;
+            padding: 5% 0% 0% 5%;
+            font-size: 30px;
+            border-bottom: 2px solid black;
+        }
+        .likeDivBody{
+            width: 100%;
+            height: 80%;
+            display: flex;
+            justify-content:space-evenly;
+            align-items: center;
+        }
+        .likeDivBodyDiv1{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+        }
+        .likeDivBodyDiv2{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+        }
+        .likeDivBodyDiv3{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+        }
+        .likeDivBodyDiv4{
+            width: 15%;
+            height: 40%;
+            text-align: center;
+        }
+        .info{
+            width: 100%;
+            height: 40%;
+        }
+        .infoLeft{
+            width: 33%;
+            display: inline-block;
+        }
+        .infoLeftDiv{
+            width: 60%;
+            padding: 0% 20% 0% 20%;
+        }
+        .infoLeftTitle{
+            padding: 5% 0% 3% 10%;
+            font-size: 30px;
+            border-bottom: 2px solid black;
+        }
+        .infoLeftBody{
+            padding: 5% 0% 3% 10%;
+            font-size: 20px;
+        }
+        .infoLeftBodyDiv1{
+            padding: 0% 0% 3% 0%;
+        }
+        .infoLeftBodyDiv2{
+            padding: 0% 0% 3% 0%;
+        }
+        .infoLeftBodyDiv3{
+            padding: 0% 0% 3% 0%;
+        }
+        .infoLeftBodyDiv4{
+            padding: 0% 0% 3% 0%;
+        }
+        .infoCenter{
+            width: 33%;
+            display: inline-block;
+        }
+        .infoCenterDiv{
+            width: 60%;
+            padding: 0% 20% 0% 20%;
+        }
+        .infoCenterTitle{
+            padding: 5% 0% 3% 10%;
+            font-size: 30px;
+            border-bottom: 2px solid black;
+        }
+        .infoCenterBody{
+            padding: 5% 0% 3% 10%;
+            font-size: 20px;
+        }
+        .infoCenterBodyDiv1{
+            padding: 0% 0% 3% 0%;
+        }
+        .infoCenterBodyDiv2{
+            padding: 0% 0% 3% 0%;
+        }
+        .infoCenterBodyDiv3{
+            padding: 0% 0% 3% 0%;
+        }
+        .infoCenterBodyDiv4{
+            padding: 0% 0% 3% 0%;
+        }
+        .infoRight{
+            width: 33%;
+            float: right;
+            display: inline-block;
+        }
+        .infoRightDiv{
+            width: 60%;
+            padding: 0% 20% 0% 20%;
+        }
+        .infoRightTitle{
+            padding: 5% 0% 3% 10%;
+            font-size: 30px;
+            border-bottom: 2px solid black;
+        }
+        .infoRightBody{
+            padding: 5% 0% 3% 10%;
+            font-size: 20px;
+        }
+        .infoRightBodyDiv1{
+            padding: 0% 0% 3% 0%;
+        }
+        .infoRightBodyDiv2{
+            padding: 0% 0% 3% 0%;
+        }
+        .infoRightBodyDiv3{
+            padding: 0% 0% 3% 0%;
+        }
+        .infoRightBodyDiv4{
+            padding: 0% 0% 3% 0%;
         }
     </style>
-    <link rel="stylesheet" href="/css/ul.css">
+    <script type="text/javascript" src="/js/moveDiv.js"></script>
 </head>
 <body>
-    <a href="/">SOJU</a>
-    <div style="float:right;">
-        <input type="button" value="로그인 및 회원가입" sec:authorize="isAnonymous()" onclick="location.href='/loginform'">
-        <input type="button" value="로그아웃" sec:authorize="isAuthenticated()" onclick="location.href='/logout'">
+    <header>
+        <div class="topDiv">
+            <span class="leftSpan" onclick="location.href='/'">SOJU</span>
+            <span class = "rightSpan">
+                <ul>
+                    <li class="rightSpanText">이용권이 <span>30</span>일 남았습니다.</li>
+                    <li style="cursor: pointer;">
+                        <div class="icon" data-number="5">
+                            <i class="ri-notification-4-fill"></i>
+                        </div>
+                    </li>
+                    <li>
+                        <input class="inputButton" sec:authorize="isAnonymous()" type="button" value="회원가입/로그인" onclick="location.href='/loginform'">
+                        <input class="inputButton" sec:authorize="isAuthenticated()" type="button" value="로그아웃" onclick="location.href='/logout'">
+                    </li>
+                </ul>
+            </span>
+        </div>
+        <div class="navDiv">
+            <a style="text-decoration:none; color: black;" href="/recruitstudy" >소중한 친구들 구하기</a>
+            <label>|</label>
+            <a style="text-decoration:none; color: black;" href="/meta">모임 공간</a>
+            <label>|</label>
+            <a style="text-decoration:none; color: black;" href="/noticeroom">게시판</a>
+            <label>|</label>
+            <a style="text-decoration:none; color: black;" href="/store">스토어</a>
+            <label>|</label>
+            <a style="text-decoration:none; color: black;" href="/mypage">마이페이지</a>
+        </div>
+    </header>
+    <div class="blankDiv">
+        <input type="hidden" value="공간 좀 두기">
     </div>
-
-    <div style="float:right;">알림</div>
-
-    <br><br>
-
-    <!-- 상단 메뉴바 구역 -->
-    <div style="display: flex; border: 2px solid green; justify-content:space-evenly; height:5%;">
-        <a href="/recruitstudy" >소중한 친구들 구하기</a>
-        <a href="/meta">모임 공간</a>
-        <a href="/noticeroom">게시판</a>
-        <a href="/checklist">체크리스트</a>
-        <a href="/store">스토어</a>
-        <a href="/mypage">마이페이지</a>
+    <div class="imgDiv">
+        <input type="hidden" value="광고">
     </div>
-
-    <br>
-
-    <div style="display: flex; height:35%;">
-        <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:100%;">
-    </div>
-
-    <br>
-
-    <div style="text-align: center; display:flex;">
-        <div>
-            <img src="/imagePath/employment.png" style="width:25%;">
-            <br>
-            <a href="">취업</a>
+    <div class="attentionDiv">
+        <div class="attentionDivTitle">
+            <span>어느 분야에 관심이 있나요?</span>
         </div>
-        <div>
-            <img src="/imagePath/entrance.png" style="width:25%;">
-            <br>
-            <a href="">입시</a>
-        </div>
-        <div>
-            <img src="/imagePath/computer.png" style="width:25%;">
-            <br>
-            <a href="">컴퓨터 / IT</a>
-        </div>
-        <div>
-            <img src="/imagePath/language.png" style="width:25%;">
-            <br>
-            <a href="">언어</a>
-        </div>
-        <div>
-            <img src="/imagePath/management.png" style="width:25%;">
-            <br>
-            <a href="">경영 / 마케팅</a>
-        </div>
-        <div>
-            <img src="/imagePath/math.png" style="width:25%;">
-            <br>
-            <a href="">수학</a>
-        </div>
-        <div>
-            <img src="/imagePath/engineer.png" style="width:25%;">
-            <br>
-            <a href="">공학</a>
-        </div>
-        <div>
-            <img src="/imagePath/game.png" style="width:25%;">
-            <br>
-            <a href="">게임</a>
-        </div>
-        <div>
-            <img src="/imagePath/design.png" style="width:25%;">
-            <br>
-            <a href="">디자인</a>
-        </div>
-        <div>
-            <img src="/imagePath/education.png" style="width:25%;">
-            <br>
-            <a href="">교육</a>
-        </div>
-        <div>
-            <img src="/imagePath/etc.png" style="width:25%;">
-            <br>
-            <a href="">기타</a>
-        </div>
-    </div>
-
-    <br><br>
-    <span style="border-bottom: 2px solid green">가장 핫한 스터디</span>
-    <br><br>
-    <div style="display:flex;">
-        <div style="float:left;">
-            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
-            <br>
-            <a href="">백엔드 스터디</a>
-        </div>
-        <div style="float:left;">
-            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
-            <br>
-            <a href="">프론트엔드 스터디</a>
-        </div>
-        <div style="float:left;">
-            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
-            <br>
-            <a href="">경제 공부방</a>
-        </div>
-        <div style="float:left;">
-            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
-            <br>
-            <a href="">시사 토론방</a>
+        <div class="attentionDivBody">
+            <div class="attentionDivBodyDiv1">
+                <div class="attentionDivBodyDivCircle">
+                    <img src="/img/computer.png">
+                </div>
+                <div class="attentionDivBodyDivText" onclick="location.href='/metatest'">컴퓨터/IT</div>
+            </div>
+            <div class="attentionDivBodyDiv2">
+                <div class="attentionDivBodyDivCircle">
+                    <img src="/img/math.png">
+                </div>
+                <div class="attentionDivBodyDivText">수학</div>
+            </div>
+            <div class="attentionDivBodyDiv3">
+                <div class="attentionDivBodyDivCircle">
+                    <img src="/img/management.png">
+                </div>
+                <div class="attentionDivBodyDivText">경영 / 마케팅</div>
+            </div>
+            <div class="attentionDivBodyDiv4">
+                <div class="attentionDivBodyDivCircle">
+                    <img src="/img/design.png">
+                </div>
+                <div class="attentionDivBodyDivText">디자인</div>
+            </div>
+            <div class="attentionDivBodyDiv5">
+                <div class="attentionDivBodyDivCircle">
+                    <img src="/img/education.png">
+                </div>
+                <div class="attentionDivBodyDivText">교육</div>
+            </div>
+            <div class="attentionDivBodyDiv6">
+                <div class="attentionDivBodyDivCircle">
+                    <img src="/img/literature.png">
+                </div>
+                <div class="attentionDivBodyDivText">문학</div>
+            </div>
+            <div class="attentionDivBodyDiv7">
+                <div class="attentionDivBodyDivCircle">
+                    <img src="/img/entrance.png">
+                </div>
+                <div class="attentionDivBodyDivText">입시</div>
+            </div>
+            <div class="attentionDivBodyDiv8">
+                <div class="attentionDivBodyDivCircle">
+                    <img src="/img/engineer.png">
+                </div>
+                <div class="attentionDivBodyDivText">공학</div>
+            </div>
+            <div class="attentionDivBodyDiv9">
+                <div class="attentionDivBodyDivCircle">
+                    <img src="/img/language.png">
+                </div>
+                <div class="attentionDivBodyDivText">언어</div>
+            </div>
+            <div class="attentionDivBodyDiv10">
+                <div class="attentionDivBodyDivCircle">
+                    <img src="/img/employment.png">
+                </div>
+                <div class="attentionDivBodyDivText">취업</div>
+            </div>
+            <div class="attentionDivBodyDiv11">
+                <div class="attentionDivBodyDivCircle">
+                    <img src="/img/etc.png">
+                </div>
+                <div class="attentionDivBodyDivText">기타</div>
+            </div>
         </div>
     </div>
-
-    <br><br>
-    <span style="border-bottom: 2px solid green">인기 있는 멘토님</span>
-    <br><br>
-    <div style="display:flex;">
-        <div style="float:left;">
-            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
-            <br>
-            <a href="">홍길동 멘토님 - 자바 / 백엔드</a>
+    <div class="hotDiv">
+        <div class="hotDivTitle">
+            <span>가장 핫한 스터디</span>
         </div>
-        <div style="float:left;">
-            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
-            <br>
-            <a href="">일길동 멘토님 - 포토샵</a>
-        </div>
-        <div style="float:left;">
-            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
-            <br>
-            <a href="">이길동 멘토님 - GSAT</a>
-        </div>
-        <div style="float:left;">
-            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
-            <br>
-            <a href="">삼길동 멘토님 - 프론트엔드</a>
-        </div>
-    </div>
-
-    <br><br>
-    <span style="border-bottom: 2px solid green">내가 관심있는 분야의 멘토님</span>
-    <br><br>
-    <div style="display:flex;">
-        <div style="float:left;">
-            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
-            <br>
-            <a href="">홍길동 멘토님 - 자바</a>
-        </div>
-        <div style="float:left;">
-            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
-            <br>
-            <a href="">일길동 멘토님 - 프론트엔드</a>
-        </div>
-        <div style="float:left;">
-            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
-            <br>
-            <a href="">이길동 멘토님 - 백엔드</a>
-        </div>
-        <div style="float:left;">
-            <img src="/imagePath/시바견 오후 12.27.52.jpg" style="width:50%;">
-            <br>
-            <a href="">삼길동 멘토님 - 풀스택</a>
+        <div class="hotDivBody">
+            <div class="hotDivBodyDivImg1">
+                <button class="hotDivBodyDivImg1Button" id="btnLeft" onclick="moveDiv('l');">
+                    <img class="hotDivBodyDivImg1Img" src="/img/left-arrow.png">
+                </button>
+            </div>
+            <div class="hotDivBodyDiv1" id="hotDivBodyDiv1">스터디 1</div>
+            <div class="hotDivBodyDiv2" id="hotDivBodyDiv2">스터디 2</div>
+            <div class="hotDivBodyDiv3" id="hotDivBodyDiv3">스터디 3</div>
+            <div class="hotDivBodyDiv4" id="hotDivBodyDiv4">스터디 4</div>
+            <div class="hotDivBodyDiv5" id="hotDivBodyDiv5">스터디 5</div>
+            <div class="hotDivBodyDiv6" id="hotDivBodyDiv6">스터디 6</div>
+            <div class="hotDivBodyDiv7" id="hotDivBodyDiv7">스터디 7</div>
+            <div class="hotDivBodyDiv8" id="hotDivBodyDiv8">스터디 8</div>
+            <div class="hotDivBodyDiv9" id="hotDivBodyDiv9">스터디 9</div>
+            <div class="hotDivBodyDiv10" id="hotDivBodyDiv10">스터디 10</div>
+            <div class="hotDivBodyDiv11" id="hotDivBodyDiv11">스터디 11</div>
+            <div class="hotDivBodyDiv12" id="hotDivBodyDiv12">스터디 12</div>
+            <div class="hotDivBodyDivImg2">
+                <button class="hotDivBodyDivImg2Button" id="btnRight" onclick="moveDiv('r');">
+                    <img class="hotDivBodyDivImg2Img" src="/img/right-arrow.png">
+                </button>
+            </div>
         </div>
     </div>
-
-    <div id="notice" style="float:left;">
-        <br><br>
-        <ul>
-            <li><span>공지사항</span></li>
-            <li><a href="">다 나가주세요</a></li>
-            <li><a href="">혼자있고 싶네요</a></li>
-            <li><a href="">제 통장에 100만원만</a></li>
-            <li><a href="">꽂아주세 계좌는 국민..</a></li>
-        </ul>
+    <div>
+        <input type="hidden" value="공간 띄우고 이건 그냥 패딩이나 마진값으로 띄우자">
     </div>
-    <div style="float:right;">
-        <br><br>
-        <ul>
-            <li><span>가장 인기있는 게시글</span><li></li>
-            <li><a href="">요즘 공부할거 추천좀...</a></li>
-            <li><a href="">요즘 너무 춥지않냐?!?!?!?!?!</a></li>
-            <li><a href="">점메추 부탁드려요</a></li>
-            <li><a href="">홍길동 멘토님 후기다</a></li>
-        </ul>
+    <div class="rankDiv">
+        <div class="rankDivTitle">
+            <span>인기있는 멘토</span>
+        </div>
+        <div class="rankDivBody">
+            <div class="rankDivBodyDiv1">멘토 1</div>
+            <div class="rankDivBodyDiv2">멘토 2</div>
+            <div class="rankDivBodyDiv3">멘토 3</div>
+            <div class="rankDivBodyDiv4">멘토 4</div>
+        </div>
     </div>
+    <div>
+        <input type="hidden" value="공간 띄우고">
+    </div>
+    <div class="likeDiv">
+        <div class="likeDivTitle">
+            <span>관심분야 멘토</span>
+        </div>
+        <div class="likeDivBody">
+            <div class="likeDivBodyDiv1">멘토 1</div>
+            <div class="likeDivBodyDiv2">멘토 2</div>
+            <div class="likeDivBodyDiv3">멘토 3</div>
+            <div class="likeDivBodyDiv4">멘토 4</div>
+        </div>
+    </div>
+    <div>
+        <input type="hidden" value="공간 좀 띄우고">
+    </div>
+    <div class="info">
+        <span class="infoLeft">
+            <div class="infoLeftDiv">
+                <div class="infoLeftTitle">
+                    <label>공지사항</label>
+                </div>
+                <div class="infoLeftBody">
+                    <div class="infoLeftBodyDiv1">내용1</div>
+                    <div class="infoLeftBodyDiv2">내용2</div>
+                    <div class="infoLeftBodyDiv3">내용3</div>
+                    <div class="infoLeftBodyDiv4">내용4</div>
+                </div>
+            </div>
+        </span>
+        <span class="infoCenter">
+            <div class="infoCenterDiv">
+                <div class="infoCenterTitle">
+                    <label>질문방</label>
+                </div>
+                <div class="infoCenterBody">
+                    <div class="infoCenterBodyDiv1">내용1</div>
+                    <div class="infoCenterBodyDiv2">내용2</div>
+                    <div class="infoCenterBodyDiv3">내용3</div>
+                    <div class="infoCenterBodyDiv4">내용4</div>
+                </div>
+            </div>
+        </span>
+        <span class="infoRight">
+            <div class="infoRightDiv">
+                <div class="infoRightTitle">
+                    <label>잡담방</label>
+                </div>
+                <div class="infoRightBody">
+                    <div class="infoRightBodyDiv1">내용1</div>
+                    <div class="infoRightBodyDiv2">내용2</div>
+                    <div class="infoRightBodyDiv3">내용3</div>
+                    <div class="infoRightBodyDiv4">내용4</div>
+                </div>
+            </div>
+        </span>
+    </div>
+    <footer>
+        <div>
+            <span>개인정보 처리방침 /</span>
+            <span>고객센터 어쩌구 저쩌구</span>
+        </div>
+    </footer>
+    <script>
+        const nav = document.querySelector('#nav');
+        const onScroll = (event) => {
+            const scrollPosition = event.target.scrollingElement.scrollTop;
+            if (scrollPosition > 10 ){
+                if(!nav.classList.contains('scrolledDown')) {
+                    nav.classList.add('scrolledDown');
+                }
+            } else {
+                if (nav.classList.contains('scrolledDown')) {
+                    !nav.classList.remove('scrolledDown');
+                }
+            }
+        };
+        document.addEventListener('scroll', onScroll);
+    </script>
 </body>
 </html>

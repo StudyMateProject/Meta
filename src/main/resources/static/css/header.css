@@ -1,0 +1,103 @@
+html {
+    height: 100%;
+}
+body{
+    width: 70%;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0px;
+}
+header{
+    position:fixed;
+    padding-top: 10px;
+    width: 70%;
+    height: 80px;
+    background-color: white;
+    border-bottom: 5px solid #57B862;
+}
+ul{
+    padding: 0px;
+    margin: 0px;
+    display:flex;
+    float:right;
+}
+li{
+    margin: 0px;
+    padding: 0px 0px 0px 15px;
+    list-style:none;
+    display:inline;
+    height: 30px;
+}
+.topDiv{
+    height: 50%;
+}
+.navDiv{
+    margin-top: 20px;
+    font-size: 30px;
+    width: 100%;
+    height: 50%;
+    display: flex;
+    line-height : 120%;
+    justify-content:space-evenly;
+    background-color: #57B862;
+}
+.rightSpan{
+    text-align: center;
+    float:right;
+    font-size:20px;
+    height: 100%;
+}
+.inputButton{
+    height: 35px;
+    font-size: 20px;
+    background-color: #57B862;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.leftSpan{
+    height: 100%;
+    font-size:30px;
+    margin-left: 2%;
+    cursor: pointer;
+}
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+.icon {
+    position: relative;
+    font-size: 30px;
+    color: rgb(156, 153, 153);
+    transform-origin: top;
+    animation: anim 1s forwards infinite;
+}
+.icon::before {
+    content: attr(data-number);
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    background-color: #7EFFB2;
+    font-size: 14px;
+    color: #090909;
+    display: grid;
+    place-items: center;
+    border: 2px solid #090909;
+    border-radius: 50%;
+}
+@keyframes anim {
+    10% {
+        rotate: 15deg;
+    }
+    20% {
+        rotate: -15deg;
+    }
+    30% {
+        rotate: 15deg;
+    }
+    50% {
+        rotate: 0deg;
+    }
+}
+.rightSpanText{
+
+}
