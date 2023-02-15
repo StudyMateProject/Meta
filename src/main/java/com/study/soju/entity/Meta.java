@@ -74,7 +74,7 @@ public class Meta {
                     .metaTitle(metaTitle)
                     .metaType(metaType)
                     .metaPersonnel(metaPersonnel)
-                    .metaRecruitingPersonnel(0) // 방을 생성할때 모집중인 인원은 항상 0이다.
+                    .metaRecruitingPersonnel(0) // 방을 생성할때 참여중인 인원은 항상 0이다.
                     .build();
         }
     }
@@ -154,9 +154,9 @@ public class Meta {
         }
 
         // 모집인원이 정원초과일 경우 에러메세지를 DTO로 변환 (생성자 방식)
-        public rpEntrance(String err) { // 파라미터로 서비스에서 넘어온 에러메세지를 받아온다.
+        public rpEntrance(String err) { // 파라미터로 서비스에서 넘어온 에러 메시지를 받아온다.
             this.metaIdx = 0; // metaIdx는 0으로 고정해서 에러 체크값으로 사용한다.
-            this.metaTitle = err; // metaTitle은 받아온 에러메세지를 저장한다.
+            this.metaTitle = err; // metaTitle은 받아온 에러 메시지를 저장한다.
         }
     }
 }

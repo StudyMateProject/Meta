@@ -30,7 +30,7 @@ public class MetaController {
     public String meta(Model model) {
         // 1. 서비스를 통해 현재 생성된 메타 방을 모두 조회해서, List형태의 DTO로 반환 받아온다.
         List<Meta.rpMetaList> metaList = metaService.metaList();
-        // 5. 반환받은 List형태의 DTO를 바인딩한다.
+        // 5. 1에서 반환받은 List형태의 DTO를 바인딩한다.
         model.addAttribute("metaList", metaList);
         // 6. 검색 체크값을 바인딩한다. - 0 : 검색 안했을 경우
         model.addAttribute("check", 0);
@@ -51,8 +51,8 @@ public class MetaController {
 
     // 방 만들기
     @GetMapping("/createmetaform/createmeta")
-    public String createMeta(Meta.rqCreateMeta rqCreateMeta) { // 1. DTO로 form값을 다 받아온다.
-        // 2. 받아온 DTO를 서비스에 전달한다.
+    public String createMeta(Meta.rqCreateMeta rqCreateMeta) { // 1. 파라미터로 form에서 넘어온 DTO를 받아온다.
+        // 2. 1에서 파라미터로 받아온 DTO를 서비스에 전달한다.
         metaService.createRoom(rqCreateMeta);
         // 메타 메인 페이지로 이동
         return "redirect:/meta";
@@ -60,10 +60,10 @@ public class MetaController {
 
     // 방 이름 및 분야별로 검색
     @GetMapping("/search")
-    public String searchMeta(Meta.rqSearchMetaList rqSearchMetaList, Model model) { // 1. DTO로 form값을 다 받아온다.
-        // 2. 받아온 DTO를 서비스에 전달한다.
+    public String searchMeta(Meta.rqSearchMetaList rqSearchMetaList, Model model) { // 1. 파라미터로 form에서 넘어온 DTO를 받아온다.
+        // 2. 1에서 파라미터로 받아온 DTO를 서비스에 전달한다.
         List<Meta.rpSearchMetaList> rpSearchMetaList = metaService.searchMetaList(rqSearchMetaList);
-        // 6. 반환받은 List형태의 DTO를 바인딩한다.
+        // 6. 2에서 반환받은 List형태의 DTO를 바인딩한다.
         model.addAttribute("searchMetaList", rpSearchMetaList);
         // 7. 검색 체크값을 바인딩한다. - 1 : 검색 했을 경우
         model.addAttribute("check", 1);
@@ -78,7 +78,7 @@ public class MetaController {
         Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 7. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 DTO를 서비스에 전달한다.
         Meta.rpEntrance rpEntrance = metaService.entrance(metaIdx, rpNickImage);
-        // 14. 반환받은 DTO가 존재하는지 체크한다.
+        // 14. 7에서 반환받은 DTO가 있는지 체크한다.
         // 14-1. 반환받은 DTO가 없는 경우 - 해당 방이 없는 경우
         if ( rpEntrance == null ) {
             // 14-1-1. 에러메세지를 바인딩한다.
@@ -87,10 +87,10 @@ public class MetaController {
             return "Meta/MetaRoom";
         // 14-2. 반환받은 DTO가 있는 경우 - 해당 방이 있는 경우
         } else {
-            // 15. 반환받은 DTO 값중 metaIdx가 0인지 아닌지 체크한다.
+            // 15. 7에서 반환받은 DTO 값 중 metaIdx가 0인지 체크한다.
             // 15-1. metaIdx가 0인 경우 - 모집인원이 정원초과
             if ( rpEntrance.getMetaIdx() == 0 ) {
-                // 15-1-1. metaTitle에 저장한 에러메세지를 바인딩한다.
+                // 15-1-1. 7에서 반환받은 DTO 값 중 metaTitle에 저장되있는 에러메세지를 바인딩한다.
                 model.addAttribute("err", rpEntrance.getMetaTitle());
                 // 메타 메인 페이지로 이동
                 return "Meta/MetaRoom";
@@ -185,7 +185,7 @@ public class MetaController {
     public String exitRoom(@RequestParam long metaIdx, Principal principal) { // 1. 파라미터로 입장한 방 번호를 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
         Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
-        // 3. 1에서 파라미터로 받아온 방 번호와 2에서 받아온 DTO를 서비스에 전달하다.
+        // 3. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 DTO를 서비스에 전달하다.
         metaService.exit(metaIdx, rpNickImage);
         // 메타 메인 페이지로 이동
         return "redirect:/meta";
