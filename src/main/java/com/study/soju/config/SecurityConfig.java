@@ -43,12 +43,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable(); // Spring Security에서 POST방식을 사용하기 위한 메소드
+                               // Spring Security 설정들을 활성화시켜 준다.
 
         // 권한 설정
         http
                 //.antMatcher("/") // 특정 경로를 지정, 해당 메소드를 생략하면 모든 경로에 대해 검색하게 된다.
                 .authorizeRequests() // 보안 검사기능 시작
-                .antMatchers("/", "/joinform/**", "/loginform/**").permitAll() // 해당경로에 대한 모든 접근을 허용한다.
+                .antMatchers("/", "/n", "/joinform/**", "/loginform/**").permitAll() // 해당경로에 대한 모든 접근을 허용한다.
                 .antMatchers("/ws/**", "/meta/**").hasRole("USER") // /로그인은 USER권한을 가지고 있는 사용자에게만 허용한다.
                 .antMatchers("/mypage/pay").access("hasRole('ADMIN')")
                 .anyRequest().authenticated(); // 나머지 요청들은 권한의 종류에 상관 없이 권한이 있어야 접근 가능하다.
