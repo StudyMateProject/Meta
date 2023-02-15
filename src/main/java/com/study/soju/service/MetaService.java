@@ -101,13 +101,13 @@ public class MetaService {
             // 12-2. 로그인 유저가 참가자로 없는 경우 - 신규접속
             } else {
                 // 13. 9에서 조회된 값 중 참여중인 인원이 정원초과인지 체크한다.
-                // 13-1. 참여중인 인원이 모집인원보다 크거나 같은 경우
+                // 13-1. 참여중인 인원이 모집 인원보다 크거나 같은 경우
                 if (meta.getMetaRecruitingPersonnel() >= meta.getMetaPersonnel()) {
                     // 13-1-1. 에러 메세지를 작성해 DTO로 변환한다.
                     Meta.rpEntrance rpEntrance = new Meta.rpEntrance("이 방은 정원초과 입니다.");
                     // 13-1-2. 13-1-1에서 변환된 DTO를 반환한다.
                     return rpEntrance;
-                // 13-2. 참여중인 인원이 모집인원보다 작은 경우
+                // 13-2. 참여중인 인원이 모집 인원보다 작은 경우
                 } else {
                     // 13-2-1. 8에서 파라미터로 받아온 방 번호와 함께 받아온 DTO를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
                     MetaRoom metaRoomParticipate = new MetaRoom(); // 방 내부 참여자 명단
@@ -117,7 +117,7 @@ public class MetaService {
                     metaRoomParticipate.setMetaProfileImage(rpNickImage.getProfileImage());
                     // 13-2-3. 13-2-2에서 값들이 전달된 Entity를 방 내부 참여자 명단에 저장한다.
                     metaRoomRepository.save(metaRoomParticipate);
-                    // 13-2-4. 8에서 파라미터로 받아온 방 번호로 방에 참여중인 인원 수를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
+                    // 13-2-4. 8에서 파라미터로 받아온 방 번호로 방 내부 참여자 명단 수를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
                     int participantCount = metaRoomRepository.findByParticipantCount(metaIdx);
                     // 13-2-5. 13-2-4에서 조회하고 받아온 값을 9에서 조회하고 받아온 Entity 값 중 참여중인 인원에 setter를 통해 전달한다.
                     meta.setMetaRecruitingPersonnel(participantCount);
@@ -159,7 +159,7 @@ public class MetaService {
         metaRoomRepository.delete(metaRoom);
         // 8. 4에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
         Meta meta = metaRepository.findByMetaIdx(metaIdx);
-        // 9. 4에서 파라미터로 받아온 방 번호로 방에 참여중인 인원 수를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
+        // 9. 4에서 파라미터로 받아온 방 번호로 방 내부 참여자 명단 수를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
         int participantCount = metaRoomRepository.findByParticipantCount(metaIdx);
         // 10. 9에서 조회하고 받아온 값을 8에서 조회하고 받아온 Entity 값 중 참여중인 인원에 setter를 통해 전달한다.
         meta.setMetaRecruitingPersonnel(participantCount);
