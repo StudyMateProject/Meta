@@ -14,7 +14,7 @@
 	CREATE DATABASE soju;
 	USE soju;
 
-##### 사용된 테이블 : Member, MetaRoom
+##### ~~사용된 테이블 : Member, MetaRoom~~ (아래 수정된 테이블 사용)
 	멤버 테이블
 	CREATE TABLE Member (
 		emailId VARCHAR(50) PRIMARY KEY, #이메일 형식 아이디
@@ -86,9 +86,9 @@
 	#메타버스 방 내부
 	CREATE TABLE MetaRoom(
 		idx INT PRIMARY KEY AUTO_INCREMENT, #순서 번호 - 기본키, 시퀀스
-		metaNickname VARCHAR(20) UNIQUE NOT NULL, #닉네임 - 추가완료
+		metaNickname VARCHAR(20) UNIQUE NOT NULL, #닉네임
 		CONSTRAINT fk_metaRoomNickname FOREIGN KEY(metaNickname) REFERENCES Member(nickname) ON DELETE CASCADE ON UPDATE CASCADE #포린키 연결
-		metaProfileImage VARCHAR(100),
+		metaProfileImage VARCHAR(100), #프로필 이미지
 		metaIdx INT NOT NULL, #방 번호
 		CONSTRAINT fk_metaRoomIdx FOREIGN KEY(metaIdx) REFERENCES Meta(metaIdx) ON DELETE CASCADE ON UPDATE CASCADE #포린키 연결
 	);
@@ -146,5 +146,28 @@
 ##### 지금까지는 메세지를 전송할때 반드시 버튼을 직접 눌러야 전송이 되는 번거로움이 있었다.
 ##### 그래서 키보드에 엔터만 클릭해도 메세지가 전송되도록 하기위해 addEventListener에 keypress를 사용하여 event.key로 Enter가 눌렸을때 메세지 전송 메소드가 실행되도록 만들었다.
 ##### 그럼 이제 더이상 메세지를 전송하기위해 직접 버튼을 클릭하러 갈 필요없이 간단하게 엔터키만 클릭해서 메세지를 전송할 수 있다.
+
+#
+
+### 📌 02/15
+#### ✔ 메타 메인 페이지에 로그인 유저 정보를 가져와 프로필 구역에 작성
+##### 메타 메인 페에지에 로그인 유저의 정보를 볼 수 있는 프로필 구역을 만들었다.
+##### 여기에는 로그인 유저의 프로필 사진, 이름, 관심 있는 분야, 이용권 남은 일수가 작성된다.
+#### ✔ 메인 페이지와 메타 메인 페이지에 css을 추가해 꾸미기
+##### css를 추가하면서 방 타입별로 구역이 나뉘게 되는데 이러면 원래 사용하던 th:each를 각 방 타입 구역마다 사용해야한다.
+##### 하지만 원래 사용하던 th:each는 방 타입 구분없이 한번에 다 가져와 내부에서 th:if를 통해 내부에서 타입별로 나누어주었는데 이 방식을 사용하지 못하게 된다.
+##### 혹시나 하나의 객체를 각 구역에서 중복으로 사용할 수 있나 하고 한번 사용해봤으나 역시나 위에 구역에서 사용하면 아랫구역에서는 사용이 안되었다.
+##### 그래서 이 문제를 해결하기위해 Controller에서 받아온 생성된 방 List를 foreach문을 사용하여 방 타입별로 한버더 나누어서 각 방 타입마다 List를 생성해서 바인딩하였다.
+##### 그럼 이제 방 타입 구역에 맞게 바인딩한 List를 가져다가 사용하면 정상적으로 각 구역별로 방들이 잘 나오는걸 볼 수 있다.
+
+#
+
+### 📌 02/16
+#### ✔ 자습실에 채팅 및 참가자 구역 삭제, 체크리스트 및 D-DAY 추가, 알람 기능 및 시간 기능 추가
+##### 자습실은 얘기하고 노는공간이 아닌 개인적인 공부를 하는곳이기에 불필요한 채팅이나 참가자 구역을 삭제하였다.
+##### 대신 그 자리에 다른 개인적으로 사용할 수 있는것들을 추가하였다.
+##### 먼저 삭제된 채팅 구역에는 자신이 오늘 하루 무엇을 할지 작성한 체크리스트와 자신이 목표를 세워둔 D-DAY를 추가하였다.
+##### 그 다음 삭제된 참가자 구역에는 현재 날짜 및 시간을 알 수있는 날짜 시간 기능과 공부를 얼마나 했는지 경과된 시간 체크를 도와주는 스톱워치와 자신이 계획한 시간대로 공부할 수 있게 체크를 도와주는 타이머 기능을 추가하였다.
+#### ✔ 자습실 페이지에 css를 추가해 꾸미기
 
 #
