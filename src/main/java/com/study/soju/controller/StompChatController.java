@@ -103,15 +103,6 @@ public class StompChatController {
         template.convertAndSend("/sub/meta/oneRoom/" + message.getMetaIdx(), message);
     }
 
-    // 자습실 채팅
-    @MessageMapping(value = "/meta/oneRoom/message")
-    public void messageOneRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.
-        // 2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
-        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1번에서 받아온 방 번호가 병합된다.
-        //    "/sub" + "/meta/studyRoom" + metaIdx = "/sub/meta/oneRoom/1"
-        template.convertAndSend("/sub/meta/oneRoom/" + message.getMetaIdx(), message);
-    }
-
     // 자습실 퇴장
     @MessageMapping(value = "/meta/oneRoom/exit")
     public void exitOneRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.

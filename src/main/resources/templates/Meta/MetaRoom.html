@@ -578,7 +578,7 @@
                                 <a th:href="@{/meta/studyroom(metaIdx=${study.metaIdx})}">
                                     (스터디)
                                     [[${study.metaTitle}]]
-                                    [[${study.metaRecruitingPersonnel}]] / [[${study.metaPersonnel}]])
+                                    ([[${study.metaRecruitingPersonnel}]] / [[${study.metaPersonnel}]])
                                 </a>
                             </div>
                         </div>
@@ -596,6 +596,23 @@
                                     (카페)
                                     [[${cafe.metaTitle}]]
                                     ([[${cafe.metaRecruitingPersonnel}]] / [[${cafe.metaPersonnel}]])
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bodyDivRightSpanBottomBottomMid">
+
+                    </div>
+                    <div class="bodyDivRightSpanBottomBottomBottom">
+                        <div class="bodyDivRightSpanBottomBottomBottomTop">
+                            <span>자습실</span>
+                        </div>
+                        <div class="bodyDivRightSpanBottomBottomBottomBottom">
+                            <div class="bodyDivRightSpanBottomBottomBottomBottomValue" th:each="one : ${oneList}">
+                                <a th:href="@{/meta/oneroom(metaIdx=${one.metaIdx})}">
+                                    (자습)
+                                    [[${one.metaTitle}]]
+                                    ([[${one.metaRecruitingPersonnel}]] / [[${one.metaPersonnel}]])
                                 </a>
                             </div>
                         </div>

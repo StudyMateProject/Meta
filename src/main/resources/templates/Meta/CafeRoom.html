@@ -11,40 +11,61 @@
     </style>
 </head>
 <body onkeydown="keyDown()" onkeyup="keyUp()" onbeforeunload="close()">
-    <!-- 메뉴바 -->
-    <div style="border: 2px solid black; width: 80%; height: 50px; margin-bottom: 5px; float: left;">
-        <b th:text="'방 제목 : ' + ${meta.metaTitle}"></b>
+    <!-- 방 정보 작성 구역 -->
+    <div id="titleArea">
+        <b id="title" th:text="'방 번호 : ' + ${metaRoom.metaIdx} + '   |   ' + '(스터디)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
     </div>
-    <div style="border: 2px solid black; width: 18%; height: 50px; margin-bottom: 5px; margin-left: 1%; float: right;">
-        <input type="button" value="나가기" onclick="location.href='/meta'" style="width: 25%; height: 50px;">
+
+    <!-- 상단 왼쪽 참가자 구역 -->
+    <div id="menuBar" style="border: 2px solid black; box-sizing: border-box; width: 80%; height: 10%; margin-bottom: 5px; float: left;">
+        <!-- 참가자 코드 -->
+        <div th:each="participant : ${participantList}" th:id="${participant.metaNickname}" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%; float: left;">
+            <img th:src="@{/imagePath/} + ${participant.metaProfileImage}" style="width: 50%; height:100%; float: left;">
+            <b th:text="${participant.metaNickname}"></b>
+        </div>
+    </div>
+
+    <!-- 상단 오른쪽 메뉴바 구역 -->
+    <div style="border: 2px solid black; box-sizing: border-box; width: 18%; height: 10%; margin-bottom: 5px; margin-left: 1%; float: right;">
+        <input type="button" value="나가기" onclick="location.href='/meta'" style="width: 25%; height: 100%;">
     </div>
 
     <!-- 메타버스 -->
-    <canvas style="border: 2px solid black; width: 80%; height: 80%; float: left;" id="canvas"></canvas>
+    <canvas id="canvas" style="border: 2px solid black; box-sizing: border-box; width: 80%; height: 80%; float: left;"></canvas>
 
-    <!-- 채팅 작성란 -->
-    <div id="chatArea" style="text-align: center; float: right; border: 2px solid black; width: 18%; height: 80%; margin-left: 1%; overflow-y: scroll;">
+    <!-- 채팅 구역 -->
+    <div id="chatArea" style="text-align: center; border: 2px solid black; box-sizing: border-box; width: 18%; height: 80%; margin-left: 1%; float: right; overflow-y: scroll;">
         <div style="text-align: center;">채팅</div><br>
-        <!-- 메세지 작성 코드 -->
+        <!-- 메세지 코드 -->
         <div style="text-align: left;"></div>
     </div>
 
-    <!-- 채팅 입력란 -->
+    <!-- 메세지 입력란 -->
     <div>
-        <input id="btn_send" type="button" value="보내기" onclick="send()" style="width: 3%; height: 15%; margin-top: 1%; margin-left: 1%; float: right;">
+        <input id="btnSend" type="button" value="보내기" onclick="send()" style="width: 3%; height: 15%; margin-top: 1%; margin-left: 1%; float: right;">
         <input id="message" type="text" style="width: 13.5%; height: 15%; margin-top: 1%; float: right;" placeholder = "채팅 입력란">
     </div>
 <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-    <!-- sockjs 사용을 위한 js를 추가 -->
+    <!-- SockJS 사용을 위한 js를 추가 -->
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <!-- stomp 사용을 위한 js를 추가 -->
+    <!-- Stomp 사용을 위한 js를 추가 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <!-- Ajax 사용을 위한 js를 추가 -->
     <script src="/js/httpRequest.js"></script>
 
     <script th:inline="javascript">
-        var metaIdx = [[${meta.metaIdx}]]; // 방 번호
-        var nickname = [[${nickname.nickname}]]; // 로그인 유저의 닉네임
+        var metaIdx = [[${metaRoom.metaIdx}]]; // 방 번호
+        var metaTitle = [[${metaRoom.metaTitle}]]; // 방 제목
+        var metaRecruitingPersonnel = [[${metaRoom.metaRecruitingPersonnel}]]; // 참가중인 인원
+        var metaPersonnel = [[${metaRoom.metaPersonnel}]]; // 모집인원
+        var nickname = [[${nickImage.nickname}]]; // 로그인 유저의 닉네임
+        var profileImage = [[${nickImage.profileImage}]]; // 로그인 유저의 프로필 사진
+        let count = 0; // 전송된 메세지 수
+        // Date.now() - UTC 기준으로 1970년 1월 1일 0시 0분 0초부터 현재까지 경과된 밀리 초를 반환한다.
+        let start = Date.now(); // 시작 시간
+        let end = Date.now(); // 메세지 전송 시간
+        let canSendMessage = true; // 메세지 전송 상태
+        let message = document.getElementById("message"); // 메세지 작성란
 
         // 1. SockJS를 생성한다. (StompWebSocketConfig에서 설정한 Endpoint와 동일하게 맞춰준다.)
         var sockJs = new SockJS("/ws/meta");
@@ -65,33 +86,68 @@
                 // 6-1. 변환된 DTO를 사용하기 편하게 각각 변수에 나눠놓는다.
                 var writer = content.writer; // 작성자
                 var message = content.message; // 메세지
+                var participant = content.participant; // 참가자 닉네임
+                var profileImage = content.profileImage; // 참가자 프로필 사진
+                var exit = content.exit; // 퇴장자 닉네임
+                var recruitingPersonnel = content.metaRecruitingPersonnel; // 참가중인 인원
+                let timePassed = end - start; // 처음 메세지 전송후 1초 이내 다음 메세지 전송까지의 경과 시간 - 1초 이후 시작 시간 초기화
 
+                var chatArea = document.getElementById("chatArea"); // 메세지가 작성될 채팅 구역
                 var str = ""; // 메세지 코드가 작성될 변수
-                var chatArea = document.getElementById("chatArea"); // 메세지가 작성될 구역
 
-                // 작성자가 로그인 유저와 같을 경우 (본인)
+                // 작성자가 로그인 유저와 같은 경우 (본인)
                 if ( writer === nickname ) {
-                    // 7. 메세지 코드를 작성한다.
-                    str = '<div style="text-align: left;">';
-                    str += '<b>' + writer + ' : ' + message + '</b>';
-                    str += '</div>'
-                    // 8. 작성된 메세지 코드를 메세지 구역에 올린다.
-                    //    insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
-                    //    position에는 총 4가지의 옵션이 있다.
-                    //    1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
-                    //    2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
-                    //    3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
-                    //    4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
-                    chatArea.insertAdjacentHTML("beforeend", str);
-                    // 메세지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
-                    chatArea.scrollTop = scroll.scrollHeight;
-                // 작성자가 로그인 유저와 다를 경우 (타 유저)
+                    // 1초 이내 5개 이상의 메세지를 보낼 경우
+                    if ( timePassed <= 1000 && count >= 5 ) {
+                        alert("짧은 시간에 많은 메시지를 보낼 수 없습니다. 잠시 후 다시 시도해주세요.");
+                        // 5초간 메세지를 보낼 수 없는 상태로 변경
+                        canSendMessage = false;
+                        setTimeout(function() {
+                            canSendMessage = true;
+                        }, 5000);
+                        // 5초 이후 다시 시작 시간을 현재 시간으로 설정하고 전송된 메세지 수를 0으로 초기화
+                        start = Date.now();
+                        count = 0;
+                    // 그 외 경우
+                    } else {
+                        // 메세지를 보낼 수 없는 상태인 경우
+                        if ( canSendMessage == false ) {
+                            // 받아온 메세지를 올리지 않고 통과
+                        // 메세지를 보낼 수 있는 상태인 경우
+                        } else {
+                            // 7. 메세지 코드를 작성한다.
+                            str = '<div style="text-align: left;">';
+                            str += '<b>' + writer + ' : ' + message + '</b>';
+                            str += '</div>'
+                            // 8. 작성된 메세지 코드를 채팅 구역에 올린다.
+                            //    insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                            //    position에는 총 4가지의 옵션이 있다.
+                            //    1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                            //    2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                            //    3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                            //    4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                            chatArea.insertAdjacentHTML("beforeend", str);
+                            // 메세지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
+                            chatArea.scrollTop = scroll.scrollHeight;
+                            // 메세지 전송 시간을 현재로 작성
+                            end = Date.now();
+                            // 전송된 메세지 수 1 증가
+                            count++;
+                            // 메세지를 전송한지 1초가 지날 경우
+                            if ( timePassed > 1000 ) {
+                                // 시작 시간을 다시 현재 시간으로 설정하고 전송된 메세지 수를 0으로 초기화
+                                start = Date.now();
+                                count = 0;
+                            }
+                        }
+                    }
+                // 작성자가 로그인 유저와 다른 경우 (타 유저)
                 } else {
                     // 7. 메세지 코드를 작성한다.
                     str = '<div style="text-align: left;">';
                     str += '<b>' + writer + ' : ' + message + '</b>';
                     str += '</div>'
-                    // 8. 작성된 메세지 코드를 메세지 구역에 올린다.
+                    // 8. 작성된 메세지 코드를 채팅 구역에 올린다.
                     //    insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
                     //    position에는 총 4가지의 옵션이 있다.
                     //    1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
@@ -99,8 +155,70 @@
                     //    3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
                     //    4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
                     chatArea.insertAdjacentHTML("beforeend", str);
-                    // 메세지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
+                    // 메세지가 채팅 구역 크기를 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                     chatArea.scrollTop = scroll.scrollHeight;
+
+                    // 참가중인 인원이 바뀌는 경우 - 본인이 방에 들어올 경우에는 위에서 th:text로 참가한 방의 정보들이 다 작성되기에 참가자가 본인이 아닌 경우에만 실시간으로 참가중인 인원이 바뀌어 새로 작성되도록 만든다.
+                    if ( recruitingPersonnel != null ) {
+                        var title = document.getElementById("title"); // 방 정보 id
+                        title.remove(); // 위에서 가져온 id를 이용하여 해당 방 정보를 삭제한다.
+
+                        var titleArea = document.getElementById("titleArea"); // 방 정보가 작성될 구역
+                        var ptr = ""; // 방 정보 코드가 작성될 변수
+
+                        // 방 정보 코드를 작성한다.
+                        prt = '<b id="title">';
+                        prt += '방 번호 : ';
+                        prt += metaIdx;
+                        prt += '   |    (스터디) 방 제목 : ';
+                        prt += metaTitle;
+                        prt += ' ( '
+                        prt += recruitingPersonnel;
+                        prt += ' / ';
+                        prt += metaPersonnel;
+                        prt += ' )';
+                        prt += '</b>';
+                        // 작성된 방 정보 코드를 참가자 구역에 올린다.
+                        // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                        // position에는 총 4가지의 옵션이 있다.
+                        // 1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                        // 2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                        // 3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                        // 4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                        titleArea.insertAdjacentHTML("afterbegin", prt);
+                    }
+
+                    // 새로 들어온 참가자가 있는 경우 - 본인이 방에 들어올 경우에는 위에서 th:each로 참가자가 모두 작성되기에 참가자가 본인이 아닌 경우에만 실시간으로 참가자 구역에 추가 작성되도록 만든다.
+                    if ( participant != null ) {
+                        var menuBar = document.getElementById("menuBar"); // 참가자가 작성될 구역
+                        var mtr = ""; // 참가자 코드가 작성될 변수
+
+                        // 참가자가 새로 들어온게 아닌 새로고침한 경우 - 이전에 작성되있던 참가자 코드랑 중복되지 않게 먼저 삭제한다.
+                        var ptr = document.getElementById(writer); // 이전에 작성되있던 참가자 id
+                        // 이전에 작성되있던 참가자 코드가 있을 경우
+                        if ( ptr != null ) {
+                            ptr.remove(); // 위에서 가져온 id를 이용하여 해당 참가자를 삭제한다.
+                        }
+
+                        // 참가자 코드를 작성한다.
+                        mtr = '<div id="' + writer + '" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%; float: left;">';
+                        mtr += '<img src="/imagePath/' + profileImage + '" style="width: 50%; height: 100%; float: left;">';
+                        mtr += '<b>' + writer + '</b>';
+                        // 작성된 참가자 코드를 참가자 구역에 올린다.
+                        // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                        // position에는 총 4가지의 옵션이 있다.
+                        // 1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                        // 2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                        // 3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                        // 4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                        menuBar.insertAdjacentHTML("afterbegin", mtr);
+                    }
+
+                    // 해당 방을 나가는 경우 - 본인이 방을 나갈 경우에는 본인은 나가고 없으므로 퇴장자가 본인이 아닌 경우에만 실시간으로 참가자 구역에서 삭제되도록 만든다.
+                    if ( exit != null ) {
+                        var mtr = document.getElementById(writer); // 참가자 id
+                        mtr.remove(); // 위에서 가져온 id를 이용하여 해당 참가자를 삭제한다.
+                    }
                 }
             });
 
@@ -108,7 +226,14 @@
             // 4. send(path, header, message)로 메세지를 보낸다. (입장할때 딱 한번만 전달한다.)
             //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
             //    여기서 보낸 메세지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-            stomp.send('/pub/meta/cafeRoom/enter', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname}));
+            stomp.send('/pub/meta/cafeRoom/enter', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, profileImage : profileImage, metaRecruitingPersonnel : metaRecruitingPersonnel}));
+        });
+
+        // 엔터키로 메세지를 전송하는 경우
+        message.addEventListener("keypress", function(event) {
+            if ( event.key === "Enter" ) {
+                send();
+            }
         });
 
         // 채팅 메세지 전송
@@ -124,10 +249,10 @@
         // 방 나가기 (Ajax 사용) - onbeforeunload를 사용하기 위해선 반드시 Ajax를 사용해야 한다.
         // onbeforeunload (body 태그에 작성) - 탭 닫기, 윈도우 닫기, 뒤로가기, 나가기 버튼 등 해당 페이지를 벗어나는 기능을 실행할 경우 아래 메소드를 항상 실행한다.
         function close() {
-            // 9. send(path, header, message)로 메세지를 보낸다. (퇴장할때 딱 한번만 전달한다.)
-            //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
-            //    여기서 보낸 메세지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-            stomp.send('/pub/meta/cafeRoom/exit', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname}));
+            // send(path, header, message)로 메세지를 보낸다. (퇴장할때 딱 한번만 전달한다.)
+            // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+            // 여기서 보낸 메세지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+            stomp.send('/pub/meta/cafeRoom/exit', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, metaRecruitingPersonnel : metaRecruitingPersonnel}));
 
             var url = "/meta/exit";
             var param = "metaIdx=" + metaIdx;
@@ -162,8 +287,13 @@
         let imgBg = new Image(); // 배경 이미지
         imgBg.src = "/map/cafeRoom.png"; // 배경 이미지 주소
 
-        let x = 870, y = 850; // 캐릭터 시작 위치 지정
-        let w = 30, h = 30; // 캐릭터 크기 지정 (전체 사이즈의 절반만 작성)
+        let a = document.getElementById('canvas').clientWidth;
+        let b = a / 2;
+        let c = document.getElementById('canvas').clientHeight;
+        d = (c / 6) * 5;
+
+        let x = b, y = d; // 캐릭터 시작 위치 지정
+        let w = 20, h = 20; // 캐릭터 크기 지정 (전체 사이즈의 절반만 작성)
 
         // 윈도우 시작시 가장 먼저 실행되는 메소드
         window.onload = function(e) {
@@ -174,11 +304,11 @@
             // canvas 크기 설정
             setCanvasSize();
 
-            // 캔버스 크기의 상대적 위치
-            canvasLeft = canvas.getBoundingClientRect().left; // 왼쪽 벽
-            canvasTop = canvas.getBoundingClientRect().top; // 위쪽 벽
-            canvasRight = canvas.getBoundingClientRect().right; // 오른쪽 벽
-            canvasBottom = canvas.getBoundingClientRect().bottom; // 아래쪽 벽
+            // 캔버스 크기의 절대적 위치
+            canvasLeft = 0 + 50; // 왼쪽 벽
+            canvasTop = 0 + 50 // 위쪽 벽
+            canvasRight = document.getElementById('canvas').clientWidth - 50; // 오른쪽 벽
+            canvasBottom = document.getElementById('canvas').clientHeight - 50; // 아래쪽 벽
 
             // 시작!!
             //runGame();
@@ -194,8 +324,10 @@
 
         // canvas 크기 설정 메소드 (윈도우 크기게 맞게 설정)
         function setCanvasSize() {
-            canvas.setAttribute("width", window.innerWidth);
-            canvas.setAttribute("height", window.innerHeight);
+            //캔버스의 현재 길이 설정
+            canvas.setAttribute("width", document.getElementById('canvas').clientWidth);
+            //캔버스의 현재 높이 설정
+            canvas.setAttribute("height", document.getElementById('canvas').clientHeight);
         }
 
         // 시작 메소드
@@ -238,9 +370,25 @@
                     requestAnimationFrame(runGame); // AnimationFrame 실행
                     if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
                         dx = 0;
+                        if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
+                        if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
                         break;
                     } else { // 왼쪽 벽이 나오기 전까지 움직인다.
                         dx = -5;
+                        if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
+                        if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
                         break;
                     }
                 // 위로 이동
@@ -249,9 +397,25 @@
                     requestAnimationFrame(runGame); // AnimationFrame 실행
                     if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
                         dy = 0;
+                        if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
+                        if ( y > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
                         break;
                     } else { // 위쪽 벽이 나오기 전까지 움직인다.
                         dy = -5;
+                        if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
+                        if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
                         break;
                     }
                 // 오른쪽으로 이동
@@ -260,9 +424,25 @@
                     requestAnimationFrame(runGame); // AnimationFrame 실행
                     if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
                         dx = 0;
+                        if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
+                        if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
                         break;
                     } else { // 오른쪽 벽이 나오기 전까지 움직인다.
                         dx = 5;
+                        if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
+                        if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
                         break;
                     }
                 // 아래로 이동
@@ -271,9 +451,25 @@
                     requestAnimationFrame(runGame); // AnimationFrame 실행
                     if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
                         dy = 0;
+                        if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
+                        if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
                         break;
                     } else { // 아래쪽 벽이 나오기 전까지 움직인다.
                         dy = 5;
+                        if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
+                        if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
                         break;
                     }
             }

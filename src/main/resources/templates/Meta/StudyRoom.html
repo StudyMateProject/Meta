@@ -60,9 +60,10 @@
         var metaPersonnel = [[${metaRoom.metaPersonnel}]]; // 모집인원
         var nickname = [[${nickImage.nickname}]]; // 로그인 유저의 닉네임
         var profileImage = [[${nickImage.profileImage}]]; // 로그인 유저의 프로필 사진
-        let count = 0; // 메세지 전송 수
-        let start = Date.now(); // 시작 시간 - 현재 시간으로 초기화
-        let end = Date.now(); // 메세지 전송 시간 - 현재 시간으로 초기화
+        let count = 0; // 전송된 메세지 수
+        // Date.now() - UTC 기준으로 1970년 1월 1일 0시 0분 0초부터 현재까지 경과된 밀리 초를 반환한다.
+        let start = Date.now(); // 시작 시간
+        let end = Date.now(); // 메세지 전송 시간
         let canSendMessage = true; // 메세지 전송 상태
         let message = document.getElementById("message"); // 메세지 작성란
 
@@ -89,14 +90,14 @@
                 var profileImage = content.profileImage; // 참가자 프로필 사진
                 var exit = content.exit; // 퇴장자 닉네임
                 var recruitingPersonnel = content.metaRecruitingPersonnel; // 참가중인 인원
-                let timePassed = end - start;
+                let timePassed = end - start; // 처음 메세지 전송후 1초 이내 다음 메세지 전송까지의 경과 시간 - 1초 이후 시작 시간 초기화
 
                 var chatArea = document.getElementById("chatArea"); // 메세지가 작성될 채팅 구역
                 var str = ""; // 메세지 코드가 작성될 변수
 
                 // 작성자가 로그인 유저와 같은 경우 (본인)
                 if ( writer === nickname ) {
-                    // 1초안에 5개 이상의 메세지를 보낼 경우
+                    // 1초 이내 5개 이상의 메세지를 보낼 경우
                     if ( timePassed <= 1000 && count >= 5 ) {
                         alert("짧은 시간에 많은 메시지를 보낼 수 없습니다. 잠시 후 다시 시도해주세요.");
                         // 5초간 메세지를 보낼 수 없는 상태로 변경
@@ -104,7 +105,7 @@
                         setTimeout(function() {
                             canSendMessage = true;
                         }, 5000);
-                        // 5초 이후 다시 시작 시간을 현재 시간으로 설정하고 메세지 전송 수를 0으로 초기화
+                        // 5초 이후 다시 시작 시간을 현재 시간으로 설정하고 전송된 메세지 수를 0으로 초기화
                         start = Date.now();
                         count = 0;
                     // 그 외 경우
@@ -130,11 +131,11 @@
                             chatArea.scrollTop = scroll.scrollHeight;
                             // 메세지 전송 시간을 현재로 작성
                             end = Date.now();
-                            // 메세지 전송 수 1 증가
+                            // 전송된 메세지 수 1 증가
                             count++;
                             // 메세지를 전송한지 1초가 지날 경우
                             if ( timePassed > 1000 ) {
-                                // 시작 시간을 다시 현재 시간으로 설정하고 메세지 전송 수를 0으로 초기화
+                                // 시작 시간을 다시 현재 시간으로 설정하고 전송된 메세지 수를 0으로 초기화
                                 start = Date.now();
                                 count = 0;
                             }
@@ -286,8 +287,13 @@
         let imgBg = new Image(); // 배경 이미지
         imgBg.src = "/map/studyRoom.png"; // 배경 이미지 주소
 
-        let x = 870, y = 850; // 캐릭터 시작 위치 지정
-        let w = 30, h = 30; // 캐릭터 크기 지정 (전체 사이즈의 절반만 작성)
+        let a = document.getElementById('canvas').clientWidth;
+        let b = a / 2;
+        let c = document.getElementById('canvas').clientHeight;
+        d = (c / 6) * 5;
+
+        let x = b, y = d; // 캐릭터 시작 위치 지정
+        let w = 20, h = 20; // 캐릭터 크기 지정 (전체 사이즈의 절반만 작성)
 
         // 윈도우 시작시 가장 먼저 실행되는 메소드
         window.onload = function(e) {
@@ -298,11 +304,11 @@
             // canvas 크기 설정
             setCanvasSize();
 
-            // 캔버스 크기의 상대적 위치
-            canvasLeft = canvas.getBoundingClientRect().left; // 왼쪽 벽
-            canvasTop = canvas.getBoundingClientRect().top; // 위쪽 벽
-            canvasRight = canvas.getBoundingClientRect().right; // 오른쪽 벽
-            canvasBottom = canvas.getBoundingClientRect().bottom; // 아래쪽 벽
+            // 캔버스 크기의 절대적 위치
+            canvasLeft = 0 + 50; // 왼쪽 벽
+            canvasTop = 0 + 50 // 위쪽 벽
+            canvasRight = document.getElementById('canvas').clientWidth - 50; // 오른쪽 벽
+            canvasBottom = document.getElementById('canvas').clientHeight - 50; // 아래쪽 벽
 
             // 시작!!
             //runGame();
@@ -318,8 +324,10 @@
 
         // canvas 크기 설정 메소드 (윈도우 크기게 맞게 설정)
         function setCanvasSize() {
-            canvas.setAttribute("width", window.innerWidth);
-            canvas.setAttribute("height", window.innerHeight);
+            //캔버스의 현재 길이 설정
+            canvas.setAttribute("width", document.getElementById('canvas').clientWidth);
+            //캔버스의 현재 높이 설정
+            canvas.setAttribute("height", document.getElementById('canvas').clientHeight);
         }
 
         // 시작 메소드
@@ -362,9 +370,25 @@
                     requestAnimationFrame(runGame); // AnimationFrame 실행
                     if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
                         dx = 0;
+                        if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
+                        if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
                         break;
                     } else { // 왼쪽 벽이 나오기 전까지 움직인다.
                         dx = -5;
+                        if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
+                        if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
                         break;
                     }
                 // 위로 이동
@@ -373,9 +397,25 @@
                     requestAnimationFrame(runGame); // AnimationFrame 실행
                     if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
                         dy = 0;
+                        if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
+                        if ( y > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
                         break;
                     } else { // 위쪽 벽이 나오기 전까지 움직인다.
                         dy = -5;
+                        if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
+                        if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
                         break;
                     }
                 // 오른쪽으로 이동
@@ -384,9 +424,25 @@
                     requestAnimationFrame(runGame); // AnimationFrame 실행
                     if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
                         dx = 0;
+                        if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
+                        if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
                         break;
                     } else { // 오른쪽 벽이 나오기 전까지 움직인다.
                         dx = 5;
+                        if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
+                        if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
+                            dy = 0;
+                            break;
+                        }
                         break;
                     }
                 // 아래로 이동
@@ -395,9 +451,25 @@
                     requestAnimationFrame(runGame); // AnimationFrame 실행
                     if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
                         dy = 0;
+                        if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
+                        if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
                         break;
                     } else { // 아래쪽 벽이 나오기 전까지 움직인다.
                         dy = 5;
+                        if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
+                        if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
+                            dx = 0;
+                            break;
+                        }
                         break;
                     }
             }
