@@ -31,43 +31,44 @@ public class MetaController {
     public String meta(Principal principal, Model model) {
         // 1. 서비스를 통해 현재 생성된 메타 방을 모두 조회해서, List 형태의 DTO로 반환 받아온다.
         List<Meta.rpMetaList> rpMetaList = metaService.metaList();
-        // 2. 1에서 반환받은 List 형태의 DTO를 방의 타입별로 나누기 위해 각 방의 타입마다 List를 생성한다.
-        // 2-1. studyRoom List DTO
+        // 2. 1에서 반환받은 List 형태의 DTO를 방의 타입별로 나누기 위해 각 방의 타입마다 List 형태의 DTO를 생성한다.
+        // 2-1. 방 타입이 스터디일 경우 - studyRoom List DTO
         List<Meta.rpMetaList> studyList = new ArrayList<>();
-        // 2-2. cafeRoom List DTO
+        // 2-2. 방 타입이 카페일 경우 - cafeRoom List DTO
         List<Meta.rpMetaList> cafeList = new ArrayList<>();
-        // 2-3. oneRoom List DTO
+        // 2-3. 방 타입이 자습일 경우 - oneRoom List DTO
         List<Meta.rpMetaList> oneList = new ArrayList<>();
-        // 3. foreach를 사용하여 1에서 반환받은 List 형태의 DTO에 들어있는 값들을 하나씩 꺼낸다.
+        // 3. foreach문을 사용하여 1에서 반환받은 List 형태의 DTO에 들어있는 값들을 하나씩 가져온다.
         for ( Meta.rpMetaList metaList : rpMetaList ) {
-            // 3-1. 방 타입이 스터디일 경우
+            // 4. 3에서 가져온 값 중 방 타입을 가져와 체크한다.
+            // 4-1. 방 타입이 스터디일 경우
             if ( metaList.getMetaType().equals("studyRoom") ) {
-                // 3-1-1. 2-1에서 생성한 studyRoom List DTO에 추가한다.
+                // 4-1-1. 2-1에서 생성한 studyRoom List DTO에 추가한다.
                 studyList.add(metaList);
-            // 3-2. 방 타입이 카페일 경우
+            // 4-2. 방 타입이 카페일 경우
             } else if ( metaList.getMetaType().equals("cafeRoom") ) {
-                // 3-2-1. 2-2에서 생성한 cafeRoom List DTO에 추가한다.
+                // 4-2-1. 2-2에서 생성한 cafeRoom List DTO에 추가한다.
                 cafeList.add(metaList);
-            // 3-3. 방 타입이 자습일 경우
+            // 4-3. 방 타입이 자습일 경우
             } else {
-                // 3-3-1. 2-3에서 생성한 oneRoom List DTO에 추가한다.
+                // 4-3-1. 2-3에서 생성한 oneRoom List DTO에 추가한다.
                 oneList.add(metaList);
             }
         }
 
-        // 4. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
+        // 5. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
         Member.rpMetaProfile rpMetaProfile = signUpService.metaProfile(principal.getName());
 
-        // 5. 3에서 foreach를 사용하여 방 타입별로 값을 새로 추가해 만든 List 형태의 DTO들을 바인딩한다.
-        // 5-1. 2-1에서 생성하고 3-1에서 값을 추가한 studyRoom List DTO를 바인딩한다.
+        // 6. 3에서 foreach문을 사용하여 방 타입별로 값을 새로 추가해 만든 List 형태의 DTO들을 바인딩한다.
+        // 6-1. 2-1에서 생성하고 4-1에서 값을 추가한 studyRoom List DTO를 바인딩한다.
         model.addAttribute("studyList", studyList);
-        // 5-2. 2-2에서 생성하고 3-2에서 값을 추가한 cafeRoom List DTO를 바인딩한다.
+        // 6-2. 2-2에서 생성하고 4-2에서 값을 추가한 cafeRoom List DTO를 바인딩한다.
         model.addAttribute("cafeList", cafeList);
-        // 5-3. 2-3에서 생성하고 3-3에서 값을 추가한 oneRoom List DTO를 바인딩한다.
+        // 6-3. 2-3에서 생성하고 4-3에서 값을 추가한 oneRoom List DTO를 바인딩한다.
         model.addAttribute("oneList", oneList);
-        // 6. 4에서 반환받은 유저 정보 DTO를 바인딩한다.
+        // 7. 5에서 반환받은 유저 정보 DTO를 바인딩한다.
         model.addAttribute("metaProfile", rpMetaProfile);
-        // 7. 검색 체크값을 바인딩한다. - 0 : 검색 안했을 경우
+        // 8. 검색 체크값을 바인딩한다. - 0 : 검색 안했을 경우
         model.addAttribute("check", 0);
         // 0. 검색에 사용할 DTO를 바인딩한다.
         model.addAttribute("metaDTO", new Meta.rqSearchMetaList());
@@ -99,42 +100,43 @@ public class MetaController {
         // 2. 1에서 파라미터로 받아온 DTO를 서비스에 전달한다.
         List<Meta.rpSearchMetaList> rpSearchMetaList = metaService.searchMetaList(rqSearchMetaList);
         // 3. 2에서 반환받은 List 형태의 DTO를 방의 타입별로 나누기 위해 각 방의 타입마다 List를 생성한다.
-        // 3-1. studyRoom List DTO
+        // 3-1. 방 타입이 스터디일 경우 - studyRoom List DTO
         List<Meta.rpSearchMetaList> studyList = new ArrayList<>();
-        // 3-2. cafeRoom List DTO
+        // 3-2. 방 타입이 카페일 경우 - cafeRoom List DTO
         List<Meta.rpSearchMetaList> cafeList = new ArrayList<>();
-        // 3-3. oneRoom List DTO
+        // 3-3. 방 타입이 자습일 경우 - oneRoom List DTO
         List<Meta.rpSearchMetaList> oneList = new ArrayList<>();
-        // 4. foreach를 사용하여 2에서 반환받은 List 형태의 DTO에 들어있는 값들을 하나씩 꺼낸다.
+        // 4. foreach문을 사용하여 2에서 반환받은 List 형태의 DTO에 들어있는 값들을 하나씩 가져온다.
         for ( Meta.rpSearchMetaList searchMetaList : rpSearchMetaList ) {
-            // 4-1. 방 타입이 스터디일 경우
+            // 5. 3에서 가져온 값 중 방 타입을 가져와 체크한다.
+            // 5-1. 방 타입이 스터디일 경우
             if ( searchMetaList.getMetaType().equals("studyRoom") ) {
-                // 4-1-1. 2-1에서 생성한 studyRoom List DTO에 추가한다.
+                // 5-1-1. 2-1에서 생성한 studyRoom List DTO에 추가한다.
                 studyList.add(searchMetaList);
-            // 4-2. 방 타입이 카페일 경우
+            // 5-2. 방 타입이 카페일 경우
             } else if ( searchMetaList.getMetaType().equals("cafeRoom") ) {
-                // 4-2-1. 2-2에서 생성한 cafeRoom List DTO에 추가한다.
+                // 5-2-1. 2-2에서 생성한 cafeRoom List DTO에 추가한다.
                 cafeList.add(searchMetaList);
-            // 4-3. 방 타입이 자습일 경우
+            // 5-3. 방 타입이 자습일 경우
             } else {
-                // 4-3-1. 2-3에서 생성한 oneRoom List DTO에 추가한다.
+                // 5-3-1. 2-3에서 생성한 oneRoom List DTO에 추가한다.
                 oneList.add(searchMetaList);
             }
         }
 
-        // 5. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
+        // 6. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
         Member.rpMetaProfile rpMetaProfile = signUpService.metaProfile(principal.getName());
 
-        // 6. 4에서 foreach를 사용하여 방 타입별로 값을 새로 추가해 만든 List 형태의 DTO들을 바인딩한다.
-        // 6-1. 3-1에서 생성하고 4-1에서 값을 추가한 studyRoom List DTO를 바인딩한다.
+        // 7. 4에서 foreach문을 사용하여 방 타입별로 값을 새로 추가해 만든 List 형태의 DTO들을 바인딩한다.
+        // 7-1. 3-1에서 생성하고 5-1에서 값을 추가한 studyRoom List DTO를 바인딩한다.
         model.addAttribute("studyList", studyList);
-        // 6-2. 3-2에서 생성하고 4-2에서 값을 추가한 cafeRoom List DTO를 바인딩한다.
+        // 7-2. 3-2에서 생성하고 5-2에서 값을 추가한 cafeRoom List DTO를 바인딩한다.
         model.addAttribute("cafeList", cafeList);
-        // 6-3. 3-3에서 생성하고 4-3에서 값을 추가한 oneRoom List DTO를 바인딩한다.
+        // 7-3. 3-3에서 생성하고 5-3에서 값을 추가한 oneRoom List DTO를 바인딩한다.
         model.addAttribute("oneList", oneList);
-        // 7. 5에서 반환받은 유저 정보 DTO를 바인딩한다.
+        // 8. 6에서 반환받은 유저 정보 DTO를 바인딩한다.
         model.addAttribute("metaProfile", rpMetaProfile);
-        // 8. 검색 체크값을 바인딩한다. - 1 : 검색 했을 경우
+        // 9. 검색 체크값을 바인딩한다. - 1 : 검색 했을 경우
         model.addAttribute("check", 1);
         // 0. 검색에 사용할 DTO를 바인딩한다.
         model.addAttribute("metaDTO", new Meta.rqSearchMetaList());
