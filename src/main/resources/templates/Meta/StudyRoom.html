@@ -287,9 +287,9 @@
         let imgBg = new Image(); // 배경 이미지
         imgBg.src = "/map/studyRoom.png"; // 배경 이미지 주소
 
-        let a = document.getElementById('canvas').clientWidth;
+        let a = document.getElementById("canvas").clientWidth;
         let b = a / 2;
-        let c = document.getElementById('canvas').clientHeight;
+        let c = document.getElementById("canvas").clientHeight;
         d = (c / 6) * 5;
 
         let x = b, y = d; // 캐릭터 시작 위치 지정
@@ -307,8 +307,8 @@
             // 캔버스 크기의 절대적 위치
             canvasLeft = 0 + 50; // 왼쪽 벽
             canvasTop = 0 + 50 // 위쪽 벽
-            canvasRight = document.getElementById('canvas').clientWidth - 50; // 오른쪽 벽
-            canvasBottom = document.getElementById('canvas').clientHeight - 50; // 아래쪽 벽
+            canvasRight = document.getElementById("canvas").clientWidth - 50; // 오른쪽 벽
+            canvasBottom = document.getElementById("canvas").clientHeight - 50; // 아래쪽 벽
 
             // 시작!!
             //runGame();
@@ -325,9 +325,9 @@
         // canvas 크기 설정 메소드 (윈도우 크기게 맞게 설정)
         function setCanvasSize() {
             //캔버스의 현재 길이 설정
-            canvas.setAttribute("width", document.getElementById('canvas').clientWidth);
+            canvas.setAttribute("width", document.getElementById("canvas").clientWidth);
             //캔버스의 현재 높이 설정
-            canvas.setAttribute("height", document.getElementById('canvas').clientHeight);
+            canvas.setAttribute("height", document.getElementById("canvas").clientHeight);
         }
 
         // 시작 메소드
