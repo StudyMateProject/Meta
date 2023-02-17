@@ -35,8 +35,8 @@ public class SignUpService implements UserDetailsService {
             //Mail Server 설정
             String charSet = "UTF-8"; // 사용할 언어셋
             String hostSMTP = "smtp.naver.com"; // 사용할 SMTP
-            String hostSMTPid = "sksh0000@naver.com"; // 사용할 SMTP에 해당하는 ID - 이메일 형식
-            String hostSMTPpwd = "akzmsjxndhcbfgv5"; // 사용할 ID에 해당하는 PWD
+            String hostSMTPid = ""; // 사용할 SMTP에 해당하는 ID - 이메일 형식
+            String hostSMTPpwd = ""; // 사용할 ID에 해당하는 PWD
 
             // 가장 중요한 TLS설정 - 이것이 없으면 신뢰성 에러가 나온다
             Properties props = System.getProperties();
@@ -44,7 +44,7 @@ public class SignUpService implements UserDetailsService {
             props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
             // 보내는 사람 E-Mail, 제목, 내용
-            String fromEmail = "sksh0000@naver.com"; // 보내는 사람 email - hostSMTPid와 동일하게 작성
+            String fromEmail = ""; // 보내는 사람 email - hostSMTPid와 동일하게 작성
             String fromName = "관리자"; // 보내는 사람 이름
             String subject = "[Study with me] 이메일 인증번호 발송 안내입니다."; // 제목
 
