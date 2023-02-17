@@ -1,8 +1,10 @@
 package com.study.soju.service;
 
+import com.study.soju.dto.MailKeyDTO;
 import com.study.soju.entity.Member;
 import com.study.soju.repository.MemberRepository;
 import lombok.Builder;
+import org.apache.commons.mail.HtmlEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Properties;
+
 @Builder
 @Service
 public class SignUpService implements UserDetailsService {
@@ -18,6 +22,74 @@ public class SignUpService implements UserDetailsService {
     @Autowired
     MemberRepository memberRepository;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //아이디 중복체크
+    public String checkEmailId(String emailId) {
+
+        Member member = memberRepository.findByEmailId(emailId);
+        if( member != null ) {
+            return "no";
+        } else {
+            // MailKeyDTO불러와서 사용
+            String mailKey = new MailKeyDTO().getKey(7, false);
+
+            //Mail Server 설정
+            String charSet = "UTF-8"; // 사용할 언어셋
+            String hostSMTP = "smtp.naver.com"; // 사용할 SMTP
+            String hostSMTPid = "sksh0000@naver.com"; // 사용할 SMTP에 해당하는 ID - 이메일 형식
+            String hostSMTPpwd = "akzmsjxndhcbfgv5"; // 사용할 ID에 해당하는 PWD
+
+            // 가장 중요한 TLS설정 - 이것이 없으면 신뢰성 에러가 나온다
+            Properties props = System.getProperties();
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+
+            // 보내는 사람 E-Mail, 제목, 내용
+            String fromEmail = "sksh0000@naver.com"; // 보내는 사람 email - hostSMTPid와 동일하게 작성
+            String fromName = "관리자"; // 보내는 사람 이름
+            String subject = "[Study with me] 이메일 인증번호 발송 안내입니다."; // 제목
+
+            // 받는 사람 E-Mail 주소
+            String mail = emailId; // 받는 사람 email
+
+            try {
+                HtmlEmail email = new HtmlEmail(); // Email 생성
+                email.setDebug(true);
+                email.setCharset(charSet); // 언어셋 사용
+                email.setSSL(true);
+                email.setHostName(hostSMTP); // SMTP 사용
+                email.setSmtpPort(587);	// SMTP 포트 번호 입력
+
+                email.setAuthentication(hostSMTPid, hostSMTPpwd); // 메일 ID, PWD
+                email.setTLS(true);
+                email.addTo(mail); // 받는 사람
+                email.setFrom(fromEmail, fromName, charSet); // 보내는 사람
+                email.setSubject(subject); // 제목
+                email.setHtmlMsg(
+                        "<p>" + "[메일 인증 안내입니다.]" + "</p>" +
+                                "<p>" + "Study with me를 사용해 주셔서 감사드립니다." + "</p>" +
+                                "<p>" + "아래 인증 코드를 '인증번호'란에 입력해 주세요." + "</p>" +
+                                "<p>" + mailKey + "</p>"); // 본문 내용
+                email.send(); // 메일 보내기
+                // 메일 보내기가 성공하면 메일로 보낸 랜덤키를 콜백 메소드에도 전달
+                return mailKey;
+            } catch (Exception e) {
+                System.out.println(e);
+                // 메일 보내기가 실패하면 "no"를 콜백 메소드에 전달
+                return "no";
+            }
+        }
+    }
+
+    //핸드폰번호 중복체크
+    public String checkPhone (String phoneNumber) {
+        Member member = memberRepository.findByPhoneNumber(phoneNumber);
+        if ( member != null ) {
+            return "no";
+        } else {
+            return "yes";
+        }
+    }
+
     // 회원가입
     public Member.rpJoinMember joinMember(Member.rqJoinMember rqJoinMember, PasswordEncoder passwordEncoder) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO와 비밀번호 암호화 메소드를 받아온다.
         // 4. 3에서 파라미터로 받아온 DTO를 Entity로 변환하면서 3에서 파라미터로 같이 받아온 비밀번호 암호화 메소드를 파라미터로 넘겨준다.

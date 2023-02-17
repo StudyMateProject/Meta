@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Object> {
     Member findByEmailId(String emailId);
+    Member findByPhoneNumber(String phoneNumber);
 
     // 5-1. @Query 어노테이션을 사용하여 조회에 사용할 쿼리문을 작성한다.
     @Query("SELECT m FROM Member m WHERE m.name = :name AND m.phoneNumber = :phoneNumber")

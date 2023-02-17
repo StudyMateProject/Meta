@@ -3,6 +3,7 @@ package com.study.soju.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.study.soju.entity.Member;
 import com.study.soju.httpclient.GoogleLogin;
+import com.study.soju.httpclient.IamPortPass;
 import com.study.soju.service.SignUpOAuthService;
 import com.study.soju.service.SignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 
 @Controller
 public class SignUpController {
@@ -46,6 +48,41 @@ public class SignUpController {
         model.addAttribute("memberDTO", new Member.rqJoinMember());
         // 2. 회원가입 페이지로 이동한다.
         return "SignUp/JoinForm";
+    }
+
+    //이메일 중복체크 & 이메일 전송 SMTP
+    @PostMapping("/joinform/emailcheck")
+    @ResponseBody
+    public String emailCheck(String emailId) { // 1. 파라미터로 Ajax를 통해 넘어온 이메일 아이디를 받아온다.
+        String checkEmailId =  signUpService.checkEmailId(emailId); //이메일 존재 여부
+        return checkEmailId;
+    }
+
+    //본인인증 IamPort서버 통신
+    @PostMapping("/joinform/certifications")
+    @ResponseBody
+    public HashMap<String, String> certifications(String impUid) {
+        JsonNode jsonToken = IamPortPass.getToken(); //서버로 부터 토큰값 받아옴 (Json 형식)
+        String accessToken = jsonToken.get("response").get("access_token").asText(); //서버로 부터 토큰값 받아옴 (Text)
+
+        JsonNode userInfo = IamPortPass.getUserInfo(impUid, accessToken); //유저정보 가져옴
+        String birthday = userInfo.get("response").get("birthday").asText(); //userInfo에 들어 있는 생년월일
+        String name = userInfo.get("response").get("name").asText(); //userInfo에 들어 있는 이름
+        String phoneNumber = userInfo.get("response").get("phone").asText(); //userInfo에 들어 있는 핸드폰 번호
+
+        HashMap<String, String> map = new HashMap<>(); //생년월일 / 이름 / 핸드폰 번호 HashMap으로 만들어 전송
+        map.put("birthday", birthday);
+        map.put("name", name);
+        map.put("phoneNumber", phoneNumber);
+        return map; //map에 정보 저장 후 전송
+    }
+
+    //핸드폰 번호 중복체크
+    @PostMapping("/joinform/phonecheck")
+    @ResponseBody
+    public String checkPhone(String phoneNumber) {
+        String checkPhone = signUpService.checkPhone(phoneNumber); //핸드폰 번호 존재 여부
+        return checkPhone;
     }
 
     // 회원가입 진행 URL

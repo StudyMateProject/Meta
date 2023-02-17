@@ -8,17 +8,25 @@
 <body>
     <!-- th:object="${바인딩한 객체의 변수명}" - 모델로 바인딩한 객체를 가져온다. -->
     <form action="/joinform/join" method="post" th:object="${memberDTO}">
+        <!-- 이메일 중복 체크 값 -->
+        <input id="hEmailCheck" type="text">
+        <!-- 이메일 인증 번호 체크 값 -->
+        <input id="hEmailKey" type="text">
         <ul>
             <!-- th:for="th:field에 작성한 변수명" - label과 input을 연결 해준다. -->
             <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
-            <li><label th:for="emailId">아이디 : </label><input th:field="*{emailId}" type="text"></li>
+            <li><label th:for="emailId">아이디(이메일) : </label><input th:field="*{emailId}" type="text">
+                <input type="button" value="인증번호 전송" onclick="sendEmail(this.form)"></li>
+            <li><label>인증번호 입력 </label><input id="emailKey" type="text">
+                <input type="button" value="인증번호 확인" onclick="checkEmail()"></li>
             <li><label th:for="pwd">비밀번호 : </label><input th:field="*{pwd}" type="password"></li>
-            <li><label th:for="name">이름 : </label><input th:field="*{name}" type="text"></li>
             <li><label th:for="nickname">닉네임 : </label><input th:field="*{nickname}" type="text"></li>
+            <li><label th:for="name">이름 : </label><input th:field="*{name}" type="text"></li>
             <li><label th:for="birthday">생년월일 : </label><input th:field="*{birthday}" type="date"></li>
+            <li><label th:for="phoneNumber">휴대폰 번호 : </label><input th:field="*{phoneNumber}" type="tel">
+                <input id="btnPhone" type="button" value="인증하기"></li>
             <li><label> 성별 : </label><label>남</label><input th:field="*{gender}" type="radio" value="M">
                                       <label>여</label><input th:field="*{gender}" type="radio" value="W"></li>
-            <li><label th:for="phoneNumber">휴대폰 번호 : </label><input th:field="*{phoneNumber}" type="tel"></li>
             <li><label th:for="address">주소 : </label><input th:field="*{address}" type="text"></li>
             <li><label th:for="studyType">관심 분야 : </label><select th:field="*{studyType}"><option value="">관심 분야</option>
                                                                                             <option value="문과">문과</option>
@@ -27,5 +35,147 @@
         </ul>
         <input type="submit" value="가입">
     </form>
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!-- Ajax사용을 위한 js를 추가 -->
+    <script src="/js/httpRequest.js"></script>
+    <!-- 이메일 중복 체크, 이메일 인증 번호 전송 및 체크 -->
+    <script>
+        // 이메일 인증 번호 발송
+        function sendEmail(f) {
+            let emailId = f.emailId.value; // 이메일 아이디
+
+            // 이메일 형식 체크 패턴
+            let pattern = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
+
+            // 아이디가 이메일 형식에 맞는지 체크한다.
+            // 이메일 형식이 아닐 경우
+            if( !pattern.test(emailId) ) {
+                alert("이메일 형식을 다시 확인해주세요\n ex) abc@naver.com");
+                return;
+            // 이메일 형식이 맞는 경우
+            } else {
+                // Ajax 사용
+                let url = "/joinform/emailcheck";
+                let param = "emailId=" + emailId;
+                sendRequest(url, param, resultSendEmail, "POST");
+            }
+        }
+        // 이메일 인증 번호 발송 콜백 메소드
+        function resultSendEmail() {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                let data = xhr.responseText; // 이메일 전송 체크 값
+                let hEmailCheck = document.getElementById("hEmailCheck"); // 이메일 중복 체크 값
+                let hEmailKey = document.getElementById("hEmailKey"); // 이메일 인증 번호 체크 값
+
+                // 이메일이 전송됬는지 체크한다.
+                // 이메일이 전송되지 못한 경우 - 중복된 이메일 아이디 - 사용 불가
+                if ( data == "no" ) {
+                    alert("이미 존재하는 아이디입니다.");
+                    hEmailCheck.value = "false"; // 이메일 중복 체크 값 false
+                    return;
+                // 이메일이 전송된 경우 - 사용 가능한 아이디
+                } else {
+                    alert("인증 메일을 발송했습니다.");
+                    hEmailKey.value = data; // 반환받은 이메일 인증 번호를 이메일 인증 번호 체크 값에 전달한다.
+                    return;
+                }
+            }
+        }
+
+        // 이메일 인증 번호 체크
+        function checkEmail() {
+            let emailId = document.getElementById("emailId"); // 이메일 아이디
+            let emailKey = document.getElementById("emailKey"); // 이메일 인증 번호
+            let hEmailKey = document.getElementById("hEmailKey"); // 이메일 인증 번호 체크 값
+            let hEmailCheck = document.getElementById("hEmailCheck"); // 이메일 중복 체크 값
+
+            // 작성한 이메일 인증 번호와 이메일 인증 전호 체크 값이 같은지 체크한다.
+            // 값이 같을 경우 - 이메일 사용 가능
+            if ( emailKey.value == hEmailKey.value ) {
+                alert("인증 되었습니다.");
+                hEmailCheck.value = "true"; // 이메일 중복 체크 값 true
+                emailId.readOnly = true; // 이메일 아이디를 변경 못하게 막기
+                emailKey.readOnly = true; // 이메일 인증 번호를 변경 못하게 막기
+                return;
+            // 값이 다를 경우 - 이메일 사용 불가
+            } else {
+                alert("인증 번호를 다시 확인해주세요");
+                hEmailCheck.value = "false"; // 이메일 중복 체크 값 false
+                emailKey.value = ""; // 작성한 이메일 인증 번호를 초기화
+                return;
+            }
+        }
+    </script>
+
+    <!-- iamport.payment.js 인증 -->
+    <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <!-- 아임포트 본인인증 및 값 삽입 => '인증하기' 버튼 클릭시 -->
+    <script>
+        // textbox & 버튼(2개이상)을 누르면 함수가 실행되도록 하는 방법
+        // querySelectorAll로 id값(#id)을 불러와서 배열로 생성, 이후 forEach문을 활용해 각각의 것을 눌렀을 때 실행되게 하도록 한다.
+        let openPort = document.querySelectorAll("#name, #birthday, #phoneNumber, #btnPhone");
+        openPort.forEach(function(element){
+            element.addEventListener("click", function() {
+                var IMP = window.IMP; // init로 객체초기화 (가맹점식별코드)
+                IMP.init("imp88140833"); // 가맹점 번호
+                IMP.certification({
+                    popup : true // 팝업 사용
+                } ,function (rsp) {
+                    if ( rsp.success ){ // 인증에 성공할 경우
+                        let impUid = rsp.imp_uid;
+                        let url = "/joinform/certifications";
+                        let param = "impUid=" + impUid;
+                        sendRequest(url, param, resultCertifications, "POST");
+                        return;
+                    } else { //인증 실패 시
+                        alert("인증 실패하였습니다.");
+                        return;
+                    }
+                });
+            });
+        });
+        // 휴대폰 인증 콜백 메소드
+        function resultCertifications () {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                let data = xhr.responseText; // 인증된 유저 정보를 Map으로 받아온다.
+                let json = JSON.parse(data); // Map으로 받아온 값을 JavaScript 객체로 변환한다.
+
+                let name = document.getElementById("name");
+                let birthday = document.getElementById("birthday");
+                let phoneNumber = document.getElementById("phoneNumber");
+
+                name.value = json.name;
+                name.readOnly = true;
+                birthday.value = json.birthday;
+                birthday.readOnly = true;
+                phoneNumber.value = json.phoneNumber;
+                phoneNumber.readOnly = true;
+
+                let url = "/joinform/phonecheck";
+                let param = "phoneNumber=" + json.phoneNumber;
+                sendRequest(url, param, resultPhoneCheck, "POST");
+            }
+        }
+        function resultPhoneCheck() {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                let data = xhr.responseText;
+                let name = document.getElementById("name");
+                let birthday = document.getElementById("birthday");
+                let phoneNumber = document.getElementById("phoneNumber");
+
+                if( data == "no" ) {
+                    alert("이미 가입된 회원 정보입니다.");
+                    name.value = "";
+                    birthday.value = "";
+                    phoneNumber.value = "";
+                    return;
+                } else {
+                    alert("가입 가능한 회원 정보입니다.");
+                    return;
+                }
+            }
+        }
+    </script>
 </body>
 </html>
