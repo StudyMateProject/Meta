@@ -13,30 +13,35 @@ public class MainController {
     // 로그인 후 메인 페이지
     @GetMapping("/")
     public String main(Principal principal) {
+        // 1. 로그인을 했는지 체크한다.
+        // 1-1. 로그인을 안한 경우
         if ( principal == null ) {
+            // 1-1-1. 로그인 전 메인 페이지로 리다이렉트한다.
             return "redirect:/n";
+        // 1-2. 로그인을 한 경우
+        } else {
+            // 메인 페이지로 이동한다.
+            return "Main";
         }
-        // 메인 페이지로 이동
-        return "Main";
     }
 
     // 로그인 전 메인 페이지
     @GetMapping("/n")
     public String nmain() {
-        // 메인 페이지로 이동
+        // 1. 메인 페이지로 이동한다.
         return "Main";
     }
 
     // 로그인 페이지
     @GetMapping("/loginform") // required = false - 해당 필드가 URL 파라미터에 존재하지 않아도 에러가 발생하지 않는다.
-    public String loginform(@RequestParam(value = "error", required = false) String error, // 1-1. URL 파라미터로 넘어오는 에러 체크값이 있을 경우 받는다.
-                            @RequestParam(value = "errorMsg", required = false) String errorMsg, // 1-2. URL 파라미터로 넘어오는 에러 메세지가 있을 경우 받는다.
+    public String loginform(@RequestParam(value = "error", required = false) String error, // 1-1. URL 파라미터를 통해 넘어오는 에러 체크값이 있을 경우 받는다.
+                            @RequestParam(value = "errorMsg", required = false) String errorMsg, // 1-2. URL 파라미터를 통해 넘어오는 에러 메세지가 있을 경우 받는다.
                             Model model) { // 1. 파라미터로 넘어오는 각종 에러값들을 받아온다.
-        // 2. 1-1에서 받아온 에러 체크값을 바인딩 한다.
+        // 2. 1-1에서 받아온 에러 체크값을 바인딩한다.
         model.addAttribute("error", error);
-        // 3. 1-2에서 받아온 에러 메세지를 바인딩 한다.
+        // 3. 1-2에서 받아온 에러 메세지를 바인딩한다.
         model.addAttribute("errorMsg", errorMsg);
-        // 로그인 페이지로 이동
+        // 4. 로그인 페이지로 이동한다.
         return "SignUp/LoginForm";
     }
 
@@ -44,7 +49,7 @@ public class MainController {
     @PostMapping("/logout")
     public void logout() {
         // 로그아웃 후 이동 페이지는 Spring Security가 각 핸들러를 통해 잡고 있기에 여기서 굳이 잡아줄 필요가 없다.
-        // 메인 페이지로 이동
+        // 메인 페이지로 이동한다.
         // return "Main";
     }
 }

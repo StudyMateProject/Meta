@@ -17,9 +17,7 @@ public class StompChatController {
     // @MessageMapping - 클라이언트에서 요청을 보낸 URI 에 대응하는 메소드로 연결을 해주는 역할을 한다.
     // StompWebSocketConfig에서 설정한 applicationDestinationPrefixes와 @MessageMapping 경로가 자동으로 병합된다.
     // "/pub" + "/meta/studyRoom/enter" = "/pub/meta/studyRoom/enter"
-
-    ////////////////////////////////////////////////// 스터디룸 구역 //////////////////////////////////////////////////
-
+////////////////////////////////////////////////// 스터디룸 구역 //////////////////////////////////////////////////
     // 스터디룸 입장
     @MessageMapping(value = "/meta/studyRoom/enter")
     public void enterStudyRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.
@@ -56,9 +54,7 @@ public class StompChatController {
         //    "/sub" + "/meta/studyRoom" + metaIdx = "/sub/meta/studyRoom/1"
         template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
     }
-
-    ////////////////////////////////////////////////// 카페 구역 //////////////////////////////////////////////////
-
+////////////////////////////////////////////////// 카페 구역 //////////////////////////////////////////////////
     // 카페 입장
     @MessageMapping(value = "/meta/cafeRoom/enter")
     public void enterCafeRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.
@@ -89,9 +85,7 @@ public class StompChatController {
         //    "/sub" + "/meta/studyRoom" + metaIdx = "/sub/meta/cafeRoom/1"
         template.convertAndSend("/sub/meta/cafeRoom/" + message.getMetaIdx(), message);
     }
-
-    ////////////////////////////////////////////////// 자습실 구역 //////////////////////////////////////////////////
-
+////////////////////////////////////////////////// 자습실 구역 //////////////////////////////////////////////////
     // 자습실 입장
     @MessageMapping(value = "/meta/oneRoom/enter")
     public void enterOneRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.
