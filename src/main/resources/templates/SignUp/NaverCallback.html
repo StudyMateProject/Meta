@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <!-- 네이버 회원가입에 미리 작성될 정보들 -->
+    <form id="f" action="/loginform/naverjoinform" method="POST" th:object="${memberDTO}">
+        <input th:field="*{name}" type="hidden">
+        <input th:field="*{gender}" type="hidden">
+        <input th:field="*{emailId}" type="hidden">
+        <input th:field="*{birthday}" type="hidden">
+        <input th:field="*{phoneNumber}" type="hidden">
+    </form>
+<!------------------------------------------------------------------------------------------------------------------------------->
+    <script src="/js/httpRequest.js"></script>
+    <script type="text/javascript" src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" charset="utf-8"></script>
+    <script>
+        const naverLogin = new naver.LoginWithNaverId(
+            {
+                clientId: "O6Ia5cRtqbBq7SKu1wwd", // 네이버에서 발급받은 API 사용 ID
+                isPopup: false, // callbackUrl을 팝업창으로 열건지 선택 - true : 팝업 / false : 다음 페이지
+                callbackHandle: true // 콜백메소드에 핸들메소드 사용여부
+            }
+        );
+        naverLogin.init();
+
+        //유효성 검사
+        window.addEventListener('load', function () {
+            naverLogin.getLoginStatus(function (status) {
+                if (status) {
+                    // naver API 필수정보값
+                    const name = naverLogin.user.getName(); // 이름
+                    const gender = naverLogin.user.getGender(); // 성별
+                    const emailId = naverLogin.user.getEmail(); // 이메일
+                    const birthyear = naverLogin.user.getBirthyear(); // 출생년도
+                    const birthday = naverLogin.user.getBirthday(); // 생일
+                    const phoneNumber = naverLogin.user.getMobile(); //핸드폰 번호
+
+                    // input 태그 hidden 타입
+                    let hName = document.getElementById("name"); // 이름
+                    let hGender = document.getElementById("gender"); // 성별
+                    let hEmailId = document.getElementById("emailId"); // 이메일
+                    let hBirthday = document.getElementById("birthday"); // 생일
+                    let hPhoneNumber = document.getElementById("phoneNumber"); //핸드폰 번호
+
+                    // input value에 naver API 필수정보값 넣기
+                    hName.value = name; // 이름
+                    hGender.value = gender; // 성별
+                    hEmailId.value = emailId; // 이메일
+                    hBirthday.value = birthyear + "-" +birthday; // 생일
+                    hPhoneNumber.value = phoneNumber; //핸드폰 번호
+
+                    // 인증페이지 이동
+                    let url = "/loginform/naverauthentication";
+                    let param = "emailId=" + emailId +
+                                "&name=" + name +
+                                "&phoneNumber=" + phoneNumber;
+                    sendRequest(url, param, resultNaverLogin, "POST")
+                } else {
+                    console.log("callback 처리에 실패하였습니다.");
+                }
+            });
+        });
+        function resultNaverLogin() {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                // 네이버 로그인 인증 컨트롤러에서 넘어온 반환값을 받아온다.
+                let data = xhr.responseText;
+
+                // 반환값이 "0"과 "1"이 아닌 경우 - 타 플랫폼 가입자 - 에러
+                if ( data != "0" && data != "1" ) {
+                    alert(data);
+                    location.href = "/loginform";
+                    return;
+                // 반환값이 "1"인 경우 - 네이버 가입자 - 로그인
+                } else if ( data == "1" ) {
+                    location.href = "/oauth2/authorization/naver";
+                    return;
+                // 반환값이 "0"인 경우 - 미가입자 - 회원가입
+                } else {
+                    // form태그
+                    let f = document.getElementById("f");
+                    // action과 method는 위에 form태그에서 미리 다 설정해놨기에 바로 submit()하면 된다.
+                    f.submit();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

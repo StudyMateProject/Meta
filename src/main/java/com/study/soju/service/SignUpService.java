@@ -17,7 +17,7 @@ public class SignUpService implements UserDetailsService {
     // 멤버 DB
     @Autowired
     MemberRepository memberRepository;
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 회원가입
     public Member.rpJoinMember joinMember(Member.rqJoinMember rqJoinMember, PasswordEncoder passwordEncoder) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO와 비밀번호 암호화 메소드를 받아온다.
         // 4. 3에서 파라미터로 받아온 DTO를 Entity로 변환하면서 3에서 파라미터로 같이 받아온 비밀번호 암호화 메소드를 파라미터로 넘겨준다.
@@ -29,16 +29,6 @@ public class SignUpService implements UserDetailsService {
         // 10. 9에서 변환된 DTO를 반환한다.
         return rpJoinMember;
     }
-
-//    // 로그인 유저 닉네임 조회
-//    public Member.rpNickname memberNickname(String emailId) { // 1. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
-//        // 2. 1에서 파라미터로 받아온 아이디로 로그인 유저를 조회하고, 조회된 값을 받아온다.
-//        Member member = memberRepository.findByEmailId(emailId);
-//        // 3. 2에서 조회된 Entity를 DTO로 변환한다.
-//        Member.rpNickname rpNickname = new Member.rpNickname(member);
-//        // 4. 3에서 변환된 DTO를 반환한다.
-//        return rpNickname;
-//    }
 
     // 로그인 유저 닉네임 및 프로플 사진 조회
     public Member.rpNickImage memberNickImage(String emailId) { // 1. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.

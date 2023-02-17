@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>여기는 구글 회원가입하는 곳입니다.</h1>
+    <form action="/loginform/naverjoin" method="post" th:object="${memberDTO}">
+        <!-- 어느 소셜 플랫폼 가입자인지 구별 -->
+        <input name="platform" type="hidden" value="naver">
+        <ul>
+            <!-- th:for="th:field에 작성한 변수명" - label과 input을 연결 해준다. -->
+            <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
+            <li><label th:for="emailId">아이디 : </label><input name="emailId" type="text" th:value="${emailId}" readonly></li>
+            <li><label th:for="name">이름 : </label><input name="name" type="text" th:value="${name}" readonly></li>
+            <li><label th:for="nickname">닉네임 : </label><input th:field="*{nickname}" type="text"></li>
+            <li><label th:for="birthday">생년월일 : </label><input name="birthday" type="text" th:value="${birthday}" readonly></li>
+            <li><label> 성별 : </label><label th:if="${gender == 'M'}">남 <input name="gender" type="radio" th:value="${gender}" checked></label>
+                                      <label th:if="${gender == 'F'}">여 <input name="gender" type="radio" th:value="${gender}" checked></label></li>
+            <li><label th:for="phoneNumber">휴대폰 번호 : </label><input name="phoneNumber" type="tel" th:value="${phoneNumber}" readonly></li>
+            <li><label th:for="address">주소 : </label><input th:field="*{address}" type="text"></li>
+            <li><label th:for="studyType">관심 분야 : </label><select th:field="*{studyType}"><option value="">관심 분야</option>
+                                                                                            <option value="문과">문과</option>
+                                                                                            <option value="이과">이과</option>
+                                                                                            <option value="공과">공과</option></select></li>
+        </ul>
+        <input type="submit" value="가입">
+    </form>
+</body>
+</html>

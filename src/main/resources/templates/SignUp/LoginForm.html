@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="/css/ul.css">
+    <script th:inline="javascript">
+        // 컨트롤러에서 모델로 바인딩한 소셜 로그인 에러 메세지
+        let loginErrMsg = [[${loginErrMsg}]];
+
+        // 소셜 로그인 에러 메세지가 null이 아닌 경우 에러 알림창 등장
+        if ( loginErrMsg != null ) {
+            alert(loginErrMsg);
+        }
+    </script>
 </head>
 <body>
     <!-- Spring Security를 사용하기 위해선 반드시 method는 POST를 사용해야 한다. -->
@@ -22,6 +31,13 @@
         <input type="submit" value="로그인">
         <input name="btnJoin" type="button" value="회원가입" onclick="location.href='/joinform'">
     </form>
+
+    <!-- 구글 로그인 -->
+    <!-- 3. MainController에서 미리 만들어서 바인딩한 구글 로그인 URL을 가져와 사용한다. -->
+    <a th:href="${googleUrl}"><img src="/img/GoogleLogin.png" style="height: 40px; width: auto"></a>
+
+    <!-- 네이버 로그인 -->
+    <div  class="naver" id="naverIdLogin"></div>
 <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
     <!-- 아이디 및 비밀번호가 틀릴 경우 에러 알림창이 등장 -->
     <script th:inline="javascript">
@@ -36,28 +52,21 @@
         }
     </script>
 
-<!--    &lt;!&ndash; Ajax사용을 위한 js를 추가 &ndash;&gt;-->
-<!--    <script src="/js/httpRequest.js"></script>-->
-<!--    <script th:inline="javascript">-->
-<!--        function login(f) {-->
-<!--            let emailId = f.emailId.value;-->
-<!--            let pwd = f.pwd.value;-->
-
-<!--            let url = "/loginform/login";-->
-<!--            let param = "emailId=" + emailId +-->
-<!--                        "&pwd=" + pwd;-->
-<!--            sendRequest(url, param, resultLogin, "POST");-->
-<!--        }-->
-<!--        function resultLogin() {-->
-<!--            alert(xhr.readyState);-->
-<!--            if ( xhr.readyState == 4 && xhr.status == 200 ) {-->
-<!--                let error = [[${error}]];-->
-<!--                let errorMsg = [[${errorMsg}]];-->
-<!--                if ( error == "true" ) {-->
-<!--                    alert(errorMsg);-->
-<!--                }-->
-<!--            }-->
-<!--        }-->
-<!--    </script>-->
+    <!-- 네이버 로그인 API -->
+    <script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" charset="utf-8"></script>
+    <script>
+        // 네이버 로그인 정보
+        const naverLogin = new naver.LoginWithNaverId(
+            {
+                clientId: "O6Ia5cRtqbBq7SKu1wwd", // 네이버에서 발급받은 API 사용 ID
+                callbackUrl: "http://localhost:8888/loginform/navercallback", // 로그인을 하고 정보동의 후 이동할 페이지 - 네이버에서 미리 등록해야한다.
+                loginButton: {color: "green", type: 3, height: 40}, // 위에 작성한 <div>태그에 만들어줄 로그인 버튼 모양 설정
+                isPopup: false, // callbackUrl을 팝업창으로 열건지 선택 - true : 팝업 / false : 다음 페이지
+                callbackHandle: true // 콜백메소드에 핸들메소드 사용여부
+            }
+        );
+        // 로그인 정보동의 시작
+        naverLogin.init();
+    </script>
 </body>
 </html>
