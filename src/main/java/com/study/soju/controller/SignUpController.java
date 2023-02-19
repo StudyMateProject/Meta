@@ -69,6 +69,9 @@ public class SignUpController {
         // 5에서 받환받은 값에 어떤것들이 들어있는지 조회 및 체크
         //System.out.println(jsonToken);
         // 17. 5에서 반환받은 값에서 필요한 access_token을 가져와 토큰 변수에 전달한다.
+        // toString - 객체나 값을 문자열로 변환하는 메소드로, 디버깅이나 출력용으로 사용한다. - "" 큰 따옴표가 항시 따라 붙는다.
+        // asText - 일반적으로 사람이 읽을 수 있는 형식으로 값을 문자열로 변환하는 데 사용한다. - "" 큰 따옴표 없이 글자만 나온다.
+        // 여기서 두가지의 눈에 띄는 차이는 "" 큰 따옴표의 유무인데, 값을 URL에 담아서 함께 보내는 GET 방식에는 데이터에 따라 붙는 이 "" 큰 따옴표가 걸리적 거리기에 반드시 asText로 변환해야 한다.
         String accessToken = jsonToken.get("response").get("access_token").asText();
 
         // 18. 4에서 파라미터로 받아온 imp_uid와 17에서 전달받은 access_token으로 이번엔 IamPort를 통해 인증된 유저 정보를 받아와야 하기에 IamPort 서버와 통신하는 메소드에 imp_uid와 access_token을 전달한다.
@@ -122,7 +125,9 @@ public class SignUpController {
         // 5에서 받환받은 값에 어떤것들이 들어있는지 조회 및 체크
         //System.out.println(jsonToken);
         // 17. 5에서 반환받은 값에서 필요한 access_token을 가져와 토큰 변수에 전달한다.
-        // asText vs toString -
+        // toString - 객체나 값을 문자열로 변환하는 메소드로, 디버깅이나 출력용으로 사용한다. - "" 큰 따옴표가 항시 따라 붙는다.
+        // asText - 일반적으로 사람이 읽을 수 있는 형식으로 값을 문자열로 변환하는 데 사용한다. - "" 큰 따옴표 없이 글자만 나온다.
+        // 여기서 두가지의 눈에 띄는 차이는 "" 큰 따옴표의 유무인데, 값을 URL에 담아서 함께 보내는 GET 방식에는 데이터에 따라 붙는 이 "" 큰 따옴표가 걸리적 거리기에 반드시 asText를 사용해야 한다.
         String accessToken = jsonToken.get("access_token").asText();
 
         // 18. 17에서 전달받은 access_token으로 이번엔 구글 로그인 유저 정보를 받아와야 하기에 구글 서버와 통신하는 메소드에 access_token을 전달한다.
