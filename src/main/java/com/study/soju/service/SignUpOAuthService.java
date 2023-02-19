@@ -22,30 +22,30 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
     MemberRepository memberRepository;
 
     // 구글 로그인 인증 - 미가입자, 가입자, 중복 가입자 비교
-    public Member.rpJoinSocialMember findByJoinGoogleMember(String emailId) { // 43. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
-        // 44. 43에서 파라미터로 받아온 아이디로 유저를 조회하고, 조회된 값을 받아온다.
+    public Member.rpJoinSocialMember findByJoinGoogleMember(String emailId) { // 42. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
+        // 43. 42에서 파라미터로 받아온 아이디로 유저를 조회하고, 조회된 값을 받아온다.
         Member member = memberRepository.findByEmailId(emailId);
-        // 45. 조회된 값이 있는지 체크한다.
-        // 45-1. 조회된 값이 없는 경우 - 미가입자
+        // 44. 조회된 값이 있는지 체크한다.
+        // 44-1. 조회된 값이 없는 경우 - 미가입자
         if ( member == null ) {
-            // 45-1-1. 눌값을 반환한다.
+            // 44-1-1. 눌값을 반환한다.
             return null;
-        // 45-2. 조회된 값이 있는 경우 - 구글 가입자 or 타 플랫폼 가입자
+        // 44-2. 조회된 값이 있는 경우 - 구글 가입자 or 타 플랫폼 가입자
         } else {
-            // 46. 43에서 파라미터로 받아온 아이디와 "google"로 지정한 플랫폼으로 유저를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
+            // 45. 42에서 파라미터로 받아온 아이디와 "google"로 지정한 플랫폼으로 유저를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
             Member googleMember = memberRepository.findBySocialMember(emailId, "google");
-            // 47. 조회된 값이 있는지 체크한다.
-            // 47-1. 조회된 값이 없는 경우 - 구글 이메일을 사용하여 다른 플랫폼으로 가입한 유저
-            if (googleMember == null) {
-                // 47-1-1. 에러 메시지를 작성해 DTO로 변환한다.
+            // 46. 조회된 값이 있는지 체크한다.
+            // 46-1. 조회된 값이 없는 경우 - 구글 이메일을 사용하여 다른 플랫폼으로 가입한 유저
+            if ( googleMember == null ) {
+                // 46-1-1. 에러 메시지를 작성해 DTO로 변환한다.
                 Member.rpJoinSocialMember rpJoinSocialMember = new Member.rpJoinSocialMember("해당 유저는 다른 플랫폼으로 가입한 이력이 있습니다.\n로그인 페이지로 이동합니다.");
-                // 47-1-2. 47-1-1에서 변환된 DTO를 반환한다.
+                // 46-1-2. 46-1-1에서 변환된 DTO를 반환한다.
                 return rpJoinSocialMember;
-            // 47-2. 조회된 값이 있는 경우 - 구글로 가입한 유저
+            // 46-2. 조회된 값이 있는 경우 - 구글로 가입한 유저
             } else {
-                // 47-2-1. 46에서 조회하고 받아온 Entity를 DTO로 변환한다.
+                // 46-2-1. 46에서 조회하고 받아온 Entity를 DTO로 변환한다.
                 Member.rpJoinSocialMember rpJoinSocialMember = new Member.rpJoinSocialMember(member);
-                // 47-2-2. 47-2-1에서 변환된 DTO를 반환한다.
+                // 46-2-2. 46-2-1에서 변환된 DTO를 반환한다.
                 return rpJoinSocialMember;
             }
         }

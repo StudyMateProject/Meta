@@ -9,9 +9,9 @@
     <!-- th:object="${바인딩한 객체의 변수명}" - 모델로 바인딩한 객체를 가져온다. -->
     <form action="/joinform/join" method="post" th:object="${memberDTO}">
         <!-- 이메일 중복 체크 값 -->
-        <input id="hEmailCheck" type="text">
+        <input id="hEmailCheck" type="hidden">
         <!-- 이메일 인증 번호 체크 값 -->
-        <input id="hEmailKey" type="text">
+        <input id="hEmailKey" type="hidden">
         <ul>
             <!-- th:for="th:field에 작성한 변수명" - label과 input을 연결 해준다. -->
             <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
@@ -54,7 +54,7 @@
                 return;
             // 이메일 형식이 맞는 경우
             } else {
-                // Ajax 사용
+                // 1. Ajax를 사용하여 작성한 아이디를 컨트롤러로 보낸다.
                 let url = "/joinform/emailcheck";
                 let param = "emailId=" + emailId;
                 sendRequest(url, param, resultSendEmail, "POST");
@@ -63,20 +63,28 @@
         // 이메일 인증 번호 발송 콜백 메소드
         function resultSendEmail() {
             if ( xhr.readyState == 4 && xhr.status == 200 ) {
-                let data = xhr.responseText; // 이메일 전송 체크 값
-                let hEmailCheck = document.getElementById("hEmailCheck"); // 이메일 중복 체크 값
+                // 14. 컨트롤러에서 반환된 이메일 정보 DTO를 받아온다.
+                let data = xhr.responseText;
+                // 15. 14에서 받아온 DTO를 JavaScript 객체로 변환한다.
+                let jsData = JSON.parse(data);
+                let hEmailCheck = document.getElementById("hEmailCheck"); // 아이디 중복 체크 값
                 let hEmailKey = document.getElementById("hEmailKey"); // 이메일 인증 번호 체크 값
 
-                // 이메일이 전송됬는지 체크한다.
-                // 이메일이 전송되지 못한 경우 - 중복된 이메일 아이디 - 사용 불가
-                if ( data == "no" ) {
-                    alert("이미 존재하는 아이디입니다.");
-                    hEmailCheck.value = "false"; // 이메일 중복 체크 값 false
+                // 16. 15에서 변환된 DTO 값 중 체크 값으로 메일이 정상적으로 발송됬는지 체크한다.
+                // 16-1. 메일이 발송이 실패한 경우 - 중복된 아이디 - 사용 불가
+                if ( jsData.emailId == "0" ) {
+                    alert(jsData.msg); // 변환된 DTO 값 중 메세지를 가져와 알람으로 띄운다.
+                    hEmailCheck.value = "false"; // 아이디 중복 체크 값에 false를 전달한다.
                     return;
-                // 이메일이 전송된 경우 - 사용 가능한 아이디
+                // 16-2. 메일 발송이 실패한 경우 - 내부 문제로 발송 실패
+                } else if ( jsData.emailId == "-1" ) {
+                    alert(jsData.msg); // 변환된 DTO 값 중 메세지를 가져와 알람으로 띄운다.
+                    hEmailCheck.value = "false"; // 아이디 중복 체크 값에 false를 전달한다.
+                    return;
+                // 16-3. 메일이 발송이 성공한 경우 - 사용 가능한 아이디
                 } else {
                     alert("인증 메일을 발송했습니다.");
-                    hEmailKey.value = data; // 반환받은 이메일 인증 번호를 이메일 인증 번호 체크 값에 전달한다.
+                    hEmailKey.value = jsData.msg; // 15에서 변환된 DTO 값 중 메세지를 가져와 이메일 인증 번호 체크 값에 전달한다.
                     return;
                 }
             }
@@ -86,22 +94,22 @@
         function checkEmail() {
             let emailId = document.getElementById("emailId"); // 이메일 아이디
             let emailKey = document.getElementById("emailKey"); // 이메일 인증 번호
+            let hEmailCheck = document.getElementById("hEmailCheck"); // 아이디 중복 체크 값
             let hEmailKey = document.getElementById("hEmailKey"); // 이메일 인증 번호 체크 값
-            let hEmailCheck = document.getElementById("hEmailCheck"); // 이메일 중복 체크 값
 
-            // 작성한 이메일 인증 번호와 이메일 인증 전호 체크 값이 같은지 체크한다.
-            // 값이 같을 경우 - 이메일 사용 가능
+            // 작성한 이메일 인증 번호와 이메일 인증 번호 체크 값이 같은지 체크한다.
+            // 값이 같을 경우 - 아아디 사용 가능
             if ( emailKey.value == hEmailKey.value ) {
                 alert("인증 되었습니다.");
-                hEmailCheck.value = "true"; // 이메일 중복 체크 값 true
-                emailId.readOnly = true; // 이메일 아이디를 변경 못하게 막기
-                emailKey.readOnly = true; // 이메일 인증 번호를 변경 못하게 막기
+                hEmailCheck.value = "true"; // 아이디 중복 체크 값에 true를 전달한다.
+                emailId.readOnly = true; // 인증된 아이디를 변경하지 못하도록 막는다.
+                emailKey.readOnly = true; // 작성한 이메일 인증 번호를 변경하지 못하도록 막는다.
                 return;
             // 값이 다를 경우 - 이메일 사용 불가
             } else {
                 alert("인증 번호를 다시 확인해주세요");
-                hEmailCheck.value = "false"; // 이메일 중복 체크 값 false
-                emailKey.value = ""; // 작성한 이메일 인증 번호를 초기화
+                hEmailCheck.value = "false"; // 아이디 중복 체크 값에 false를 전달한다.
+                emailKey.value = ""; // 작성한 이메일 인증 번호를 초기화한다.
                 return;
             }
         }
@@ -121,9 +129,11 @@
                 IMP.init("imp88140833"); // 가맹점 번호
                 IMP.certification({
                     popup : true // 팝업 사용
-                } ,function (rsp) {
+                } ,function (rsp) { // 1. 파라미터로 rsp를 받아온다.
                     if ( rsp.success ){ // 인증에 성공할 경우
+                        // 2. 1에서 파라미터로 받아온 rsp에서 imp_uid를 가져온다.
                         let impUid = rsp.imp_uid;
+                        // 3. Ajax를 사용하여 2에서 가져온 imp_uid를 컨트롤러로 보낸다.
                         let url = "/joinform/certifications";
                         let param = "impUid=" + impUid;
                         sendRequest(url, param, resultCertifications, "POST");
@@ -138,38 +148,46 @@
         // 휴대폰 인증 콜백 메소드
         function resultCertifications () {
             if ( xhr.readyState == 4 && xhr.status == 200 ) {
-                let data = xhr.responseText; // 인증된 유저 정보를 Map으로 받아온다.
-                let json = JSON.parse(data); // Map으로 받아온 값을 JavaScript 객체로 변환한다.
+                // 32. 컨트롤러에서 반환된 유저 정보 Map을 받아온다.
+                let data = xhr.responseText;
+                // 33. 32에서 받아온 Map을 JavaScript 객체로 변환한다.
+                let jsData = JSON.parse(data);
+                let name = document.getElementById("name"); // 이름
+                let birthday = document.getElementById("birthday"); // 생년월일
+                let phoneNumber = document.getElementById("phoneNumber"); // 휴대폰 번호
 
-                let name = document.getElementById("name");
-                let birthday = document.getElementById("birthday");
-                let phoneNumber = document.getElementById("phoneNumber");
+                // 34. 33에서 변환된 Map에 들어있는 값들을 꺼내서 각 작성란에 맞게 전달한다.
+                name.value = jsData.name; // 변환된 Map 값 중 이름을 가져와 이름 작성란에 전달한다.
+                name.readOnly = true; // 전달된 이름을 변경하지 못하도록 막는다.
+                birthday.value = jsData.birthday; // 변환된 Map 값 중 생년월일을 가져와 생년월일 작성란에 전달한다.
+                birthday.readOnly = true; // 전달된 생년월일을 변경하지 못하도록 막는다.
+                phoneNumber.value = jsData.phoneNumber; // 변환된 Map 값 중 휴대폰 번호를 가져와 휴대폰 번호 작성란에 전달한다.
+                phoneNumber.readOnly = true; // 전달된 휴대폰 번호를 변경하지 못하도록 막는다.
 
-                name.value = json.name;
-                name.readOnly = true;
-                birthday.value = json.birthday;
-                birthday.readOnly = true;
-                phoneNumber.value = json.phoneNumber;
-                phoneNumber.readOnly = true;
-
-                let url = "/joinform/phonecheck";
-                let param = "phoneNumber=" + json.phoneNumber;
-                sendRequest(url, param, resultPhoneCheck, "POST");
+                // 35. Ajax를 사용하여 33에서 변환된 Map 값 중 휴대폰 번호를 컨트롤러로 보낸다. - 중복 가입자인지 체크
+                let url = "/joinform/checkphone";
+                let param = "phoneNumber=" + jsData.phoneNumber;
+                sendRequest(url, param, resultCheckPhone, "POST");
             }
         }
-        function resultPhoneCheck() {
+        // 휴대폰 번호로 중복 가입자 체크 콜백 메소드
+        function resultCheckPhone() {
             if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                // 42. 컨트롤러에서 반환된 값을 받아온다.
                 let data = xhr.responseText;
-                let name = document.getElementById("name");
-                let birthday = document.getElementById("birthday");
-                let phoneNumber = document.getElementById("phoneNumber");
+                let name = document.getElementById("name"); // 이름
+                let birthday = document.getElementById("birthday"); // 생년월일
+                let phoneNumber = document.getElementById("phoneNumber"); // 휴대폰 번호
 
+                // 43. 42에서 받아온 값을 체크한다.
+                // 43-1. 받아온 값이 no일 경우 - 중복 가입자
                 if( data == "no" ) {
                     alert("이미 가입된 회원 정보입니다.");
-                    name.value = "";
-                    birthday.value = "";
-                    phoneNumber.value = "";
+                    name.value = ""; // 작성된 이름을 초기화한다.
+                    birthday.value = ""; // 작성된 생년월일을 초기화한다.
+                    phoneNumber.value = ""; // 작성된 휴대폰 번호를 초기화한다.
                     return;
+                // 43-2. 받아온 값이 yes일 경우 - 신규 가입자
                 } else {
                     alert("가입 가능한 회원 정보입니다.");
                     return;

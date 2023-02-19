@@ -60,6 +60,26 @@ public class Member {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // DTO 구역
 
+    // 이메일 인증 Response DTO
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @Builder
+    @ToString
+    public static class rpCheckEmailId {
+        private String emailId;
+        private String msg;
+
+        // Entity를 DTO로 변환 (생성자 방식)
+        public rpCheckEmailId(String emailId, String msg) { // 파라미터로 서비스에서 넘어온 체크 값과 메시지를 받아온다.
+            // 조회된 유저가 있을 경우 - emailId : 0 / msg : 중복 가입 에러 메세지
+            // 이메일 전송 성공할 경우 - emailId : 이메일 아이디 / 이메일 인증 번호
+            // 이메일 전송 실패할 경우 - emailId : -1 / msg : 전송 실패 에러 메세지
+            this.emailId = emailId; // emailId는 전송 및 에러 체크 값으로 사용한다.
+            this.msg = msg; // msg는 알람 메세지로 사용한다.
+        }
+    }
+
     // 자사 회원가입 Request DTO
     @Getter // getter 어노테이션
     @Setter // setter 어노테이션
@@ -173,7 +193,7 @@ public class Member {
         // Entity를 DTO로 변환 (생성자 방식) - 자사 플랫폼의 가입자인 경우
         public rpJoinSocialMember(String errMsg) { // 파라미터로 서비스에서 넘어온 에러 메시지를 받아온다.
             this.idx = 0; // idx는 0으로 고정해서 에러 체크값으로 사용한다.
-            this.errMsg = errMsg; // errMsg는 받아온 에러 메시지를 저장한다.
+            this.errMsg = errMsg; // errMsg는 받아온 에러 메시지를 전달한다.
         }
     }
 
@@ -224,7 +244,7 @@ public class Member {
                 this.gender = gender; // 성별
                 this.phoneNumber = phoneNumber; // 핸드폰 번호
                 this.platform = platform; // 플랫폼
-                // 12-2. 구글 로그인일 경우
+            // 12-2. 구글 로그인일 경우
             } else {
                 this.attributes = attributes; // 유저 정보 Map
                 this.nameAttributeKey = nameAttributeKey; // 필드값
@@ -241,7 +261,7 @@ public class Member {
             if ( "naver".equals(registrationId) ) {
                 // 8-1-1. 네이버 로그인 메소드로 7에서 받아온 값들을 모두 전달한다.
                 return ofNaver(registrationId, userNameAttributeName, attributes);
-                // 8-2. 구글 로그인일 경우
+            // 8-2. 구글 로그인일 경우
             } else {
                 // 8-2-1. 구글 로그인 메소드로 7에서 받아온 값들을 모두 전달한다.
                 return ofGoogle(registrationId, userNameAttributeName, attributes);
