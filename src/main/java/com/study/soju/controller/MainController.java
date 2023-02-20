@@ -20,7 +20,7 @@ public class MainController {
             return "redirect:/n";
         // 1-2. 로그인을 한 경우
         } else {
-            // 메인 페이지로 이동한다.
+            // 1-2-1. 메인 페이지로 이동한다.
             return "Main";
         }
     }
@@ -56,7 +56,7 @@ public class MainController {
         model.addAttribute("errorMsg", errorMsg);
         // 6. 1-3에서 받아온 소셜 로그인 에러 메세지를 바인딩한다.
         model.addAttribute("loginErrMsg", loginErrMsg);
-        // 로그인 페이지로 이동한다.
+        // 7. 로그인 페이지로 이동한다.
         return "SignUp/LoginForm";
     }
 
