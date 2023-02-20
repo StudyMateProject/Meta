@@ -2,9 +2,7 @@ package com.study.soju.entity;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Getter // getter 어노테이션
 @Setter // setter 어노테이션
@@ -15,14 +13,17 @@ import javax.persistence.Id;
 @Entity(name = "MetaRoom") // Entity 어노테이션 - 괄호안에는 테이블명과 똑같이 작성한다.
 public class MetaRoom {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idx;
+
+    @Column(nullable = false)
+    private long metaIdx;
+
     @Column(length = 20)
     private String metaNickname;
 
     @Column(length = 100)
     private String metaProfileImage;
-
-    @Column(nullable = false)
-    private long metaIdx;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // DTO 구역
 

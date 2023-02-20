@@ -128,7 +128,7 @@
                             //    4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
                             chatArea.insertAdjacentHTML("beforeend", str);
                             // 메세지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
-                            chatArea.scrollTop = scroll.scrollHeight;
+                            chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
                             // 메세지 전송 시간을 현재로 작성
                             end = Date.now();
                             // 전송된 메세지 수 1 증가
@@ -156,7 +156,7 @@
                     //    4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
                     chatArea.insertAdjacentHTML("beforeend", str);
                     // 메세지가 채팅 구역 크기를 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
-                    chatArea.scrollTop = scroll.scrollHeight;
+                    chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
 
                     // 참가중인 인원이 바뀌는 경우 - 본인이 방에 들어올 경우에는 위에서 th:text로 참가한 방의 정보들이 다 작성되기에 참가자가 본인이 아닌 경우에만 실시간으로 참가중인 인원이 바뀌어 새로 작성되도록 만든다.
                     if ( recruitingPersonnel != null ) {
@@ -211,7 +211,7 @@
                         // 2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
                         // 3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
                         // 4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
-                        menuBar.insertAdjacentHTML("afterbegin", mtr);
+                        menuBar.insertAdjacentHTML("beforeend", mtr);
                     }
 
                     // 해당 방을 나가는 경우 - 본인이 방을 나갈 경우에는 본인은 나가고 없으므로 퇴장자가 본인이 아닌 경우에만 실시간으로 참가자 구역에서 삭제되도록 만든다.
