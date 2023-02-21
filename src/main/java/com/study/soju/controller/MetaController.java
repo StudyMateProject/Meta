@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,8 @@ public class MetaController {
     // 회원가입 및 로그인 인증 서비스
     @Autowired
     SignUpService signUpService;
+    @Autowired
+    HttpServletRequest request;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 메타 메인 페이지
     @GetMapping("")
@@ -177,6 +181,11 @@ public class MetaController {
                 model.addAttribute("metaRoom", rpEntrance);
                 // 22. 15-2-1에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
                 model.addAttribute("participantList", rpMetaRoomIdxList);
+                HttpSession session = request.getSession();
+                if ( session.getAttribute(rpNickImage.getNickname()) == null ) {
+                    session.setAttribute(rpNickImage.getNickname(), rpNickImage.getNickname());
+                    model.addAttribute("entryCheck", session.getAttribute(rpNickImage.getNickname()));
+                }
                 // 23. 스터디룸 페이지로 이동한다.
                 return "Meta/StudyRoom";
             }
@@ -268,6 +277,10 @@ public class MetaController {
         Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 3. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 DTO를 서비스에 전달하다.
         metaService.exit(metaIdx, rpNickImage);
+        HttpSession session = request.getSession();
+        if ( session.getAttribute(rpNickImage.getNickname()) != null ) {
+            session.removeAttribute(rpNickImage.getNickname());
+        }
         // 4. 메타 메인 페이지로 리다이렉트한다.
         return "redirect:/meta";
     }
