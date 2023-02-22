@@ -33,6 +33,13 @@ public class MetaController {
     // 메타 메인 페이지
     @GetMapping("")
     public String meta(Principal principal, Model model) {
+        // 5. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
+        Member.rpMetaProfile rpMetaProfile = signUpService.metaProfile(principal.getName());
+
+        HttpSession session = request.getSession();
+        if ( session.getAttribute(rpMetaProfile.getNickname()) != null ) {
+            return "redirect:/meta/exit?metaIdx=" + session.getAttribute(rpMetaProfile.getNickname());
+        }
         // 1. 서비스를 통해 현재 생성된 메타 방을 모두 조회해서, List 형태의 DTO로 반환 받아온다.
         List<Meta.rpMetaList> rpMetaList = metaService.metaList();
         // 2. 1에서 반환받은 List 형태의 DTO를 방의 타입별로 나누기 위해 각 방의 타입마다 List 형태의 DTO를 생성한다.
@@ -59,9 +66,6 @@ public class MetaController {
                 oneList.add(metaList);
             }
         }
-
-        // 5. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
-        Member.rpMetaProfile rpMetaProfile = signUpService.metaProfile(principal.getName());
 
         // 6. 3에서 foreach문을 사용하여 방 타입별로 값을 새로 추가해 만든 List 형태의 DTO들을 바인딩한다.
         // 6-1. 2-1에서 생성하고 4-1에서 값을 추가한 studyRoom List DTO를 바인딩한다.
@@ -153,41 +157,55 @@ public class MetaController {
     public String studyRoom(@RequestParam long metaIdx, Principal principal, Model model) { // 1. 파라미터로 입장한 방 번호를 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
         Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
-        // 7. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 DTO를 서비스에 전달한다.
-        Meta.rpEntrance rpEntrance = metaService.entrance(metaIdx, rpNickImage);
-        // 14. 7에서 반환받은 DTO가 있는지 체크한다.
-        // 14-1. 반환받은 DTO가 없는 경우 - 해당 방이 없는 경우
-        if ( rpEntrance == null ) {
-            // 14-1-1. 에러메세지를 바인딩한다.
-            model.addAttribute("err", "해당 방의 정보가 없습니다.");
-            // 14-1-2. 메타 메인 페이지로 이동한다.
-            return "Meta/MetaRoom";
-        // 14-2. 반환받은 DTO가 있는 경우 - 해당 방이 있는 경우
+        HttpSession session = request.getSession();
+        // 12-1. 로그인 유저가 참가자로 있는 경우 - 중복접속 - 새로고침
+        if ( session.getAttribute(rpNickImage.getNickname()) != null ) {
+            // 7. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 DTO를 서비스에 전달한다.
+            Meta.rpEntrance rpEntrance = metaService.reEntrance(metaIdx, rpNickImage);
+            // 15-2-1. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+            List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(metaIdx);
+            // 20. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+            model.addAttribute("nickImage", rpNickImage);
+            // 21. 7에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
+            model.addAttribute("metaRoom", rpEntrance);
+            // 22. 15-2-1에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
+            model.addAttribute("participantList", rpMetaRoomIdxList);
+
+            model.addAttribute("entryCheck", session.getAttribute(rpNickImage.getNickname()));
+            return "Meta/StudyRoom";
         } else {
-            // 15. 7에서 반환받은 DTO 값 중 metaIdx가 0인지 체크한다.
-            // 15-1. metaIdx가 0인 경우 - 모집인원이 정원초과
-            if ( rpEntrance.getMetaIdx() == 0 ) {
-                // 15-1-1. 7에서 반환받은 DTO 값 중 metaTitle에 저장되있는 에러메세지를 바인딩한다.
-                model.addAttribute("err", rpEntrance.getMetaTitle());
-                // 15-1-2. 메타 메인 페이지로 이동한다.
+            session.setAttribute(rpNickImage.getNickname(), metaIdx);
+            // 7. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 DTO를 서비스에 전달한다.
+            Meta.rpEntrance rpEntrance = metaService.newEntrance(metaIdx, rpNickImage);
+            // 14. 7에서 반환받은 DTO가 있는지 체크한다.
+            // 14-1. 반환받은 DTO가 없는 경우 - 해당 방이 없는 경우
+            if ( rpEntrance == null ) {
+                // 14-1-1. 에러메세지를 바인딩한다.
+                model.addAttribute("err", "해당 방의 정보가 없습니다.");
+                // 14-1-2. 메타 메인 페이지로 이동한다.
                 return "Meta/MetaRoom";
-            // 15-2. metaIdx가 0이 아닌 경우 - 해당 방에 입장
+                // 14-2. 반환받은 DTO가 있는 경우 - 해당 방이 있는 경우
             } else {
-                // 15-2-1. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-                List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(metaIdx);
-                // 20. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
-                model.addAttribute("nickImage", rpNickImage);
-                // 21. 7에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
-                model.addAttribute("metaRoom", rpEntrance);
-                // 22. 15-2-1에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
-                model.addAttribute("participantList", rpMetaRoomIdxList);
-                HttpSession session = request.getSession();
-                if ( session.getAttribute(rpNickImage.getNickname()) == null ) {
-                    session.setAttribute(rpNickImage.getNickname(), rpNickImage.getNickname());
-                    model.addAttribute("entryCheck", session.getAttribute(rpNickImage.getNickname()));
+                // 15. 7에서 반환받은 DTO 값 중 metaIdx가 0인지 체크한다.
+                // 15-1. metaIdx가 0인 경우 - 모집인원이 정원초과
+                if ( rpEntrance.getMetaIdx() == 0 ) {
+                    // 15-1-1. 7에서 반환받은 DTO 값 중 metaTitle에 저장되있는 에러메세지를 바인딩한다.
+                    model.addAttribute("err", rpEntrance.getMetaTitle());
+                    // 15-1-2. 메타 메인 페이지로 이동한다.
+                    return "Meta/MetaRoom";
+                    // 15-2. metaIdx가 0이 아닌 경우 - 해당 방에 입장
+                } else {
+                    // 15-2-1. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+                    List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(metaIdx);
+                    // 20. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+                    model.addAttribute("nickImage", rpNickImage);
+                    // 21. 7에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
+                    model.addAttribute("metaRoom", rpEntrance);
+                    // 22. 15-2-1에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
+                    model.addAttribute("participantList", rpMetaRoomIdxList);
+                    // 23. 스터디룸 페이지로 이동한다.
+                    return "Meta/StudyRoom";
                 }
-                // 23. 스터디룸 페이지로 이동한다.
-                return "Meta/StudyRoom";
             }
         }
     }
@@ -198,7 +216,7 @@ public class MetaController {
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
         Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 7. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 DTO를 서비스에 전달한다.
-        Meta.rpEntrance rpEntrance = metaService.entrance(metaIdx, rpNickImage);
+        Meta.rpEntrance rpEntrance = metaService.newEntrance(metaIdx, rpNickImage);
         // 14. 7에서 반환받은 DTO가 있는지 체크한다.
         // 14-1. 반환받은 DTO가 없는 경우 - 해당 방이 없는 경우
         if ( rpEntrance == null ) {
@@ -237,7 +255,7 @@ public class MetaController {
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
         Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 7. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 DTO를 서비스에 전달한다.
-        Meta.rpEntrance rpEntrance = metaService.entrance(metaIdx, rpNickImage);
+        Meta.rpEntrance rpEntrance = metaService.newEntrance(metaIdx, rpNickImage);
         // 14. 7에서 반환받은 DTO가 있는지 체크한다.
         // 14-1. 반환받은 DTO가 없는 경우 - 해당 방이 없는 경우
         if ( rpEntrance == null ) {

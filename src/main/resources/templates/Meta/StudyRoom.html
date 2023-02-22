@@ -10,7 +10,7 @@
         }
     </style>
 </head>
-<body onkeydown="keyDown()" onkeyup="keyUp()">
+<body onkeydown="keyDown()" onkeyup="keyUp()" onunload="exit1()">
     <!-- 방 정보 작성 구역 -->
     <div id="titleArea">
         <b id="title" th:text="'방 번호 : ' + ${metaRoom.metaIdx} + '   |   ' + '(스터디)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
@@ -27,7 +27,7 @@
 
     <!-- 상단 오른쪽 메뉴바 구역 -->
     <div style="border: 2px solid black; box-sizing: border-box; width: 18%; height: 10%; margin-bottom: 5px; margin-left: 1%; float: right;">
-        <input type="button" value="나가기" onclick="exitBtn();" style="width: 25%; height: 100%;">
+        <input type="button" value="나가기" th:onclick="exit1()" style="width: 25%; height: 100%;">
     </div>
 
     <!-- 메타버스 -->
@@ -66,21 +66,9 @@
         let end = Date.now(); // 메시지 전송 시간
         let canSendMessage = true; // 메시지 전송 상태
         let message = document.getElementById("message"); // 메시지 작성란
-        // 'participantNickname'이라는 키에 저장된 값을 불러옵니다.
-        let participantNickname = sessionStorage.getItem('participantNickname');
-        // 페이지를 이탈할 때 발생하는 이벤트 핸들러 등록 - beforeunload
-        window.addEventListener("beforeunload", function(event) {
-            if ( event.currentTarget.performance.navigation.type === 1 ) {
-                // 새로고침 이벤트인 경우
-                sessionStorage.setItem('participantNickname', nickname);
-                event.preventDefault(); // 이벤트 기본 동작 취소
-                event.returnValue = ""; // 사용자 정의 메시지 없음
-            } else {
-                // 새로고침 이외의 이벤트인 경우
-                // 페이지 이탈을 막지 않음
-                exit();
-            }
-        });
+        let entryCheck = [[${entryCheck}]];
+        // nickname 이라는 키에 저장된 값을 불러옵니다.
+        let participantNickname = sessionStorage.getItem(nickname);
 
         // 1. SockJS를 생성한다. (StompWebSocketConfig에서 설정한 Endpoint와 동일하게 맞춰준다.)
         var sockJs = new SockJS("/ws/meta");
@@ -158,88 +146,106 @@
                     }
                 // 작성자가 로그인 유저와 다른 경우 (타 유저)
                 } else {
-                    // 7. 메시지 코드를 작성한다.
-                    str = '<div style="text-align: left;">';
-                    str += '<b>' + writer + ' : ' + message + '</b>';
-                    str += '</div>'
-                    // 8. 작성된 메시지 코드를 채팅 구역에 올린다.
-                    //    insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
-                    //    position에는 총 4가지의 옵션이 있다.
-                    //    1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
-                    //    2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
-                    //    3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
-                    //    4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
-                    chatArea.insertAdjacentHTML("beforeend", str);
-                    // 메시지가 채팅 구역 크기를 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
-                    chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
-
-                    // 참가중인 인원이 바뀌는 경우 - 본인이 방에 들어올 경우에는 위에서 th:text로 참가한 방의 정보들이 다 작성되기에 참가자가 본인이 아닌 경우에만 실시간으로 참가중인 인원이 바뀌어 새로 작성되도록 만든다.
-                    if ( recruitingPersonnel != null ) {
-                        var title = document.getElementById("title"); // 방 정보 id
-                        title.remove(); // 위에서 가져온 id를 이용하여 해당 방 정보를 삭제한다.
-
-                        var titleArea = document.getElementById("titleArea"); // 방 정보가 작성될 구역
-                        var ptr = ""; // 방 정보 코드가 작성될 변수
-
-                        // 방 정보 코드를 작성한다.
-                        prt = '<b id="title">';
-                        prt += '방 번호 : ';
-                        prt += metaIdx;
-                        prt += '   |    (스터디) 방 제목 : ';
-                        prt += metaTitle;
-                        prt += ' ( '
-                        prt += recruitingPersonnel;
-                        prt += ' / ';
-                        prt += metaPersonnel;
-                        prt += ' )';
-                        prt += '</b>';
-                        // 작성된 방 정보 코드를 참가자 구역에 올린다.
-                        // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
-                        // position에는 총 4가지의 옵션이 있다.
-                        // 1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
-                        // 2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
-                        // 3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
-                        // 4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
-                        titleArea.insertAdjacentHTML("afterbegin", prt);
-                    }
-
-                    // 새로 들어온 참가자가 있는 경우 - 본인이 방에 들어올 경우에는 위에서 th:each로 참가자가 모두 작성되기에 참가자가 본인이 아닌 경우에만 실시간으로 참가자 구역에 추가 작성되도록 만든다.
-                    if ( participant != null ) {
-                        var menuBar = document.getElementById("menuBar"); // 참가자가 작성될 구역
-                        var mtr = ""; // 참가자 코드가 작성될 변수
-
-                        // 참가자가 새로 들어온게 아닌 새로고침한 경우 - 이전에 작성되있던 참가자 코드랑 중복되지 않게 먼저 삭제한다.
-                        var ptr = document.getElementById(writer); // 이전에 작성되있던 참가자 id
-                        // 이전에 작성되있던 참가자 코드가 있을 경우
-                        if ( ptr != null ) {
-                            ptr.remove(); // 위에서 가져온 id를 이용하여 해당 참가자를 삭제한다.
-                        }
-
-                        // 참가자 코드를 작성한다.
-                        mtr = '<div id="' + writer + '" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%; float: left;">';
-                        mtr += '<img src="/imagePath/' + profileImage + '" style="width: 50%; height: 100%; float: left;">';
-                        mtr += '<b>' + writer + '</b>';
-                        // 작성된 참가자 코드를 참가자 구역에 올린다.
-                        // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
-                        // position에는 총 4가지의 옵션이 있다.
-                        // 1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
-                        // 2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
-                        // 3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
-                        // 4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
-                        menuBar.insertAdjacentHTML("beforeend", mtr);
-                    }
-
-                    // 해당 방을 나가는 경우 - 본인이 방을 나갈 경우에는 본인은 나가고 없으므로 퇴장자가 본인이 아닌 경우에만 실시간으로 참가자 구역에서 삭제되도록 만든다.
-                    if ( exit != null ) {
+                    let exitTime = Date.now();
+                    alert(entryTime);
+                    if ( exit != null && entryTime == null ) {
+                        // 해당 방을 나가는 경우 - 본인이 방을 나갈 경우에는 본인은 나가고 없으므로 퇴장자가 본인이 아닌 경우에만 실시간으로 참가자 구역에서 삭제되도록 만든다.
                         var mtr = document.getElementById(writer); // 참가자 id
                         mtr.remove(); // 위에서 가져온 id를 이용하여 해당 참가자를 삭제한다.
+                        str = '<div style="text-align: left;">';
+                        str += '<b>' + writer + ' : ' + message + '</b>';
+                        str += '</div>'
+                        // 8. 작성된 메시지 코드를 채팅 구역에 올린다.
+                        //    insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                        //    position에는 총 4가지의 옵션이 있다.
+                        //    1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                        //    2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                        //    3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                        //    4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                        chatArea.insertAdjacentHTML("beforeend", str);
+                        // 메시지가 채팅 구역 크기를 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
+                        chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
+                    } else if ( exit != null && entryTime != null ) {
+                        isLeft = false;
+                        leftTime = null;
+                        return;
+                    } else {
+                        alert(2);
+                        // 7. 메시지 코드를 작성한다.
+                        str = '<div style="text-align: left;">';
+                        str += '<b>' + writer + ' : ' + message + '</b>';
+                        str += '</div>'
+                        // 8. 작성된 메시지 코드를 채팅 구역에 올린다.
+                        //    insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                        //    position에는 총 4가지의 옵션이 있다.
+                        //    1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                        //    2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                        //    3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                        //    4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                        chatArea.insertAdjacentHTML("beforeend", str);
+                        // 메시지가 채팅 구역 크기를 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
+                        chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
+
+                        // 참가중인 인원이 바뀌는 경우 - 본인이 방에 들어올 경우에는 위에서 th:text로 참가한 방의 정보들이 다 작성되기에 참가자가 본인이 아닌 경우에만 실시간으로 참가중인 인원이 바뀌어 새로 작성되도록 만든다.
+                        if ( recruitingPersonnel != null ) {
+                            var title = document.getElementById("title"); // 방 정보 id
+                            title.remove(); // 위에서 가져온 id를 이용하여 해당 방 정보를 삭제한다.
+
+                            var titleArea = document.getElementById("titleArea"); // 방 정보가 작성될 구역
+                            var ptr = ""; // 방 정보 코드가 작성될 변수
+
+                            // 방 정보 코드를 작성한다.
+                            prt = '<b id="title">';
+                            prt += '방 번호 : ';
+                            prt += metaIdx;
+                            prt += '   |    (스터디) 방 제목 : ';
+                            prt += metaTitle;
+                            prt += ' ( '
+                            prt += recruitingPersonnel;
+                            prt += ' / ';
+                            prt += metaPersonnel;
+                            prt += ' )';
+                            prt += '</b>';
+                            // 작성된 방 정보 코드를 참가자 구역에 올린다.
+                            // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                            // position에는 총 4가지의 옵션이 있다.
+                            // 1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                            // 2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                            // 3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                            // 4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                            titleArea.insertAdjacentHTML("afterbegin", prt);
+                        }
+                        // 새로 들어온 참가자가 있는 경우 - 본인이 방에 들어올 경우에는 위에서 th:each로 참가자가 모두 작성되기에 참가자가 본인이 아닌 경우에만 실시간으로 참가자 구역에 추가 작성되도록 만든다.
+                        if ( participant != null ) {
+                            var menuBar = document.getElementById("menuBar"); // 참가자가 작성될 구역
+                            var mtr = ""; // 참가자 코드가 작성될 변수
+
+                            // 참가자가 새로 들어온게 아닌 새로고침한 경우 - 이전에 작성되있던 참가자 코드랑 중복되지 않게 먼저 삭제한다.
+                            var ptr = document.getElementById(writer); // 이전에 작성되있던 참가자 id
+                            // 이전에 작성되있던 참가자 코드가 있을 경우
+                            if ( ptr != null ) {
+                                ptr.remove(); // 위에서 가져온 id를 이용하여 해당 참가자를 삭제한다.
+                            }
+
+                            // 참가자 코드를 작성한다.
+                            mtr = '<div id="' + writer + '" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%; float: left;">';
+                            mtr += '<img src="/imagePath/' + profileImage + '" style="width: 50%; height: 100%; float: left;">';
+                            mtr += '<b>' + writer + '</b>';
+                            // 작성된 참가자 코드를 참가자 구역에 올린다.
+                            // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                            // position에는 총 4가지의 옵션이 있다.
+                            // 1. beforebegin : 타켓 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                            // 2. afterbegin : 타켓 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                            // 3. beforeend : 타켓 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                            // 4. afterend : 타켓 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                            menuBar.insertAdjacentHTML("beforeend", mtr);
+                        }
                     }
                 }
             });
 
-            console.log("입장" + participantNickname);
-            if ( participantNickname == null ) {
-                sessionStorage.setItem('participantNickname', nickname);
+            if ( entryCheck == null ) {
+                sessionStorage.clear();
                 // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
                 // 4. send(path, header, message)로 입장 메시지를 보낸다. (입장할때 딱 한번만 전달한다.)
                 //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
@@ -265,52 +271,48 @@
             message.value = ""; // 메시지를 전송한 뒤 처음으로 초기화 한다.
         }
 
-        // 나가기 버튼을 클릭할 경우 실행될 메소드
-        function exitBtn() {
-            // metaIdx를 컨트롤러에 방 나가기 메소드로 보낸다. - 이 작업을 통해 아래 beforeunload 이벤트를 실행 시킨다.
-            location.href = "/meta/exit?metaIdx=" + metaIdx;
-            // beforeunload 이벤트 등록
-            window.addEventListener("beforeunload", function(event) {
-                // 경고창 띄우기
-                event.preventDefault(); // 이벤트 기본 동작 취소
-                event.returnValue = "방을 나가시면 채팅이 모두 사라집니다.\n 그래도 정말로 방을 나가시겠습니까?"; // 사용자 정의 경고 메시지
-                window.addEventListener("unload", function (event) {
-                    // 유저가 "확인" 버튼을 클릭한 경우
-                    if (event.returnValue) {
-                        // send(path, header, message)로 퇴장 메시지를 보낸다. (퇴장할때 딱 한번만 전달한다.)
-                        // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
-                        // 여기서 보낸 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                        stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, metaRecruitingPersonnel : metaRecruitingPersonnel}));
-                        // 로컬 스토리지에서 나가기 버튼을 클릭한 참여자 입장 값 삭제한다. - 그래야 다음에 다시 입장할 경우 입장 메시지가 작성된다.
-                        sessionStorage.removeItem('participantNickname');
-                    // 유저가 "취소" 버튼을 클릭한 경우
-                    } else {
-                        sessionStorage.setItem('participantNickname', nickname);
-                        // 아무런 행동 없이 반환한다.
-                        return;
-                    }
-                });
-            });
-        }
-
         // 방 나가기 (Ajax 사용) - onbeforeunload를 사용하기 위해선 반드시 Ajax를 사용해야 한다.
         // beforeunload (body 태그에 작성) - 탭 닫기, 윈도우 닫기, 뒤로가기, 새로고침 등 해당 페이지를 벗어나는 기능을 실행할 경우 아래 메소드를 항상 실행한다.
         function exit() {
-            // 로컬 스토리지에서 나가기 버튼을 클릭한 참여자 입장 값 삭제한다. - 그래야 다음에 다시 입장할 경우 입장 메시지가 작성된다.
-            sessionStorage.removeItem('participantNickname');
+            sessionStorage.setItem(nickname, nickname);
             // send(path, header, message)로 퇴장 메시지를 보낸다. (퇴장할때 딱 한번만 전달한다.)
             // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
             // 여기서 보낸 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+            console.log(1);
             stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, metaRecruitingPersonnel : metaRecruitingPersonnel}));
-
+            console.log(2);
             // Ajax를 사용하여 metaIdx를 컨트롤러에 방 나가기 메소드로 보낸다.
             var url = "/meta/exit";
             var param = "metaIdx=" + metaIdx;
             sendRequest(url, param, resultClose, "get");
+            console.log(3);
         }
         // 방 나가기 콜백 메소드
         function resultClose() {
             if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                location.href = "/meta";
+                sessionStorage.clear();
+                // 방에서 나가면 해당 페이지가 아예 사라져 그 뒤 일을 수행하지 못하므로 콜백 메소드를 따로 사용할 일은 없다.
+            }
+        }
+
+        function exit1() {
+            let leftTime = Date.now(); // 해당 유저가 방을 나간 시간
+            let entryTime = null;
+
+            // 0.5초 이내에 다시 입장하지 않은 경우 - 퇴장
+            sessionStorage.clear();
+            stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, metaRecruitingPersonnel : metaRecruitingPersonnel, exitTime : entryTime}));
+
+            // Ajax를 사용하여 metaIdx를 컨트롤러에 방 나가기 메소드로 보낸다.
+            var url = "/meta/exit";
+            var param = "metaIdx=" + metaIdx;
+            sendRequest(url, param, resultClose1, "get");
+        }
+        // 방 나가기 콜백 메소드
+        function resultClose1() {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                location.href = "/meta";
                 // 방에서 나가면 해당 페이지가 아예 사라져 그 뒤 일을 수행하지 못하므로 콜백 메소드를 따로 사용할 일은 없다.
             }
         }
@@ -450,7 +452,7 @@
                             dx = 0;
                             break;
                         }
-                        if ( y > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
+                        if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
                             dx = 0;
                             break;
                         }

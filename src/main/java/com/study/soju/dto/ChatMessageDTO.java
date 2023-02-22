@@ -16,4 +16,5 @@ public class ChatMessageDTO {
     private int metaRecruitingPersonnel; // 참여중인 인원
     private String entry;
     private String exit; // 퇴장 체크값
+    private Long exitTime;
 }
