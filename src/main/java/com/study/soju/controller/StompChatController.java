@@ -4,16 +4,22 @@ import com.study.soju.dto.ChatMessageDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import java.util.Date;
+import java.util.concurrent.*;
 
 @Controller
 @RequiredArgsConstructor
 public class StompChatController {
     @Autowired
     SimpMessagingTemplate template; // 특정 Broker로 메세지를 전달한다.
+
+    // 메시지를 보낼 때 퇴장 메시지와 재입장 메시지를 관리하기 위한 ConcurrentHashMap
+    ConcurrentHashMap<String, ChatMessageDTO> metaMessageMap = new ConcurrentHashMap<>();
+    // ScheduledExecutorService를 생성합니다.
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     // Client에서 전송한 SEND 요청을 처리
     // @MessageMapping - 클라이언트에서 요청을 보낸 URI 에 대응하는 메소드로 연결을 해주는 역할을 한다.
@@ -33,6 +39,18 @@ public class StompChatController {
         template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
     }
 
+    @MessageMapping(value = "/meta/studyRoom/reenter")
+    public void reEnterStudyRoom(ChatMessageDTO message, SimpMessageHeaderAccessor accessor) {
+        String metaIdx = (String) accessor.getSessionAttributes().get("metaIdx");
+        // 이전의 퇴장 메시지 삭제
+        ChatMessageDTO exitMessage = metaMessageMap.get(metaIdx + "_exit");
+        if (exitMessage != null) {
+            metaMessageMap.remove(metaIdx + "_exit");
+        }
+
+        template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
+    }
+
     // 스터디룸 채팅
     @MessageMapping(value = "/meta/studyRoom/message")
     public void messageStudyRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.
@@ -44,17 +62,36 @@ public class StompChatController {
 
     // 스터디룸 퇴장
     @MessageMapping(value = "/meta/studyRoom/exit")
-    public void exitStudyRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.
+    public CompletableFuture<Void> exitStudyRoom(ChatMessageDTO message, SimpMessageHeaderAccessor accessor) { // 1. DTO로 채팅 정보들을 다 받아온다.
         // 2. 받아온 DTO 값 중 작성자를 가져와 퇴장메세지를 작성해 DTO 값 중 메세지에 저장한다.
         message.setMessage(message.getWriter() + "님이 채팅방에서 탈주하였습니다.");
         // 3. 1에서 받아온 DTO 값 중 작성자를 가져와 퇴장자로 저장한다.
         message.setExit(message.getWriter());
         // 4. 1에서 받아온 DTO 값 중 참가중인 인원을 가져와 1을 감소한뒤 다시 참가중인 인원에 저장한다.
         message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
-        // 5. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
-        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 받아온 방 번호가 병합된다.
-        //    "/sub" + "/meta/studyRoom" + metaIdx = "/sub/meta/studyRoom/1"
-        template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
+
+        String metaIdx = (String) accessor.getSessionAttributes().get("metaIdx");
+
+        // 새로운 퇴장 메시지 추가
+        metaMessageMap.put(metaIdx + "_exit", message);
+
+        // 퇴장 메시지를 전송하기 전에 1초를 대기한다. - 새로고침 대기
+        return CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(1000);
+                ChatMessageDTO exitMessage = metaMessageMap.get(metaIdx + "_exit");
+                if (exitMessage == null) {
+                    System.out.println(1);
+                    return;
+                } else {
+                    template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
+                    System.out.println(2);
+                    metaMessageMap.remove(metaIdx + "_exit");
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 ////////////////////////////////////////////////// 카페 구역 //////////////////////////////////////////////////
     // 카페 입장
