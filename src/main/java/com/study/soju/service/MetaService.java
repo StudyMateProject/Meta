@@ -79,42 +79,40 @@ public class MetaService {
     }
 
     // 입장한 메타 방 조회 후 모집된 인원 증가
-    public Meta.rpEntrance newEntrance(long metaIdx, Member.rpNickImage rpNickImage) { // 8. 파라미터로 컨트롤러에서 넘어온 방 번호와 DTO를 받아온다.
-        // 9. 8에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
+    public Meta.rpEntrance newEntrance(long metaIdx, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 DTO를 받아온다.
+        // 2. 1에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
         Meta meta = metaRepository.findByMetaIdx(metaIdx);
-        // 10.9에서 조회된 값이 있는지 체크한다.
-        // 10-1. 조회된 값이 없는 경우 - 해당 방이 없는 경우
+        // 3. 2에서 조회된 값이 있는지 체크한다.
+        // 3-1. 조회된 값이 없는 경우 - 해당 방이 없는 경우
         if ( meta == null ) {
-            // 10-1-1. 눌값을 반환한다.
+            // 3-1-1. 눌값을 반환한다.
             return null;
-        // 10-2. 조회된 값이 있는 경우 - 해당 방이 있는 경우
+        // 3-2. 조회된 값이 있는 경우 - 해당 방이 있는 경우
         } else {
-            // 13. 9에서 조회된 값 중 참여중인 인원이 정원초과인지 체크한다.
-            // 13-1. 참여중인 인원이 모집 인원보다 크거나 같은 경우
+            // 4. 2에서 조회된 값 중 참여중인 인원이 정원초과인지 체크한다.
+            // 4-1. 참여중인 인원이 모집 인원보다 크거나 같은 경우
             if (meta.getMetaRecruitingPersonnel() >= meta.getMetaPersonnel()) {
-                // 13-1-1. 에러 메세지를 작성해 DTO로 변환한다.
+                // 4-1-1. 에러 메시지를 작성해 DTO로 변환한다.
                 Meta.rpEntrance rpEntrance = new Meta.rpEntrance("해당 방은 정원초과 입니다.");
-                // 13-1-2. 13-1-1에서 변환된 DTO를 반환한다.
+                // 4-1-2. 4-1-1에서 변환된 DTO를 반환한다.
                 return rpEntrance;
-            // 13-2. 참여중인 인원이 모집 인원보다 작은 경우
+            // 4-2. 참여중인 인원이 모집 인원보다 작은 경우
             } else {
-                // 13-2-1. 8에서 파라미터로 받아온 방 번호와 함께 받아온 DTO를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
+                // 4-2-1. 1에서 파라미터로 받아온 방 번호와 함께 받아온 DTO를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
                 MetaRoom metaRoomParticipate = new MetaRoom(); // 방 내부 참여자 명단
-                // 13-2-2. setter를 사용하여 8에서 파라미터로 받아온 값들을 MetaRoom에 전달한다.
+                // 4-2-2. setter를 사용하여 1에서 파라미터로 받아온 값들을 MetaRoom에 전달한다.
                 metaRoomParticipate.setMetaIdx(metaIdx);
                 metaRoomParticipate.setMetaNickname(rpNickImage.getNickname());
                 metaRoomParticipate.setMetaProfileImage(rpNickImage.getProfileImage());
-                // 13-2-3. 13-2-2에서 값들이 전달된 Entity를 방 내부 참여자 명단에 저장한다.
+                // 4-2-3. 4-2-2에서 값들이 전달된 Entity를 방 내부 참여자 명단에 저장한다.
                 metaRoomRepository.save(metaRoomParticipate);
-                // 13-2-4. 8에서 파라미터로 받아온 방 번호로 방 내부 참여자 명단 수를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
-                int participantCount = metaRoomRepository.findByParticipantCount(metaIdx);
-                // 13-2-5. 13-2-4에서 조회된 값을 9에서 조회된 Entity 값 중 참여중인 인원에 setter를 통해 전달한다.
-                meta.setMetaRecruitingPersonnel(participantCount);
-                // 13-2-6. 13-2-5에서 값이 전달된 Entity로 방을 저장하고, 저장된 값을 받아온다.
-                Meta metaIncrease = metaRepository.save(meta);
-                // 13-2-7. 13-2-6에서 저장하고 받아온 Entity를 DTO로 변환한다.
+                // 4-2-4. 1에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
+                metaRepository.updateMetaRecruitingPersonnelCount(metaIdx);
+                // 4-2-5. 1에서 파라미터로 받아온 방 번호로 4-2-4에서 갱신한 방을 다시 조회하고, 조회된 값을 받아온다.
+                Meta metaIncrease = metaRepository.findByMetaIdx(metaIdx);
+                // 4-2-6. 4-2-5에서 조회하고 받아온 Entity를 DTO로 변환한다.
                 Meta.rpEntrance rpEntrance = new Meta.rpEntrance(metaIncrease);
-                // 13-2-8. 13-2-7에서 변환된 DTO를 반환한다.
+                // 4-2-7. 4-2-6에서 변환된 DTO를 반환한다.
                 return rpEntrance;
             }
         }
@@ -148,13 +146,7 @@ public class MetaService {
     public void exit(long metaIdx, Member.rpNickImage rpNickImage) { // 4. 파라미터로 컨트롤러에서 넘어온 방 번호와 DTO를 받아온다.
         // 5. 4에서 파라미터로 받아온 방 번호와 DTO 값 중 닉네임으로 방 내부 참여자 명단에서 삭제한다. (@Query 어노테이션 사용)
         metaRoomRepository.exitMetaRoom(metaIdx, rpNickImage.getNickname());
-        // 6. 4에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
-        Meta meta = metaRepository.findByMetaIdx(metaIdx);
-        // 7. 4에서 파라미터로 받아온 방 번호로 방 내부 참여자 명단 수를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
-        int participantCount = metaRoomRepository.findByParticipantCount(metaIdx);
-        // 8. 7에서 조회된 값을 6에서 조회된 Entity 값 중 참여중인 인원에 setter를 통해 전달한다.
-        meta.setMetaRecruitingPersonnel(participantCount);
-        // 9. 8에서 값이 전달된 Entity로 방을 저장한다.
-        metaRepository.save(meta);
+        // 6. 4에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
+        metaRepository.updateMetaRecruitingPersonnelCount(metaIdx);
     }
 }

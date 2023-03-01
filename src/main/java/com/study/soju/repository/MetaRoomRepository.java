@@ -15,15 +15,11 @@ import java.util.List;
 public interface MetaRoomRepository extends JpaRepository<MetaRoom, Object> {
     List<MetaRoom> findByMetaIdx(long metaIdx);
 
-    // 11-1. @Query 어노테이션을 사용하여 조회에 사용할 쿼리문을 작성한다.
+    // 11-1. @Query 어노테이션을 사용하여 조회에 사용할 쿼리를 작성한다.
     @Query("SELECT m FROM MetaRoom m WHERE m.metaIdx = :metaIdx AND m.metaNickname = :nickname")
     MetaRoom findByMetaIdxNickname(@Param("metaIdx") long metaIdx, @Param("nickname") String nickname);
 
-    // @Query 어노테이션을 사용하여 COUNT함수를 사용할 쿼리문을 작성한다.
-    @Query("SELECT COUNT(metaIdx) FROM MetaRoom")
-    int findByParticipantCount(@Param("metaIdx") long metaIdx);
-
-    // 5-1. @Query 어노테이션을 사용하여 조회에 사용할 쿼리문을 작성한다.
+    // 5-1. @Query 어노테이션을 사용하여 삭제에 사용할 쿼리를 작성한다.
     @Query("DELETE FROM MetaRoom m WHERE m.metaIdx = :metaIdx AND m.metaNickname = :metaNickname")
     // @Modifying - @Query 어노테이션(JPQL Query, Native Query)을 통해 작성된 INSERT, UPDATE, DELETE (SELECT 제외) 쿼리에서 사용되는 어노테이션이다.
     //              기본적으로 JpaRepository에서 제공하는 메서드 혹은 메서드 네이밍으로 만들어진 쿼리에는 적용되지 않는다.

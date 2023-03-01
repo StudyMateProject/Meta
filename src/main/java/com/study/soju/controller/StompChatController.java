@@ -4,7 +4,6 @@ import com.study.soju.dto.ChatMessageDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -25,7 +24,7 @@ public class StompChatController {
     // StompWebSocketConfig에서 설정한 applicationDestinationPrefixes와 @MessageMapping 경로가 자동으로 병합된다.
     // "/pub" + "/meta/studyRoom/enter" = "/pub/meta/studyRoom/enter"
 ////////////////////////////////////////////////// 스터디룸 구역 //////////////////////////////////////////////////
-    // 스터디룸 입장
+    // 스터디룸 첫 입장
     @MessageMapping(value = "/meta/studyRoom/enter")
     public void enterStudyRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.
         // 2. 1에서 받아온 DTO 값 중 작성자를 가져와 참여메세지를 작성해 DTO 값 중 메세지에 저장한다.
@@ -38,16 +37,32 @@ public class StompChatController {
         template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
     }
 
+    // 스터디룸 첫 입장 이후 재입장 - 첫 입장 이후 모든 재입장은 이곳으로 들어온다.
     @MessageMapping(value = "/meta/studyRoom/reenter")
-    public void reEnterStudyRoom(ChatMessageDTO message, SimpMessageHeaderAccessor accessor) { // 1. DTO로 채팅 정보들을 다 받아온다.
-        String metaIdx = (String) accessor.getSessionAttributes().get("metaIdx");
-        // 이전의 퇴장 메시지 삭제
-        ChatMessageDTO exitMessage = metaMessageMap.get(metaIdx + "_exit");
+    public void reEnterStudyRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 재입장(새로고침) 정보들을 DTO로 받아온다.
+        // 2. 이전 퇴장 메소드에서 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
+        ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
+        // 3. 2에서 가져온 DTO가 여전히 존재하는지 체크한다.
+        // 3-1. 퇴장 메시지가 존재하는 경우 - 재입장(새로고침)
         if (exitMessage != null) {
-            metaMessageMap.remove(metaIdx + "_exit");
+            // 3-1-1. 이번 퇴장 메소드에서 Map에 추가한 키에 해당하는 DTO를 삭제한다.
+            metaMessageMap.remove(message.getMetaIdx() + "_exit");
+            // 3-1-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+            //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 받아온 방 번호가 병합된다.
+            //        "/sub" + "/meta/studyRoom" + metaIdx = "/sub/meta/studyRoom/1"
+            template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
+        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 1초가 넘는 장시간의 새로고침 에러로 인한 퇴장 처리 후 재입장
+        //                                 이는 아직 퇴장한 것이 아닌데 퇴장 처리가 되었으므로 다시 입장 처리를 해준다.
+        } else {
+            // 3-2-1. 1에서 받아온 DTO 값 중 작성자를 가져와 참여메세지를 작성해 DTO 값 중 메세지에 저장한다.
+            message.setMessage(message.getWriter() + "님이 채팅방에 재입장하였습니다.");
+            // 3-2-2. 1에서 받아온 DTO 값 중 작성자를 가져와 참여자로 저장한다.
+            message.setParticipant(message.getWriter());
+            // 3-2-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+            //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 받아온 방 번호가 병합된다.
+            //        "/sub" + "/meta/studyRoom" + metaIdx = "/sub/meta/studyRoom/1"
+            template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
         }
-
-        template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
     }
 
     // 스터디룸 채팅
@@ -108,7 +123,7 @@ public class StompChatController {
         });
     }
 ////////////////////////////////////////////////// 카페 구역 //////////////////////////////////////////////////
-    // 카페 입장
+    // 카페 첫 입장
     @MessageMapping(value = "/meta/cafeRoom/enter")
     public void enterCafeRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.
         // 2. 받아온 DTO 값 중 작성자를 가져와 참여메세지를 작성해 DTO 값 중 메세지에 저장한다.
@@ -139,7 +154,7 @@ public class StompChatController {
         template.convertAndSend("/sub/meta/cafeRoom/" + message.getMetaIdx(), message);
     }
 ////////////////////////////////////////////////// 자습실 구역 //////////////////////////////////////////////////
-    // 자습실 입장
+    // 자습실 첫 입장
     @MessageMapping(value = "/meta/oneRoom/enter")
     public void enterOneRoom(ChatMessageDTO message) { // 1. DTO로 채팅 정보들을 다 받아온다.
         // 2. 받아온 DTO 값 중 작성자를 가져와 참여메세지를 작성해 DTO 값 중 메세지에 저장한다.

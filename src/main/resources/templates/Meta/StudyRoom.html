@@ -67,7 +67,7 @@
         // Date.now() - UTC 기준으로 1970년 1월 1일 0시 0분 0초부터 현재까지 경과된 밀리 초를 반환한다.
         let start = Date.now(); // 시작 시간
         let end = Date.now(); // 메시지 전송 시간
-        let canSendMessage = true; // 메시지 전송 상태
+        let sendMessage = true; // 메시지 전송 상태
         let message = document.getElementById("message"); // 메시지 작성란
         let entryCheck = [[${entryCheck}]]; // 입장 체크값
     ////////////////////////////////////////////////////// 소켓 구역 //////////////////////////////////////////////////////
@@ -112,9 +112,9 @@
                     if ( timePassed <= 1000 && count >= 5 ) {
                         alert("짧은 시간에 많은 메시지를 보낼 수 없습니다. 잠시 후 다시 시도해주세요.");
                         // 5초간 메시지를 보낼 수 없는 상태로 변경
-                        canSendMessage = false;
+                        sendMessage = false;
                         setTimeout(function() {
-                            canSendMessage = true;
+                            sendMessage = true;
                         }, 5000);
                         // 5초 이후 다시 시작 시간을 현재 시간으로 설정하고 전송된 메시지 수를 0으로 초기화
                         start = Date.now();
@@ -122,7 +122,7 @@
                     // 그 외 경우
                     } else {
                         // 메시지를 보낼 수 없는 상태인 경우
-                        if ( canSendMessage == false ) {
+                        if ( sendMessage == false ) {
                             // 받아온 메시지를 올리지 않고 통과
                         // 메시지를 보낼 수 있는 상태인 경우
                         } else {
@@ -238,18 +238,18 @@
                 }
             });
     ////////////////////////////////////////////////////// 입장 구역 //////////////////////////////////////////////////////
-            // 입장 시작!! - 먼저 해당 유저가 첫입장인지 재입장(새로고침)인지 체크한다.
-            // 첫입장일 경우
+            // 입장 시작!! - 먼저 해당 유저가 첫 입장인지 재입장(새로고침)인지 체크한다.
+            // 첫 입장일 경우
             if ( entryCheck == null ) {
                 // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
-                // 4. send(path, header, message)로 입장 메시지를 보낸다. (첫입장할때 딱 한번만 전달한다.)
+                // 4. send(path, header, message)로 입장 메시지를 보낸다. (첫 입장할때 딱 한번만 전달한다.)
                 //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 //    여기서 보낸 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
                 stomp.send('/pub/meta/studyRoom/enter', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, profileImage : profileImage, metaRecruitingPersonnel : metaRecruitingPersonnel}));
             // 재입장(새로고침)일 경우
             } else {
                 // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
-                // 4. send(path, header, message)로 입장 메시지를 보낸다. (첫입장 후 모든 재입장(새로고침)은 여기서 전달한다.)
+                // 4. send(path, header, message)로 입장 메시지를 보낸다. (첫 입장 후 모든 재입장(새로고침)은 여기서 전달한다.)
                 //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 //    여기서 보낸 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
                 stomp.send('/pub/meta/studyRoom/reenter', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, profileImage : profileImage, metaRecruitingPersonnel : metaRecruitingPersonnel}));
