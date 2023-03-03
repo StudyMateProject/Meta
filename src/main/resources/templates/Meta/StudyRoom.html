@@ -70,7 +70,7 @@
         let sendMessage = ""; // 메시지 전송 상태
         let message = document.getElementById("message"); // 메시지 작성란
         let entryCheck = [[${entryCheck}]]; // 입장 체크값
-        let sessionStorage = window.sessionStorage; // 세션 스토리지 객체 생성
+        let localStorage = window.localStorage; // 로컬 스토리지 객체 생성
     ////////////////////////////////////////////////////// 소켓 구역 //////////////////////////////////////////////////////
         // 1. SockJS를 생성한다. (StompWebSocketConfig에서 설정한 Endpoint와 동일하게 맞춰준다.)
         var sockJs = new SockJS("/ws/meta");
@@ -126,7 +126,7 @@
 
                     // 방을 퇴장하는 경우 - 본인은 퇴장 URL로 퇴장 시킨다.
                     if ( exit != null ) {
-                        sessionStorage.clear(); // 세션 스토리지 제거
+                        localStorage.clear(); // 로컬 스토리지 제거
                         location.href = "/meta/exit?metaIdx=" + metaIdx; // 퇴장 URL로 퇴장 시킨다.
                     }
                 // 작성자가 로그인 유저와 다른 경우 (타 유저)
@@ -215,16 +215,16 @@
             // 입장 시작!! - 먼저 해당 유저가 첫 입장인지 재입장(새로고침)인지 체크한다.
             // 첫 입장일 경우
             if ( entryCheck == null ) {
-                // 시작 시간과 메시지 전송 시간과 전송된 메시지 수와 메시지 전송 상태의 각 변수명을 키로 사용하고, 각 초기값을 지정해 값으로 사용하여 세션 스토리지에 추가한다.
-                sessionStorage.setItem("start", Date.now()); // Date.now()로 초기화
-                sessionStorage.setItem("end", Date.now()); // Date.now()로 초기화
-                sessionStorage.setItem("count", 0); // 0으로 초기화
-                sessionStorage.setItem("sendMessage", "true"); // true로 초기화
-                // 세션 스토리지에 추가한 값들을 가져와 각 알맞는 변수에 전달한다.
-                start = sessionStorage.getItem("start");
-                end = sessionStorage.getItem("end");
-                count = sessionStorage.getItem("count");
-                sendMessage = sessionStorage.getItem("sendMessage");
+                // 시작 시간과 메시지 전송 시간과 전송된 메시지 수와 메시지 전송 상태의 각 변수명을 키로 사용하고, 각 초기값을 지정해 값으로 사용하여 로컬 스토리지에 추가한다.
+                localStorage.setItem("start", Date.now()); // Date.now()로 초기화
+                localStorage.setItem("end", Date.now()); // Date.now()로 초기화
+                localStorage.setItem("count", 0); // 0으로 초기화
+                localStorage.setItem("sendMessage", "true"); // true로 초기화
+                // 로컬 스토리지에 추가한 값들을 가져와 각 알맞는 변수에 전달한다.
+                start = localStorage.getItem("start");
+                end = localStorage.getItem("end");
+                count = localStorage.getItem("count");
+                sendMessage = localStorage.getItem("sendMessage");
                 // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
                 // 4. send(path, header, message)로 입장 메시지를 보낸다. (첫 입장할때 딱 한번만 전달한다.)
                 //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
@@ -267,26 +267,26 @@
                 // ( end - start ) - 처음 메시지 전송후 1초 이내 다음 메시지 전송까지의 경과 시간
                 if ( ( end - start ) <= 1000 && count >= 5 ) {
                     alert("짧은 시간에 많은 메시지를 보낼 수 없습니다. 잠시 후 다시 시도해주세요.");
-                    // 먼저 세션 스토리지에서 현재 가지고 있는 메시지 전송 상태를 삭제한다.
-                    sessionStorage.removeItem("sendMessage");
-                    // 그 다음 메시지 전송 상태 값을 메시지를 보낼 수 없는 상태로 변경하여 다시 세션 스토리지에 추가한다.
-                    sessionStorage.setItem("sendMessage", "false");
-                    // 마지막으로 세션 스토리지에 다시 추가한 값을 가져와 알맞는 변수에 전달한다.
-                    sendMessage = sessionStorage.getItem("sendMessage");
+                    // 먼저 로컬 스토리지에서 현재 가지고 있는 메시지 전송 상태를 삭제한다.
+                    localStorage.removeItem("sendMessage");
+                    // 그 다음 메시지 전송 상태 값을 메시지를 보낼 수 없는 상태로 변경하여 다시 로컬 스토리지에 추가한다.
+                    localStorage.setItem("sendMessage", "false");
+                    // 마지막으로 로컬 스토리지에 다시 추가한 값을 가져와 알맞는 변수에 전달한다.
+                    sendMessage = localStorage.getItem("sendMessage");
                     // 5초 대기 후 내부 메소드를 실행한다.
                     setTimeout(function() {
-                        // 먼저 세션 스토리지에서 현재 가지고 있는 시작 시간과 전송된 메시지 수와 메시지 전송 상태를 삭제한다.
-                        sessionStorage.removeItem("start");
-                        sessionStorage.removeItem("count");
-                        sessionStorage.removeItem("sendMessage");
-                        // 그 다음 시작 시간과 전송된 메시지 수와 메시지 전송 상태 값을 다시 초기값으로 변경하여 세션 스토리지에 추가한다.
-                        sessionStorage.setItem("start", Date.now());
-                        sessionStorage.setItem("count", 0);
-                        sessionStorage.setItem("sendMessage", "true");
-                        // 마지막으로 세션 스토리지에 다시 추가한 값들을 가져와 각 알맞는 변수에 전달한다.
-                        start = sessionStorage.getItem("start");
-                        count = sessionStorage.getItem("count");
-                        sendMessage = sessionStorage.getItem("sendMessage");
+                        // 먼저 로컬 스토리지에서 현재 가지고 있는 시작 시간과 전송된 메시지 수와 메시지 전송 상태를 삭제한다.
+                        localStorage.removeItem("start");
+                        localStorage.removeItem("count");
+                        localStorage.removeItem("sendMessage");
+                        // 그 다음 시작 시간과 전송된 메시지 수와 메시지 전송 상태 값을 다시 초기값으로 변경하여 로컬 스토리지에 추가한다.
+                        localStorage.setItem("start", Date.now());
+                        localStorage.setItem("count", 0);
+                        localStorage.setItem("sendMessage", "true");
+                        // 마지막으로 로컬 스토리지에 다시 추가한 값들을 가져와 각 알맞는 변수에 전달한다.
+                        start = localStorage.getItem("start");
+                        count = localStorage.getItem("count");
+                        sendMessage = localStorage.getItem("sendMessage");
                     }, 5000);
                 // 그 외 경우
                 } else {
@@ -296,23 +296,23 @@
                         return;
                     // 메시지를 보낼 수 있는 상태인 경우
                     } else {
-                        // 먼저 세션 스토리지에서 현재 가지고 있는 메시지 전송 시간을 삭제한다.
-                        sessionStorage.removeItem("end");
-                        // 그 다음 메시지 전송 시간 값을 다시 초기값으로 변경하여 세션 스토리지에 추가한다.
-                        sessionStorage.setItem("end", Date.now());
-                        // 마지막으로 세션 스토리지에 다시 추가한 값을 가져와 알맞는 변수에 전달한다.
-                        end = sessionStorage.getItem("end");
+                        // 먼저 로컬 스토리지에서 현재 가지고 있는 메시지 전송 시간을 삭제한다.
+                        localStorage.removeItem("end");
+                        // 그 다음 메시지 전송 시간 값을 다시 초기값으로 변경하여 로컬 스토리지에 추가한다.
+                        localStorage.setItem("end", Date.now());
+                        // 마지막으로 로컬 스토리지에 다시 추가한 값을 가져와 알맞는 변수에 전달한다.
+                        end = localStorage.getItem("end");
                         // 메시지를 전송한지 1초가 지날 경우 - 다시 초기 상태로 돌아간다.
                         if ( ( end - start ) > 1000 ) {
-                            // 먼저 세션 스토리지에서 현재 가지고 있는 시작 시간과 전송된 메시지 수를 삭제한다.
-                            sessionStorage.removeItem("start");
-                            sessionStorage.removeItem("count");
-                            // 그 다음 시작 시간과 전송된 메시지 수의 값을 다시 초기값으로 변경하여 세션 스토리지에 추가한다.
-                            sessionStorage.setItem("start", Date.now());
-                            sessionStorage.setItem("count", 0);
-                            // 마지막으로 세션 스토리지에 다시 추가한 값들을 가져와 각 알맞는 변수에 전달한다.
-                            start = sessionStorage.getItem("start");
-                            count = sessionStorage.getItem("count");
+                            // 먼저 로컬 스토리지에서 현재 가지고 있는 시작 시간과 전송된 메시지 수를 삭제한다.
+                            localStorage.removeItem("start");
+                            localStorage.removeItem("count");
+                            // 그 다음 시작 시간과 전송된 메시지 수의 값을 다시 초기값으로 변경하여 로컬 스토리지에 추가한다.
+                            localStorage.setItem("start", Date.now());
+                            localStorage.setItem("count", 0);
+                            // 마지막으로 로컬 스토리지에 다시 추가한 값들을 가져와 각 알맞는 변수에 전달한다.
+                            start = localStorage.getItem("start");
+                            count = localStorage.getItem("count");
                         }
                         // send(path, header, message)로 채팅 메시지를 보낸다. (입장 이후 작성되는 모든 메시지는 여기서 전달한다.)
                         // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
@@ -321,12 +321,12 @@
                         message.value = ""; // 메시지를 전송한 뒤 공백 상태로 만든다.
                         // 먼저 전송된 메시지 수를 1 증가시킨다.
                         count++;
-                        // 그 다음 세션 스토리지에서 현재 가지고 있는 전송된 메시지 수를 삭제한다.
-                        sessionStorage.removeItem("count");
-                        // 그 다음 메시지 수의 값을 증가한 값으로 변경하여 다시 세션 스토리지에 추가한다.
-                        sessionStorage.setItem("count", count);
-                        // 마지막으로 세션 스토리지에 다시 추가한 값을 가져와 알맞는 변수에 전달한다.
-                        count = sessionStorage.getItem("count");
+                        // 그 다음 로컬 스토리지에서 현재 가지고 있는 전송된 메시지 수를 삭제한다.
+                        localStorage.removeItem("count");
+                        // 그 다음 메시지 수의 값을 증가한 값으로 변경하여 다시 로컬 스토리지에 추가한다.
+                        localStorage.setItem("count", count);
+                        // 마지막으로 로컬 스토리지에 다시 추가한 값을 가져와 알맞는 변수에 전달한다.
+                        count = localStorage.getItem("count");
                     }
                 }
             }
