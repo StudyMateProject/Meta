@@ -352,6 +352,10 @@
     </script>
     <!--------------------------------------------------- 캔버스 구역 ---------------------------------------------------->
     <script th:inline="javascript">
+        var nickname1 = [[${nickImage.nickname}]]; // 로그인 유저의 닉네임
+        var profileImage1 = [[${nickImage.profileImage}]]; // 로그인 유저의 프로필 사진
+        let entryCheck1 = [[${entryCheck}]]; // 입장 체크값
+
         let canvas; // 도화지
         let canvasLeft; // 왼쪽 벽
         let canvasTop; // 위쪽 벽
@@ -360,28 +364,90 @@
         let context; // 화가
         let imgC = "imgChar2"; // 그림 이름 받는곳
 
-        let dx = 0; // x축 움직임
-        let dy = 0; // y축 움직임
+        let type = ""; // 메시지 타입
+        let characters = ""; // 캐릭터 Map - 서버로 보내기용
+        let characters1 = ""; // 캐릭터 Map 파싱 - 캔버스에 그리기용
+        let character = ""; // 캐릭터 Map의 닉네임 키
+        let coordinate = ""; // 캐릭터 Map의 닉네임 키에 해당하는 List 값
 
         let keycode; // 키보드 키코드
 
-        let imgChar = new Image(); // 캐릭터 1번 동작 이미지
-        imgChar.src = "/character/mario.png"; // 캐릭터 1번 동작 이미지 주소
-        let imgChar2 = new Image(); // 캐릭터 2번 동작 이미지
-        imgChar2.src = "/character/mario2.png"; // 캐릭터 2번 동작 이미지 주소
+        let imgChar = new Image(); // 캐릭터 이미지
         let imgBg = new Image(); // 배경 이미지
         imgBg.src = "/map/studyRoom.png"; // 배경 이미지 주소
 
         let a = document.getElementById("canvas").clientWidth;
-        let b = a / 2;
+        let b = "";
         let c = document.getElementById("canvas").clientHeight;
-        d = (c / 6) * 5;
+        d = "";
 
-        let x = b, y = d; // 캐릭터 시작 위치 지정
-        let w = 20, h = 20; // 캐릭터 크기 지정 (전체 사이즈의 절반만 작성)
+        let x = ""; // 캐릭터 시작 위치 지정
+        let y = ""; // 캐릭터 시작 위치 지정
+        let w = 20; // 캐릭터 크기 지정 (전체 사이즈의 절반만 작성)
+        let h = 20; // 캐릭터 크기 지정 (전체 사이즈의 절반만 작성)
 
-        // 윈도우 시작시 가장 먼저 실행되는 메소드
-        window.onload = function(e) {
+        var connect = function() {
+            // 1. SockJS를 생성한다. (StompWebSocketConfig에서 설정한 Endpoint와 동일하게 맞춰준다.)
+            var sockJs1 = new SockJS("/ws/meta");
+            // 2. 생성된 SockJS를 Stomp에 전달한다.
+            var stomp1 = Stomp.over(sockJs1);
+
+            // 3. connect가 이뤄지면 실행한다.
+            stomp1.connect({}, function () {
+                // connect가 이뤄지면 콘솔에 로그를 찍는다.
+                console.log("STOMP1 Connection");
+
+                // 5. subscribe(path, callback)으로 메시지를 받을 수 있다.
+                //    StompChatController에서 SimpMessagingTemplate를 통해 전달한 DTO를 여기서 콜백 메소드 파라미터로 전달 받는다.
+                stomp1.subscribe("/sub/meta/studyRoom/canvas/" + metaIdx, function (message) {
+                    // 6. JSON.parse(변환 대상) - JSON 문자열을 JavaScript 값이나 객체로 변환한다.
+                    //    JSON형식으로 넘어온 DTO를 JavaScript형식으로 변환한다.
+                    var content1 = JSON.parse(message.body);
+                    var writer1 = content1.writer;
+
+                    type = content1.type;
+                    characters = content1.characters; // 서버로 보내기용
+                    characters1 = JSON.parse(characters); // 캔버스에 그리기용
+
+                    if ( type == "left" || type == "top" || type == "right" || type == "bottom" ) {
+                        drawChar();
+                    }
+
+                    if ( nickname1 == writer1 ) {
+                        if ( type == "enter" || type == "reenter" ) {
+                            start1();
+                        }
+                    }
+                });
+                if ( entryCheck1 == null ) {
+                    // 시작 시간과 메시지 전송 시간과 전송된 메시지 수와 메시지 전송 상태의 각 변수명을 키로 사용하고, 각 초기값을 지정해 값으로 사용하여 로컬 스토리지에 추가한다.
+                    localStorage.setItem("start", Date.now()); // Date.now()로 초기화
+                    localStorage.setItem("end", Date.now()); // Date.now()로 초기화
+                    localStorage.setItem("count", 0); // 0으로 초기화
+                    localStorage.setItem("sendMessage", "true"); // true로 초기화
+                    // 로컬 스토리지에 추가한 값들을 가져와 각 알맞는 변수에 전달한다.
+                    start = localStorage.getItem("start");
+                    end = localStorage.getItem("end");
+                    count = localStorage.getItem("count");
+                    sendMessage = localStorage.getItem("sendMessage");
+                    // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
+                    // 4. send(path, header, message)로 입장 메시지를 보낸다. (첫 입장할때 딱 한번만 전달한다.)
+                    //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+                    //    여기서 보낸 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+                    stomp.send('/pub/meta/studyRoom/canvas/enter', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, character : profileImage1, type : "enter", x : a / 2, y : (c / 6) * 5}));
+                // 재입장(새로고침)일 경우
+                } else {
+                    // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
+                    // 4. send(path, header, message)로 입장 메시지를 보낸다. (첫 입장 후 모든 재입장(새로고침)은 여기서 전달한다.)
+                    //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+                    //    여기서 보낸 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+                    stomp.send('/pub/meta/studyRoom/canvas/reenter', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, character : profileImage1, type : "reenter", x : a / 2, y : (c / 6) * 5}));
+                }
+            });
+        };
+        connect();
+
+        function start1() {
             // canvas id값으로 가져오기
             canvas = document.getElementById("canvas");
             // canvas를 2d로 설정
@@ -416,32 +482,34 @@
 
         // 시작 메소드
         function runGame() {
-            moveAll(); // 캐릭터에 움직임을 주는 메소드
             drawAll(); // canvas 위에 이미지를 그려주는 메소드
-        }
-
-        // 캐릭터에 움직임을 주는 메소드
-        function moveAll() {
-            x += dx;
-            y += dy;
         }
 
         // canvas 위에 이미지를 그려주는 메소드
         function drawAll() {
             // 배경 그리기
             context.drawImage(imgBg, 0, 0, canvas.width, canvas.height);
-            // 캐릭터 동작에 따라 바뀌게 만든다.
-            if (imgC == imgChar) { // 그림 이름이 캐릭터 1번 동작일 경우
-                // 캐릭터 2번 동작을 그려준다.
-                context.drawImage(imgChar2, x-w, y-h, w*2, h*2);
-                // 그림 이름을 캐릭터 2번 동작으로 바꿔준다.
-                imgC = imgChar2;
-            } else { // 그림 이름이 캐릭터 2번 동작일 경우
-                // 캐릭터 1번 동작을 그려준다.
-                context.drawImage(imgChar, x-w, y-h, w*2, h*2);
-                // 그림 이름을 캐릭터 1번 동작으로 바꿔준다.
-                imgC = imgChar;
+            for ( character in characters1 ) {
+                // 해당 캐릭터의 좌표 정보 배열 가져오기
+                coordinate = characters1[character];
+                // 좌표 정보 배열에서 각 좌표를 가져와서 캐릭터 그리기
+                imgChar.src = "/imagePath/" + coordinate[0]; // 캐릭터 이미지 주소
+                context.drawImage(imgChar, coordinate[1]-w, coordinate[2]-h, w*2, h*2);
             }
+        }
+
+        // canvas 위에 이미지를 그려주는 메소드
+        function drawChar() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            for ( character in characters1 ) {
+                // 해당 캐릭터의 좌표 정보 배열 가져오기
+                coordinate = characters1[character];
+                // 좌표 정보 배열에서 각 좌표를 가져와서 캐릭터 그리기
+                imgChar.src = "/imagePath/" + coordinate[0]; // 캐릭터 이미지 주소
+                context.drawImage(imgChar, coordinate[1]-w, coordinate[2]-h, w*2, h*2);
+            }
+            cancelAnimationFrame(runGame); // 실행되고있는 AnimationFrame 삭제
+            requestAnimationFrame(runGame); // AnimationFrame 실행
         }
 
         // 키가 눌렸을때 실행되는 메소드 - 움직임 상태
@@ -450,118 +518,26 @@
             switch(keycode) {
                 // 왼쪽으로 이동
                 case 37:
-                    cancelAnimationFrame(runGame); // 실행되고있는 AnimationFrame 삭제
-                    requestAnimationFrame(runGame); // AnimationFrame 실행
-                    if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
-                        dx = 0;
-                        if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
-                            dy = 0;
-                            break;
-                        }
-                        if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
-                            dy = 0;
-                            break;
-                        }
-                        break;
-                    } else { // 왼쪽 벽이 나오기 전까지 움직인다.
-                        dx = -5;
-                        if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
-                            dy = 0;
-                            break;
-                        }
-                        if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
-                            dy = 0;
-                            break;
-                        }
-                        break;
-                    }
+                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, character : profileImage1, type : "left", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    break;
                 // 위로 이동
                 case 38:
-                    cancelAnimationFrame(runGame); // 실행되고있는 AnimationFrame 삭제
-                    requestAnimationFrame(runGame); // AnimationFrame 실행
-                    if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
-                        dy = 0;
-                        if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
-                            dx = 0;
-                            break;
-                        }
-                        if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
-                            dx = 0;
-                            break;
-                        }
-                        break;
-                    } else { // 위쪽 벽이 나오기 전까지 움직인다.
-                        dy = -5;
-                        if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
-                            dx = 0;
-                            break;
-                        }
-                        if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
-                            dx = 0;
-                            break;
-                        }
-                        break;
-                    }
+                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, character : profileImage1, type : "top", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    break;
                 // 오른쪽으로 이동
                 case 39:
-                    cancelAnimationFrame(runGame); // 실행되고있는 AnimationFrame 삭제
-                    requestAnimationFrame(runGame); // AnimationFrame 실행
-                    if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
-                        dx = 0;
-                        if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
-                            dy = 0;
-                            break;
-                        }
-                        if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
-                            dy = 0;
-                            break;
-                        }
-                        break;
-                    } else { // 오른쪽 벽이 나오기 전까지 움직인다.
-                        dx = 5;
-                        if ( y < canvasTop ) { // 위쪽 벽이 나오면 멈춘다.
-                            dy = 0;
-                            break;
-                        }
-                        if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
-                            dy = 0;
-                            break;
-                        }
-                        break;
-                    }
+                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, character : profileImage1, type : "right", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    break;
                 // 아래로 이동
                 case 40:
-                    cancelAnimationFrame(runGame); // 실행되고있는 AnimationFrame 삭제
-                    requestAnimationFrame(runGame); // AnimationFrame 실행
-                    if ( y > canvasBottom ) { // 아래쪽 벽이 나오면 멈춘다.
-                        dy = 0;
-                        if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
-                            dx = 0;
-                            break;
-                        }
-                        if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
-                            dx = 0;
-                            break;
-                        }
-                        break;
-                    } else { // 아래쪽 벽이 나오기 전까지 움직인다.
-                        dy = 5;
-                        if ( x < canvasLeft ) { // 왼쪽 벽이 나오면 멈춘다.
-                            dx = 0;
-                            break;
-                        }
-                        if ( x > canvasRight ) { // 오른쪽 벽이 나오면 멈춘다.
-                            dx = 0;
-                            break;
-                        }
-                        break;
-                    }
+                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, character : profileImage1, type : "bottom", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    break;
             }
         }
 
         // 눌린 키가 떼졌을때 실행되는 메소드 - 멈춤 상태
         function keyUp() {
-            keycode = event.keyCode; // 키보드 키코드
+            var keycode = event.keyCode; // 키보드 키코드
             switch(keycode) {
                 // x축 멈춤
                 case 37:

@@ -1,12 +1,29 @@
 package com.study.soju.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbitmq.client.Channel;
 import com.study.soju.dto.ChatMessageDTO;
+import com.study.soju.dto.MetaCanvasDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageBuilder;
+import org.springframework.amqp.core.QueueInformation;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 @Controller
@@ -15,6 +32,22 @@ public class StompChatController {
     // @MessageMapping으로 받아온 메시지를 다시 클라이언트로 전달해주는 SimpMessagingTemplate
     @Autowired
     SimpMessagingTemplate template; // 특정 Broker로 메세지를 전달한다.
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private RabbitAdmin rabbitAdmin;
+
+    public int getMessageCount(String queueName) {
+        QueueInformation queueInformation = rabbitAdmin.getQueueInfo(queueName);
+        return queueInformation.getMessageCount();
+    }
+
+    Map<String, List<Object>> metaCanvasMap = new HashMap<>();
 
     // 메시지를 보낼 때 퇴장 메시지와 재입장 메시지를 관리하기 위한 ConcurrentHashMap
     ConcurrentHashMap<String, ChatMessageDTO> metaMessageMap = new ConcurrentHashMap<>();
@@ -121,6 +154,134 @@ public class StompChatController {
                 throw new RuntimeException(e);
             }
         });
+    }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @MessageMapping(value = "/meta/studyRoom/canvas/enter")
+    public void canvasEnterStudyRoom(MetaCanvasDTO canvas) throws JsonProcessingException {
+        List<Object> metaCanvasList = new ArrayList();
+        metaCanvasList.add(canvas.getCharacter());
+        metaCanvasList.add(canvas.getX());
+        metaCanvasList.add(canvas.getY());
+        metaCanvasMap.put(canvas.getWriter(), metaCanvasList);
+        String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+        canvas.setCharacters(metaCanvasJson);
+        template.convertAndSend("/sub/meta/studyRoom/canvas/" + canvas.getMetaIdx(), canvas);
+    }
+
+    @MessageMapping(value = "/meta/studyRoom/canvas/reenter")
+    public void canvasReEnterStudyRoom(MetaCanvasDTO canvas) throws JsonProcessingException {
+        List<Object> coordinate = metaCanvasMap.get(canvas.getWriter());
+        coordinate.set(1, canvas.getX());
+        coordinate.set(2, canvas.getY());
+        String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+        canvas.setCharacters(metaCanvasJson);
+        template.convertAndSend("/sub/meta/studyRoom/canvas/" + canvas.getMetaIdx(), canvas);
+    }
+
+    @MessageMapping(value = "/meta/studyRoom/canvas/move")
+    public void canvasMoveStudyRoom(MetaCanvasDTO canvas) throws JsonProcessingException {
+        List<Object> coordinate = metaCanvasMap.get(canvas.getWriter());
+        switch( canvas.getType() ) {
+            // 왼쪽으로 이동
+            case "left":
+                if ( (int) coordinate.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
+                    if ( (int) coordinate.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    if ( (int) coordinate.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    break;
+                } else { // 왼쪽 벽이 나오기 전까지 움직인다.
+                    coordinate.set(1, (int) coordinate.get(1) - 5);
+                    if ( (int) coordinate.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    if ( (int) coordinate.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    break;
+                }
+                // 위로 이동
+            case "top":
+                if ( (int) coordinate.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
+                    if ( (int) coordinate.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    if ( (int) coordinate.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    break;
+                } else { // 위쪽 벽이 나오기 전까지 움직인다.
+                    coordinate.set(2, (int) coordinate.get(2) - 5);
+                    if ( (int) coordinate.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    if ( (int) coordinate.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    break;
+                }
+                // 오른쪽으로 이동
+            case "right":
+                if ( (int) coordinate.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
+                    if ( (int) coordinate.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    if ( (int) coordinate.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    break;
+                } else { // 오른쪽 벽이 나오기 전까지 움직인다.
+                    coordinate.set(1, (int) coordinate.get(1) + 5);
+                    if ( (int) coordinate.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    if ( (int) coordinate.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    break;
+                }
+                // 아래로 이동
+            case "bottom":
+                if ( (int) coordinate.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
+                    if ( (int) coordinate.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    if ( (int) coordinate.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    break;
+                } else { // 아래쪽 벽이 나오기 전까지 움직인다.
+                    coordinate.set(2, (int) coordinate.get(2) + 5);
+                    if ( (int) coordinate.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    if ( (int) coordinate.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
+                        break;
+                    }
+                    break;
+                }
+        }
+        String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+        canvas.setCharacters(metaCanvasJson);
+        String json = objectMapper.writeValueAsString(canvas);
+        Message message = MessageBuilder.withBody(json.getBytes())
+                .setContentType("application/json")
+                .build();
+        rabbitTemplate.convertAndSend("MsgExchange", "MsgRoutingKey", message);
+        //template.convertAndSend("/sub/meta/studyRoom/canvas/" + canvas.getMetaIdx(), canvas);
+    }
+
+    @RabbitListener(queues = "MsgQueue", ackMode = "MANUAL")
+    public void receiveMessage(Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws Exception {
+        String json = new String(message.getBody(), "UTF-8");
+        MetaCanvasDTO canvas = objectMapper.readValue(json, MetaCanvasDTO.class);
+        SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.create();
+        headers.setLeaveMutable(true);
+        headers.setNativeHeader("clear-cache", "true");
+        template.convertAndSend("/sub/meta/studyRoom/canvas/" + canvas.getMetaIdx(), canvas, headers.getMessageHeaders());
+        channel.basicAck(tag, false);
     }
 ////////////////////////////////////////////////// 카페 구역 //////////////////////////////////////////////////
     // 카페 첫 입장
