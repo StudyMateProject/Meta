@@ -352,6 +352,7 @@
     </script>
     <!--------------------------------------------------- 캔버스 구역 ---------------------------------------------------->
     <script th:inline="javascript">
+        var metaIdx1 = [[${metaRoom.metaIdx}]]; // 방 번호
         var nickname1 = [[${nickImage.nickname}]]; // 로그인 유저의 닉네임
         var profileImage1 = [[${nickImage.profileImage}]]; // 로그인 유저의 프로필 사진
         let entryCheck1 = [[${entryCheck}]]; // 입장 체크값
@@ -434,14 +435,14 @@
                     // 4. send(path, header, message)로 입장 메시지를 보낸다. (첫 입장할때 딱 한번만 전달한다.)
                     //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     //    여기서 보낸 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/canvas/enter', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, character : profileImage1, type : "enter", x : a / 2, y : (c / 6) * 5}));
+                    stomp.send('/pub/meta/studyRoom/canvas/enter', {}, JSON.stringify({metaIdx : metaIdx1, writer : nickname1, character : profileImage1, type : "enter", x : a / 2, y : (c / 6) * 5}));
                 // 재입장(새로고침)일 경우
                 } else {
                     // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
                     // 4. send(path, header, message)로 입장 메시지를 보낸다. (첫 입장 후 모든 재입장(새로고침)은 여기서 전달한다.)
                     //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     //    여기서 보낸 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/canvas/reenter', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, character : profileImage1, type : "reenter", x : a / 2, y : (c / 6) * 5}));
+                    stomp.send('/pub/meta/studyRoom/canvas/reenter', {}, JSON.stringify({metaIdx : metaIdx1, writer : nickname1, character : profileImage1, type : "reenter", x : a / 2, y : (c / 6) * 5}));
                 }
             });
         };
@@ -518,19 +519,19 @@
             switch(keycode) {
                 // 왼쪽으로 이동
                 case 37:
-                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, character : profileImage1, type : "left", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx1, writer : nickname1, character : profileImage1, type : "left", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
                     break;
                 // 위로 이동
                 case 38:
-                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, character : profileImage1, type : "top", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx1, writer : nickname1, character : profileImage1, type : "top", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
                     break;
                 // 오른쪽으로 이동
                 case 39:
-                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, character : profileImage1, type : "right", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx1, writer : nickname1, character : profileImage1, type : "right", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
                     break;
                 // 아래로 이동
                 case 40:
-                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx, writer : nickname, character : profileImage1, type : "bottom", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx1, writer : nickname1, character : profileImage1, type : "bottom", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
                     break;
             }
         }

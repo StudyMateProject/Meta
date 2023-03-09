@@ -8,7 +8,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ChatMessageDTO {
-    private String metaIdx; // 방 번호
+    private Long metaIdx; // 방 번호
     private String writer; // 작성자
     private String message; // 메세지
     private String participant; // 참가자

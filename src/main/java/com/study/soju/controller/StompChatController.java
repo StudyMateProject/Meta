@@ -47,7 +47,7 @@ public class StompChatController {
         return queueInformation.getMessageCount();
     }
 
-    Map<String, List<Object>> metaCanvasMap = new HashMap<>();
+    Map<Long, Map<String, List<Object>>> metaRoomMap = new HashMap<>();
 
     // 메시지를 보낼 때 퇴장 메시지와 재입장 메시지를 관리하기 위한 ConcurrentHashMap
     ConcurrentHashMap<String, ChatMessageDTO> metaMessageMap = new ConcurrentHashMap<>();
@@ -146,6 +146,9 @@ public class StompChatController {
                     template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
                     // 8-1-2. 5에서 Map에 추가한 키에 해당하는 DTO를 삭제한다.
                     metaMessageMap.remove(message.getMetaIdx() + "_exit");
+
+                    Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
+                    metaCanvasMap.remove(message.getExit());
                 // 8-2. 퇴장 메시지가 존재하지 않는 경우 - 재입장(새로고침)
                 } else {
                     // 8-2-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
@@ -158,21 +161,40 @@ public class StompChatController {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @MessageMapping(value = "/meta/studyRoom/canvas/enter")
     public void canvasEnterStudyRoom(MetaCanvasDTO canvas) throws JsonProcessingException {
-        List<Object> metaCanvasList = new ArrayList();
-        metaCanvasList.add(canvas.getCharacter());
-        metaCanvasList.add(canvas.getX());
-        metaCanvasList.add(canvas.getY());
-        metaCanvasMap.put(canvas.getWriter(), metaCanvasList);
-        String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
-        canvas.setCharacters(metaCanvasJson);
-        template.convertAndSend("/sub/meta/studyRoom/canvas/" + canvas.getMetaIdx(), canvas);
+        Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(canvas.getMetaIdx());
+        System.out.println("0 : " + metaCanvasMap);
+        if ( metaCanvasMap == null ) {
+            metaCanvasMap = new HashMap<>();
+            List<Object> metaCoordinateList = new ArrayList();
+            metaCoordinateList.add(canvas.getCharacter());
+            metaCoordinateList.add(canvas.getX());
+            metaCoordinateList.add(canvas.getY());
+            metaCanvasMap.put(canvas.getWriter(), metaCoordinateList);
+            metaRoomMap.put(canvas.getMetaIdx(), metaCanvasMap);
+            System.out.println("1 : " + metaRoomMap);
+            String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+            canvas.setCharacters(metaCanvasJson);
+            template.convertAndSend("/sub/meta/studyRoom/canvas/" + canvas.getMetaIdx(), canvas);
+        } else {
+            List<Object> metaCoordinateList = new ArrayList();
+            metaCoordinateList.add(canvas.getCharacter());
+            metaCoordinateList.add(canvas.getX());
+            metaCoordinateList.add(canvas.getY());
+            metaCanvasMap.put(canvas.getWriter(), metaCoordinateList);
+            System.out.println("2 : " + metaRoomMap);
+            String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+            canvas.setCharacters(metaCanvasJson);
+            template.convertAndSend("/sub/meta/studyRoom/canvas/" + canvas.getMetaIdx(), canvas);
+        }
     }
 
     @MessageMapping(value = "/meta/studyRoom/canvas/reenter")
     public void canvasReEnterStudyRoom(MetaCanvasDTO canvas) throws JsonProcessingException {
-        List<Object> coordinate = metaCanvasMap.get(canvas.getWriter());
-        coordinate.set(1, canvas.getX());
-        coordinate.set(2, canvas.getY());
+        Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(canvas.getMetaIdx());
+        List<Object> metaCoordinateList = metaCanvasMap.get(canvas.getWriter());
+        System.out.println(metaCoordinateList);
+        metaCoordinateList.set(1, canvas.getX());
+        metaCoordinateList.set(2, canvas.getY());
         String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
         canvas.setCharacters(metaCanvasJson);
         template.convertAndSend("/sub/meta/studyRoom/canvas/" + canvas.getMetaIdx(), canvas);
@@ -180,84 +202,85 @@ public class StompChatController {
 
     @MessageMapping(value = "/meta/studyRoom/canvas/move")
     public void canvasMoveStudyRoom(MetaCanvasDTO canvas) throws JsonProcessingException {
-        List<Object> coordinate = metaCanvasMap.get(canvas.getWriter());
+        Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(canvas.getMetaIdx());
+        List<Object> metaCoordinateList = metaCanvasMap.get(canvas.getWriter());
         switch( canvas.getType() ) {
             // 왼쪽으로 이동
             case "left":
-                if ( (int) coordinate.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
-                    if ( (int) coordinate.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
+                if ( (int) metaCoordinateList.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
+                    if ( (int) metaCoordinateList.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
                         break;
                     }
-                    if ( (int) coordinate.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
+                    if ( (int) metaCoordinateList.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
                         break;
                     }
                     break;
                 } else { // 왼쪽 벽이 나오기 전까지 움직인다.
-                    coordinate.set(1, (int) coordinate.get(1) - 5);
-                    if ( (int) coordinate.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
+                    metaCoordinateList.set(1, (int) metaCoordinateList.get(1) - 5);
+                    if ( (int) metaCoordinateList.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
                         break;
                     }
-                    if ( (int) coordinate.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
+                    if ( (int) metaCoordinateList.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
                         break;
                     }
                     break;
                 }
                 // 위로 이동
             case "top":
-                if ( (int) coordinate.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
-                    if ( (int) coordinate.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
+                if ( (int) metaCoordinateList.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
+                    if ( (int) metaCoordinateList.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
                         break;
                     }
-                    if ( (int) coordinate.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
+                    if ( (int) metaCoordinateList.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
                         break;
                     }
                     break;
                 } else { // 위쪽 벽이 나오기 전까지 움직인다.
-                    coordinate.set(2, (int) coordinate.get(2) - 5);
-                    if ( (int) coordinate.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
+                    metaCoordinateList.set(2, (int) metaCoordinateList.get(2) - 5);
+                    if ( (int) metaCoordinateList.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
                         break;
                     }
-                    if ( (int) coordinate.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
+                    if ( (int) metaCoordinateList.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
                         break;
                     }
                     break;
                 }
                 // 오른쪽으로 이동
             case "right":
-                if ( (int) coordinate.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
-                    if ( (int) coordinate.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
+                if ( (int) metaCoordinateList.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
+                    if ( (int) metaCoordinateList.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
                         break;
                     }
-                    if ( (int) coordinate.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
+                    if ( (int) metaCoordinateList.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
                         break;
                     }
                     break;
                 } else { // 오른쪽 벽이 나오기 전까지 움직인다.
-                    coordinate.set(1, (int) coordinate.get(1) + 5);
-                    if ( (int) coordinate.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
+                    metaCoordinateList.set(1, (int) metaCoordinateList.get(1) + 5);
+                    if ( (int) metaCoordinateList.get(2) < canvas.getCanvasTop() ) { // 위쪽 벽이 나오면 멈춘다.
                         break;
                     }
-                    if ( (int) coordinate.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
+                    if ( (int) metaCoordinateList.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
                         break;
                     }
                     break;
                 }
                 // 아래로 이동
             case "bottom":
-                if ( (int) coordinate.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
-                    if ( (int) coordinate.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
+                if ( (int) metaCoordinateList.get(2) > canvas.getCanvasBottom() ) { // 아래쪽 벽이 나오면 멈춘다.
+                    if ( (int) metaCoordinateList.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
                         break;
                     }
-                    if ( (int) coordinate.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
+                    if ( (int) metaCoordinateList.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
                         break;
                     }
                     break;
                 } else { // 아래쪽 벽이 나오기 전까지 움직인다.
-                    coordinate.set(2, (int) coordinate.get(2) + 5);
-                    if ( (int) coordinate.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
+                    metaCoordinateList.set(2, (int) metaCoordinateList.get(2) + 5);
+                    if ( (int) metaCoordinateList.get(1) < canvas.getCanvasLeft() ) { // 왼쪽 벽이 나오면 멈춘다.
                         break;
                     }
-                    if ( (int) coordinate.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
+                    if ( (int) metaCoordinateList.get(1) > canvas.getCanvasRight() ) { // 오른쪽 벽이 나오면 멈춘다.
                         break;
                     }
                     break;
