@@ -49,10 +49,10 @@ public class IamPortPass {
 //            System.out.println("Post parameters : " + postParams);
 //            System.out.println("Response Code : " + responseCode);
 
-            // 14. JSON 형태의 데이터를 파싱하기 위한 ObjectMapper를 생성한다.
-            // ObjectMapper - JSON을 Java 객체로 deserialization 하거나 Java 객체를 JSON으로 serialization 할 때 사용하는 Jackson 라이브러리의 클래스이다.
+            // 14. JSON 형식의 데이터를 파싱하기 위한 ObjectMapper를 생성한다.
+            // ObjectMapper - JSON 형식의 데이터를 Java 객체로 역직렬화(Deserialize)하거나, 반대로 Java 객체를 JSON 형식의 데이터로 직렬화(Serialize)할 때 사용하는 Jackson 라이브러리의 클래스이다.
             ObjectMapper mapper = new ObjectMapper();
-            // 15. 13에서 받아온 JSON 형태의 반환 값을 11에서 미리 만들어둔 변수에 해당 타입인 JsonNode 객체로 파싱하여 전달한다.
+            // 15. 13에서 받아온 JSON 형식의 반환 값을 11에서 미리 만들어둔 변수에 해당 타입인 JsonNode 객체로 파싱하여 전달한다.
             returnJson = mapper.readTree(response.getEntity().getContent());
 
         } catch (UnsupportedEncodingException e) { // 지원되지 않는 인코딩 예외
@@ -91,10 +91,10 @@ public class IamPortPass {
 //            System.out.println("\nSending 'GET' request to URL : " + RequestUrl);
 //            System.out.println("Response Code : " + responseCode);
 
-            // 26. JSON 형태의 데이터를 파싱하기 위한 ObjectMapper를 생성한다.
-            // ObjectMapper - JSON을 Java 객체로 deserialization 하거나, Java 객체를 JSON으로 serialization 할 때 사용하는 Jackson 라이브러리의 클래스이다.
+            // 26. JSON 형식의 데이터를 파싱하기 위한 ObjectMapper를 생성한다.
+            // ObjectMapper - JSON 형식의 데이터를 Java 객체로 역직렬화(Deserialize)하거나, 반대로 Java 객체를 JSON 형식의 데이터로 직렬화(Serialize)할 때 사용하는 Jackson 라이브러리의 클래스이다.
             ObjectMapper mapper = new ObjectMapper();
-            // 27. 25에서 받아온 JSON 형태의 반환 값을 23에서 미리 만들어둔 변수에 해당 타입인 JsonNode 객체로 파싱하여 전달한다.
+            // 27. 25에서 받아온 JSON 형식의 반환 값을 23에서 미리 만들어둔 변수에 해당 타입인 JsonNode 객체로 파싱하여 전달한다.
             returnJson = mapper.readTree(response.getEntity().getContent());
 
         } catch (UnsupportedEncodingException e) { // 지원되지 않는 인코딩 예외
