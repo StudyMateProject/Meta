@@ -159,11 +159,16 @@ public class StompChatController {
                     Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
                     // 8-1-4. 8-1-3에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 List를 제거한다.
                     metaCanvasMap.remove(message.getExit());
+                    String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+                    message.setExit(metaCanvasJson);
+                    template.convertAndSend("/sub/meta/studyRoom/canvas/" + message.getMetaIdx(), message);
                 // 8-2. 퇴장 메시지가 존재하지 않는 경우 - 재입장(새로고침)
                 } else {
                     // 8-2-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
                 }
             } catch (InterruptedException e) { // 스레드를 중지하거나 중단시킬 때 발생할 수 있는 예외
+                throw new RuntimeException(e);
+            } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });

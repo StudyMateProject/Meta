@@ -408,23 +408,34 @@
                     var content1 = JSON.parse(message.body);
                     // 6-1. 변환된 DTO를 사용하기 편하게 각각 변수에 나눠놓는다.
                     var writer1 = content1.writer; // 작성자
+                    var exit1 = content1.exit; // 퇴장 체크값
 
-                    type = content1.type; // 메시지 타입
-                    characters = content1.characters; // 캐릭터 Map - 서버로 보내기용
-                    characters1 = JSON.parse(characters); // 캐릭터 Map 파싱 - 캔버스에 그리기용
-
-                    // 메시지 타입이 왼쪽이거나 위쪽이거나 오른쪽이거나 아래쪽일 경우
-                    if ( type == "left" || type == "top" || type == "right" || type == "bottom" ) {
-                        // 캐릭터 그리기 메소드로 이동한다.
+                    //
+                    // 방을 퇴장하는 경우 - 본인은 퇴장하고 없으므로 타 유저인 경우에만 실시간으로 참가자 구역에서 삭제되도록 만든다.
+                    if ( exit1 != null ) {
+                        characters = exit1;
+                        characters1 = JSON.parse(exit1);
                         drawChar();
-                    }
+                    } else {
+                        type = content1.type; // 메시지 타입
+                        characters = content1.characters; // 캐릭터 Map - 서버로 보내기용
+                        characters1 = JSON.parse(characters); // 캐릭터 Map 파싱 - 캔버스에 그리기용
 
-                    // 작성자가 로그인 유저와 같은 경우 (본인)
-                    if ( nickname1 == writer1 ) {
-                        // 메시지 타입이 첫 입장이거나 재입장일 경우
-                        if ( type == "enter" || type == "reenter" ) {
-                            // 캔버스 메소드로 이동한다.
-                            start1();
+                        // 메시지 타입이 왼쪽이거나 위쪽이거나 오른쪽이거나 아래쪽일 경우
+                        if ( type == "left" || type == "top" || type == "right" || type == "bottom" ) {
+                            // 캐릭터 그리기 메소드로 이동한다.
+                            drawChar();
+                        }
+
+                        // 작성자가 로그인 유저와 같은 경우 (본인)
+                        if ( nickname1 == writer1 ) {
+                            // 메시지 타입이 첫 입장이거나 재입장일 경우
+                            if ( type == "enter" || type == "reenter" ) {
+                                // 캔버스 메소드로 이동한다.
+                                start1();
+                            }
+                        } else {
+                            drawChar();
                         }
                     }
                 });
@@ -492,6 +503,9 @@
 
         // canvas 위에 이미지를 그려주는 메소드
         function drawAll() {
+            // canvas의 왼쪽 상단 모서리에서 시작하여 canvas의 전체 영역을 지운다.
+            // 새로 받아온 캐릭터 정보들로 다시 그리기 위하여 먼저 캔버스 위에 그려져있는 캐릭터들을 모두 지운다.
+            context.clearRect(0, 0, canvas.width, canvas.height);
             // 배경 그리기
             context.drawImage(imgBg, 0, 0, canvas.width, canvas.height);
             for ( character in characters1 ) {
@@ -500,6 +514,10 @@
                 // 좌표 정보 배열에서 각 좌표를 가져와서 캐릭터 그리기
                 imgChar.src = "/imagePath/" + coordinate[0]; // 캐릭터 이미지 주소
                 context.drawImage(imgChar, coordinate[1]-w, coordinate[2]-h, w*2, h*2);
+                context.font = "bold 15px Arial";
+                context.fillStyle = "white";
+                context.textAlign = "center";
+                context.fillText(character, coordinate[1], coordinate[2] - 25);
             }
         }
 
