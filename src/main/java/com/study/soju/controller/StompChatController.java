@@ -15,6 +15,8 @@ import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -114,6 +116,22 @@ public class StompChatController {
         //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
         //    "/sub" + "/meta/studyRoom/" + metaIdx = "/sub/meta/studyRoom/1"
         template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
+    }
+
+    // 스터디룸 녹음
+    @MessageMapping(value = "/meta/studyRoom/record")
+    public void recordStudyRoom(@Payload String recordFile,
+                                SimpMessageHeaderAccessor accessor) {
+
+        // 해당 방 번호를 가져온다.
+        String metaIdx = accessor.getFirstNativeHeader("metaIdx");
+
+        // 메시지 헤더 설정 - 헤더에 추가할 것이 있을 경우 사용한다.
+        SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.create();
+        headers.setLeaveMutable(true);
+        headers.setNativeHeader("type", "record");
+
+        template.convertAndSend("/sub/meta/studyRoom/" + metaIdx, recordFile, headers.getMessageHeaders());
     }
 
     // 스터디룸 퇴장

@@ -1,10 +1,14 @@
 package com.study.soju.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 @EnableWebSocketMessageBroker // Stomp를 사용하기위해 선언하는 어노테이션
 @Configuration
@@ -31,6 +35,18 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // setApplicationDestinationPrefixes : Client에서 전송한 SEND 요청을 처리
         registry.setApplicationDestinationPrefixes("/pub"); // 송신 - 전송 방향 : 클라이언트 --> 서버
         // enableSimpleBroker : 해당 경로로 SimpleBroker를 등록, SimpleBroker는 해당 경로를 SUBSCRIBE하는 Client에게 메세지를 전달하는 간단한 작업을 수행
-        registry.enableSimpleBroker("/sub"); // 수신 - 전송 방향 : 서버 --> 클라이언트
+        registry.enableSimpleBroker("/sub") // 수신 - 전송 방향 : 서버 --> 클라이언트
+                .setHeartbeatValue(new long[]{10000, 10000}) // heartbeat 설정
+                .setTaskScheduler(heartBeatScheduler());
+    }
+
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration.setMessageSizeLimit(1024 * 1024); // 1MB로 설정
+    }
+
+    @Bean
+    public TaskScheduler heartBeatScheduler() {
+        return new ConcurrentTaskScheduler();
     }
 }
