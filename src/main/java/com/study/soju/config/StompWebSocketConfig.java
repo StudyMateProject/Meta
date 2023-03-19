@@ -42,7 +42,7 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-        registration.setMessageSizeLimit(1024 * 1024); // 1MB로 설정
+        registration.setMessageSizeLimit(10 * 1024 * 1024); // 1MB로 설정
     }
 
     @Bean
