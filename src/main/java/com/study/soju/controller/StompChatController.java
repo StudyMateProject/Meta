@@ -130,26 +130,30 @@ public class StompChatController {
                                                                       //                                STOMP 프로토콜에서 사용되는 프레임(Frame)에 대한 정보를 포함하며, 이를 이용하여 메시지의 발신자, 수신자, 메시지 타입 등의 정보를 설정하거나 읽어올 수 있다.
                                                                       //                                STOMP 메시지에 사용될 헤더의 추가, 수정, 삭제, 조회 등을 할 수 있다.
 
-        // 2. SimpMessageHeaderAccessor를 사용하여 metaIdx라는 이름의 헤더 정보를 추출해, metaIdx 변수에 방 번호를 전달한다.
+        // 2. SimpMessageHeaderAccessor를 사용하여 "metaIdx"라는 이름의 헤더 정보를 추출해, metaIdx 변수에 방 번호를 전달한다.
         String metaIdx = accessor.getFirstNativeHeader("metaIdx");
+        // 3. SimpMessageHeaderAccessor를 사용하여 "writer"라는 이름의 헤더 정보를 추출해, writer 변수에 작성자를 전달한다.
+        String writer = accessor.getFirstNativeHeader("writer");
 
-
-        // 3. SimpMessageHeaderAccessor 클래스의 create() 메소드를 사용하여 headers 객체를 생성한다.
+        // 4. SimpMessageHeaderAccessor 클래스의 create() 메소드를 사용하여 headers 객체를 생성한다.
         //    SimpMessageHeaderAccessor - Spring 프레임워크의 메시지 핸들러에서 메시지의 헤더 정보를 읽거나 쓸 수 있도록 지원하는 클래스이다.
         //    create() - 새로운 SimpMessageHeaderAccessor 객체를 생성하고 반환한다.
         //    이렇게 생성된 SimpMessageHeaderAccessor 객체를 통해 메시지 헤더에 접근하여 정보를 설정하거나 조회할 수 있다.
         SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.create();
-        // 4. setLeaveMutable(true) - SimpMessageHeaderAccessor 객체가 생성될 때 생성되는 내부 MessageHeaders 객체를 변경 가능하게 설정하는 메소드이다.
+        // 5. setLeaveMutable(true) - SimpMessageHeaderAccessor 객체가 생성될 때 생성되는 내부 MessageHeaders 객체를 변경 가능하게 설정하는 메소드이다.
         //                            MessageHeaders 객체에는 메시지 헤더와 관련된 정보가 들어있으며, 이 정보들을 변경할 수 있도록 하기 위해 setLeaveMutable() 메소드를 호출하여 변경 가능하게 설정한다.
         //                            이후 SimpMessageHeaderAccessor 객체를 사용하여 메시지 헤더에 정보를 추가하거나 제거할 수 있다.
         headers.setLeaveMutable(true);
         // setNativeHeader("key", "value") - SimpMessageHeaderAccessor를 사용하여 STOMP 메시지의 native header를 설정하는 메소드로, 이 메소드를 사용하기 위해서는 key와 value를 인자로 전달해주어야 한다.
         //                                   이렇게 key와 value로 설정된 native header는 STOMP 프로토콜을 사용하는 메시지 전송 시에 추가적인 헤더 정보를 담을 때 사용된다.
-        // 5. setNativeHeader("type", "record") - SimpMessageHeaderAccessor를 사용하여 STOMP 메시지의 native header 중 "type"을 "record"로 설정하는 코드이다.
+        // 6. setNativeHeader("type", "record") - SimpMessageHeaderAccessor를 사용하여 STOMP 메시지의 native header 중 "type"을 "record"로 설정하는 코드이다.
         //                                        이 코드를 통해 "type" header를 "record"로 설정하여, 클라이언트 측에서 해당 메시지를 녹음 메시지로 인식하고 처리할 수 있도록 한다.
         headers.setNativeHeader("type", "record");
+        // 7. setNativeHeader("type", "record") - SimpMessageHeaderAccessor를 사용하여 STOMP 메시지의 native header 중 "writer"을 3에서 헤더 정보를 추출해 전달받은 작성자로 설정하는 코드이다.
+        //                                        이 코드를 통해 "writer" header를 작성자로 설정하여, 클라이언트 측에서 해당 메시지를 누가 보냈는지 인식하고 처리할 수 있도록 한다.
+        headers.setNativeHeader("writer", writer);
 
-        // 6. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+        // 8. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
         //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 2에서 헤더 정보를 추출해 전달받은 방 번호가 병합된다.
         //    "/sub" + "/meta/studyRoom/" + metaIdx = "/sub/meta/studyRoom/1"
         template.convertAndSend("/sub/meta/studyRoom/" + metaIdx, recordFile, headers.getMessageHeaders());

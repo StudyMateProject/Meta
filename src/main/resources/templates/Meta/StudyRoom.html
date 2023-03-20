@@ -97,26 +97,71 @@
                 // 채팅에 필요한 것들
                 var chatArea = document.getElementById("chatArea"); // 메시지가 작성될 채팅 구역
                 var str = ""; // 메시지 코드가 작성될 변수
+                // 6. 5에서 전달받은 메시지의 headers에서 type 값이 "record"인지 체크한다.
+                // 6-1. type 값이 "record"인 경우
                 if ( chat.headers.type == "record" ) {
-                    let audioData = chat.body;
-                    let audioUrl = audioData;
+                    // 7. document.createElement()를 사용하여, 전달 받은 녹음된 오디오 메시지를 코드로 작성해 채팅 구역에 올린다.
+                    // document.createElement() - 지정한 태그 이름을 가진 HTML 요소를 생성하는 메소드이다.
+                    //                            이 메소드를 사용하면 동적으로 HTML 요소를 생성할 수 있다.
+                    // audio(오디오) 태그를 생성한다.
                     let audioTag = document.createElement("audio");
+                    // 5에서 전달 받은 메시지의 body에서 녹음된 오디오 데이터를 가져와 audio(오디오) 태그의 소스로 전달한다.
+                    audioTag.src = chat.body;
+                    // audio(오디오) 태그의 컨트롤러를 설정한다.
                     audioTag.controls = true;
-                    audioTag.src = audioUrl;
-                    chatArea.appendChild(audioTag);
+                    // b 태그를 생성한다.
+                    let bTag = document.createElement("b");
+                    // b 태그의 display를 flex로 설정하는 style을 추가한다.
+                    bTag.style.display = "flex";
+                    // b 태그의 align-items를 center로 설정하는 style을 추가한다.
+                    bTag.style.alignItems = "center";
+                    // document.createTextNode() - 지정한 텍스트를 포함하는 새로운 Text 노드를 생성하는 메소드이다.
+                    //                             이 메소드를 사용하여 동적으로 HTML 요소의 텍스트를 업데이트할 수 있다.
+                    //                             이 메소드는 document.createElement()와 함께 사용하여 동적으로 HTML 요소를 생성하는 데 사용된다.
+                    // b 태그에 넣을 내용을 작성해 TextNode로 생성한다.
+                    let bContent = document.createTextNode(nickname + " : ");
+                    // b 태그에 TextNode로 생성한 내용을 넣는다.
+                    bTag.appendChild(bContent);
+                    // b 태그에 audio(오디오) 태그를 넣는다.
+                    bTag.appendChild(audioTag);
+                    // div 태그를 생성한다.
+                    let divTag = document.createElement("div");
+                    // div 태그의 text-align을 left로 설정하는 style을 추가한다.
+                    divTag.style.textAlign = "left";
+                    // div 태그에 b 태그를 넣는다.
+                    divTag.appendChild(bTag);
+                    // 채팅 구역에 div 태그를 올린다.
+                    chatArea.appendChild(divTag);
+                    // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                     chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
-
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////
+                    // 채팅 구역에 올라간 audio(오디오) 태그를 모두 선택하여 audioTags 변수에 NodeList 형태로 저장한다.
+                    // querySelectorAll - HTML 문서 내에서 특정 CSS 선택자에 해당하는 요소들을 찾아 NodeList 형태로 반환하는 메소드이다.
+                    // NodeList - DOM에서 사용되는 객체로, 여러 개의 노드(HTML 요소, 속성, 텍스트 등)가 포함될 수 있는 리스트 형태의 객체를 나타낸다.
+                    //            일반적으로 querySelectorAll 메소드로 선택된 요소들을 반환하는데 사용된다.
+                    //            NodeList 객체는 배열과 유사하게 인덱스를 사용하여 접근할 수 있으며, length 속성을 통해 그 길이를 알 수 있다.
+                    //            하지만 NodeList는 배열이 아니므로, 배열 메소드를 사용할 수 없다.
                     let audioTags = document.querySelectorAll("#chatArea audio");
+                    // forEach 메소드를 사용하여 audioTags 변수에 저장되어 있는 NodeList의 각 요소에 대하여 이벤트 리스너를 등록한다.
                     audioTags.forEach(audio => {
+                        // forEach 메소드를 사용하여 audioTags 변수에 저장되어 있는 NodeList에서 가져온 각 audio(오디오) 태그마다,
+                        // "ended" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
+                        // ended - 오디오나 비디오 등의 미디어가 재생이 끝났을 때 발생한다.
                         audio.addEventListener("ended", () => {
+                            // 각 audio(오디오) 태그의 재생이 종료되면, audio(오디오) 태그에 작성되어 있는 소스를 그대로 재작성한다.
+                            // 이는 오디오 재생이 끝나고 다시 재생할 때, 오디오 소스가 초기화되도록 하는 역할을 한다.
+                            // 이렇게 하는 이유는, 오디오 태그의 재생이 종료되고 나서 다시 오디오 태그가 재생될 때, 병합된 오디오 데이터를 온전히 다시 재생하기 위해서이다.
+                            // 이렇게 하지 않으면, 오디오 태그의 재생이 종료되고 나서 다시 오디오 태그가 재생될 때, 병합된 오디오 데이터중 마지막 오디오 데이터만 재생된다.
+                            // 하나의 오디오 데이터는 문제가 없지만, 병합된 여러개의 오디오 데이터는 이런 문제가 발생해 임시방편으로 찾아낸 방법이다.
                             audio.src = audio.src;
                         });
                     });
+                // 6-2. type 값이 "record"가 아닌 경우
                 } else {
-                    // 6. JSON.parse(변환 대상) - JSON 문자열을 JavaScript 값이나 객체로 변환한다.
-                    //    JSON형식으로 넘어온 DTO를 JavaScript형식으로 변환한다.
+                    // 7. JSON형식으로 넘어온 DTO를 JavaScript형식으로 변환한다.
+                    //    JSON.parse(변환 대상) - JSON 문자열을 JavaScript 값이나 객체로 변환한다.
                     var content = JSON.parse(chat.body);
-                    // 6-1. 변환된 DTO를 사용하기 편하게 각각 변수에 나눠놓는다.
+                    // 7-1. 변환된 DTO를 사용하기 편하게 각각 변수에 나눠놓는다.
                     var writer = content.writer; // 작성자
                     var message = content.message; // 메시지
                     var participant = content.participant; // 참가자 닉네임
@@ -137,11 +182,11 @@
 
                     // 작성자가 로그인 유저와 같은 경우 (본인)
                     if ( writer === nickname ) {
-                        // 7. 메시지 코드를 작성한다.
+                        // 8. 메시지 코드를 작성한다.
                         str = '<div style="text-align: left;">';
                         str += '<b>' + writer + ' : ' + message + '</b>';
                         str += '</div>'
-                        // 8. 작성된 메시지 코드를 채팅 구역에 올린다.
+                        // 9. 작성된 메시지 코드를 채팅 구역에 올린다.
                         //    insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
                         //    position에는 총 4가지의 옵션이 있다.
                         //    1. beforebegin : 타겟 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
@@ -159,11 +204,11 @@
                         }
                     // 작성자가 로그인 유저와 다른 경우 (타 유저)
                     } else {
-                        // 7. 메시지 코드를 작성한다.
+                        // 8. 메시지 코드를 작성한다.
                         str = '<div style="text-align: left;">';
                         str += '<b>' + writer + ' : ' + message + '</b>';
                         str += '</div>'
-                        // 8. 작성된 메시지 코드를 채팅 구역에 올린다.
+                        // 9. 작성된 메시지 코드를 채팅 구역에 올린다.
                         //    insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
                         //    position에는 총 4가지의 옵션이 있다.
                         //    1. beforebegin : 타겟 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
@@ -475,10 +520,10 @@
                 resolve(reader.result);
             }
         });
-        // send(path, header, message)로 녹음된 오디오 메시지를 전송한다. (모든 녹음된 오디오 메시지는 여기서 전송한다.)
-        // {metaIdx : metaIdx} - 전송할 메시지의 Header로, Header를 통해 metaIdx를 전송한다.
+        // send(path, header, message)를 사용하여 녹음된 오디오 데이터를 메시지로 전송한다. (모든 녹음된 오디오 데이터는 여기서 메시지를 전송한다.)
+        // {metaIdx : metaIdx, writer : nickname} - 전송할 메시지의 Header로, Header를 통해 metaIdx와 nickname을 전송한다.
         // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 파라미터를 통해 받는다.
-        stomp.send('/pub/meta/studyRoom/record', {metaIdx : metaIdx}, base64Data);
+        stomp.send('/pub/meta/studyRoom/record', {metaIdx : metaIdx, writer : nickname}, base64Data);
         // recordedChunks 배열을 초기화한다.
         recordedChunks = [];
         // 오디오 태그에 작성되있는 소스를 초기화한다.
@@ -490,7 +535,8 @@
     // 오디오 태그에서 "ended" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
     // ended - 오디오나 비디오 등의 미디어가 재생이 끝났을 때 발생한다.
     record.addEventListener("ended", function() {
-        // 오디오 태그에 작성되있는 소스를 그대로 재작성한다.
+        // 오디오 태그의 재생이 종료되면, 오디오 태그에 작성되어 있는 소스를 그대로 재작성한다.
+        // 이는 오디오 재생이 끝나고 다시 재생할 때, 오디오 소스가 초기화되도록 하는 역할을 한다.
         // 이렇게 하는 이유는, 오디오 태그의 재생이 종료되고 나서 다시 오디오 태그가 재생될 때, 병합된 오디오 데이터를 온전히 다시 재생하기 위해서이다.
         // 이렇게 하지 않으면, 오디오 태그의 재생이 종료되고 나서 다시 오디오 태그가 재생될 때, 병합된 오디오 데이터중 마지막 오디오 데이터만 재생된다.
         // 하나의 오디오 데이터는 문제가 없지만, 병합된 여러개의 오디오 데이터는 이런 문제가 발생해 임시방편으로 찾아낸 방법이다.
