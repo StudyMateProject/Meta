@@ -202,8 +202,13 @@ public class StompChatController {
                     Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
                     // 8-1-4. 8-1-3에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 List를 제거한다.
                     metaCanvasMap.remove(message.getExit());
+                    // 8-1-5. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 8-1-3에서 가져온 Map을 JSON 문자열로 변환한다.
                     String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+                    // 8-1-6. 8-1-5에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장자에 setter를 통해 전달한다.
                     message.setExit(metaCanvasJson);
+                    // 8-1-7. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+                    //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                    //        "/sub" + "/meta/studyRoom/canvas/" + metaIdx = "/sub/meta/studyRoom/canvas/1"
                     template.convertAndSend("/sub/meta/studyRoom/canvas/" + message.getMetaIdx(), message);
                 // 8-2. 퇴장 메시지가 존재하지 않는 경우 - 재입장(새로고침)
                 } else {
