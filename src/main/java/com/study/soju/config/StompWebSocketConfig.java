@@ -41,8 +41,8 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 // MQTT heartbeat - 클라이언트와 서버간의 연결 상태를 유지하기 위해 주기적으로 보내는 메시지이다.
                 .setHeartbeatValue(new long[]{10000, 10000})
                 // heartBeatScheduler() 메소드에서 생성된 스케줄러를 사용하여, MQTT heartbeat를 주기적으로 보내는 작업을 스케줄링하고 있다.
-                // setTaskScheduler() - MQTT heartbeat를 보내는 작업을 스케줄링하는 스케줄러를 설정하는 메소드이다.
-                // heartBeatScheduler() - MQTT heartbeat를 보내는 작업을 스케줄링하는 스케줄러를 생성하는 메소드이다. (아래에 @Bean으로 생성되어 있다.)
+                // setTaskScheduler() - MQTT heartbeat를 보내는 작업을 스케줄링하는 스케줄러를 설정하는 메소드이다. (@Bean으로 생성한 메소드를 가져와 설정한다.)
+                // heartBeatScheduler() - MQTT heartbeat를 보내는 작업을 스케줄링하는 스케줄러를 생성하는 메소드이다. (@Bean으로 메소드를 생성한다.)
                 .setTaskScheduler(heartBeatScheduler());
     }
 
