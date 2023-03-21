@@ -32,21 +32,33 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     // 여기서는 송수신에 따라 각 접두사로 path를 지정하고, StompChatController 및 JavaScript에서 나머지 path를 지정할 수 있다.
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // setApplicationDestinationPrefixes : Client에서 전송한 SEND 요청을 처리
+        // setApplicationDestinationPrefixes - Client에서 전송한 SEND 요청을 처리한다.
         registry.setApplicationDestinationPrefixes("/pub"); // 송신 - 전송 방향 : 클라이언트 --> 서버
-        // enableSimpleBroker : 해당 경로로 SimpleBroker를 등록, SimpleBroker는 해당 경로를 SUBSCRIBE하는 Client에게 메세지를 전달하는 간단한 작업을 수행
+        // enableSimpleBroker - 해당 경로로 SimpleBroker를 등록, SimpleBroker는 해당 경로를 SUBSCRIBE하는 Client에게 메세지를 전달하는 간단한 작업을 수행한다.
         registry.enableSimpleBroker("/sub") // 수신 - 전송 방향 : 서버 --> 클라이언트
-                .setHeartbeatValue(new long[]{10000, 10000}) // heartbeat 설정
+                // 클라이언트와 서버간의 연결 상태를 유지하기 위해 주기적으로 보내는 heartbeat 메시지의 주기를 10초로 설정하고 있다.
+                // setHeartbeatValue() - MQTT heartbeat를 설정하는 메소드이다.
+                // MQTT heartbeat - 클라이언트와 서버간의 연결 상태를 유지하기 위해 주기적으로 보내는 메시지이다.
+                .setHeartbeatValue(new long[]{10000, 10000})
+                // heartBeatScheduler() 메소드에서 생성된 스케줄러를 사용하여, MQTT heartbeat를 주기적으로 보내는 작업을 스케줄링하고 있다.
+                // setTaskScheduler() - MQTT heartbeat를 보내는 작업을 스케줄링하는 스케줄러를 설정하는 메소드이다.
+                // heartBeatScheduler() - MQTT heartbeat를 보내는 작업을 스케줄링하는 스케줄러를 생성하는 메소드이다. (아래에 @Bean으로 생성되어 있다.)
                 .setTaskScheduler(heartBeatScheduler());
     }
 
-    @Override
-    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-        registration.setMessageSizeLimit(10 * 1024 * 1024); // 1MB로 설정
-    }
-
+    // MQTT heartbeat를 보내는 작업을 스케줄링하는 스케줄러를 생성한다.
     @Bean
     public TaskScheduler heartBeatScheduler() {
+        // 이 메소드에서는 Spring Framework의 TaskScheduler 인터페이스를 구현한 ConcurrentTaskScheduler 빈을 반환한다.
+        // ConcurrentTaskScheduler - 스프링 프레임워크에서 제공하는 TaskScheduler 인터페이스의 구현체로,
+        //                           별도의 스레드를 생성하여 주기적으로 작업을 수행할 수 있는 스케줄러이다.
         return new ConcurrentTaskScheduler();
+    }
+
+    // WebSocket 전송 시, 메시지 크기 제한을 설정한다.
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        // 이 코드에서는 10MB (10 * 1024 * 1024 byte) 로 설정되어 있으므로, 10MB 이하의 메시지만 WebSocket으로 전송할 수 있다.
+        registration.setMessageSizeLimit(10 * 1024 * 1024);
     }
 }
