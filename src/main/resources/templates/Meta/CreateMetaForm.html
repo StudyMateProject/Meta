@@ -12,6 +12,7 @@
             <!-- th:for="th:field에 작성한 변수명" - label과 input을 연결 해준다. -->
             <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
             <li><label th:for="metaTitle">방 제목 : </label><input th:field="*{metaTitle}" type="text"></li>
+            <li><label>생성자 : </label><input name="metaMaster" th:value="${metaMaster}"></li>
             <li><label th:for="metaType">방 분야 : </label><select th:field="*{metaType}"><option value="">방 분야</option>
                                                                                         <option value="studyRoom">스터디방</option>
                                                                                         <option value="cafeRoom">카페</option>

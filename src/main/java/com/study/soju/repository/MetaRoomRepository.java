@@ -16,14 +16,13 @@ import java.util.List;
 @Transactional // UPDATE, DELETE 를 사용할 때 필요한 어노테이션
 @Repository
 public interface MetaRoomRepository extends JpaRepository<MetaRoom, Object> {
-    List<MetaRoom> findByMetaIdx(long metaIdx);
+    List<MetaRoom> findByMetaIdx(long idx);
 
     // 11-1. @Query 어노테이션을 사용하여 조회에 사용할 쿼리를 작성한다.
     @Query("SELECT m FROM MetaRoom m WHERE m.metaIdx = :metaIdx AND m.metaNickname = :nickname")
-    MetaRoom findByMetaIdxNickname(@Param("metaIdx") long metaIdx, @Param("nickname") String nickname);
+    MetaRoom findByMetaIdxNickname(@Param("metaIdx") long idx, @Param("nickname") String nickname);
 
     // 5-1. @Query 어노테이션을 사용하여 삭제에 사용할 쿼리를 작성한다.
-    @Query("DELETE FROM MetaRoom m WHERE m.metaIdx = :metaIdx AND m.metaNickname = :metaNickname")
     // @Modifying(clearAutomatically = true) - @Query 어노테이션(JPQL Query, Native Query)을 통해 작성된 INSERT, UPDATE, DELETE (SELECT 제외) 쿼리에서 사용되는 어노테이션이다.
     //                                         기본적으로 JpaRepository에서 제공하는 메서드 혹은 메서드 네이밍으로 만들어진 쿼리에는 적용되지 않는다.
     //                                         반환 타입으로는 void 또는 int/Integer만 사용할 수 있다.
@@ -31,5 +30,17 @@ public interface MetaRoomRepository extends JpaRepository<MetaRoom, Object> {
     //                                         JPA는 엔티티를 조회한 후 1차 캐시에 저장하므로, 엔티티의 상태 변경 등이 일어날 때 캐시를 비워주지 않으면 예기치 않은 문제가 발생할 수 있다.
     //                                         clearAutomatically 옵션을 사용하면 해당 메서드 실행 후 자동으로 1차 캐시를 비워준다.
     @Modifying(clearAutomatically = true)
-    void exitMetaRoom(@Param("metaIdx") long metaIdx, @Param("metaNickname") String metaNickname);
+    @Query("DELETE FROM MetaRoom m WHERE m.metaIdx = :metaIdx AND m.metaNickname = :metaNickname")
+    void exitMetaRoom(@Param("metaIdx") long idx, @Param("metaNickname") String metaNickname);
+
+    // 5-1. @Query 어노테이션을 사용하여 삭제에 사용할 쿼리를 작성한다.
+    // @Modifying(clearAutomatically = true) - @Query 어노테이션(JPQL Query, Native Query)을 통해 작성된 INSERT, UPDATE, DELETE (SELECT 제외) 쿼리에서 사용되는 어노테이션이다.
+    //                                         기본적으로 JpaRepository에서 제공하는 메서드 혹은 메서드 네이밍으로 만들어진 쿼리에는 적용되지 않는다.
+    //                                         반환 타입으로는 void 또는 int/Integer만 사용할 수 있다.
+    //                                         "clearAutomatically = true" 옵션은 EntityManager의 1차 캐시를 비워주는 역할을 한다.
+    //                                         JPA는 엔티티를 조회한 후 1차 캐시에 저장하므로, 엔티티의 상태 변경 등이 일어날 때 캐시를 비워주지 않으면 예기치 않은 문제가 발생할 수 있다.
+    //                                         clearAutomatically 옵션을 사용하면 해당 메서드 실행 후 자동으로 1차 캐시를 비워준다.
+    @Modifying(clearAutomatically = true)
+    @Query("DELETE FROM MetaRoom m WHERE m.metaIdx = :metaIdx")
+    void deleteByMetaIdx(@Param("metaIdx") long idx);
 }

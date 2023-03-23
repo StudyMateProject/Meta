@@ -20,28 +20,34 @@ public class MetaService {
     // 메타 방 내부 DB
     @Autowired
     MetaRoomRepository metaRoomRepository;
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 생성된 메타 방 모두 조회
     public List<Meta.rpMetaList> metaList() {
-        // 2. 현재 생성된 메타 방을 모두 조회하고, 조회된 값을 받아온다.
+        // 2. 현재 생성된 메타 방 중에 모집된 인원이 0인 방을 모두 삭제한다.
+        metaRepository.deleteByMetaRecruitingPersonnel(0);
+        // 3. 현재 생성된 메타 방을 모두 조회하고, 조회된 값을 받아온다.
         List<Meta> metaList = metaRepository.findAll();
-        // 3. List형식의 Entity를 DTO로 변환하는 방법 (stream 방식)
-        // .stream() - List형식의 Entity --> Entity 스트림 - DB에서 가져온 List형식의 Entity를 스트림으로 변환
-        // .map(DTO::new) - Entity 스트림 --> DTO 스트림 - 변한된 Entity 스트림을 DTO클래스의 생성자메소드를 사용해 요소들을 전달하여 DTO로 바꾼뒤 새로운 스트림으로 변환
-        // .collect(Collectors.toList()); - DTO 스트림 --> List형식의 DTO - 변한된 DTO 스트림을 List로 변환
+        // 4. List형식의 Entity를 DTO로 변환하는 방법 (stream 방식)
+        //    .stream() - List형식의 Entity --> Entity 스트림 - DB에서 가져온 List형식의 Entity를 스트림으로 변환
+        //    .map(DTO::new) - Entity 스트림 --> DTO 스트림 - 변한된 Entity 스트림을 DTO클래스의 생성자메소드를 사용해 요소들을 전달하여 DTO로 바꾼뒤 새로운 스트림으로 변환
+        //    .collect(Collectors.toList()); - DTO 스트림 --> List형식의 DTO - 변한된 DTO 스트림을 List로 변환
         List<Meta.rpMetaList> rpMetaList = metaList.stream()
                                                    .map(Meta.rpMetaList::new)
                                                    .collect(Collectors.toList());
-        // 4. 3에서 변환된 List형태의 DTO를 반환한다.
+        // 5. 4에서 변환된 List형태의 DTO를 반환한다.
         return rpMetaList;
     }
 
     // 메타 방 생성
-    public void createRoom(Meta.rqCreateMeta rqCreateMeta) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO를 받아온다.
+    public Meta.rpCreateMeta createRoom(Meta.rqCreateMeta rqCreateMeta) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO를 받아온다.
         // 4. 3에서 파라미터로 받아온 DTO를 Entity로 변환한다.
         Meta meta = rqCreateMeta.toEntity();
-        // 5. 4에서 변환된 Entity로 방을 저장한다.
-        metaRepository.save(meta);
+        // 5. 4에서 변환된 Entity로 방을 저장하고, 저장한 값을 받아온다.
+        Meta createMeta = metaRepository.save(meta);
+        // 6. 5에서 저장하고 받아온 Entity를 DTO로 변환한다.
+        Meta.rpCreateMeta rpCreateMeta = new Meta.rpCreateMeta(createMeta);
+        // 7. 6에서 변환된 DTO를 반환한다.
+        return rpCreateMeta;
     }
 
     // 메타 방 이름 및 분류별 검색
@@ -50,13 +56,13 @@ public class MetaService {
         Meta meta = rqSearchMetaList.toEntity();
         // 5. 4에서 변환된 Entity 값 중 검색 종류를 가져와 체크한다.
         // 5-1. 검색 종류가 방 번호인 경우
-        if ( meta.getMetaIdx() != null ) {
+        if ( meta.getIdx() != null ) {
             // 5-1-1. 4에서 변환된 Entity 값 중 검색 종류와 idx를 가지고 이에 해당하는 방을 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
-            List<Meta> searchMetaList = metaRepository.findByMetaIdxList(meta.getMetaType(), meta.getMetaIdx());
+            List<Meta> searchMetaList = metaRepository.findByIdxList(meta.getMetaType(), meta.getIdx());
             // 5-1-2. List형식의 Entity를 DTO로 변환하는 방법 (stream 방식)
-            // .stream() - List형식의 Entity --> Entity 스트림 - DB에서 가져온 List형식의 Entity를 스트림으로 변환
-            // .map(DTO::new) - Entity 스트림 --> DTO 스트림 - 변한된 Entity 스트림을 DTO클래스의 생성자메소드를 사용해 요소들을 전달하여 DTO로 바꾼뒤 새로운 스트림으로 변환
-            // .collect(Collectors.toList()); - DTO 스트림 --> List형식의 DTO - 변한된 DTO 스트림을 List로 변환
+            //        .stream() - List형식의 Entity --> Entity 스트림 - DB에서 가져온 List형식의 Entity를 스트림으로 변환
+            //        .map(DTO::new) - Entity 스트림 --> DTO 스트림 - 변한된 Entity 스트림을 DTO클래스의 생성자메소드를 사용해 요소들을 전달하여 DTO로 바꾼뒤 새로운 스트림으로 변환
+            //        .collect(Collectors.toList()); - DTO 스트림 --> List형식의 DTO - 변한된 DTO 스트림을 List로 변환
             List<Meta.rpSearchMetaList> rpSearchMetaList = searchMetaList.stream()
                                                                          .map(Meta.rpSearchMetaList::new)
                                                                          .collect(Collectors.toList());
@@ -67,9 +73,9 @@ public class MetaService {
             // 5-2-1. 4에서 변환된 Entity 값 중 검색 종류와 idx를 가지고 이에 해당하는 방을 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
             List<Meta> searchMetaList = metaRepository.findByMetaTitleList(meta.getMetaType(), meta.getMetaTitle());
             // 5-2-2. List형식의 Entity를 DTO로 변환하는 방법 (stream 방식)
-            // .stream() - List형식의 Entity --> Entity 스트림 - DB에서 가져온 List형식의 Entity를 스트림으로 변환
-            // .map(DTO::new) - Entity 스트림 --> DTO 스트림 - 변한된 Entity 스트림을 DTO클래스의 생성자메소드를 사용해 요소들을 전달하여 DTO로 바꾼뒤 새로운 스트림으로 변환
-            // .collect(Collectors.toList()); - DTO 스트림 --> List형식의 DTO - 변한된 DTO 스트림을 List로 변환
+            //        .stream() - List형식의 Entity --> Entity 스트림 - DB에서 가져온 List형식의 Entity를 스트림으로 변환
+            //        .map(DTO::new) - Entity 스트림 --> DTO 스트림 - 변한된 Entity 스트림을 DTO클래스의 생성자메소드를 사용해 요소들을 전달하여 DTO로 바꾼뒤 새로운 스트림으로 변환
+            //        .collect(Collectors.toList()); - DTO 스트림 --> List형식의 DTO - 변한된 DTO 스트림을 List로 변환
             List<Meta.rpSearchMetaList> rpSearchMetaList = searchMetaList.stream()
                                                                          .map(Meta.rpSearchMetaList::new)
                                                                          .collect(Collectors.toList());
@@ -78,10 +84,34 @@ public class MetaService {
         }
     }
 
-    // 입장한 메타 방 조회 후 모집된 인원 증가
-    public Meta.rpEntrance newEntrance(long metaIdx, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 DTO를 받아온다.
+    // 방 생성 후 바로 입장
+    public Meta.rpEntrance masterEntrance(long idx, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
-        Meta meta = metaRepository.findByMetaIdx(metaIdx);
+        Meta meta = metaRepository.findByIdx(idx);
+        // 3. 1에서 파라미터로 받아온 방 번호와 함께 받아온 DTO를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
+        MetaRoom metaRoomParticipate = new MetaRoom(); // 방 내부 참여자 명단
+        // 4. 1에서 파라미터로 받아온 값들을 setter를 통하여 MetaRoom에 전달한다.
+        metaRoomParticipate.setMetaIdx(idx);
+        metaRoomParticipate.setMetaNickname(rpNickImage.getNickname());
+        metaRoomParticipate.setMetaProfileImage(rpNickImage.getProfileImage());
+        // 4-1. 2에서 조회된 방 정보 중 방 생성자 닉네임을 setter를 통하여 MetaRoom에 전달한다.
+        metaRoomParticipate.setMetaMaster(meta.getMetaMaster());
+        // 5. 4에서 값들이 전달된 Entity를 방 내부 참여자 명단에 저장한다.
+        metaRoomRepository.save(metaRoomParticipate);
+        // 6. 1에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
+        metaRepository.updateMetaRecruitingPersonnelCount(idx);
+        // 7. 1에서 파라미터로 받아온 방 번호로 6에서 갱신한 방을 다시 조회하고, 조회된 값을 받아온다.
+        Meta metaIncrease = metaRepository.findByIdx(idx);
+        // 8. 7에서 조회하고 받아온 Entity를 DTO로 변환한다.
+        Meta.rpEntrance rpEntrance = new Meta.rpEntrance(metaIncrease);
+        // 9. 8에서 변환된 DTO를 반환한다.
+        return rpEntrance;
+    }
+
+    // 입장한 메타 방 조회 후 모집된 인원 증가
+    public Meta.rpEntrance newEntrance(long idx, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 DTO를 받아온다.
+        // 2. 1에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
+        Meta meta = metaRepository.findByIdx(idx);
         // 3. 2에서 조회된 값이 있는지 체크한다.
         // 3-1. 조회된 값이 없는 경우 - 해당 방이 없는 경우
         if ( meta == null ) {
@@ -100,16 +130,16 @@ public class MetaService {
             } else {
                 // 4-2-1. 1에서 파라미터로 받아온 방 번호와 함께 받아온 DTO를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
                 MetaRoom metaRoomParticipate = new MetaRoom(); // 방 내부 참여자 명단
-                // 4-2-2. setter를 사용하여 1에서 파라미터로 받아온 값들을 MetaRoom에 전달한다.
-                metaRoomParticipate.setMetaIdx(metaIdx);
+                // 4-2-2. 1에서 파라미터로 받아온 값들을 setter를 통하여 MetaRoom에 전달한다.
+                metaRoomParticipate.setMetaIdx(idx);
                 metaRoomParticipate.setMetaNickname(rpNickImage.getNickname());
                 metaRoomParticipate.setMetaProfileImage(rpNickImage.getProfileImage());
                 // 4-2-3. 4-2-2에서 값들이 전달된 Entity를 방 내부 참여자 명단에 저장한다.
                 metaRoomRepository.save(metaRoomParticipate);
                 // 4-2-4. 1에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
-                metaRepository.updateMetaRecruitingPersonnelCount(metaIdx);
+                metaRepository.updateMetaRecruitingPersonnelCount(idx);
                 // 4-2-5. 1에서 파라미터로 받아온 방 번호로 4-2-4에서 갱신한 방을 다시 조회하고, 조회된 값을 받아온다.
-                Meta metaIncrease = metaRepository.findByMetaIdx(metaIdx);
+                Meta metaIncrease = metaRepository.findByIdx(idx);
                 // 4-2-6. 4-2-5에서 조회하고 받아온 Entity를 DTO로 변환한다.
                 Meta.rpEntrance rpEntrance = new Meta.rpEntrance(metaIncrease);
                 // 4-2-7. 4-2-6에서 변환된 DTO를 반환한다.
@@ -118,35 +148,44 @@ public class MetaService {
         }
     }
 
-    public Meta.rpEntrance reEntrance(long metaIdx, Member.rpNickImage rpNickImage) {
-        // 9. 8에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
-        Meta meta = metaRepository.findByMetaIdx(metaIdx);
-        // 12-1-1. 9에서 조회된 Entity를 DTO로 변환한다.
+    // 임장한 방 재입장 - 새로고침
+    public Meta.rpEntrance reEntrance(long idx, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 DTO를 받아온다.
+        // 2. 1에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
+        Meta meta = metaRepository.findByIdx(idx);
+        // 3. 2에서 조회된 Entity를 DTO로 변환한다.
         Meta.rpEntrance rpEntrance = new Meta.rpEntrance(meta);
-        // 12-1-2. 12-1-1에서 변환된 DTO를 반환한다.
+        // 4. 3에서 변환된 DTO를 반환한다.
         return rpEntrance;
     }
 
     // 방 번호에 해당하는 방에 참여중인 참가자 전체 조회
-    public List<MetaRoom.rpMetaRoomIdxList> metaRoomParticipant(long metaIdx) { // 16. 파라미터로 컨트롤러에서 넘어온 방 번호와 DTO들을 받아온다.
-        // 17. 16에서 파라미터로 받아온 방 번호에 해당하는 방에 참여중인 참가자들을 모두 조회하고, 조회된 값을 받아온다.
-        List<MetaRoom> metaRoomIdxList = metaRoomRepository.findByMetaIdx(metaIdx);
-        // 18. List형식의 Entity를 DTO로 변환하는 방법 (stream 방식)
-        // .stream() - List형식의 Entity --> Entity 스트림 - DB에서 가져온 List형식의 Entity를 스트림으로 변환
-        // .map(DTO::new) - Entity 스트림 --> DTO 스트림 - 변한된 Entity 스트림을 DTO클래스의 생성자메소드를 사용해 요소들을 전달하여 DTO로 바꾼뒤 새로운 스트림으로 변환
-        // .collect(Collectors.toList()); - DTO 스트림 --> List형식의 DTO - 변한된 DTO 스트림을 List로 변환
+    public List<MetaRoom.rpMetaRoomIdxList> metaRoomParticipant(long idx) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호를 받아온다.
+        // 2. 1에서 파라미터로 받아온 방 번호에 해당하는 방에 참여중인 참가자들을 모두 조회하고, 조회된 값을 받아온다.
+        List<MetaRoom> metaRoomIdxList = metaRoomRepository.findByMetaIdx(idx);
+        // 3. List형식의 Entity를 DTO로 변환하는 방법 (stream 방식)
+        //    .stream() - List형식의 Entity --> Entity 스트림 - DB에서 가져온 List형식의 Entity를 스트림으로 변환
+        //    .map(DTO::new) - Entity 스트림 --> DTO 스트림 - 변한된 Entity 스트림을 DTO클래스의 생성자메소드를 사용해 요소들을 전달하여 DTO로 바꾼뒤 새로운 스트림으로 변환
+        //    .collect(Collectors.toList()); - DTO 스트림 --> List형식의 DTO - 변한된 DTO 스트림을 List로 변환
         List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaRoomIdxList.stream()
                                                                             .map(MetaRoom.rpMetaRoomIdxList::new)
                                                                             .collect(Collectors.toList());
-        // 19. 18에서 변환된 DTO를 반환한다.
+        // 4. 3에서 변환된 DTO를 반환한다.
         return rpMetaRoomIdxList;
     }
 
     // 입장한 메타 방 조회 후 모집된 인원 감소 및 참가자 삭제
-    public void exit(long metaIdx, Member.rpNickImage rpNickImage) { // 4. 파라미터로 컨트롤러에서 넘어온 방 번호와 DTO를 받아온다.
-        // 5. 4에서 파라미터로 받아온 방 번호와 DTO 값 중 닉네임으로 방 내부 참여자 명단에서 삭제한다. (@Query 어노테이션 사용)
-        metaRoomRepository.exitMetaRoom(metaIdx, rpNickImage.getNickname());
+    public void exit(long idx, String nickname) { // 4. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
+        // 5. 4에서 파라미터로 받아온 방 번호와 닉네임으로 방 내부 참여자 명단에서 해당 유저를 삭제한다. (@Query 어노테이션 사용)
+        metaRoomRepository.exitMetaRoom(idx, nickname);
         // 6. 4에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
-        metaRepository.updateMetaRecruitingPersonnelCount(metaIdx);
+        metaRepository.updateMetaRecruitingPersonnelCount(idx);
+    }
+
+    // 방 삭제
+    public void delete(long idx) { // 3. 파라미터로 컨트롤러에서 넘어온 방 번호를 받아온다.
+        // 4. 3에서 파라미터로 받아온 방 번호에 해당하는 방을 삭제한다. (@Query 어노테이션 사용)
+        metaRepository.deleteByIdx(idx);
+        // 5. 3에서 파라미터로 받아온 방 번호에 해당하는 방에 참여중인 참가자들을 모두 삭제한다. (@Query 어노테이션 사용)
+        metaRoomRepository.deleteByMetaIdx(idx);
     }
 }

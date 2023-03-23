@@ -24,6 +24,9 @@ public class MetaRoom {
 
     @Column(length = 100)
     private String metaProfileImage;
+
+    @Column (length = 20)
+    private String metaMaster;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // DTO 구역
 
@@ -36,11 +39,13 @@ public class MetaRoom {
     public static class rpMetaRoomIdxList {
         private String metaNickname;
         private String metaProfileImage;
+        private String metaMaster;
 
         // Entity를 DTO로 변환 (생성자 방식)
         public rpMetaRoomIdxList(MetaRoom metaRoom) {
             this.metaNickname = metaRoom.getMetaNickname();
             this.metaProfileImage = metaRoom.getMetaProfileImage();
+            this.metaMaster = metaRoom.getMetaMaster();
         }
     }
 }

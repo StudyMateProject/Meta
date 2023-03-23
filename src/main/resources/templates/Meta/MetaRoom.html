@@ -517,7 +517,7 @@
                         </div>
                         <div class="bodyDivRightSpanBottomBottomTopBottom">
                             <div class="bodyDivRightSpanBottomBottomTopBottomValue" th:each="study : ${studyList}">
-                                <a th:href="@{/meta/studyroom(metaIdx=${study.metaIdx})}">
+                                <a th:href="@{/meta/studyroom(idx=${study.idx})}">
                                     (스터디)
                                     [[${study.metaTitle}]]
                                     ([[${study.metaRecruitingPersonnel}]] / [[${study.metaPersonnel}]])
@@ -534,7 +534,7 @@
                         </div>
                         <div class="bodyDivRightSpanBottomBottomBottomBottom">
                             <div class="bodyDivRightSpanBottomBottomBottomBottomValue" th:each="cafe : ${cafeList}">
-                                <a th:href="@{/meta/caferoom(metaIdx=${cafe.metaIdx})}">
+                                <a th:href="@{/meta/caferoom(idx=${cafe.idx})}">
                                     (카페)
                                     [[${cafe.metaTitle}]]
                                     ([[${cafe.metaRecruitingPersonnel}]] / [[${cafe.metaPersonnel}]])
@@ -575,7 +575,7 @@
                         </div>
                         <div class="bodyDivRightSpanBottomBottomTopBottom">
                             <div class="bodyDivRightSpanBottomBottomTopBottomValue" th:each="study : ${studyList}">
-                                <a th:href="@{/meta/studyroom(metaIdx=${study.metaIdx})}">
+                                <a th:href="@{/meta/studyroom(idx=${study.idx})}">
                                     (스터디)
                                     [[${study.metaTitle}]]
                                     ([[${study.metaRecruitingPersonnel}]] / [[${study.metaPersonnel}]])
@@ -592,7 +592,7 @@
                         </div>
                         <div class="bodyDivRightSpanBottomBottomBottomBottom">
                             <div class="bodyDivRightSpanBottomBottomBottomBottomValue" th:each="cafe : ${cafeList}">
-                                <a th:href="@{/meta/caferoom(metaIdx=${cafe.metaIdx})}">
+                                <a th:href="@{/meta/caferoom(idx=${cafe.idx})}">
                                     (카페)
                                     [[${cafe.metaTitle}]]
                                     ([[${cafe.metaRecruitingPersonnel}]] / [[${cafe.metaPersonnel}]])
@@ -609,7 +609,7 @@
                         </div>
                         <div class="bodyDivRightSpanBottomBottomBottomBottom">
                             <div class="bodyDivRightSpanBottomBottomBottomBottomValue" th:each="one : ${oneList}">
-                                <a th:href="@{/meta/oneroom(metaIdx=${one.metaIdx})}">
+                                <a th:href="@{/meta/oneroom(idx=${one.idx})}">
                                     (자습)
                                     [[${one.metaTitle}]]
                                     ([[${one.metaRecruitingPersonnel}]] / [[${one.metaPersonnel}]])

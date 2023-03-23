@@ -57,6 +57,9 @@ public class StompChatController {
         return queueInformation.getMessageCount();
     }
 
+    // 방장 재입장 체크를 위한 Map
+    ConcurrentHashMap<Long, String> boomMetaRoom = new ConcurrentHashMap<>();
+
     // 방에 참가한 유저의 캐릭터 정보들을 보낼때 방 번호로 구분하기 위한 Map
     Map<Long, Map<String, List<Object>>> metaRoomMap = new HashMap<>();
 
@@ -71,11 +74,23 @@ public class StompChatController {
     // 스터디룸 첫 입장
     @MessageMapping(value = "/meta/studyRoom/enter")
     public void enterStudyRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 첫 입장 정보들을 DTO로 받아온다.
-        // 2. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 참여메세지를 작성해 DTO 값 중 메세지에 저장한다.
-        message.setMessage(message.getWriter() + "님이 채팅방에 참여하였습니다.");
-        // 3. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 참여자로 저장한다.
+        // 2. 먼저 위에서 생성한 방장 재입장 체크용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 값이 존재하는지 체크한다.
+        // 2-1. Map에서 가져온 값이 존재하는 경우 - 방장 퇴장 후 1분 이내 유저 입장
+        if ( boomMetaRoom.get(message.getMetaIdx()) != null ) {
+            // 2-1-1. 그 다음 Map에서 가져온 값이 작성자와 같을 경우 - 방장 퇴장 후 1분 이내 방장 재입장
+            if ( boomMetaRoom.get(message.getMetaIdx()).equals(message.getWriter()) ) {
+                // 2-1-1-1. 1에서 파라미터로 받아온 DTO 값 중 타입을 가져와 setter를 통하여 "cancel"로 변경한다.
+                message.setType("cancel");
+                // 2-1-1-2. 퇴장 메소드에서 Map에 추가한 키에 해당하는 값을 삭제한다.
+                boomMetaRoom.remove(message.getMetaIdx());
+            }
+        }
+        // 2-2. Map에서 가져온 값이 존재하지 않는 경우 - 방장 퇴장 전 입장
+        // 3. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 입장 메시지를 작성해 DTO 값 중 메시지에 저장한다.
+        message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에 입장하였습니다.");
+        // 4. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 참여자로 저장한다.
         message.setParticipant(message.getWriter());
-        // 4. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+        // 5. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
         //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
         //    "/sub" + "/meta/studyRoom/" + metaIdx = "/sub/meta/studyRoom/1"
         template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
@@ -89,7 +104,7 @@ public class StompChatController {
         // 3. 2에서 가져온 DTO가 여전히 존재하는지 체크한다.
         // 3-1. 퇴장 메시지가 존재하는 경우 - 재입장(새로고침)
         if (exitMessage != null) {
-            // 3-1-1. 이번 퇴장 메소드에서 Map에 추가한 키에 해당하는 DTO를 삭제한다.
+            // 3-1-1. 퇴장 메소드에서 Map에 추가한 키에 해당하는 DTO를 삭제한다.
             metaMessageMap.remove(message.getMetaIdx() + "_exit");
             // 3-1-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
             //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
@@ -98,7 +113,7 @@ public class StompChatController {
         // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 1초가 넘는 장시간의 새로고침 에러로 인한 퇴장 처리 후 재입장
         //                                 이는 아직 퇴장한 것이 아닌데 퇴장 처리가 되었으므로 다시 입장 처리를 해준다.
         } else {
-            // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 참여메세지를 작성해 DTO 값 중 메세지에 저장한다.
+            // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 재입장 메시지를 작성해 DTO 값 중 메시지에 저장한다.
             message.setMessage(message.getWriter() + "님이 채팅방에 재입장하였습니다.");
             // 3-2-2. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 참여자로 저장한다.
             message.setParticipant(message.getWriter());
@@ -174,7 +189,7 @@ public class StompChatController {
         // 4. 1에서 파라미터로 받아온 DTO 값 중 참가중인 인원을 가져와 1을 감소한뒤 다시 참가중인 인원에 저장한다.
         message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
 
-        // 5. 1에서 파라미터로 받아온 DTO 값 중 방 번호와 퇴장을 의미하는 문자를 조합하여 키로 사용하고, 1에서 파라미터로 받아온 DTO를 값으로 사용하여 Map에 추가한다.
+        // 5. 1에서 파라미터로 받아온 DTO 값 중 방 번호와 퇴장을 의미하는 문자를 조합하여 키로 사용하고, 1에서 파라미터로 받아온 DTO를 값으로 사용하여, Map에 추가한다.
         metaMessageMap.put(message.getMetaIdx() + "_exit", message);
 
         // CompletableFuture.runAsync - 비동기적으로 실행되는 작업을 수행하는 CompletableFuture 객체를 반환한다.
@@ -191,28 +206,49 @@ public class StompChatController {
                 ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
                 // 8. 6에서 1초 대기한 후에도 7에서 가져온 DTO가 여전히 존재하는지 체크한다.
                 // 8-1. 퇴장 메시지가 존재하는 경우 - 퇴장
-                if ( exitMessage != null ) {
-                    // 8-1-1. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
-                    //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-                    //        "/sub" + "/meta/studyRoom/" + metaIdx = "/sub/meta/studyRoom/1"
-                    template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
-                    // 8-1-2. 5에서 Map에 추가한 키에 해당하는 DTO를 삭제한다.
-                    metaMessageMap.remove(message.getMetaIdx() + "_exit");
-                    // 8-1-3. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
-                    Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
-                    // 8-1-4. 8-1-3에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 List를 제거한다.
-                    metaCanvasMap.remove(message.getExit());
-                    // 8-1-5. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 8-1-3에서 가져온 Map을 JSON 문자열로 변환한다.
-                    String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
-                    // 8-1-6. 8-1-5에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장자에 setter를 통해 전달한다.
-                    message.setExit(metaCanvasJson);
-                    // 8-1-7. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
-                    //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-                    //        "/sub" + "/meta/studyRoom/canvas/" + metaIdx = "/sub/meta/studyRoom/canvas/1"
-                    template.convertAndSend("/sub/meta/studyRoom/canvas/" + message.getMetaIdx(), message);
+                if ( exitMessage == null ) {
+                    // 8-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
                 // 8-2. 퇴장 메시지가 존재하지 않는 경우 - 재입장(새로고침)
                 } else {
-                    // 8-2-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
+                    // 9. 5에서 Map에 추가한 키에 해당하는 DTO를 삭제한다.
+                    metaMessageMap.remove(message.getMetaIdx() + "_exit");
+                    // 10. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+                    Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
+                    // 11. 10에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 List를 제거한다.
+                    metaCanvasMap.remove(message.getExit());
+                    // 12. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 10에서 가져온 Map을 JSON 문자열로 변환한다.
+                    String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+                    // 13. 12에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장자에 setter를 통해 전달한다.
+                    message.setExit(metaCanvasJson);
+                    // 13. 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임이 존재하는지 체크한다.
+                    // 13-1. 방장 닉네임이 존재하지 않는 경우
+                    if ( message.getMaster() == null ) {
+                        // 13-1-1. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+                        //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                        //        "/sub" + "/meta/studyRoom/" + metaIdx = "/sub/meta/studyRoom/1"
+                        template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
+                        // 13-1-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+                        //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                        //         "/sub" + "/meta/studyRoom/canvas/" + metaIdx = "/sub/meta/studyRoom/canvas/1"
+                        template.convertAndSend("/sub/meta/studyRoom/canvas/" + message.getMetaIdx(), message);
+                    // 13-2. 방장 닉네임이 존재하는 경우
+                    } else {
+                        // 13-2-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임을 값으로 사용하여, 위에서 생성한 방장 재입장 체크용 Map에 추가한다.
+                        boomMetaRoom.put(message.getMetaIdx(), message.getMaster());
+                        // 13-2-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+                        //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                        //        "/sub" + "/meta/studyRoom/" + metaIdx = "/sub/meta/studyRoom/1"
+                        template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
+                        // 13-2-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+                        //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                        //         "/sub" + "/meta/studyRoom/canvas/" + metaIdx = "/sub/meta/studyRoom/canvas/1"
+                        template.convertAndSend("/sub/meta/studyRoom/canvas/" + message.getMetaIdx(), message);
+                        // 13-2-3. 퇴장 메시지를 전송하고 난 후 60초(1분) 대기하여 방장이 완전한 퇴장인지 다시 재입장 하는지 체크한다.
+                        Thread.sleep(60000);
+                        // 13-2-4. 위에서 생성한 방장 재입장 체크용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 값을 제거한다.
+                        // 13-2-4. 13-2-1에서 Map에 추가한 키에 해당하는 값을 삭제한다.
+                        boomMetaRoom.remove(message.getMetaIdx());
+                    }
                 }
             } catch (InterruptedException e) { // 스레드를 중지하거나 중단시킬 때 발생할 수 있는 예외
                 throw new RuntimeException(e);
@@ -240,9 +276,9 @@ public class StompChatController {
             metaCoordinateList.add(canvas.getX());
             // 3-1-5. 3-1-2에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 y축 좌표를 전달한다.
             metaCoordinateList.add(canvas.getY());
-            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-1-2에서 생성한 List를 값으로 사용하여 3-1-1에서 생성한 Map에 추가한다.
+            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-1-2에서 생성한 List를 값으로 사용하여, 3-1-1에서 생성한 Map에 추가한다.
             metaCanvasMap.put(canvas.getWriter(), metaCoordinateList);
-            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 3-1-6에서 추가한 Map을 값으로 사용하여 위에서 생성한 Map에 추가한다.
+            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 3-1-6에서 추가한 Map을 값으로 사용하여, 위에서 생성한 Map에 추가한다.
             metaRoomMap.put(canvas.getMetaIdx(), metaCanvasMap);
             // 3-1-7. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 3-1-1에서 생성한 Map을 JSON 문자열로 변환한다.
             String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
@@ -262,7 +298,7 @@ public class StompChatController {
             metaCoordinateList.add(canvas.getX());
             // 3-2-4. 3-2-1에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 y축 좌표를 전달한다.
             metaCoordinateList.add(canvas.getY());
-            // 3-2-5. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-2-1에서 생성한 List를 값으로 사용하여 2에서 가져온 Map에 추가한다.
+            // 3-2-5. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-2-1에서 생성한 List를 값으로 사용하여, 2에서 가져온 Map에 추가한다.
             metaCanvasMap.put(canvas.getWriter(), metaCoordinateList);
             // 3-2-6. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 Map을 JSON 문자열로 변환한다.
             String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
