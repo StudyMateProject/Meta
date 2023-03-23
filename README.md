@@ -10,7 +10,7 @@
 #### ✔ 웹소켓(STOMP)을 이용한 각 메타 방 내부 채팅 구현
 현재까지 대강 구현해둔 로그인과 소켓부분을 메인 페이지를 하나 만들어서 연동하고 본격적으로 메타쪽을 구현해보도록 할것이다.
 
-##### 사용된 데이터베이스 : MySQL - soju
+##### ~~사용된 데이터베이스 : MySQL - soju~~ (아래 수정된 테이블 사용)
 	CREATE DATABASE soju;
 	USE soju;
 
@@ -51,11 +51,11 @@
 ##### 메타 방 내부에 참가자를 작성하기 위해 테이블을 하나 새로 만드는데 이 테이블 이름을 MetaRoom으로 하는것이 적절해보여 MetaRoom테이블을 Meta로 바꿔준뒤, MetaRoom테이블을 새로 만들었다.
 ##### 그리고 Member테이블에 프로필 사진을 추가해주었다.
 
-##### 사용된 데이터베이스 : MySQL - soju
+##### ~~사용된 데이터베이스 : MySQL - soju~~ (아래 수정된 테이블 사용)
 	CREATE DATABASE soju;
 	USE soju;
 
-##### 사용된 테이블 : Member, MetaRoom
+##### ~~사용된 테이블 : Member, MetaRoom~~ (아래 수정된 테이블 사용)
 	멤버 테이블
 	CREATE TABLE Member (
 		##################회원가입 전 입력##################
@@ -224,4 +224,57 @@
 ### 📌 03/21
 #### ✔ 전송한 녹음된 오디오 메시지를 전달받은 후 채팅 구역에 채팅 메시지 형태로 작성자 이름과 녹음된 오디오 파일을 함께 보여주도록 구현
 
+#
+
+### 📌 03/23
+#### ✔ 방장이 퇴장할 경우 방이 터지기까지 1분의 유예 시간을 주고, 1분 이내에 방장이 다시 방에 들어올 경우 방은 유지되고, 들어오지 않을 경우 방이 터지도록 구현
+#### ✔ 테이블 변경
+##### Member 테이블에 시퀀스로 사용할 idx를 추가하였다.
+##### Meta 테이블에 metaIdx를 idx로 변경하였다.
+##### Meta 테이블과 MetaRoom 테이블에 각각 방장 닉네임을 받을 수 있는 metaMaster 컬럼을 추가하였다.
+
+##### 사용된 데이터베이스 : MySQL - soju
+	CREATE DATABASE soju;
+	USE soju;
+
+##### 사용된 테이블 : Member, MetaRoom
+	멤버 테이블
+	CREATE TABLE Member (
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT,
+		##################회원가입 전 입력##################
+		emailId VARCHAR(50) PRIMARY KEY, #이메일 형식 아이디
+		pwd VARCHAR(255) NOT NULL, #비밀번호
+		name VARCHAR(10) NOT NULL, #이름
+		nickname VARCHAR(20) UNIQUE NOT NULL, #닉네임
+		birthday DATE NOT NULL, #생년월일
+		gender VARCHAR(1) NOT NULL, #성별
+		phoneNumber VARCHAR(15) UNIQUE NOT NULL, #핸드폰 번호
+		address VARCHAR(100) NOT NULL, #주소
+		studyType VARCHAR(10) NOT NULL, #관심있는 분야
+		platform VARCHAR(10) NOT NULL, #플랫폼
+		roleName VARCHAR(100) NOT NULL, #Spring Security 권한	
+		##################회원가입 후 입력##################
+		profileImage VARCHAR(100) #프로필 사진
+	);
+	
+	#메타버스 방
+	CREATE TABLE Meta(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #방 번호 - 기본키, 시퀀스
+		metaTitle VARCHAR(50) NOT NULL, #방 제목
+		metaType VARCHAR(10) NOT NULL, #방 분야
+		metaPersonnel INT NOT NULL, #방 모집 인원
+		metaRecruitingPersonnel INT NOT NULL, #방 모집된 인원
+		metaMaster VARCHAR(20) #방장 닉네임
+	);
+
+	#메타버스 방 내부
+	CREATE TABLE MetaRoom(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #방 입장 번호(순서) - 기본키, 시퀀스
+		metaIdx BIGINT NOT NULL, #방 번호
+		CONSTRAINT fk_metaRoomIdx FOREIGN KEY(metaIdx) REFERENCES Meta(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		metaNickname VARCHAR(20) UNIQUE NOT NULL, #닉네임
+		CONSTRAINT fk_metaRoomNickname FOREIGN KEY(metaNickname) REFERENCES Member(nickname) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		metaProfileImage VARCHAR(100), #프로필 사진
+		metaMaster VARCHAR(20) UNIQUE #방장 닉네임
+	);
 #
