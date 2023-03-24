@@ -59,7 +59,7 @@ public class MetaService {
         metaRoomRepository.save(metaRoomParticipate);
         // 7. 3에서 저장하고 받아온 Entity 값 중 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
         metaRepository.updateMetaRecruitingPersonnelCount(createMeta.getIdx());
-        // 8. 7에서 저장하고 받아온 Entity를 DTO로 변환한다.
+        // 8. 3에서 저장하고 받아온 Entity를 DTO로 변환한다.
         Meta.rpCreateMeta rpCreateMeta = new Meta.rpCreateMeta(createMeta);
         // 9. 8에서 변환된 DTO를 반환한다.
         return rpCreateMeta;
@@ -69,12 +69,12 @@ public class MetaService {
     public int entranceMetaRoom(long idx, String metaNickname) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호와 닉네임으로 방 내부 참여자 명단에서 해당 유저를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
         MetaRoom metaRoom = metaRoomRepository.findByEntranceMetaRoom(idx, metaNickname);
-        // 3. 2에서 조회된 값이 있는지 체크한다.
-        // 3-1. 조회된 값이 없는 경우 - 유저 입장
+        // 3. 2에서 조회된 값이 존재하는지 체크한다.
+        // 3-1. 조회된 값이 존재하지 않는 경우 - 유저 입장
         if (metaRoom == null) {
             // 3-1-1. 0을 반환한다.
             return 0;
-            // 3-2. 조회된 값이 있는 경우 - 방장 입장
+        // 3-2. 조회된 값이 존재하는 경우 - 방장 입장
         } else {
             // 3-2-1. 1을 반환한다.
             return 1;
@@ -119,12 +119,12 @@ public class MetaService {
     public Meta.rpEntrance newEntrance(long idx, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 로그인 유저 정보 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
         Meta meta = metaRepository.findByIdx(idx);
-        // 3. 2에서 조회된 값이 있는지 체크한다.
-        // 3-1. 조회된 값이 없는 경우 - 해당 방이 없는 경우
+        // 3. 2에서 조회된 값이 존재하는지 체크한다.
+        // 3-1. 조회된 값이 존재하지 않는 경우 - 해당 방이 없는 경우
         if ( meta == null ) {
             // 3-1-1. 눌값을 반환한다.
             return null;
-        // 3-2. 조회된 값이 있는 경우 - 해당 방이 있는 경우
+        // 3-2. 조회된 값이 존재하는 경우 - 해당 방이 있는 경우
         } else {
             // 4. 2에서 조회된 값 중 참여중인 인원이 정원초과인지 체크한다.
             // 4-1. 참여중인 인원이 모집 인원보다 크거나 같은 경우

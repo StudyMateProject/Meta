@@ -163,6 +163,7 @@ public class MetaController {
         Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 3. 1에서 파라미터로 받아온 방 생성 DTO와 2에서 반환받은 로그인 유저 정보 DTO를 서비스에 전달한다.
         Meta.rpCreateMeta rpCreateMeta = metaService.createRoom(rqCreateMeta, rpNickImage);
+        System.out.println(rpCreateMeta);
         // 4. 2에서 반환받은 DTO 값 중 방 타입을 체크한다.
         // 4-1. 방 타입이 스터디일 경우
         if ( rpCreateMeta.getMetaType().equals("studyRoom") ) {
@@ -208,8 +209,8 @@ public class MetaController {
             // 5. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 서비스에 전달한다.
             int rpEntranceMetaRoom = metaService.entranceMetaRoom(idx, rpNickImage.getNickname());
             // 6. 5에서 반환된 값이 어떤것인지 체크한다.
-            // 6-1. 0이 반환된 경우 - 방 생성 후 방장 입장
-            if ( rpEntranceMetaRoom == 0 ) {
+            // 6-1. 1이 반환된 경우 - 방 생성 후 방장 입장
+            if ( rpEntranceMetaRoom == 1 ) {
                 // 6-1-1. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용하고, 1에서 받아온 방 번호를 값으로 사용하여 세션에 추가한다.
                 session.setAttribute(rpNickImage.getNickname(), idx);
                 // 6-1-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
@@ -224,7 +225,7 @@ public class MetaController {
                 model.addAttribute("participantList", rpMetaRoomIdxList);
                 // 6-1-7. 스터디룸 페이지로 이동한다.
                 return "Meta/StudyRoom";
-            // 6-2. 1이 반환된 경우 - 유저 첫 입장
+            // 6-2. 0이 반환된 경우 - 유저 첫 입장
             } else {
                 // 7. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 로그인 유저 정보 DTO를 서비스에 전달한다.
                 Meta.rpEntrance rpNewEntrance = metaService.newEntrance(idx, rpNickImage);
