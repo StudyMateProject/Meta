@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,7 @@ public class MetaController {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 메타 메인 페이지
     @GetMapping("")
-    public String meta(Principal principal, Model model) {
+    public String meta(Principal principal, Model model) throws UnsupportedEncodingException {
         // 1. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
         Member.rpMetaProfile rpMetaProfile = signUpService.metaProfile(principal.getName());
 
@@ -43,7 +45,7 @@ public class MetaController {
         // 3. 2에서 가져온 세션 객체를 통해 1에서 반환받은 DTO 값 중 닉네임에 해당하는 세션이 존재하는지 체크한다.
         // 3-1. 세션이 존재하는 경우
         if ( session.getAttribute(rpMetaProfile.getNickname()) != null ) {
-            return "redirect:/meta/exit?idx=" + session.getAttribute(rpMetaProfile.getNickname());
+            return "redirect:/meta/exit?idx=" + session.getAttribute(rpMetaProfile.getNickname()) + "&nickname=" + URLEncoder.encode(rpMetaProfile.getNickname(), "UTF-8");
         }
         // 3-2. 세션이 존재하지 않는 경우
         // 4. 서비스를 통해 현재 생성된 메타 방을 모두 조회해서, List 형태의 DTO로 반환 받아온다.
@@ -104,22 +106,22 @@ public class MetaController {
 
     // 방 만들기
     @GetMapping("/createmetaform/createmeta")
-    public String createMeta(Meta.rqCreateMeta rqCreateMeta) { // 1. 파라미터로 form에서 넘어온 DTO를 받아온다.
+    public String createMeta(Meta.rqCreateMeta rqCreateMeta) throws UnsupportedEncodingException { // 1. 파라미터로 form에서 넘어온 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 DTO를 서비스에 전달한다.
         Meta.rpCreateMeta rpCreateMeta = metaService.createRoom(rqCreateMeta);
         // 3. 2에서 반환받은 DTO 값 중 방 타입을 체크한다.
         // 3-1. 방 타입이 스터디일 경우
         if ( rpCreateMeta.getMetaType().equals("studyRoom") ) {
             // 3-1-1. 2에서 반환받은 DTO 값 중 방 번호와 방 생성자 닉네임을 가지고 스터디 페이지로 리다이렉트한다.
-            return "redirect:/meta/studyroom?idx=" + rpCreateMeta.getIdx() + "&metaMaster=" + rpCreateMeta.getMetaMaster();
+            return "redirect:/meta/studyroom?idx=" + rpCreateMeta.getIdx() + "&metaMaster=" + URLEncoder.encode(rpCreateMeta.getMetaMaster(), "UTF-8");
         // 3-2. 방 타입이 카페일 경우
         } else if ( rpCreateMeta.getMetaType().equals("cafeRoom") ) {
             // 3-2-1. 2에서 반환받은 DTO 값 중 방 번호와 방 생성자 닉네임을 가지고 카페 페이지로 리다이렉트한다.
-            return "redirect:/meta/caferoom?idx=" + rpCreateMeta.getIdx() + "&metaMaster=" + rpCreateMeta.getMetaMaster();
+            return "redirect:/meta/caferoom?idx=" + rpCreateMeta.getIdx() + "&metaMaster=" + URLEncoder.encode(rpCreateMeta.getMetaMaster(), "UTF-8");
         // 3-3. 방 타입이 자습일 경우
         } else {
             // 3-3-1. 2에서 반환받은 DTO 값 중 방 번호와 방 생성자 닉네임을 가지고 자습실 페이지로 리다이렉트한다.
-            return "redirect:/meta/oneroom?idx=" + rpCreateMeta.getIdx() + "&metaMaster=" + rpCreateMeta.getMetaMaster();
+            return "redirect:/meta/oneroom?idx=" + rpCreateMeta.getIdx() + "&metaMaster=" + URLEncoder.encode(rpCreateMeta.getMetaMaster(), "UTF-8");
         }
     }
 
@@ -335,7 +337,7 @@ public class MetaController {
 
     // 방 나가기
     @GetMapping("/exit")
-    public String exitRoom(@RequestParam long idx, String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
+    public String exitRoom(@RequestParam long idx, @RequestParam String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
         // 3. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 DTO를 서비스에 전달하다.
         metaService.exit(idx, nickname);
         // 7. 세션을 사용하기 위하여 HttpServletRequest을 통해 세션 객체를 가져온다.
@@ -348,7 +350,7 @@ public class MetaController {
 
     // 방 삭제
     @GetMapping("/delete")
-    public String deleteRoom(@RequestParam long idx, String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
+    public String deleteRoom(@RequestParam long idx, @RequestParam String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
         metaService.delete(idx);
         // 3. 세션을 사용하기 위하여 HttpServletRequest을 통해 세션 객체를 가져온다.

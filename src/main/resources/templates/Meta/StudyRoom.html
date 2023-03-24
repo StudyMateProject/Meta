@@ -9,6 +9,12 @@
             overflow: hidden;
         }
     </style>
+    <!-- SockJS 사용을 위한 js를 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <!-- Stomp 사용을 위한 js를 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <!-- Ajax 사용을 위한 js를 추가 -->
+    <script src="/js/httpRequest.js"></script>
 </head>
 <!-- unload - beforeunload 이벤트에서 반환한 값을 처리한다. -->
 <body onkeydown="keyDown()" onkeyup="keyUp()" onunload="exit()">
@@ -30,7 +36,7 @@
 
     <!-- 상단 오른쪽 메뉴바 구역 -->
     <div style="border: 2px solid black; box-sizing: border-box; width: 19.5%; height: 10%; margin-bottom: 0.5%; float: right;">
-        <input type="button" value="나가기" th:onclick="|location.href='@{/meta/exit(idx = ${metaRoom.idx})}'|" style="width: 25%; height: 100%;">
+        <input type="button" value="나가기" th:onclick="|location.href='@{/meta/exit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|" style="width: 25%; height: 100%;">
     </div>
 
     <!-- 메타버스 -->
@@ -58,12 +64,6 @@
         <input id="message" type="text" style="width: 70%; height: 90%; float: left;" placeholder = "채팅 입력란">
     </div>
 <!-------------------------------------------------------js 구역-------------------------------------------------------->
-    <!-- SockJS 사용을 위한 js를 추가 -->
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <!-- Stomp 사용을 위한 js를 추가 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-    <!-- Ajax 사용을 위한 js를 추가 -->
-    <script src="/js/httpRequest.js"></script>
 
     <!---------------------------------------------------- 채팅 구역 ----------------------------------------------------->
     <script th:inline="javascript">
@@ -86,7 +86,7 @@
         let boomTimeoutId; // 방장 퇴장 setTimeout
         //////////////////////////////////////////////////// 소켓 구역 ////////////////////////////////////////////////////
         // 1. SockJS를 생성한다. (StompWebSocketConfig에서 설정한 Endpoint와 동일하게 맞춰준다.)
-        var sockJs = new SockJS("/ws/meta");
+        var sockJs = new SockJS("/ws/meta/chat");
         // 2. 생성된 SockJS를 Stomp에 전달한다.
         var stomp = Stomp.over(sockJs);
 
@@ -254,7 +254,7 @@
                     // 첫 입장
                     if ( metaType == "enter" ) {
                         // 메시지 코드를 작성한다.
-                        str = '<div style="text-align: left;">';
+                        str = '<div style="text-align: left; color: green;">';
                         str += '<b>' + message + '</b>';
                         str += '</div>'
                         // 작성한 메시지 코드를 채팅 구역에 올린다.
@@ -379,7 +379,7 @@
                     // 유저 퇴장
                     if ( metaType == "exit" ) {
                         // 메시지 코드를 작성한다.
-                        str = '<div style="text-align: left;">';
+                        str = '<div style="text-align: left; color: purple;">';
                         str += '<b>' + message + '</b>';
                         str += '</div>'
                         // 작성한 메시지 코드를 채팅 구역에 올린다.
@@ -398,6 +398,7 @@
                             // 로컬 스토리지를 제거한다.
                             localStorage.clear();
                             // 퇴장 URL에 파라미터로 방 번호와 닉네임을 가져가 퇴장한다.
+                            alert(nickname);
                             location.href = "/meta/exit?idx=" + metaIdx + "&nickname=" + nickname;
                         // 작성자가 로그인 유저와 다른 경우 (타 유저)
                         } else {
@@ -789,16 +790,16 @@
                     //                       fetch() 메소드는 Promise 객체를 반환하며, 이를 통해 비동기적으로 서버로부터 데이터를 받아올 수 있다.
                     //                       응답을 받아오는 데 성공하면 Response 객체를 반환하고, 실패하면 Error 객체를 반환한다.
                     // 예시 - 아래와 같이 fetch 메소드를 사용하여 JSON 데이터를 요청할 수 있다.
-                    // fetch("/meta/delete?idx=" + metaIdx)
+                    // fetch("/meta/delete?idx=" + metaIdx + "&nickname=" + nickname)
                     //     .then(response => response.json()) // JSON 형식으로 파싱
                     //     .then(data => console.log(data)) // 응답 데이터 처리
                     //     .catch(error => console.error(error)); // 오류 처리
                     // fetch 메소드는 Promise를 반환하기 때문에, then 메서드를 사용하여 비동기 처리를 할 수 있다.
-                    // fetch 메소드를 사용하여 "/meta/delete?idx=1" 주소로 GET 요청을 보내고,
+                    // fetch 메소드를 사용하여 "/meta/delete?idx=1&nickname=테스터" 주소로 GET 요청을 보내고,
                     // then() 메소드를 사용하여 요청이 성공했을 때 반환된 Response 객체를 json() 메소드를 통해 JSON 형식으로 변환한다.
                     // 그리고 다시 then() 메소드를 사용하여 변환된 JSON 데이터를 콘솔에 출력한다.
                     // 만약 요청이 실패하면 catch 메소드에서 에러를 출력한다.
-                    fetch ("/meta/delete?idx=" + metaIdx);
+                    fetch ("/meta/delete?idx=" + metaIdx + "&nickname=" + nickname);
                 // 참여중인 인원이 2명 이상인 경우
                 } else {
                     // send(path, header, message)로 퇴장 메시지를 전송한다. (퇴장할때 딱 한번만 전송한다.)
@@ -819,10 +820,10 @@
     <!--------------------------------------------------- 캔버스 구역 ---------------------------------------------------->
     <script th:inline="javascript">
         //////////////////////////////////////////////////// 변수 구역 ////////////////////////////////////////////////////
-        var metaIdx1 = [[${metaRoom.idx}]]; // 방 번호
-        var nickname1 = [[${nickImage.nickname}]]; // 로그인 유저의 닉네임
-        var profileImage1 = [[${nickImage.profileImage}]]; // 로그인 유저의 프로필 사진
-        let entryCheck1 = [[${entryCheck}]]; // 입장 체크값
+        var canvasMetaIdx = [[${metaRoom.idx}]]; // 방 번호
+        var canvasNickname = [[${nickImage.nickname}]]; // 로그인 유저의 닉네임
+        var canvasProfileImage = [[${nickImage.profileImage}]]; // 로그인 유저의 프로필 사진
+        let canvasEntryCheck = [[${entryCheck}]]; // 입장 체크값
 
         let canvas; // 도화지
         let canvasLeft; // 왼쪽 벽
@@ -832,11 +833,10 @@
         let context; // 화가
         let imgC = "imgChar2"; // 그림 이름 받는곳
 
-        let type = ""; // 메시지 타입
-        let characters = ""; // 캐릭터 Map - 서버로 보내기용
-        let characters1 = ""; // 캐릭터 Map 파싱 - 캔버스에 그리기용
-        let character = ""; // 캐릭터 Map의 닉네임 키
-        let coordinate = ""; // 캐릭터 Map의 닉네임 키에 해당하는 List 값
+        let serverCharacters; // 캐릭터 Map - 서버로 보내기용
+        let canvasCharacters; // 캐릭터 Map 파싱 - 캔버스에 그리기용
+        let character; // 캐릭터 Map의 닉네임 키
+        let coordinate; // 캐릭터 Map의 닉네임 키에 해당하는 List 값
 
         let keycode; // 키보드 키코드
 
@@ -854,82 +854,75 @@
         let w = 20; // 캐릭터 크기 지정 (전체 사이즈의 절반만 작성)
         let h = 20; // 캐릭터 크기 지정 (전체 사이즈의 절반만 작성)
         //////////////////////////////////////////////////// 소켓 구역 ////////////////////////////////////////////////////
-        // 소켓 메소드
-        var connect = function() {
-            // 1. SockJS를 생성한다. (StompWebSocketConfig에서 설정한 Endpoint와 동일하게 맞춰준다.)
-            var sockJs1 = new SockJS("/ws/meta");
-            // 2. 생성된 SockJS를 Stomp에 전달한다.
-            var stomp1 = Stomp.over(sockJs1);
+        // 1. SockJS를 생성한다. (StompWebSocketConfig에서 설정한 Endpoint와 동일하게 맞춰준다.)
+        var canvasSockJs = new SockJS("/ws/meta/canvas");
+        // 2. 생성된 SockJS를 Stomp에 전달한다.
+        var canvasStomp = Stomp.over(canvasSockJs);
 
-            // 3. connect가 이뤄지면 실행한다.
-            stomp1.connect({}, function () {
-                // connect가 이뤄지면 콘솔에 로그를 찍는다.
-                console.log("STOMP1 Connection");
+        // 3. connect가 이뤄지면 실행한다.
+        canvasStomp.connect({}, function () {
+            // connect가 이뤄지면 콘솔에 로그를 찍는다.
+            console.log("canvasStomp Connection");
 
-                // 5. subscribe(path, callback)으로 메시지를 받을 수 있다.
-                //    StompChatController에서 SimpMessagingTemplate를 통해 전달한 DTO를 여기서 콜백 메소드 파라미터로 전달 받는다.
-                stomp1.subscribe("/sub/meta/studyRoom/canvas/" + metaIdx, function (message) {
-                    // 6. JSON.parse(변환 대상) - JSON 문자열을 JavaScript 값이나 객체로 변환한다.
-                    //    JSON형식으로 넘어온 DTO를 JavaScript형식으로 변환한다.
-                    var content1 = JSON.parse(message.body);
-                    // 6-1. 변환된 DTO를 사용하기 편하게 각각 변수에 나눠놓는다.
-                    var writer1 = content1.writer; // 작성자
-                    var exit1 = content1.exit; // 퇴장 체크값
+            // 5. subscribe(path, callback)으로 메시지를 받을 수 있다.
+            //    StompChatController에서 SimpMessagingTemplate를 통해 전달한 DTO를 여기서 콜백 메소드 파라미터로 전달 받는다.
+            canvasStomp.subscribe("/sub/meta/studyRoom/canvas/" + metaIdx, function (message) {
+                // 6. JSON.parse(변환 대상) - JSON 문자열을 JavaScript 값이나 객체로 변환한다.
+                //    JSON형식으로 넘어온 DTO를 JavaScript형식으로 변환한다.
+                var canvasContent = JSON.parse(message.body);
+                // 6-1. 변환된 DTO를 사용하기 편하게 각각 변수에 나눠놓는다.
+                var canvasWriter = canvasContent.writer; // 작성자
+                var canvasExit = canvasContent.exit; // 퇴장 체크값
+                var canvasType = canvasContent.type; // 메시지 타입
 
-                    //
-                    // 방을 퇴장하는 경우 - 본인은 퇴장하고 없으므로 타 유저인 경우에만 실시간으로 참가자 구역에서 삭제되도록 만든다.
-                    if ( exit1 != null ) {
-                        characters = exit1;
-                        characters1 = JSON.parse(exit1);
-                        drawChar();
-                    } else {
-                        type = content1.type; // 메시지 타입
-                        characters = content1.characters; // 캐릭터 Map - 서버로 보내기용
-                        characters1 = JSON.parse(characters); // 캐릭터 Map 파싱 - 캔버스에 그리기용
-
-                        // 메시지 타입이 왼쪽이거나 위쪽이거나 오른쪽이거나 아래쪽일 경우
-                        if ( type == "left" || type == "top" || type == "right" || type == "bottom" ) {
-                            // 캐릭터 그리기 메소드로 이동한다.
-                            drawChar();
-                        }
-
-                        // 작성자가 로그인 유저와 같은 경우 (본인)
-                        if ( nickname1 == writer1 ) {
-                            // 메시지 타입이 첫 입장이거나 재입장일 경우
-                            if ( type == "enter" || type == "reenter" ) {
-                                // 캔버스 메소드로 이동한다.
-                                start1();
-                            }
-                        } else {
-                            drawChar();
-                        }
-                    }
-                });
-        //////////////////////////////////////////////////// 입장 구역 ////////////////////////////////////////////////////
-                // 입장 시작!! - 먼저 입장 체크값을 이용하여 해당 유저가 첫 입장인지 재입장(새로고침)인지 체크한다.
-                // 첫 입장일 경우 - 입장 체크값이 존재하지 않는다.
-                if ( entryCheck1 == null ) {
-                    // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
-                    // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장할때 딱 한번만 여기서 입장 메시지를 전송한다.)
-                    //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
-                    //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/canvas/enter', {}, JSON.stringify({metaIdx : metaIdx1, writer : nickname1, character : profileImage1, type : "enter", x : a / 2, y : (c / 6) * 5}));
-                // 재입장(새로고침)일 경우 - 입장 체크값이 존재한다.
+                // 방을 퇴장하는 경우 - 본인은 퇴장하고 없으므로 타 유저인 경우에만 실시간으로 참가자 구역에서 삭제되도록 만든다.
+                if ( canvasExit != null ) {
+                    serverCharacters = canvasExit; // 캐릭터 Map - 서버로 보내기용
+                    canvasCharacters = JSON.parse(serverCharacters); // 캐릭터 Map 파싱 - 캔버스에 그리기용
+                    drawChar();
                 } else {
-                    // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
-                    // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장 이후 모든 재입장(새로고침)은 여기서 입장 메시지를 전송한다.)
-                    //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
-                    //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/canvas/reenter', {}, JSON.stringify({metaIdx : metaIdx1, writer : nickname1, character : profileImage1, type : "reenter", x : a / 2, y : (c / 6) * 5}));
+                    serverCharacters = canvasContent.characters; // 캐릭터 Map - 서버로 보내기용
+                    canvasCharacters = JSON.parse(serverCharacters); // 캐릭터 Map 파싱 - 캔버스에 그리기용
+
+                    // 메시지 타입이 왼쪽이거나 위쪽이거나 오른쪽이거나 아래쪽일 경우
+                    if ( canvasType == "left" || canvasType == "top" || canvasType == "right" || canvasType == "bottom" ) {
+                        // 캐릭터 그리기 메소드로 이동한다.
+                        drawChar();
+                    }
+
+                    // 작성자가 로그인 유저와 같은 경우 (본인)
+                    if ( canvasNickname == canvasWriter ) {
+                        // 메시지 타입이 첫 입장이거나 재입장일 경우
+                        if ( canvasType == "enter" || canvasType == "reEnter" ) {
+                            // 캔버스 메소드로 이동한다.
+                            canvasStart();
+                        }
+                    } else {
+                        drawChar();
+                    }
                 }
             });
-        };
-        //////////////////////////////////////////////////// 시작 구역 ////////////////////////////////////////////////////
-        // 방에 접속하면 가장 먼저 소켓 메소드로 이동한다.
-        connect();
+        //////////////////////////////////////////////////// 입장 구역 ////////////////////////////////////////////////////
+            // 입장 시작!! - 먼저 입장 체크값을 이용하여 해당 유저가 첫 입장인지 재입장(새로고침)인지 체크한다.
+            // 첫 입장일 경우 - 입장 체크값이 존재하지 않는다.
+            if ( canvasEntryCheck == null ) {
+                // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
+                // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장할때 딱 한번만 여기서 입장 메시지를 전송한다.)
+                //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+                //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+                stomp.send('/pub/meta/studyRoom/canvas/enter', {}, JSON.stringify({type : "enter", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, x : a / 2, y : (c / 6) * 5}));
+            // 재입장(새로고침)일 경우 - 입장 체크값이 존재한다.
+            } else {
+                // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
+                // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장 이후 모든 재입장(새로고침)은 여기서 입장 메시지를 전송한다.)
+                //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+                //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+                stomp.send('/pub/meta/studyRoom/canvas/reenter', {}, JSON.stringify({type : "reEnter", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, x : a / 2, y : (c / 6) * 5}));
+            }
+        });
         /////////////////////////////////////////////////// 캔버스 구역 ///////////////////////////////////////////////////
         // 캔버스 메소드
-        function start1() {
+        function canvasStart() {
             // canvas id값으로 가져오기
             canvas = document.getElementById("canvas");
             // canvas를 2d로 설정
@@ -974,9 +967,9 @@
             context.clearRect(0, 0, canvas.width, canvas.height);
             // 배경 그리기
             context.drawImage(imgBg, 0, 0, canvas.width, canvas.height);
-            for ( character in characters1 ) {
+            for ( character in canvasCharacters ) {
                 // 해당 캐릭터의 좌표 정보 배열 가져오기
-                coordinate = characters1[character];
+                coordinate = canvasCharacters[character];
                 // 좌표 정보 배열에서 각 좌표를 가져와서 캐릭터 그리기
                 imgChar.src = "/imagePath/" + coordinate[0]; // 캐릭터 이미지 주소
                 context.drawImage(imgChar, coordinate[1]-w, coordinate[2]-h, w*2, h*2);
@@ -992,9 +985,9 @@
             // canvas의 왼쪽 상단 모서리에서 시작하여 canvas의 전체 영역을 지운다.
             // 새로 받아온 캐릭터 정보들로 다시 그리기 위하여 먼저 캔버스 위에 그려져있는 캐릭터들을 모두 지운다.
             context.clearRect(0, 0, canvas.width, canvas.height);
-            for ( character in characters1 ) {
+            for ( character in canvasCharacters ) {
                 // 해당 캐릭터의 좌표 정보 배열 가져오기
-                coordinate = characters1[character];
+                coordinate = canvasCharacters[character];
                 // 좌표 정보 배열에서 각 좌표를 가져와서 캐릭터 그리기
                 imgChar.src = "/imagePath/" + coordinate[0]; // 캐릭터 이미지 주소
                 context.drawImage(imgChar, coordinate[1]-w, coordinate[2]-h, w*2, h*2);
@@ -1013,28 +1006,28 @@
                     // send(path, header, message)로 채팅 메시지를 전송한다. (왼쪽 키가 눌릴 경우 여기서 이동 메시지를 전송한다.)
                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx1, writer : nickname1, character : profileImage1, type : "left", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type : "left", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
                     break;
                 // 위로 이동
                 case 38:
                     // send(path, header, message)로 채팅 메시지를 전송한다. (위쪽 키가 눌릴 경우 여기서 이동 메시지를 전송한다.)
                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx1, writer : nickname1, character : profileImage1, type : "top", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type : "top", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
                     break;
                 // 오른쪽으로 이동
                 case 39:
                     // send(path, header, message)로 채팅 메시지를 전송한다. (오른쪽 키가 눌릴 경우 여기서 이동 메시지를 전송한다.)
                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx1, writer : nickname1, character : profileImage1, type : "right", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type : "right", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
                     break;
                 // 아래로 이동
                 case 40:
                     // send(path, header, message)로 채팅 메시지를 전송한다. (아래쪽 키가 눌릴 경우 여기서 이동 메시지를 전송한다.)
                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({metaIdx : metaIdx1, writer : nickname1, character : profileImage1, type : "bottom", canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type : "bottom", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
                     break;
             }
         }

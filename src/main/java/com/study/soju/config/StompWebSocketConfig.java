@@ -24,7 +24,12 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws/meta") // Client가 WebSocket 또는 SockJS에 connect할 경로
+        // 채팅 소켓
+        registry.addEndpoint("/ws/meta/chat") // Client가 WebSocket 또는 SockJS에 connect할 경로
+                .setAllowedOrigins("http://localhost:8888") // 도메인주소
+                .withSockJS(); // SockJS
+        // 캔버스 소켓
+        registry.addEndpoint("/ws/meta/canvas") // Client가 WebSocket 또는 SockJS에 connect할 경로
                 .setAllowedOrigins("http://localhost:8888") // 도메인주소
                 .withSockJS(); // SockJS
     }
