@@ -95,14 +95,12 @@ public class Meta {
     public static class rpCreateMeta {
         private long idx;
         private String metaType;
-        private String metaMaster;
 
 
         // Entity를 DTO로 변환 (생성자 방식)
         public rpCreateMeta(Meta meta) {
             this.idx = meta.getIdx();
             this.metaType = meta.getMetaType();
-            this.metaMaster = meta.getMetaMaster();
         }
     }
 

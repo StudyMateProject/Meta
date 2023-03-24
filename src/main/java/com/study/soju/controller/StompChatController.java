@@ -103,7 +103,7 @@ public class StompChatController {
         ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
         // 3. 2에서 가져온 DTO가 여전히 존재하는지 체크한다.
         // 3-1. 퇴장 메시지가 존재하는 경우 - 재입장(새로고침)
-        if (exitMessage != null) {
+        if ( exitMessage != null ) {
             // 3-1-1. 퇴장 메소드에서 Map에 추가한 키에 해당하는 DTO를 삭제한다.
             metaMessageMap.remove(message.getMetaIdx() + "_exit");
             // 3-1-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
@@ -144,7 +144,6 @@ public class StompChatController {
                                                                       //    SimpMessageHeaderAccessor - Spring 프레임워크의 MessageHeaderAccessor 인터페이스를 구현한 클래스로, STOMP 메시지의 헤더 정보를 쉽게 조작하고 접근할 수 있게 해준다.
                                                                       //                                STOMP 프로토콜에서 사용되는 프레임(Frame)에 대한 정보를 포함하며, 이를 이용하여 메시지의 발신자, 수신자, 메시지 타입 등의 정보를 설정하거나 읽어올 수 있다.
                                                                       //                                STOMP 메시지에 사용될 헤더의 추가, 수정, 삭제, 조회 등을 할 수 있다.
-
         // 2. SimpMessageHeaderAccessor를 사용하여 "metaIdx"라는 이름의 헤더 정보를 추출해, metaIdx 변수에 방 번호를 전달한다.
         String metaIdx = accessor.getFirstNativeHeader("metaIdx");
         // 3. SimpMessageHeaderAccessor를 사용하여 "writer"라는 이름의 헤더 정보를 추출해, writer 변수에 작성자를 전달한다.
@@ -182,6 +181,7 @@ public class StompChatController {
     // CompletableFuture - Java 8에서 추가된 클래스 중 하나로, 비동기 작업을 수행하고 해당 작업의 결과를 처리하는 기능을 제공한다.
     // <Void> - runAsync는 반환 값이 없으므로 Void 타입이다.
     public CompletableFuture<Void> exitStudyRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 퇴장 정보들을 DTO로 받아온다.
+        System.out.println(message);
         // 2. 받아온 DTO 값 중 작성자를 가져와 퇴장 메시지를 작성해 DTO 값 중 메시지에 저장한다.
         message.setMessage(message.getWriter() + "님이 채팅방에서 탈주하였습니다.");
         // 3. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 퇴장자로 저장한다.

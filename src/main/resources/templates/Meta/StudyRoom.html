@@ -9,12 +9,6 @@
             overflow: hidden;
         }
     </style>
-    <!-- SockJS 사용을 위한 js를 추가 -->
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <!-- Stomp 사용을 위한 js를 추가 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-    <!-- Ajax 사용을 위한 js를 추가 -->
-    <script src="/js/httpRequest.js"></script>
 </head>
 <!-- unload - beforeunload 이벤트에서 반환한 값을 처리한다. -->
 <body onkeydown="keyDown()" onkeyup="keyUp()" onunload="exit()">
@@ -64,6 +58,12 @@
         <input id="message" type="text" style="width: 70%; height: 90%; float: left;" placeholder = "채팅 입력란">
     </div>
 <!-------------------------------------------------------js 구역-------------------------------------------------------->
+    <!-- SockJS 사용을 위한 js를 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <!-- Stomp 사용을 위한 js를 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <!-- Ajax 사용을 위한 js를 추가 -->
+    <script src="/js/httpRequest.js"></script>
 
     <!---------------------------------------------------- 채팅 구역 ----------------------------------------------------->
     <script th:inline="javascript">
@@ -123,7 +123,7 @@
                     //                             이 메소드를 사용하여 동적으로 HTML 요소의 텍스트를 업데이트할 수 있다.
                     //                             이 메소드는 document.createElement()와 함께 사용하여 동적으로 HTML 요소를 생성하는 데 사용된다.
                     // b 태그에 넣을 내용을 작성해 TextNode로 생성한다.
-                    let bContent = document.createTextNode(nickname + " : ");
+                    let bContent = document.createTextNode(chat.headers.writer + " : ");
                     // b 태그에 TextNode로 생성한 내용을 넣는다.
                     bTag.appendChild(bContent);
                     // b 태그에 audio(오디오) 태그를 넣는다.
@@ -175,6 +175,7 @@
                     let timePassed = end - start; // 처음 메시지 전송후 1초 이내 다음 메시지 전송까지의 경과 시간 - 1초 이후 시작 시간 초기화
                     let master = content.master; // 방장 닉네임
                     let metaType = content.type; // 메시지 타입
+                    console.log(metaType);
 
                     // 8. 참여중인 인원이 바뀌는 경우
                     if ( recruitingPersonnel != null ) {

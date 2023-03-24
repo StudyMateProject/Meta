@@ -99,7 +99,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                             errorMsg = "알수없는 이유로 로그인에 실패하였습니다.";
                         }
 
-                        // 로그인 실패 후 이동 페이지 - URLEncoder : URL을 통해 전송하는 데이터가 공백이 있거나 한글로 된 경우 URL에 맞게 인코딩 해주는 역할 (공백은 +로, 한글은 16진수로 인코딩 한다.)
+                        // 로그인 실패 후 이동 페이지
+                        // URLEncoder.encode() - URL을 통해 전송하는 데이터에 공백이 있거나 특수문자 및 한글 등으로 되어 있는 경우 URL에 맞게 인코딩 해주는 메소드이다. (공백은 +로, 한글은 16진수로 인코딩 한다.)
+                        //                       이를 통해 URL에서 사용하는 특수문자나 한글 등을 인코딩하여 안전하게 전송할 수 있다.
                         response.sendRedirect("/loginform?error=true&errorMsg=" + URLEncoder.encode(errorMsg, "UTF-8"));
                         // request.getRequestDispatcher("/loginform").forward(request, response); // 로그인 실패 후 이동 페이지
                     }

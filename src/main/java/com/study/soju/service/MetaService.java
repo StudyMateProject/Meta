@@ -38,20 +38,51 @@ public class MetaService {
         return rpMetaList;
     }
 
-    // 메타 방 생성
-    public Meta.rpCreateMeta createRoom(Meta.rqCreateMeta rqCreateMeta) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO를 받아온다.
-        // 4. 3에서 파라미터로 받아온 DTO를 Entity로 변환한다.
+    // 메타 방 생성 후 바로 입장 - 방장 첫 입장
+    public Meta.rpCreateMeta createRoom(Meta.rqCreateMeta rqCreateMeta, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 생성 DTO와 로그인 유저 정보 DTO를 받아온다.
+        // 2. 1에서 파라미터로 받아온 방 생성 DTO를 Entity로 변환한다.
         Meta meta = rqCreateMeta.toEntity();
-        // 5. 4에서 변환된 Entity로 방을 저장하고, 저장한 값을 받아온다.
+        // 3. 2에서 변환된 Entity로 방을 저장하고, 저장한 값을 받아온다.
         Meta createMeta = metaRepository.save(meta);
-        // 6. 5에서 저장하고 받아온 Entity를 DTO로 변환한다.
+        // 4. 3에서 저장하고 받아온 Entity와 1에서 파라미터로 받아온 로그인 유저 정보 DTO를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
+        MetaRoom metaRoomParticipate = new MetaRoom(); // 방 내부 참여자 명단
+        // 5. 3에서 저장하고 받아온 Entity와 1에서 파라미터로 받아온 로그인 유저 정보 DTO를 setter를 통하여 MetaRoom에 전달한다.
+        // 5-1. 3에서 저장하고 받아온 Entity 값 중 방 번호를 setter를 통하여 MetaRoom에 전달한다.
+        metaRoomParticipate.setMetaIdx(createMeta.getIdx());
+        // 5-2. 1에서 파라미터로 받아온 로그인 유저 정보 DTO 값 중 닉네임을 setter를 통하여 MetaRoom에 전달한다.
+        metaRoomParticipate.setMetaNickname(rpNickImage.getNickname());
+        // 5-3. 1에서 파라미터로 받아온 로그인 유저 정보 DTO 값 중 프로필 이미지를 setter를 통하여 MetaRoom에 전달한다.
+        metaRoomParticipate.setMetaProfileImage(rpNickImage.getProfileImage());
+        // 5-4. 3에서 저장하고 받아온 Entity 값 중 방장 닉네임을 setter를 통하여 MetaRoom에 전달한다.
+        metaRoomParticipate.setMetaMaster(createMeta.getMetaMaster());
+        // 6. 5에서 값들이 전달된 Entity를 방 내부 참여자 명단에 저장한다.
+        metaRoomRepository.save(metaRoomParticipate);
+        // 7. 3에서 저장하고 받아온 Entity 값 중 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
+        metaRepository.updateMetaRecruitingPersonnelCount(createMeta.getIdx());
+        // 8. 7에서 저장하고 받아온 Entity를 DTO로 변환한다.
         Meta.rpCreateMeta rpCreateMeta = new Meta.rpCreateMeta(createMeta);
-        // 7. 6에서 변환된 DTO를 반환한다.
+        // 9. 8에서 변환된 DTO를 반환한다.
         return rpCreateMeta;
     }
 
+    // 입장하는 방에 참가중인지 조회 - 방장 첫 입장 체크
+    public int entranceMetaRoom(long idx, String metaNickname) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
+        // 2. 1에서 파라미터로 받아온 방 번호와 닉네임으로 방 내부 참여자 명단에서 해당 유저를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
+        MetaRoom metaRoom = metaRoomRepository.findByEntranceMetaRoom(idx, metaNickname);
+        // 3. 2에서 조회된 값이 있는지 체크한다.
+        // 3-1. 조회된 값이 없는 경우 - 유저 입장
+        if (metaRoom == null) {
+            // 3-1-1. 0을 반환한다.
+            return 0;
+            // 3-2. 조회된 값이 있는 경우 - 방장 입장
+        } else {
+            // 3-2-1. 1을 반환한다.
+            return 1;
+        }
+    }
+
     // 메타 방 이름 및 분류별 검색
-    public List<Meta.rpSearchMetaList> searchMetaList(Meta.rqSearchMetaList rqSearchMetaList) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO를 받아온다.
+    public List<Meta.rpSearchMetaList> searchMetaList(Meta.rqSearchMetaList rqSearchMetaList) { // 3. 파라미터로 컨트롤러에서 넘어온 방 검색 DTO를 받아온다.
         // 4. 3에서 파라미터로 받아온 DTO를 Entity로 변환한다.
         Meta meta = rqSearchMetaList.toEntity();
         // 5. 4에서 변환된 Entity 값 중 검색 종류를 가져와 체크한다.
@@ -84,32 +115,8 @@ public class MetaService {
         }
     }
 
-    // 방 생성 후 바로 입장
-    public Meta.rpEntrance masterEntrance(long idx, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 DTO를 받아온다.
-        // 2. 1에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
-        Meta meta = metaRepository.findByIdx(idx);
-        // 3. 1에서 파라미터로 받아온 방 번호와 함께 받아온 DTO를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
-        MetaRoom metaRoomParticipate = new MetaRoom(); // 방 내부 참여자 명단
-        // 4. 1에서 파라미터로 받아온 값들을 setter를 통하여 MetaRoom에 전달한다.
-        metaRoomParticipate.setMetaIdx(idx);
-        metaRoomParticipate.setMetaNickname(rpNickImage.getNickname());
-        metaRoomParticipate.setMetaProfileImage(rpNickImage.getProfileImage());
-        // 4-1. 2에서 조회된 방 정보 중 방 생성자 닉네임을 setter를 통하여 MetaRoom에 전달한다.
-        metaRoomParticipate.setMetaMaster(meta.getMetaMaster());
-        // 5. 4에서 값들이 전달된 Entity를 방 내부 참여자 명단에 저장한다.
-        metaRoomRepository.save(metaRoomParticipate);
-        // 6. 1에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
-        metaRepository.updateMetaRecruitingPersonnelCount(idx);
-        // 7. 1에서 파라미터로 받아온 방 번호로 6에서 갱신한 방을 다시 조회하고, 조회된 값을 받아온다.
-        Meta metaIncrease = metaRepository.findByIdx(idx);
-        // 8. 7에서 조회하고 받아온 Entity를 DTO로 변환한다.
-        Meta.rpEntrance rpEntrance = new Meta.rpEntrance(metaIncrease);
-        // 9. 8에서 변환된 DTO를 반환한다.
-        return rpEntrance;
-    }
-
     // 입장한 메타 방 조회 후 모집된 인원 증가
-    public Meta.rpEntrance newEntrance(long idx, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 DTO를 받아온다.
+    public Meta.rpEntrance newEntrance(long idx, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 로그인 유저 정보 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
         Meta meta = metaRepository.findByIdx(idx);
         // 3. 2에서 조회된 값이 있는지 체크한다.
@@ -128,11 +135,14 @@ public class MetaService {
                 return rpEntrance;
             // 4-2. 참여중인 인원이 모집 인원보다 작은 경우
             } else {
-                // 4-2-1. 1에서 파라미터로 받아온 방 번호와 함께 받아온 DTO를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
+                // 4-2-1. 1에서 파라미터로 받아온 방 번호와 로그인 유저 정보 DTO를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
                 MetaRoom metaRoomParticipate = new MetaRoom(); // 방 내부 참여자 명단
-                // 4-2-2. 1에서 파라미터로 받아온 값들을 setter를 통하여 MetaRoom에 전달한다.
+                // 4-2-2. 1에서 파라미터로 받아온 방 번호와 로그인 유저 정보 DTO를 setter를 통하여 MetaRoom에 전달한다.
+                // 4-2-2-1. 1에서 파라미터로 받아온 방 번호를 setter를 통하여 MetaRoom에 전달한다.
                 metaRoomParticipate.setMetaIdx(idx);
+                // 4-2-2-2. 1에서 파라미터로 받아온 로그인 유저 정보 DTO 값 중 닉네임을 setter를 통하여 MetaRoom에 전달한다.
                 metaRoomParticipate.setMetaNickname(rpNickImage.getNickname());
+                // 4-2-2-3. 1에서 파라미터로 받아온 로그인 유저 정보 DTO 값 중 프로필 이미지를 setter를 통하여 MetaRoom에 전달한다.
                 metaRoomParticipate.setMetaProfileImage(rpNickImage.getProfileImage());
                 // 4-2-3. 4-2-2에서 값들이 전달된 Entity를 방 내부 참여자 명단에 저장한다.
                 metaRoomRepository.save(metaRoomParticipate);
@@ -148,8 +158,8 @@ public class MetaService {
         }
     }
 
-    // 임장한 방 재입장 - 새로고침
-    public Meta.rpEntrance reEntrance(long idx, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 DTO를 받아온다.
+    // 입장한 방 재입장 - 새로고침
+    public Meta.rpEntrance reEntrance(long idx) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
         Meta meta = metaRepository.findByIdx(idx);
         // 3. 2에서 조회된 Entity를 DTO로 변환한다.
@@ -174,10 +184,10 @@ public class MetaService {
     }
 
     // 입장한 메타 방 조회 후 모집된 인원 감소 및 참가자 삭제
-    public void exit(long idx, String nickname) { // 4. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
-        // 5. 4에서 파라미터로 받아온 방 번호와 닉네임으로 방 내부 참여자 명단에서 해당 유저를 삭제한다. (@Query 어노테이션 사용)
+    public void exit(long idx, String nickname) { // 3. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
+        // 4. 3에서 파라미터로 받아온 방 번호와 닉네임으로 방 내부 참여자 명단에서 해당 유저를 삭제한다. (@Query 어노테이션 사용)
         metaRoomRepository.exitMetaRoom(idx, nickname);
-        // 6. 4에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
+        // 5. 3에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
         metaRepository.updateMetaRecruitingPersonnelCount(idx);
     }
 

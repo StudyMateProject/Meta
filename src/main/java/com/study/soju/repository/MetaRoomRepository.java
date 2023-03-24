@@ -19,8 +19,12 @@ public interface MetaRoomRepository extends JpaRepository<MetaRoom, Object> {
     List<MetaRoom> findByMetaIdx(long idx);
 
     // 11-1. @Query 어노테이션을 사용하여 조회에 사용할 쿼리를 작성한다.
-    @Query("SELECT m FROM MetaRoom m WHERE m.metaIdx = :metaIdx AND m.metaNickname = :nickname")
-    MetaRoom findByMetaIdxNickname(@Param("metaIdx") long idx, @Param("nickname") String nickname);
+    @Query("SELECT m FROM MetaRoom m WHERE m.metaIdx = :metaIdx AND m.metaNickname = :metaNickname")
+    MetaRoom findByEntranceMetaRoom(@Param("metaIdx") long idx, @Param("metaNickname") String metaNickname);
+
+    // 2-1. @Query 어노테이션을 사용하여 조회에 사용할 쿼리를 작성한다.
+    @Query("SELECT m FROM MetaRoom m WHERE m.metaIdx = :metaIdx AND m.metaNickname = :metaNickname")
+    MetaRoom findByMetaIdxNickname(@Param("metaIdx") long idx, @Param("metaNickname") String metaNickname);
 
     // 5-1. @Query 어노테이션을 사용하여 삭제에 사용할 쿼리를 작성한다.
     // @Modifying(clearAutomatically = true) - @Query 어노테이션(JPQL Query, Native Query)을 통해 작성된 INSERT, UPDATE, DELETE (SELECT 제외) 쿼리에서 사용되는 어노테이션이다.
