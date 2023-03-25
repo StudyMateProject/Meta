@@ -58,7 +58,7 @@ public class StompChatController {
     }
 
     // 방장 재입장 체크를 위한 Map
-    ConcurrentHashMap<Long, String> boomMetaRoom = new ConcurrentHashMap<>();
+    Map<Long, String> boomMetaRoom = new HashMap<>();
 
     // 방에 참가한 유저의 캐릭터 정보들을 보낼때 방 번호로 구분하기 위한 Map
     Map<Long, Map<String, List<Object>>> metaRoomMap = new HashMap<>();
@@ -110,7 +110,7 @@ public class StompChatController {
             //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
             //        "/sub" + "/meta/studyRoom/" + metaIdx = "/sub/meta/studyRoom/1"
             template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
-        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 1초가 넘는 장시간의 새로고침 에러로 인한 퇴장 처리 후 재입장
+        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 1초가 넘는 장시간의 새로고침 에러로 인한 퇴장 처리 후 재입장된 것으로,
         //                                 이는 아직 퇴장한 것이 아닌데 퇴장 처리가 되었으므로 다시 입장 처리를 해준다.
         } else {
             // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 재입장 메시지를 작성해 DTO 값 중 메시지에 저장한다.
@@ -181,7 +181,6 @@ public class StompChatController {
     // CompletableFuture - Java 8에서 추가된 클래스 중 하나로, 비동기 작업을 수행하고 해당 작업의 결과를 처리하는 기능을 제공한다.
     // <Void> - runAsync는 반환 값이 없으므로 Void 타입이다.
     public CompletableFuture<Void> exitStudyRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 퇴장 정보들을 DTO로 받아온다.
-        System.out.println(message);
         // 2. 받아온 DTO 값 중 작성자를 가져와 퇴장 메시지를 작성해 DTO 값 중 메시지에 저장한다.
         message.setMessage(message.getWriter() + "님이 채팅방에서 탈주하였습니다.");
         // 3. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 퇴장자로 저장한다.
@@ -200,11 +199,11 @@ public class StompChatController {
         //            run() 메소드는 매개변수를 받지 않으며, 리턴값도 없다.
         return CompletableFuture.runAsync(() -> {
             try {
-                // 6. 퇴장 메시지를 전송하기 전에 1초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
-                Thread.sleep(1000);
+                // 6. 퇴장 메시지를 전송하기 전에 0.1초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
+                Thread.sleep(100);
                 // 7. 5에서 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
                 ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
-                // 8. 6에서 1초 대기한 후에도 7에서 가져온 DTO가 여전히 존재하는지 체크한다.
+                // 8. 6에서 0.1초 대기한 후에도 7에서 가져온 DTO가 여전히 존재하는지 체크한다.
                 // 8-1. 퇴장 메시지가 존재하는 경우 - 퇴장
                 if ( exitMessage == null ) {
                     // 8-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
@@ -243,7 +242,7 @@ public class StompChatController {
                         //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
                         //         "/sub" + "/meta/studyRoom/canvas/" + metaIdx = "/sub/meta/studyRoom/canvas/1"
                         template.convertAndSend("/sub/meta/studyRoom/canvas/" + message.getMetaIdx(), message);
-                        // 13-2-3. 퇴장 메시지를 전송하고 난 후 60초(1분) 대기하여 방장이 완전한 퇴장인지 다시 재입장 하는지 체크한다.
+                        // 13-2-3. 퇴장 메시지를 전송하고 난 후 1분 대기하여 방장이 완전한 퇴장인지 다시 재입장 하는지 체크한다.
                         Thread.sleep(60000);
                         // 13-2-4. 위에서 생성한 방장 재입장 체크용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 값을 제거한다.
                         // 13-2-4. 13-2-1에서 Map에 추가한 키에 해당하는 값을 삭제한다.

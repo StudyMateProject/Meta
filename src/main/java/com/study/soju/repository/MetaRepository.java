@@ -49,7 +49,7 @@ public interface MetaRepository extends JpaRepository<Meta, Object> {
     @Query("UPDATE Meta m SET m.metaRecruitingPersonnel = (SELECT COUNT(mr) FROM MetaRoom mr WHERE mr.metaIdx = :idx) WHERE m.idx = :idx")
     void updateMetaRecruitingPersonnelCount(@Param("idx") long idx);
 
-    // 4-1. @Query 어노테이션을 사용하여 삭제에 사용할 쿼리를 작성한다.
+    // 2-1. @Query 어노테이션을 사용하여 삭제에 사용할 쿼리를 작성한다.
     // @Modifying(clearAutomatically = true) - @Query 어노테이션(JPQL Query, Native Query)을 통해 작성된 INSERT, UPDATE, DELETE (SELECT 제외) 쿼리에서 사용되는 어노테이션이다.
     //                                         기본적으로 JpaRepository에서 제공하는 메서드 혹은 메서드 네이밍으로 만들어진 쿼리에는 적용되지 않는다.
     //                                         반환 타입으로는 void 또는 int/Integer만 사용할 수 있다.

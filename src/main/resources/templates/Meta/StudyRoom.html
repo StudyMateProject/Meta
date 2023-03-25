@@ -30,7 +30,7 @@
 
     <!-- 상단 오른쪽 메뉴바 구역 -->
     <div style="border: 2px solid black; box-sizing: border-box; width: 19.5%; height: 10%; margin-bottom: 0.5%; float: right;">
-        <input type="button" value="나가기" th:onclick="|location.href='@{/meta/exit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|" style="width: 25%; height: 100%;">
+        <input type="button" value="나가기" th:onclick="|location.href='@{/meta/btnexit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|" style="width: 25%; height: 100%;">
     </div>
 
     <!-- 메타버스 -->
@@ -73,7 +73,7 @@
         var metaRecruitingPersonnel = [[${metaRoom.metaRecruitingPersonnel}]]; // 참여중인 인원
         var metaPersonnel = [[${metaRoom.metaPersonnel}]]; // 모집인원
         var metaMaster = [[${metaRoom.metaMaster}]]; // 방장 닉네임
-        var nickname = [[${nickImage.nickname}]]; // 로그인 유저의 닉네임
+        var nickname = [[${nickImage.nickname}]]; // 로그인 유저 닉네임
         var profileImage = [[${nickImage.profileImage}]]; // 로그인 유저의 프로필 사진
         // Date.now() - UTC 기준으로 1970년 1월 1일 0시 0분 0초부터 현재까지 경과된 밀리 초를 반환한다.
         let start = ""; // 시작 시간
@@ -166,7 +166,7 @@
                     //    JSON.parse(변환 대상) - JSON 문자열을 JavaScript 값이나 객체로 변환한다.
                     var content = JSON.parse(chat.body);
                     // 7-1. 변환된 DTO를 사용하기 편하게 각각 변수에 나눠놓는다.
-                    var writer = content.writer; // 작성자
+                    var writer = content.writer; // 작성자 닉네임
                     var message = content.message; // 메시지
                     var participant = content.participant; // 참가자 닉네임
                     var profileImage = content.profileImage; // 참가자 프로필 사진
@@ -175,7 +175,6 @@
                     let timePassed = end - start; // 처음 메시지 전송후 1초 이내 다음 메시지 전송까지의 경과 시간 - 1초 이후 시작 시간 초기화
                     let master = content.master; // 방장 닉네임
                     let metaType = content.type; // 메시지 타입
-                    console.log(metaType);
 
                     // 8. 참여중인 인원이 바뀌는 경우
                     if ( recruitingPersonnel != null ) {
@@ -218,7 +217,7 @@
                     if ( participant != null ) {
                         // 참가자가 새로 들어온게 아닌 새로고침한 경우 - 현재 작성되어 있는 참가자랑 중복되지 않게 먼저 이전 참가자를 삭제하고 다시 올린다.
 
-                        // 작성자 닉네임의 id를 통해 참가자 구역에 작성되어 있는 작성자를 가져와 ptr 변수에 저장한다.
+                        // 작성자 닉네임 id를 통해 참가자 구역에 작성되어 있는 작성자를 가져와 ptr 변수에 저장한다.
                         var ptr = document.getElementById(writer);
                         // 가져온 참가자가 존재하는 경우
                         if ( ptr != null ) {
@@ -334,13 +333,36 @@
                         // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                         chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
 
+                        // fetch를 사용하여 방 퇴장 URL에 파라미터로 방 번호와 작성자 닉네임을 가져가 퇴장 처리한다.
+                        // fetch(url, options) - 브라우저에서 제공하는 API 중 하나로, 네트워크 요청을 보내고 응답을 받아오는 메소드이다.
+                        //                       fetch() 메소드는 첫 번째 인자로 서버에 데이터를 요청할 URL을 전달받고, 두 번째 인자로 선택적으로 HTTP 요청과 관련된 다양한 옵션을 설정하는 객체를 전달받는다.
+                        //                       여기서 옵션 객체는 HTTP 요청에 대한 옵션을 설정할 수 있는 여러 가지 속성을 가지고 있는데,
+                        //                       예를 들어 method 속성을 이용하여 HTTP 요청 메소드(GET, POST, PUT, DELETE 등)를 지정할 수 있으며,
+                        //                       method 속성을 지정하지 않으면 기본적으로 HTTP 요청 메서드는 GET이 된다.
+                        //                       그러기에 두 번째 인자로 옵션 객체를 전달하지 않으면 기본적으로 HTTP 요청 메서드는 GET으로 지정된다.
+                        //                       또 다른 속성으로는 headers, mode, cache, credentials 등이 있다.
+                        //                       fetch() 메소드는 Promise 객체를 반환하며, 이를 통해 비동기적으로 서버로부터 데이터를 받아올 수 있다.
+                        //                       응답을 받아오는 데 성공하면 Response 객체를 반환하고, 실패하면 Error 객체를 반환한다.
+                        // 예시 - 아래와 같이 fetch 메소드를 사용하여 JSON 데이터를 요청할 수 있다.
+                        // fetch("/meta/exit?idx=" + metaIdx + "&nickname=" + writer)
+                        //     .then(response => response.json()) // JSON 형식으로 파싱
+                        //     .then(data => console.log(data)) // 응답 데이터 처리
+                        //     .catch(error => console.error(error)); // 오류 처리
+                        // fetch 메소드는 Promise를 반환하기 때문에, then 메서드를 사용하여 비동기 처리를 할 수 있다.
+                        // fetch 메소드를 사용하여 "/meta/exit?idx=방 번호&nickname=작성자" 주소로 GET 요청을 보내고,
+                        // then() 메소드를 사용하여 요청이 성공했을 때 반환된 Response 객체를 json() 메소드를 통해 JSON 형식으로 변환한다.
+                        // 그리고 다시 then() 메소드를 사용하여 변환된 JSON 데이터를 콘솔에 출력한다.
+                        // 만약 요청이 실패하면 catch 메소드에서 에러를 출력한다.
+                        fetch("/meta/exit?idx=" + metaIdx + "&nickname=" + writer);
+                        // 여기서는 fetch를 사용하여 서버에서 퇴장 유저를 처리한 뒤, 클라이언트에서는 추가로 더 할 일이 없기에 then() 메소드를 사용하지 않는다.
+
                         // id를 통해 참가자 구역에서 방장을 가져온다.
                         var mtr = document.getElementById(writer);
                         // 가져온 방장 id를 이용하여 방장을 참가자 구역에서 삭제한다.
                         mtr.remove();
 
                         // 방장 퇴장 후 방 삭제 메시지를 채팅 구역에 올리고, 방장을 참가자 구역에서 삭제한 뒤,
-                        // setTimeout 메소드를 사용하여 방장이 퇴장한지 60000ms(1분)이 경과하면 방이 삭제되도록 한다.
+                        // setTimeout 메소드를 사용하여 방장이 퇴장한지 1분이 경과하면 방이 삭제되도록 한다.
                         // 그리고 boomTimeoutId 변수에 setTimeout 메소드로 반환된 타이머 ID를 저장하여,
                         // 타이머가 실행되는 동안 ID를 사용하여 취소할 수 있도록 한다.
                         boomTimeoutId = setTimeout(function() {
@@ -394,14 +416,39 @@
                         // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                         chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
 
-                        // 작성자가 로그인 유저와 같은 경우 (본인)
+                        // 방장 닉네임과 로그인 유저 닉네임이 같은 경우 - 방장이 퇴장 유저를 처리한다.
+                        if ( metaMaster == nickname ) {
+                            // fetch를 사용하여 방 퇴장 URL에 파라미터로 방 번호와 작성자 닉네임을 가져가 퇴장 처리한다.
+                            // fetch(url, options) - 브라우저에서 제공하는 API 중 하나로, 네트워크 요청을 보내고 응답을 받아오는 메소드이다.
+                            //                       fetch() 메소드는 첫 번째 인자로 서버에 데이터를 요청할 URL을 전달받고, 두 번째 인자로 선택적으로 HTTP 요청과 관련된 다양한 옵션을 설정하는 객체를 전달받는다.
+                            //                       여기서 옵션 객체는 HTTP 요청에 대한 옵션을 설정할 수 있는 여러 가지 속성을 가지고 있는데,
+                            //                       예를 들어 method 속성을 이용하여 HTTP 요청 메소드(GET, POST, PUT, DELETE 등)를 지정할 수 있으며,
+                            //                       method 속성을 지정하지 않으면 기본적으로 HTTP 요청 메서드는 GET이 된다.
+                            //                       그러기에 두 번째 인자로 옵션 객체를 전달하지 않으면 기본적으로 HTTP 요청 메서드는 GET으로 지정된다.
+                            //                       또 다른 속성으로는 headers, mode, cache, credentials 등이 있다.
+                            //                       fetch() 메소드는 Promise 객체를 반환하며, 이를 통해 비동기적으로 서버로부터 데이터를 받아올 수 있다.
+                            //                       응답을 받아오는 데 성공하면 Response 객체를 반환하고, 실패하면 Error 객체를 반환한다.
+                            // 예시 - 아래와 같이 fetch 메소드를 사용하여 JSON 데이터를 요청할 수 있다.
+                            // fetch("/meta/exit?idx=" + metaIdx + "&nickname=" + writer)
+                            //     .then(response => response.json()) // JSON 형식으로 파싱
+                            //     .then(data => console.log(data)) // 응답 데이터 처리
+                            //     .catch(error => console.error(error)); // 오류 처리
+                            // fetch 메소드는 Promise를 반환하기 때문에, then 메서드를 사용하여 비동기 처리를 할 수 있다.
+                            // fetch 메소드를 사용하여 "/meta/exit?idx=방 번호&nickname=작성자" 주소로 GET 요청을 보내고,
+                            // then() 메소드를 사용하여 요청이 성공했을 때 반환된 Response 객체를 json() 메소드를 통해 JSON 형식으로 변환한다.
+                            // 그리고 다시 then() 메소드를 사용하여 변환된 JSON 데이터를 콘솔에 출력한다.
+                            // 만약 요청이 실패하면 catch 메소드에서 에러를 출력한다.
+                            fetch("/meta/exit?idx=" + metaIdx + "&nickname=" + writer);
+                            // 여기서는 fetch를 사용하여 서버에서 퇴장 유저를 처리한 뒤, 클라이언트에서는 추가로 더 할 일이 없기에 then() 메소드를 사용하지 않는다.
+                        }
+
+                        // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
                         if ( writer === nickname ) {
                             // 로컬 스토리지를 제거한다.
                             localStorage.clear();
                             // 퇴장 URL에 파라미터로 방 번호와 닉네임을 가져가 퇴장한다.
-                            alert(nickname);
                             location.href = "/meta/exit?idx=" + metaIdx + "&nickname=" + nickname;
-                        // 작성자가 로그인 유저와 다른 경우 (타 유저)
+                        // 작성자 닉네임과 로그인 유저 닉네임이 다른 경우 (타 유저)
                         } else {
                             // 작성자 닉네임의 id를 통해 참가자 구역에 작성되어 있는 작성자를 가져와 mtr 변수에 저장한다.
                             var mtr = document.getElementById(writer);
@@ -601,7 +648,7 @@
                         // MediaRecorder의 start() 메소드를 호출하여 녹음을 시작한다.
                         mediaRecorder.start();
 
-                        // setTimeout 메소드를 사용하여 녹음이 시작된지 300000ms(5분)이 경과하면 자동으로 녹음이 멈추고,
+                        // setTimeout 메소드를 사용하여 녹음이 시작된지 5분이 경과하면 자동으로 녹음이 멈추고,
                         // 이후 녹음을 더 이상 할 수 없도록 막고 초기화와 전송만 가능하도록 한다.
                         // 그리고 recordTimeoutId 변수에 setTimeout 메소드로 반환된 타이머 ID를 저장하여,
                         // 타이머가 실행되는 동안 ID를 사용하여 취소할 수 있도록 한다.
@@ -774,41 +821,14 @@
 
         // 3. 페이지 이탈 후 퇴장 메시지 전송 메소드 - unload에서 지정한 메소드
         function exit() {
-            // 방장 닉네임과 퇴장 유저 닉네임이 동일한지 체크한다.
-            // 닉네임이 동일한 경우 - 방장 퇴장
+            // 방장 닉네임과 퇴장 유저 닉네임이 같은지 체크한다.
+            // 닉네임이 같은 경우 - 방장 퇴장
             if ( metaMaster == nickname ) {
-                // 방에 참여중인 인원이 몇명인지 체크한다.
-                // 참여중인 인원이 방장 혼자인 경우
-                if ( metaRecruitingPersonnel == 1 ) {
-                    // fetch를 사용하여 방 삭제 URL에 파라미터로 방 번호와 닉네임을 가져가 방 삭제 후 바로 퇴장한다.
-                    // fetch(url, options) - 브라우저에서 제공하는 API 중 하나로, 네트워크 요청을 보내고 응답을 받아오는 메소드이다.
-                    //                       fetch() 메소드는 첫 번째 인자로 서버에 데이터를 요청할 URL을 전달받고, 두 번째 인자로 선택적으로 HTTP 요청과 관련된 다양한 옵션을 설정하는 객체를 전달받는다.
-                    //                       여기서 옵션 객체는 HTTP 요청에 대한 옵션을 설정할 수 있는 여러 가지 속성을 가지고 있는데,
-                    //                       예를 들어 method 속성을 이용하여 HTTP 요청 메소드(GET, POST, PUT, DELETE 등)를 지정할 수 있으며,
-                    //                       method 속성을 지정하지 않으면 기본적으로 HTTP 요청 메서드는 GET이 된다.
-                    //                       그러기에 두 번째 인자로 옵션 객체를 전달하지 않으면 기본적으로 HTTP 요청 메서드는 GET으로 지정된다.
-                    //                       또 다른 속성으로는 headers, mode, cache, credentials 등이 있다.
-                    //                       fetch() 메소드는 Promise 객체를 반환하며, 이를 통해 비동기적으로 서버로부터 데이터를 받아올 수 있다.
-                    //                       응답을 받아오는 데 성공하면 Response 객체를 반환하고, 실패하면 Error 객체를 반환한다.
-                    // 예시 - 아래와 같이 fetch 메소드를 사용하여 JSON 데이터를 요청할 수 있다.
-                    // fetch("/meta/delete?idx=" + metaIdx + "&nickname=" + nickname)
-                    //     .then(response => response.json()) // JSON 형식으로 파싱
-                    //     .then(data => console.log(data)) // 응답 데이터 처리
-                    //     .catch(error => console.error(error)); // 오류 처리
-                    // fetch 메소드는 Promise를 반환하기 때문에, then 메서드를 사용하여 비동기 처리를 할 수 있다.
-                    // fetch 메소드를 사용하여 "/meta/delete?idx=1&nickname=테스터" 주소로 GET 요청을 보내고,
-                    // then() 메소드를 사용하여 요청이 성공했을 때 반환된 Response 객체를 json() 메소드를 통해 JSON 형식으로 변환한다.
-                    // 그리고 다시 then() 메소드를 사용하여 변환된 JSON 데이터를 콘솔에 출력한다.
-                    // 만약 요청이 실패하면 catch 메소드에서 에러를 출력한다.
-                    fetch ("/meta/delete?idx=" + metaIdx + "&nickname=" + nickname);
-                // 참여중인 인원이 2명 이상인 경우
-                } else {
-                    // send(path, header, message)로 퇴장 메시지를 전송한다. (퇴장할때 딱 한번만 전송한다.)
-                    // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
-                    // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({type : "delete", metaIdx : metaIdx, writer : nickname, metaRecruitingPersonnel : metaRecruitingPersonnel, master : metaMaster}));
-                }
-            // 닉네임이 동일하지 않은 경우 - 유저 퇴장
+                // send(path, header, message)로 퇴장 메시지를 전송한다. (방장이 퇴장할때 딱 한번만 전송한다.)
+                // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+                // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+                stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({type : "delete", metaIdx : metaIdx, writer : nickname, metaRecruitingPersonnel : metaRecruitingPersonnel, master : metaMaster}));
+            // 닉네임이 다른 경우 - 유저 퇴장
             } else {
                 // send(path, header, message)로 퇴장 메시지를 전송한다. (퇴장할때 딱 한번만 전송한다.)
                 // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
@@ -822,7 +842,7 @@
     <script th:inline="javascript">
         //////////////////////////////////////////////////// 변수 구역 ////////////////////////////////////////////////////
         var canvasMetaIdx = [[${metaRoom.idx}]]; // 방 번호
-        var canvasNickname = [[${nickImage.nickname}]]; // 로그인 유저의 닉네임
+        var canvasNickname = [[${nickImage.nickname}]]; // 로그인 유저 닉네임
         var canvasProfileImage = [[${nickImage.profileImage}]]; // 로그인 유저의 프로필 사진
         let canvasEntryCheck = [[${entryCheck}]]; // 입장 체크값
 
@@ -845,15 +865,17 @@
         let imgBg = new Image(); // 배경 이미지
         imgBg.src = "/map/studyRoom.png"; // 배경 이미지 주소
 
-        let a = document.getElementById("canvas").clientWidth;
-        let b = "";
-        let c = document.getElementById("canvas").clientHeight;
-        d = "";
+        // id를 통해 캔버스의 너비를 가져와 cw 변수에 전달한다.
+        // clientWidth 속성은 패딩을 포함하지만 테두리나 마진은 포함하지 않는 요소의 내부 너비를 픽셀 단위로 반환한다.
+        let cw = document.getElementById("canvas").clientWidth;
+        // id를 통해 캔버스의 높이를 가져와 ch 변수에 전달한다.
+        // clientHeight 속성은 패딩을 포함하지만 테두리나 마진은 포함하지 않는 요소의 내부 높이를 픽셀 단위로 반환한다.
+        let ch = document.getElementById("canvas").clientHeight;
 
-        let x = ""; // 캐릭터 시작 위치 지정
-        let y = ""; // 캐릭터 시작 위치 지정
-        let w = 20; // 캐릭터 크기 지정 (전체 사이즈의 절반만 작성)
-        let h = 20; // 캐릭터 크기 지정 (전체 사이즈의 절반만 작성)
+        let x; // 캐릭터 x좌표 위치
+        let y; // 캐릭터 y좌표 위치
+        let w = 20; // 캐릭터 너비 (전체 사이즈의 절반만 작성)
+        let h = 20; // 캐릭터 높이 (전체 사이즈의 절반만 작성)
         //////////////////////////////////////////////////// 소켓 구역 ////////////////////////////////////////////////////
         // 1. SockJS를 생성한다. (StompWebSocketConfig에서 설정한 Endpoint와 동일하게 맞춰준다.)
         var canvasSockJs = new SockJS("/ws/meta/canvas");
@@ -872,15 +894,17 @@
                 //    JSON형식으로 넘어온 DTO를 JavaScript형식으로 변환한다.
                 var canvasContent = JSON.parse(message.body);
                 // 6-1. 변환된 DTO를 사용하기 편하게 각각 변수에 나눠놓는다.
-                var canvasWriter = canvasContent.writer; // 작성자
-                var canvasExit = canvasContent.exit; // 퇴장 체크값
+                var canvasWriter = canvasContent.writer; // 작성자 닉네임
                 var canvasType = canvasContent.type; // 메시지 타입
 
-                // 방을 퇴장하는 경우 - 본인은 퇴장하고 없으므로 타 유저인 경우에만 실시간으로 참가자 구역에서 삭제되도록 만든다.
-                if ( canvasExit != null ) {
-                    serverCharacters = canvasExit; // 캐릭터 Map - 서버로 보내기용
-                    canvasCharacters = JSON.parse(serverCharacters); // 캐릭터 Map 파싱 - 캔버스에 그리기용
+                // 방을 퇴장한 유저가 있는 경우
+                if ( canvasType == "exit" || canvasType == "delete" ) {
+                    serverCharacters = canvasContent.exit; // 퇴장한 유저를 제외한 캐릭터 Map - 서버로 보내기용
+                    canvasCharacters = JSON.parse(serverCharacters); // 퇴장한 유저를 제외한 캐릭터 Map 파싱 - 캔버스에 그리기용
+                    // 캐릭터 그리기 메소드로 이동한다.
+                    // 퇴장한 유저를 제외한 캐릭터 Map으로 다시 그린다.
                     drawChar();
+                // 방을 퇴장한 유저가 없는 경우
                 } else {
                     serverCharacters = canvasContent.characters; // 캐릭터 Map - 서버로 보내기용
                     canvasCharacters = JSON.parse(serverCharacters); // 캐릭터 Map 파싱 - 캔버스에 그리기용
@@ -888,18 +912,23 @@
                     // 메시지 타입이 왼쪽이거나 위쪽이거나 오른쪽이거나 아래쪽일 경우
                     if ( canvasType == "left" || canvasType == "top" || canvasType == "right" || canvasType == "bottom" ) {
                         // 캐릭터 그리기 메소드로 이동한다.
+                        // 이동한 좌표의 캐릭터 Map으로 다시 그린다.
                         drawChar();
                     }
 
-                    // 작성자가 로그인 유저와 같은 경우 (본인)
-                    if ( canvasNickname == canvasWriter ) {
-                        // 메시지 타입이 첫 입장이거나 재입장일 경우
-                        if ( canvasType == "enter" || canvasType == "reEnter" ) {
-                            // 캔버스 메소드로 이동한다.
+                    // 메시지 타입이 첫 입장이거나 재입장일 경우
+                    if ( canvasType == "enter" || canvasType == "reEnter" ) {
+                        // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
+                        if ( canvasNickname === canvasWriter ) {
+                            // 캔버스 시작 메소드로 이동한다.
+                            // 캔버스를 시작한다.
                             canvasStart();
+                        // 작성자 닉네임과 로그인 유저 닉네임이 다른 경우 (타 유저)
+                        } else {
+                            // 캐릭터 그리기 메소드로 이동한다.
+                            // 타 유저의 캐릭터 Map으로 다시 그린다.
+                            drawChar();
                         }
-                    } else {
-                        drawChar();
                     }
                 }
             });
@@ -911,14 +940,14 @@
                 // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장할때 딱 한번만 여기서 입장 메시지를 전송한다.)
                 //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                stomp.send('/pub/meta/studyRoom/canvas/enter', {}, JSON.stringify({type : "enter", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, x : a / 2, y : (c / 6) * 5}));
+                canvasStomp.send('/pub/meta/studyRoom/canvas/enter', {}, JSON.stringify({type : "enter", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));
             // 재입장(새로고침)일 경우 - 입장 체크값이 존재한다.
             } else {
                 // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
                 // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장 이후 모든 재입장(새로고침)은 여기서 입장 메시지를 전송한다.)
                 //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                stomp.send('/pub/meta/studyRoom/canvas/reenter', {}, JSON.stringify({type : "reEnter", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, x : a / 2, y : (c / 6) * 5}));
+                canvasStomp.send('/pub/meta/studyRoom/canvas/reenter', {}, JSON.stringify({type : "reEnter", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));
             }
         });
         /////////////////////////////////////////////////// 캔버스 구역 ///////////////////////////////////////////////////
@@ -1007,28 +1036,28 @@
                     // send(path, header, message)로 채팅 메시지를 전송한다. (왼쪽 키가 눌릴 경우 여기서 이동 메시지를 전송한다.)
                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type : "left", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    canvasStomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type : "left", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
                     break;
                 // 위로 이동
                 case 38:
                     // send(path, header, message)로 채팅 메시지를 전송한다. (위쪽 키가 눌릴 경우 여기서 이동 메시지를 전송한다.)
                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type : "top", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    canvasStomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type : "top", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
                     break;
                 // 오른쪽으로 이동
                 case 39:
                     // send(path, header, message)로 채팅 메시지를 전송한다. (오른쪽 키가 눌릴 경우 여기서 이동 메시지를 전송한다.)
                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type : "right", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    canvasStomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type : "right", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
                     break;
                 // 아래로 이동
                 case 40:
                     // send(path, header, message)로 채팅 메시지를 전송한다. (아래쪽 키가 눌릴 경우 여기서 이동 메시지를 전송한다.)
                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    stomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type : "bottom", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
+                    canvasStomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type : "bottom", metaIdx : canvasMetaIdx, writer : canvasNickname, character : canvasProfileImage, canvasLeft : canvasLeft, canvasTop : canvasTop, canvasRight : canvasRight, canvasBottom : canvasBottom}));
                     break;
             }
         }

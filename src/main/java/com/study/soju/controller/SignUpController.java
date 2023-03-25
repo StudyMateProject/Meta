@@ -227,14 +227,14 @@ public class SignUpController {
         if ( rpJoinSocialMember == null ) { // 회원가입
             // 9-1-1. "0"을 반환한다. - 콜백 메소드에서 다음 네이버 회원가입 페이지로 이동시킨다.
             return "0";
-            // 9-2. 반환받은 DTO가 있는 경우 - 네이버 가입자 or 타 플랫폼 가입자
+        // 9-2. 반환받은 DTO가 있는 경우 - 네이버 가입자 or 타 플랫폼 가입자
         } else {
             // 10. 받환받은 DTO 값 중 Idx를 체크한다.
             // 10-1. idx가 0일 경우 - 네이버 이메일을 사용하여 다른 플랫폼으로 가입한 유저
             if ( rpJoinSocialMember.getIdx() == 0 ) { // 에러
                 // 10-1-1. 에러메세지를 반환한다. - 콜백 메소드에서 에러메세지를 띄운뒤 로그인 페이지로 이동시킨다.
                 return rpJoinSocialMember.getErrMsg();
-                // 10-2. idx가 0이 아닐 경우 - 네이버로 가입한 유저
+            // 10-2. idx가 0이 아닐 경우 - 네이버로 가입한 유저
             } else { // 로그인
                 // 10-2-1. "1"을 반환한다. - 콜백 메소드에서 Spring Security가 관리하고 있는 OAuth2를 통해 OAuth2UserService로 이동시킨다.
                 return "1";

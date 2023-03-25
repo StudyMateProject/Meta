@@ -184,18 +184,18 @@ public class MetaService {
     }
 
     // 입장한 메타 방 조회 후 모집된 인원 감소 및 참가자 삭제
-    public void exit(long idx, String nickname) { // 3. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
-        // 4. 3에서 파라미터로 받아온 방 번호와 닉네임으로 방 내부 참여자 명단에서 해당 유저를 삭제한다. (@Query 어노테이션 사용)
+    public void exit(long idx, String nickname) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
+        // 2. 1에서 파라미터로 받아온 방 번호와 닉네임으로 방 내부 참여자 명단에서 해당 유저를 삭제한다. (@Query 어노테이션 사용)
         metaRoomRepository.exitMetaRoom(idx, nickname);
-        // 5. 3에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
+        // 3. 1에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
         metaRepository.updateMetaRecruitingPersonnelCount(idx);
     }
 
     // 방 삭제
-    public void delete(long idx) { // 3. 파라미터로 컨트롤러에서 넘어온 방 번호를 받아온다.
-        // 4. 3에서 파라미터로 받아온 방 번호에 해당하는 방을 삭제한다. (@Query 어노테이션 사용)
+    public void delete(long idx) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호를 받아온다.
+        // 2. 1에서 파라미터로 받아온 방 번호에 해당하는 방을 삭제한다. (@Query 어노테이션 사용)
         metaRepository.deleteByIdx(idx);
-        // 5. 3에서 파라미터로 받아온 방 번호에 해당하는 방에 참여중인 참가자들을 모두 삭제한다. (@Query 어노테이션 사용)
+        // 3. 1에서 파라미터로 받아온 방 번호에 해당하는 방에 참여중인 참가자들을 모두 삭제한다. (@Query 어노테이션 사용)
         metaRoomRepository.deleteByMetaIdx(idx);
     }
 }
