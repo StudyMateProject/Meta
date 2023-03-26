@@ -18,6 +18,8 @@ import java.util.List;
 public interface MetaRoomRepository extends JpaRepository<MetaRoom, Object> {
     List<MetaRoom> findByMetaIdx(long idx);
 
+    MetaRoom findByMetaNickname(String metaNickname);
+
     // 11-1. @Query 어노테이션을 사용하여 조회에 사용할 쿼리를 작성한다.
     @Query("SELECT m FROM MetaRoom m WHERE m.metaIdx = :metaIdx AND m.metaNickname = :metaNickname")
     MetaRoom findByEntranceMetaRoom(@Param("metaIdx") long idx, @Param("metaNickname") String metaNickname);

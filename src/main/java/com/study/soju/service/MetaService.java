@@ -115,6 +115,22 @@ public class MetaService {
         }
     }
 
+    // 방 번호에 해당하는 방 참가 상태 체크
+    public int entranceCheck(String metaNickname) { // 1. 파라미터로 컨트롤러에서 넘어온 닉네임을 받아온다.
+        // 2. 1에서 파라미터로 받아온 닉네임으로 해당 유저가 어떤 방이든 내부 참여자 명단에 존재하는지 조회하고, 조회된 값을 받아온다.
+        MetaRoom metaRoom = metaRoomRepository.findByMetaNickname(metaNickname);
+        // 3. 2에서 조회된 값이 존재하는지 체크한다.
+        // 3-1. 조회된 값이 존재하지 않는 경우 - 로그인 유저가 방 내부 참여자 명단에 존재하지 않는다.
+        if ( metaRoom == null ) {
+            // 3-1-1. 0을 반환한다.
+            return 0;
+        // 3-2. 조회된 값이 존재하는 경우 - 로그인 유저가 방 내부 참여자 명단에 존재한다.
+        } else {
+            // 3-2-1. 1을 반환한다.
+            return 1;
+        }
+    }
+
     // 입장한 메타 방 조회 후 모집된 인원 증가
     public Meta.rpEntrance newEntrance(long idx, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 로그인 유저 정보 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.

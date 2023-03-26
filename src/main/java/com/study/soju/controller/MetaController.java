@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -179,19 +178,32 @@ public class MetaController {
         // 4. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값이 존재하는지 체크한다.
         // 4-1. 세션에 값이 존재하는 경우 - 재입장(새로고침)
         if ( session.getAttribute(rpNickImage.getNickname()) != null ) {
-            // 4-1-1. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+            // 4-1-1. 2에서 반환받은 DTO 값 중 닉네임을 서비스에 전달한다.
+            int entranceCheck = metaService.entranceCheck(rpNickImage.getNickname());
+            // 4-1-1-1. 3에서 반환받은 값이 어떤것인지 체크한다.
+            // 4-1-1-1-1. 반환받은 값이 0인 경우 - 세션 존재 O / 방 내부 참여자 명단 존재 X - 퇴장 후 첫 입장
+            //            세션은 존재하고 방 내부 참여자 명단에는 존재하지 않다는 것은 퇴장 후 첫 입장을 의미한다.
+            if ( entranceCheck == 0 ) {
+                // 4-1-1-1-1-1. 2에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
+                session.removeAttribute(rpNickImage.getNickname());
+                // 4-1-1-1-1-2. 1에서 파라미터로 받아온 방 번호를 가지고 스터리룸 페이지로 리다이렉트한다.
+                return "redirect:/meta/studyroom?idx=" + idx;
+            }
+            // 4-1-1-1-2. 반환받은 값이 1인 경우 - 세션 존재 O / 방 내부 참여자 명단 존재 O - 재입장(새로고침)
+            //            세션도 존재하고 방 내부 참여자 명단에도 존재한다는 것은 재입장(새로고침)을 의미한다.
+            // 4-1-1-1-2-1. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
             Meta.rpEntrance rpReEntrance = metaService.reEntrance(idx);
-            // 4-1-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+            // 4-1-1-1-2-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
             List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
-            // 4-1-3. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+            // 4-1-1-1-2-3. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
             model.addAttribute("nickImage", rpNickImage);
-            // 4-1-4. 4-1-1에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
+            // 4-1-1-1-2-4. 4-1-1-1-2-1에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
             model.addAttribute("metaRoom", rpReEntrance);
-            // 4-1-5. 4-1-2에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
+            // 4-1-1-1-2-5. 4-1-1-1-2-2에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
             model.addAttribute("participantList", rpMetaRoomIdxList);
-            // 4-1-6. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값을 바인딩한다.
+            // 4-1-1-1-2-6. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값을 바인딩한다.
             model.addAttribute("entryCheck", session.getAttribute(rpNickImage.getNickname()));
-            // 4-1-7. 스터디룸 페이지로 이동한다.
+            // 4-1-1-1-2-7. 스터디룸 페이지로 이동한다.
             return "Meta/StudyRoom";
         // 4-2. 세션에 값이 존재하지 않는 경우 - 첫 입장
         } else {
@@ -337,14 +349,7 @@ public class MetaController {
     @GetMapping("/exit")
     @ResponseBody // 비동기 통신 fetch를 사용하였기에 필요한 어노테이션
     public void exitRoom(@RequestParam long idx, @RequestParam String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
-        // 2. 세션을 사용하기 위하여 HttpServletRequest을 통해 세션 객체를 가져온다.
-        HttpSession session = request.getSession();
-        // 3. 2에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
-        System.out.println(nickname);
-        System.out.println(session.getAttribute(nickname));
-        session.removeAttribute(nickname);
-        System.out.println(session.getAttribute(nickname));
-        // 4. 1에서 파라미터로 받아온 방 번호와 닉네임을 서비스에 전달한다.
+        // 2. 1에서 파라미터로 받아온 방 번호와 닉네임을 서비스에 전달한다.
         metaService.exit(idx, nickname);
     }
 

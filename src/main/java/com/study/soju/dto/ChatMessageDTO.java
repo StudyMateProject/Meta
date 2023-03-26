@@ -16,6 +16,7 @@ public class ChatMessageDTO {
     private String participant; // 참가자
     private String profileImage; // 참가자 프로필 사진
     private int metaRecruitingPersonnel; // 참여중인 인원
-    private String exit; // 퇴장 체크값
+    private String exit; // 퇴장 체크 값
     private String master; // 방장 닉네임
+    private String err; // 에러 체크 값
 }

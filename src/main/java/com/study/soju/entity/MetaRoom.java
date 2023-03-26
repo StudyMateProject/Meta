@@ -48,4 +48,19 @@ public class MetaRoom {
             this.metaMaster = metaRoom.getMetaMaster();
         }
     }
+
+    // 방 번호에 해당하는 방 참가 상태 체크 Response DTO
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @ToString
+    public static class rpEntranceCheck {
+        private String metaNickname;
+
+        // Entity를 DTO로 변환 (생성자 방식)
+        public rpEntranceCheck(MetaRoom metaRoom) {
+            this.metaNickname = metaRoom.getMetaNickname();
+        }
+    }
 }
