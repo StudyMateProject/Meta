@@ -15,7 +15,7 @@
 	USE soju;
 
 ##### ~~사용된 테이블 : Member, MetaRoom~~ (아래 수정된 테이블 사용)
-	멤버 테이블
+	멤버
 	CREATE TABLE Member (
 		emailId VARCHAR(50) PRIMARY KEY, #이메일 형식 아이디
 		pwd VARCHAR(255) NOT NULL, #비밀번호
@@ -56,7 +56,7 @@
 	USE soju;
 
 ##### ~~사용된 테이블 : Member, MetaRoom~~ (아래 수정된 테이블 사용)
-	멤버 테이블
+	멤버
 	CREATE TABLE Member (
 		##################회원가입 전 입력##################
 		emailId VARCHAR(50) PRIMARY KEY, #이메일 형식 아이디
@@ -233,12 +233,12 @@
 ##### Meta 테이블에 metaIdx를 idx로 변경하였다.
 ##### Meta 테이블과 MetaRoom 테이블에 각각 방장 닉네임을 받을 수 있는 metaMaster 컬럼을 추가하였다.
 
-##### 사용된 데이터베이스 : MySQL - soju
+##### ~~사용된 데이터베이스 : MySQL - soju~~ (아래 수정된 테이블 사용)
 	CREATE DATABASE soju;
 	USE soju;
 
-##### 사용된 테이블 : Member, MetaRoom
-	멤버 테이블
+##### ~~사용된 테이블 : Member, MetaRoom~~ (아래 수정된 테이블 사용)
+	멤버
 	CREATE TABLE Member (
 		idx BIGINT PRIMARY KEY AUTO_INCREMENT,
 		##################회원가입 전 입력##################
@@ -295,5 +295,54 @@
 
 ### 📌 03/28
 #### ✔ 방장 위임 기능 및 참가자 강퇴 기능 구현
+#### ✔ 테이블 변경
+##### MetaRoom 테이블에 metaMaster(방장 닉네임) 컬럼을 Meta 테이블의 metaMaster(방장 닉네임) 컬럼과 외래키(FOREIGN KEY)로 연결하였다.
+##### 이에 따라 Meta 테이블에서 metaMaster(방장 닉네임) 컬럼을 갱신하면 자동으로 MetaRoom 테이블의 metaMaster(방장 닉네임) 컬럼도 함께 갱신된다.
+
+##### 사용된 데이터베이스 : MySQL - soju
+	CREATE DATABASE soju;
+	USE soju;
+
+##### 사용된 테이블 : Member, MetaRoom
+	멤버 테이블
+	CREATE TABLE Member (
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT,
+		##################회원가입 전 입력##################
+		emailId VARCHAR(50) PRIMARY KEY, #이메일 형식 아이디
+		pwd VARCHAR(255) NOT NULL, #비밀번호
+		name VARCHAR(10) NOT NULL, #이름
+		nickname VARCHAR(20) UNIQUE NOT NULL, #닉네임
+		birthday DATE NOT NULL, #생년월일
+		gender VARCHAR(1) NOT NULL, #성별
+		phoneNumber VARCHAR(15) UNIQUE NOT NULL, #핸드폰 번호
+		address VARCHAR(100) NOT NULL, #주소
+		studyType VARCHAR(10) NOT NULL, #관심있는 분야
+		platform VARCHAR(10) NOT NULL, #플랫폼
+		roleName VARCHAR(100) NOT NULL, #Spring Security 권한	
+		##################회원가입 후 입력##################
+		profileImage VARCHAR(100) #프로필 사진
+	);
+	
+	#메타버스 방
+	CREATE TABLE Meta(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #방 번호 - 기본키, 시퀀스
+		metaTitle VARCHAR(50) NOT NULL, #방 제목
+		metaType VARCHAR(10) NOT NULL, #방 분야
+		metaPersonnel INT NOT NULL, #방 모집 인원
+		metaRecruitingPersonnel INT NOT NULL, #방 모집된 인원
+		metaMaster VARCHAR(20) UNIQUE #방장 닉네임
+	);
+
+	#메타버스 방 내부
+	CREATE TABLE MetaRoom(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #방 입장 번호(순서) - 기본키, 시퀀스
+		metaIdx BIGINT NOT NULL, #방 번호
+		CONSTRAINT fk_metaRoomIdx FOREIGN KEY(metaIdx) REFERENCES Meta(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		metaNickname VARCHAR(20) UNIQUE NOT NULL, #닉네임
+		CONSTRAINT fk_metaRoomNickname FOREIGN KEY(metaNickname) REFERENCES Member(nickname) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		metaProfileImage VARCHAR(100), #프로필 사진
+		metaMaster VARCHAR(20), #방장 닉네임
+		CONSTRAINT fk_metaRoomMaster FOREIGN KEY(metaMaster) REFERENCES Meta(metaMaster) ON DELETE CASCADE ON UPDATE CASCADE #포린키 연결
+	);
 
 #
