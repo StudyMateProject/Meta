@@ -298,6 +298,7 @@
 #### ✔ 테이블 변경
 ##### MetaRoom 테이블에 metaMaster(방장 닉네임) 컬럼을 Meta 테이블의 metaMaster(방장 닉네임) 컬럼과 외래키(FOREIGN KEY)로 연결하였다.
 ##### 이에 따라 Meta 테이블에서 metaMaster(방장 닉네임) 컬럼을 갱신하면 자동으로 MetaRoom 테이블의 metaMaster(방장 닉네임) 컬럼도 함께 갱신된다.
+##### Member 테이블에 studyType 컬럼의 길이를 1 증가시켜 11로 만들었다.
 
 ##### 사용된 데이터베이스 : MySQL - soju
 	CREATE DATABASE soju;
@@ -316,7 +317,7 @@
 		gender VARCHAR(1) NOT NULL, #성별
 		phoneNumber VARCHAR(15) UNIQUE NOT NULL, #핸드폰 번호
 		address VARCHAR(100) NOT NULL, #주소
-		studyType VARCHAR(10) NOT NULL, #관심있는 분야
+		studyType VARCHAR(11) NOT NULL, #관심있는 분야
 		platform VARCHAR(10) NOT NULL, #플랫폼
 		roleName VARCHAR(100) NOT NULL, #Spring Security 권한	
 		##################회원가입 후 입력##################
