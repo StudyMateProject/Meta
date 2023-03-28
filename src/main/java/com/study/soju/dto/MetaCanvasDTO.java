@@ -8,10 +8,10 @@ import lombok.ToString;
 @Setter
 @ToString
 public class MetaCanvasDTO {
+    private String type; // 메시지 타입
     private Long metaIdx; // 방 번호
     private String writer; // 참가자
     private String character; // 캐릭터
-    private String type; // 메시지 타입
     private int x; // x축 좌표
     private int y; // y축 좌표
     private String characters; // 캐릭터 정보 Map

@@ -66,9 +66,9 @@ public class MetaService {
     }
 
     // 입장하는 방에 참가중인지 조회 - 방장 첫 입장 체크
-    public int entranceMetaRoom(long idx, String metaNickname) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
+    public int entranceMetaRoom(long idx, String nickname) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호와 닉네임으로 방 내부 참여자 명단에서 해당 유저를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
-        MetaRoom metaRoom = metaRoomRepository.findByEntranceMetaRoom(idx, metaNickname);
+        MetaRoom metaRoom = metaRoomRepository.findByEntranceMetaRoom(idx, nickname);
         // 3. 2에서 조회된 값이 존재하는지 체크한다.
         // 3-1. 조회된 값이 존재하지 않는 경우 - 유저 입장
         if (metaRoom == null) {
@@ -116,9 +116,9 @@ public class MetaService {
     }
 
     // 방 번호에 해당하는 방 참가 상태 체크
-    public int entranceCheck(String metaNickname) { // 1. 파라미터로 컨트롤러에서 넘어온 닉네임을 받아온다.
+    public int entranceCheck(String nickname) { // 1. 파라미터로 컨트롤러에서 넘어온 닉네임을 받아온다.
         // 2. 1에서 파라미터로 받아온 닉네임으로 해당 유저가 어떤 방이든 내부 참여자 명단에 존재하는지 조회하고, 조회된 값을 받아온다.
-        MetaRoom metaRoom = metaRoomRepository.findByMetaNickname(metaNickname);
+        MetaRoom metaRoom = metaRoomRepository.findByMetaNickname(nickname);
         // 3. 2에서 조회된 값이 존재하는지 체크한다.
         // 3-1. 조회된 값이 존재하지 않는 경우 - 로그인 유저가 방 내부 참여자 명단에 존재하지 않는다.
         if ( metaRoom == null ) {
@@ -160,6 +160,8 @@ public class MetaService {
                 metaRoomParticipate.setMetaNickname(rpNickImage.getNickname());
                 // 4-2-2-3. 1에서 파라미터로 받아온 로그인 유저 정보 DTO 값 중 프로필 이미지를 setter를 통하여 MetaRoom에 전달한다.
                 metaRoomParticipate.setMetaProfileImage(rpNickImage.getProfileImage());
+                // 4-2-2-4. 2에서 조회하고 받아온 Entity 값 중 방장 닉네임을 setter를 통하여 MetaRoom에 전달한다.
+                metaRoomParticipate.setMetaMaster(meta.getMetaMaster());
                 // 4-2-3. 4-2-2에서 값들이 전달된 Entity를 방 내부 참여자 명단에 저장한다.
                 metaRoomRepository.save(metaRoomParticipate);
                 // 4-2-4. 1에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
@@ -199,12 +201,20 @@ public class MetaService {
         return rpMetaRoomIdxList;
     }
 
+    public int delegateMaster(long idx, String nickname) {
+//        metaRoomRepository.updateMetaMaster(idx);
+        int res = metaRepository.updateMetaMaster(idx, nickname);
+        return res;
+    }
+
     // 입장한 메타 방 조회 후 모집된 인원 감소 및 참가자 삭제
-    public void exit(long idx, String nickname) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
-        // 2. 1에서 파라미터로 받아온 방 번호와 닉네임으로 방 내부 참여자 명단에서 해당 유저를 삭제한다. (@Query 어노테이션 사용)
-        metaRoomRepository.exitMetaRoom(idx, nickname);
+    public int exit(long idx, String nickname) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
+        // 2. 1에서 파라미터로 받아온 방 번호와 닉네임으로 방 내부 참여자 명단에서 해당 유저를 삭제하고, 삭제된 결과값을 받아온다. (@Query 어노테이션 사용)
+        int res = metaRoomRepository.exitMetaRoom(idx, nickname);
         // 3. 1에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
         metaRepository.updateMetaRecruitingPersonnelCount(idx);
+        // 4. 2에서 삭제된 결과값을 반환한다.
+        return res;
     }
 
     // 방 삭제

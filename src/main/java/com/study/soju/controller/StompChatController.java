@@ -179,6 +179,42 @@ public class StompChatController {
         template.convertAndSend("/sub/meta/studyRoom/" + metaIdx, recordFile, headers.getMessageHeaders());
     }
 
+    @MessageMapping(value = "/meta/studyRoom/delegatemaster")
+    public void delegateMasterStudyRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 방장 위임 정보들을 DTO로 받아온다.
+        // 2. 받아온 DTO 값 중 작성자를 가져와 방장 위임 메시지를 작성해 DTO 값 중 메시지에 저장한다.
+        message.setMessage(message.getMetaTitle() + "방에 방장이 " + message.getWriter() + "님에서 " + message.getMaster() + "님으로 변경되었습니다.");
+        // 3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+        //    "/sub" + "/meta/studyRoom/" + metaIdx = "/sub/meta/studyRoom/1"
+        template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
+    }
+
+    // 스터디룸 강퇴
+    @MessageMapping(value = "/meta/studyRoom/kickout")
+    public void kickOutStudyRoom(ChatMessageDTO message) throws JsonProcessingException { // 1. 클라이언트로부터 전송된 강퇴 정보들을 DTO로 받아온다.
+        // 2. 받아온 DTO 값 중 작성자를 가져와 강퇴 메시지를 작성해 DTO 값 중 메시지에 저장한다.
+        message.setMessage(message.getWriter() + "님은 " + message.getMetaTitle() + "방에서 강제 탈주 되셨습니다.");
+        // 3. 1에서 파라미터로 받아온 DTO 값 중 참가중인 인원을 가져와 1을 감소한뒤 다시 참가중인 인원에 저장한다.
+        message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
+        // 4. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+        //    "/sub" + "/meta/studyRoom/" + metaIdx = "/sub/meta/studyRoom/1"
+        template.convertAndSend("/sub/meta/studyRoom/" + message.getMetaIdx(), message);
+
+        // 5. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+        Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
+        // 6. 6에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 List를 제거한다.
+        metaCanvasMap.remove(message.getExit());
+        // 7. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 6에서 가져온 Map을 JSON 문자열로 변환한다.
+        String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+        // 8. 8에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장자에 setter를 통해 전달한다.
+        message.setExit(metaCanvasJson);
+        // 9. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 DTO를 다시 전달한다.
+        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+        //    "/sub" + "/meta/studyRoom/canvas/" + metaIdx = "/sub/meta/studyRoom/canvas/1"
+        template.convertAndSend("/sub/meta/studyRoom/canvas/" + message.getMetaIdx(), message);
+    }
+
     // 스터디룸 퇴장
     @MessageMapping(value = "/meta/studyRoom/exit")
     // Future - Future 인터페이스는 Java5부터 java.util.concurrency 패키지에서 비동기의 결과값을 받는 용도로 사용했지만 비동기의 결과값을 조합하거나, error를 핸들링할 수가 없었다.
@@ -189,12 +225,10 @@ public class StompChatController {
     public CompletableFuture<Void> exitStudyRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 퇴장 정보들을 DTO로 받아온다.
         // 2. 받아온 DTO 값 중 작성자를 가져와 퇴장 메시지를 작성해 DTO 값 중 메시지에 저장한다.
         message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에서 탈주하였습니다.");
-        // 3. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 퇴장자로 저장한다.
-        message.setExit(message.getWriter());
-        // 4. 1에서 파라미터로 받아온 DTO 값 중 참가중인 인원을 가져와 1을 감소한뒤 다시 참가중인 인원에 저장한다.
+        // 3. 1에서 파라미터로 받아온 DTO 값 중 참가중인 인원을 가져와 1을 감소한뒤 다시 참가중인 인원에 저장한다.
         message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
 
-        // 5. 1에서 파라미터로 받아온 DTO 값 중 방 번호와 퇴장을 의미하는 문자를 조합하여 키로 사용하고, 1에서 파라미터로 받아온 DTO를 값으로 사용하여, Map에 추가한다.
+        // 4. 1에서 파라미터로 받아온 DTO 값 중 방 번호와 퇴장을 의미하는 문자를 조합하여 키로 사용하고, 1에서 파라미터로 받아온 DTO를 값으로 사용하여, Map에 추가한다.
         metaMessageMap.put(message.getMetaIdx() + "_exit", message);
 
         // CompletableFuture.runAsync - 비동기적으로 실행되는 작업을 수행하는 CompletableFuture 객체를 반환한다.
@@ -205,25 +239,25 @@ public class StompChatController {
         //            run() 메소드는 매개변수를 받지 않으며, 리턴값도 없다.
         return CompletableFuture.runAsync(() -> {
             try {
-                // 6. 퇴장 메시지를 전송하기 전에 0.1초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
+                // 5. 퇴장 메시지를 전송하기 전에 0.1초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
                 Thread.sleep(100);
-                // 7. 5에서 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
+                // 6. 4에서 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
                 ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
-                // 8. 6에서 0.1초 대기한 후에도 7에서 가져온 DTO가 여전히 존재하는지 체크한다.
-                // 8-1. 퇴장 메시지가 존재하는 경우 - 퇴장
+                // 7. 5에서 0.1초 대기한 후에도 6에서 가져온 DTO가 여전히 존재하는지 체크한다.
+                // 7-1. 퇴장 메시지가 존재하는 경우 - 퇴장
                 if ( exitMessage == null ) {
-                    // 8-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
-                // 8-2. 퇴장 메시지가 존재하지 않는 경우 - 재입장(새로고침)
+                    // 7-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
+                // 7-2. 퇴장 메시지가 존재하지 않는 경우 - 재입장(새로고침)
                 } else {
-                    // 9. 5에서 Map에 추가한 키에 해당하는 DTO를 삭제한다.
+                    // 8. 4에서 Map에 추가한 키에 해당하는 DTO를 삭제한다.
                     metaMessageMap.remove(message.getMetaIdx() + "_exit");
-                    // 10. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+                    // 9. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
                     Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
-                    // 11. 10에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 List를 제거한다.
+                    // 10. 9에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 List를 제거한다.
                     metaCanvasMap.remove(message.getExit());
-                    // 12. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 10에서 가져온 Map을 JSON 문자열로 변환한다.
+                    // 11. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 9에서 가져온 Map을 JSON 문자열로 변환한다.
                     String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
-                    // 13. 12에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장자에 setter를 통해 전달한다.
+                    // 12. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장자에 setter를 통해 전달한다.
                     message.setExit(metaCanvasJson);
                     // 13. 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임이 존재하는지 체크한다.
                     // 13-1. 방장 닉네임이 존재하지 않는 경우

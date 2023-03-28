@@ -13,49 +13,78 @@
 <!-- unload - beforeunload 이벤트에서 반환한 값을 처리한다. -->
 <body onkeydown="keyDown()" onkeyup="keyUp()" onunload="exit()">
     <!-- 방 정보 구역 -->
-    <div id="titleArea">
+    <div id="titleArea" style="border: 2px solid black; height: 1.5%; margin-bottom: 0.1%;">
         <b id="title" th:text="'방 번호 : ' + ${metaRoom.idx} + '   |   ' + '(스터디)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
     </div>
 
-    <!-- 상단 왼쪽 참가자 구역 -->
-    <div id="menuBar" style="border: 2px solid black; box-sizing: border-box; width: 80%; height: 10%; margin-bottom: 0.5%; float: left;">
-        <!-- 참가자 코드 -->
-        <div th:each="participant : ${participantList}" th:id="${participant.metaNickname}" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%; float: left;">
-            <b th:if="${metaRoom.metaMaster == nickImage.nickname}" style="border: 1px solid black; box-sizing: border-box; cursor: pointer; float: left;">X</b>
-            <img th:src="@{/imagePath/} + ${participant.metaProfileImage}" style="width: 50%; height:100%; float: left;">
-            <div th:if="${participant.metaNickname == metaRoom.metaMaster}"><b style="color: red;">방장</b></div>
-            <b th:text="${participant.metaNickname}"></b>
+    <!-- 상단 구역 -->
+    <div style="display: flex; justify-content: space-between; height: 10%; margin-bottom: 0.5%;">
+        <!-- 상단 왼쪽 참가자 구역 -->
+        <div id="profileArea" style="border: 2px solid black; box-sizing: border-box; width: 80%;">
+            <!-- 참가자 코드 -->
+            <div class="participant" th:each="participant : ${participantList}" th:id="${participant.metaNickname}" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%; float: left;">
+                <img th:src="@{/imagePath/} + ${participant.metaProfileImage}" style="width: 50%; height:100%; float: left;">
+                <div th:if="${participant.metaNickname == metaRoom.metaMaster}"><b style="color: red;">방장</b></div>
+                <b th:text="${participant.metaNickname}"></b>
+            </div>
+        </div>
+
+        <!-- 상단 오른쪽 메뉴바 구역 -->
+        <div style="border: 2px solid black; box-sizing: border-box; width: 19.5%;">
+            <input type="button" value="나가기" th:onclick="|location.href='@{/meta/btnexit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|" style="width: 25%; height: 100%;">
         </div>
     </div>
 
-    <!-- 상단 오른쪽 메뉴바 구역 -->
-    <div style="border: 2px solid black; box-sizing: border-box; width: 19.5%; height: 10%; margin-bottom: 0.5%; float: right;">
-        <input type="button" value="나가기" th:onclick="|location.href='@{/meta/btnexit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|" style="width: 25%; height: 100%;">
-    </div>
+    <!-- 중단 구역 -->
+    <div style="display: flex; justify-content: space-between; height: 80%">
+        <!-- 메타버스 -->
+        <canvas id="canvas" style="border: 2px solid black; box-sizing: border-box; width: 80%;"></canvas>
 
-    <!-- 메타버스 -->
-    <canvas id="canvas" style="border: 2px solid black; box-sizing: border-box; width: 80%; height: 80%; float: left;"></canvas>
+        <!-- 프로필과 채팅 -->
+        <div style="width: 19.5%; margin-left: 0.5%">
+            <!-- 프로필과 채팅 수직 정렬 -->
+            <div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
+                <!-- 프로필 구역 -->
+                <div id="detailProfileArea" style="display: none; border: 2px solid black; box-sizing: border-box; width: 100%; height: 25%; margin-bottom: 2.5%; background: white;">
+                    <b id="profileCloseBtn" style="border: 1px solid black; box-sizing: border-box; cursor: pointer; float: right;">X</b>
+                    <!-- 프로필 사진 구역 -->
+                    <!-- 공통 구역 -->
+                    <div style="display: flex; justify-content: center; align-items: center; height: 50%; width: 100%;">
+                        <img id="profileImage" style="max-height: 100%; max-width: 100%;">
+                    </div>
+                    <!-- 프로필 닉네임 구역 -->
+                    <div id="profileNicknameArea" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 30%; width: 100%;">
+                        <!-- 공통 구역 -->
+                        <b id="profileNickname"></b>
+                    </div>
+                </div>
 
-    <!-- 채팅 구역 -->
-    <div id="chatArea" style="text-align: center; border: 2px solid black; box-sizing: border-box; width: 19.5%; height: 80%; float: right; overflow-y: scroll;">
-        <div style="text-align: center;">채팅</div><br>
-        <!-- 메시지 코드 -->
-        <div style="text-align: left;">
+                <!-- 채팅 구역 -->
+                <div id="chatArea" style="border: 2px solid black; box-sizing: border-box; width: 100%; height: 100%; overflow-y: scroll;">
+                    <div style="text-align: center;">채팅</div><br>
+                    <!-- 메시지 코드 -->
+                    <div style="text-align: left;">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- 녹음 구역 -->
-    <div id="recordArea" style="border: 2px solid black; box-sizing: border-box; width: 80%; height: 5%; margin-top: 0.5%; float: left;">
-        <audio id="record" controls style="width: 70%; height: 100%; float: left;"></audio>
-        <input id="btnRecordSend" type="button" value="녹음 전송" style="width: 10%; height: 100%; float: right;" disabled>
-        <input id="btnRecordStop" type="button" value="녹음 정지" style="width: 10%; height: 100%; float: right;" disabled>
-        <input id="btnRecordStart" type="button" value="녹음 시작" style="width: 10%; height: 100%; float: right;">
-    </div>
+    <!-- 하단 구역 -->
+    <div style="display: flex; justify-content: space-between; height: 5%; margin-top: 0.5%;">
+        <!-- 녹음 구역 -->
+        <div id="recordArea" style="border: 2px solid black; box-sizing: border-box; width: 80%;">
+            <audio id="record" controls style="width: 70%; height: 100%; float: left;"></audio>
+            <input id="btnRecordSend" type="button" value="녹음 전송" style="width: 10%; height: 100%; float: right;" disabled>
+            <input id="btnRecordStop" type="button" value="녹음 정지" style="width: 10%; height: 100%; float: right;" disabled>
+            <input id="btnRecordStart" type="button" value="녹음 시작" style="width: 10%; height: 100%; float: right;">
+        </div>
 
-    <!-- 메시지 입력란 -->
-    <div style="border: 2px solid black; box-sizing: border-box; width: 19.5%; height: 5%; margin-top: 0.5%; float: right;">
-        <input id="btnSend" type="button" value="보내기" onclick="send()" style="width: 25%; height: 100%; float: right;">
-        <input id="message" type="text" style="width: 70%; height: 90%; float: left;" placeholder = "채팅 입력란">
+        <!-- 메시지 입력란 -->
+        <div style="border: 2px solid black; box-sizing: border-box; width: 19.5%; display:flex; justify-content: space-between;">
+            <input id="message" type="text" style="border: none; width: 70%; height: 96.5%; " placeholder = "채팅 입력란">
+            <input id="btnSend" type="button" value="보내기" onclick="send()" style="width: 25%; height: 100%; ">
+        </div>
     </div>
 <!-------------------------------------------------------js 구역-------------------------------------------------------->
     <!-- SockJS 사용을 위한 js를 추가 -->
@@ -65,7 +94,6 @@
     <!-- Ajax 사용을 위한 js를 추가 -->
     <script src="/js/httpRequest.js"></script>
 
-    <!---------------------------------------------------- 채팅 구역 ----------------------------------------------------->
     <script th:inline="javascript">
         //////////////////////////////////////////////////// 변수 구역 ////////////////////////////////////////////////////
         var metaIdx = [[${metaRoom.idx}]]; // 방 번호
@@ -73,8 +101,8 @@
         var metaRecruitingPersonnel = [[${metaRoom.metaRecruitingPersonnel}]]; // 참여중인 인원
         var metaPersonnel = [[${metaRoom.metaPersonnel}]]; // 모집인원
         var metaMaster = [[${metaRoom.metaMaster}]]; // 방장 닉네임
-        var nickname = [[${nickImage.nickname}]]; // 로그인 유저 닉네임
-        var profileImage = [[${nickImage.profileImage}]]; // 로그인 유저의 프로필 사진
+        var metaNickname = [[${nickImage.nickname}]]; // 로그인 유저 닉네임
+        var metaProfileImage = [[${nickImage.profileImage}]]; // 로그인 유저의 프로필 사진
         // Date.now() - UTC 기준으로 1970년 1월 1일 0시 0분 0초부터 현재까지 경과된 밀리 초를 반환한다.
         let start = ""; // 시작 시간
         let end = ""; // 메시지 전송 시간
@@ -109,13 +137,13 @@
                     // document.createElement() - 지정한 태그 이름을 가진 HTML 요소를 생성하는 메소드이다.
                     //                            이 메소드를 사용하면 동적으로 HTML 요소를 생성할 수 있다.
                     // audio(오디오) 태그를 생성한다.
-                    let audioTag = document.createElement("audio");
+                    var audioTag = document.createElement("audio");
                     // 5에서 전달 받은 메시지의 body에서 녹음된 오디오 데이터를 가져와 audio(오디오) 태그의 소스로 전달한다.
                     audioTag.src = chat.body;
                     // audio(오디오) 태그의 컨트롤러를 설정한다.
                     audioTag.controls = true;
                     // b 태그를 생성한다.
-                    let bTag = document.createElement("b");
+                    var bTag = document.createElement("b");
                     // b 태그의 display를 flex로 설정하는 style을 추가한다.
                     bTag.style.display = "flex";
                     // b 태그의 align-items를 center로 설정하는 style을 추가한다.
@@ -124,13 +152,13 @@
                     //                             이 메소드를 사용하여 동적으로 HTML 요소의 텍스트를 업데이트할 수 있다.
                     //                             이 메소드는 document.createElement()와 함께 사용하여 동적으로 HTML 요소를 생성하는 데 사용된다.
                     // b 태그에 넣을 내용을 작성해 TextNode로 생성한다.
-                    let bContent = document.createTextNode(chat.headers.writer + " : ");
+                    var bContent = document.createTextNode(chat.headers.writer + " : ");
                     // b 태그에 TextNode로 생성한 내용을 넣는다.
                     bTag.appendChild(bContent);
                     // b 태그에 audio(오디오) 태그를 넣는다.
                     bTag.appendChild(audioTag);
                     // div 태그를 생성한다.
-                    let divTag = document.createElement("div");
+                    var divTag = document.createElement("div");
                     // div 태그의 text-align을 left로 설정하는 style을 추가한다.
                     divTag.style.textAlign = "left";
                     // div 태그에 b 태그를 넣는다.
@@ -159,8 +187,8 @@
                             // 이렇게 하지 않으면, 오디오 태그의 재생이 종료되고 나서 다시 오디오 태그가 재생될 때, 병합된 오디오 데이터중 마지막 오디오 데이터만 재생된다.
                             // 하나의 오디오 데이터는 문제가 없지만, 병합된 여러개의 오디오 데이터는 이런 문제가 발생해 임시방편으로 찾아낸 방법이다.
                             audio.src = audio.src;
-                        });
-                    });
+                        }); // addEventListener
+                    }); // forEach
                 // 6-2. type 값이 "record"가 아닌 경우
                 } else {
                     // 7. JSON형식으로 넘어온 DTO를 JavaScript형식으로 변환한다.
@@ -171,10 +199,10 @@
                     var message = content.message; // 메시지
                     var participant = content.participant; // 참가자 닉네임
                     var profileImage = content.profileImage; // 참가자 프로필 사진
-                    var exit = content.exit; // 퇴장자 닉네임
                     var recruitingPersonnel = content.metaRecruitingPersonnel; // 참여중인 인원
                     let timePassed = end - start; // 처음 메시지 전송후 1초 이내 다음 메시지 전송까지의 경과 시간 - 1초 이후 시작 시간 초기화
                     let master = content.master; // 방장 닉네임
+                    let masterProfileImage = content.masterProfileImage; // 방장 프로필 이미지
                     let metaType = content.type; // 메시지 타입
 
                     // 8. 참여중인 인원이 바뀌는 경우
@@ -212,7 +240,7 @@
 
                         // 전역 변수에 선언되어 있는 참여중인 인원을 새로 받아온 참여중인 인원으로 변경한다.
                         metaRecruitingPersonnel = recruitingPersonnel;
-                    }
+                    } // recruitingPersonnel
 
                     // 9. 새로 들어온 참가자가 있는 경우
                     if ( participant != null ) {
@@ -226,14 +254,50 @@
                             ptr.remove();
                         }
 
-                        // id를 통해 참가자가 작성될 구역을 가져와 menuBar 변수에 저장한다.
-                        var menuBar = document.getElementById("menuBar");
+                        // id를 통해 참가자가 작성될 구역을 가져와 profileArea 변수에 저장한다.
+                        var profileArea = document.getElementById("profileArea");
+
+<!--                        var imgTag = document.createElement("img");-->
+<!--                        imgTag.setAttribute("style", "width: 50%; height: 100%; float: left;");-->
+<!--                        imgTag.src = "/imagePath/" + profileImage;-->
+
+<!--                        if ( metaMaster == writer ) {-->
+<!--                            var innerBContent = document.createTextNode("방장");-->
+<!--                            var innerBTag = document.createElement("b");-->
+<!--                            innerBTag.setAttribute("style", "color: red;");-->
+<!--                            innerBTag.appendChild(innerBContent);-->
+
+<!--                            var innerDivTag = document.createElement("div");-->
+<!--                            innerDivTag.appendChild(innerBTag);-->
+
+<!--                            var bContent = document.createTextNode(writer);-->
+<!--                            var bTag = document.createElement("b");-->
+<!--                            bTag.appendChild(bContent);-->
+
+<!--                            var divTag = document.createElement("div");-->
+<!--                            divTag.setAttribute("class", "participant");-->
+<!--                            divTag.setAttribute("id", writer);-->
+<!--                            divTag.setAttribute("style", "border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%; float: left;");-->
+<!--                            divTag.appendChild(imgTag);-->
+<!--                            divTag.appendChild(innerBTag);-->
+<!--                            divTag.appendChild(bTag);-->
+<!--                            profileArea.appendChild(divTag);-->
+<!--                        } else {-->
+<!--                            var bContent = document.createTextNode(writer);-->
+<!--                            var bTag = document.createElement("b");-->
+<!--                            bTag.appendChild(bContent);-->
+
+<!--                            var divTag = document.createElement("div");-->
+<!--                            divTag.setAttribute("class", "participant");-->
+<!--                            divTag.setAttribute("id", writer);-->
+<!--                            divTag.setAttribute("style", "border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%; float: left;");-->
+<!--                            divTag.appendChild(imgTag);-->
+<!--                            divTag.appendChild(bTag);-->
+<!--                            profileArea.appendChild(divTag);-->
+<!--                        } // metaMaster == writer-->
 
                         // 참가자 코드를 작성한다.
-                        var mtr = '<div id="' + writer + '" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%; float: left;">';
-                        if ( metaMaster == nickname ) {
-                            mtr += '<b style="border: 1px solid black; box-sizing: border-box; cursor: pointer; float: left;">' + 'X' + '</b>';
-                        }
+                        var mtr = '<div class="participant" id="' + writer + '" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%; float: left;">';
                         mtr += '<img src="/imagePath/' + profileImage + '" style="width: 50%; height: 100%; float: left;">';
                         if ( metaMaster == writer ) {
                             mtr += '<div>' + '<b style="color: red;">' + '방장' + '</b>' + '</div>';
@@ -246,8 +310,8 @@
                         // 2. afterbegin : 타겟 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
                         // 3. beforeend : 타겟 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
                         // 4. afterend : 타겟 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
-                        menuBar.insertAdjacentHTML("beforeend", mtr);
-                    }
+                        profileArea.insertAdjacentHTML("beforeend", mtr);
+                    } // participant
 
                     // 10. 메시지 타입 값에 따라 나눈다.
 
@@ -268,7 +332,7 @@
                         chatArea.insertAdjacentHTML("beforeend", str);
                         // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                         chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
-                    }
+                    } // enter
 
                     // 10-2. 메시지 타입이 "reEnter"일 경우
                     // 재입장(새로고침)
@@ -294,8 +358,8 @@
                             chatArea.insertAdjacentHTML("beforeend", str);
                             // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                             chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
-                        }
-                    }
+                        } // null
+                    } // reEnter
 
                     // 10-3. 메시지 타입이 "reErr"일 경우
                     // 재입장(새로고침) 에러
@@ -303,11 +367,11 @@
                         // exitTimeoutId에 저장된 setTimeout ID를 사용하여 실행 중인 타이머를 취소한다.
                         clearTimeout(exitTimeoutId);
                         // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
-                        if ( writer === nickname ) {
+                        if ( writer === metaNickname ) {
                             // 재입장(새로고침) 에러로 입장 메시지를 재전송 한다.
-                            stomp.send('/pub/meta/studyRoom/enter', {}, JSON.stringify({type: "enter", metaIdx: metaIdx, metaTitle: metaTitle, writer: nickname, profileImage: profileImage, metaRecruitingPersonnel: metaRecruitingPersonnel, err: "reErr"}));
-                        }
-                    }
+                            stomp.send('/pub/meta/studyRoom/enter', {}, JSON.stringify({type: "enter", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel, err: "reErr"}));
+                        } // metaNickname
+                    } // reErr
 
                     // 10-4. 메시지 타입이 "chat"일 경우
                     // 채팅
@@ -326,9 +390,106 @@
                         chatArea.insertAdjacentHTML("beforeend", str);
                         // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                         chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
-                    }
+                    } // chat
 
-                    // 10-5. 메시지 타입이 "delete"일 경우
+                    // 10-5 메시지 타입이 "DelegateMaster"일 경우
+                    // 방장 위임
+                    if ( metaType == "DelegateMaster" ) {
+                        // 메시지 코드를 작성한다.
+                        str = '<div style="text-align: left; color: orange;">';
+                        str += '<b>' + message + '</b>';
+                        str += '</div>'
+                        // 작성한 메시지 코드를 채팅 구역에 올린다.
+                        // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                        // position에는 총 4가지의 옵션이 있다.
+                        // 1. beforebegin : 타겟 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                        // 2. afterbegin : 타겟 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                        // 3. beforeend : 타겟 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                        // 4. afterend : 타겟 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                        chatArea.insertAdjacentHTML("beforeend", str);
+                        // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
+                        chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
+
+                        metaMaster = master;
+
+                        // 현재 작성되어 있는 위임 전 방장과 위임 후 방장을 삭제하고 다시 올린다.
+
+                        // 작성자(위임 전 방장) 닉네임 id를 통해 참가자 구역에 작성되어 있는 작성자(위임 전 방장)를 가져와 beforeMaster 변수에 저장한다.
+                        var beforeMaster = document.getElementById(writer);
+                        // 방장(위임 후 방장) 닉네임 id를 통해 참가자 구역에 작성되어 있는 방장(위임 후 방장)을 가져와 afterMaster 변수에 저장한다.
+                        var afterMaster = document.getElementById(master);
+                        // beforeMaster에 저장된 작성자(위임 전 방장) id를 사용하여 해당 참가자를 삭제한다.
+                        beforeMaster.remove();
+                        // afterMaster에 저장된 방장(위임 후 방장) id를 사용하여 해당 참가자를 삭제한다.
+                        afterMaster.remove();
+
+                        // id를 통해 작성자(위임 전 방장)와 방장(위임 후 방장)이 작성될 구역을 가져와 profileArea 변수에 저장한다.
+                        var profileArea = document.getElementById("profileArea");
+
+                        // 작성자(위임 전 방장) 코드를 작성한다.
+                        var beforeMasterCode = '<div class="participant" id="' + writer + '" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%; float: left;">';
+                        beforeMasterCode += '<img src="/imagePath/' + profileImage + '" style="width: 50%; height: 100%; float: left;">';
+                        beforeMasterCode += '<b>' + writer + '</b>';
+                        // 작성한 작성자(위임 전 방장) 코드를 참가자 구역에 올린다.
+                        // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                        // position에는 총 4가지의 옵션이 있다.
+                        // 1. beforebegin : 타겟 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                        // 2. afterbegin : 타겟 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                        // 3. beforeend : 타겟 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                        // 4. afterend : 타겟 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                        profileArea.insertAdjacentHTML("beforeend", beforeMasterCode);
+
+                        // 방장(위임 후 방장) 코드를 작성한다.
+                        var afterMasterCode = '<div class="participant" id="' + master + '" style="border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%; float: left;">';
+                        afterMasterCode += '<img src="' + masterProfileImage + '" style="width: 50%; height: 100%; float: left;">';
+                        afterMasterCode += '<div>' + '<b style="color: red;">' + '방장' + '</b>' + '</div>';
+                        afterMasterCode += '<b>' + master + '</b>';
+                        // 작성한 방장(위임 후 방장) 코드를 참가자 구역에 올린다.
+                        // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                        // position에는 총 4가지의 옵션이 있다.
+                        // 1. beforebegin : 타겟 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                        // 2. afterbegin : 타겟 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                        // 3. beforeend : 타겟 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                        // 4. afterend : 타겟 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                        profileArea.insertAdjacentHTML("beforeend", afterMasterCode);
+                    } // DelegateMaster
+
+                    // 10-6. 메시지 타입이 "KickOut"일 경우
+                    // 유저 강퇴
+                    if ( metaType == "KickOut" ) {
+                        // 메시지 코드를 작성한다.
+                        str = '<div style="text-align: left; color: purple;">';
+                        str += '<b>' + message + '</b>';
+                        str += '</div>'
+                        // 작성한 메시지 코드를 채팅 구역에 올린다.
+                        // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
+                        // position에는 총 4가지의 옵션이 있다.
+                        // 1. beforebegin : 타겟 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
+                        // 2. afterbegin : 타겟 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
+                        // 3. beforeend : 타겟 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
+                        // 4. afterend : 타겟 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
+                        chatArea.insertAdjacentHTML("beforeend", str);
+                        // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
+                        chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
+
+                        // 작성자(강퇴자) 닉네임 id를 통해 참가자 구역에 작성되어 있는 작성자(강퇴자)를 가져와 ptr 변수에 저장한다.
+                        var ptr = document.getElementById(writer);
+                        // ptr에 저장된 작성자(강퇴자) id를 사용하여 해당 참가자를 삭제한다.
+                        ptr.remove();
+
+                        // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
+                        if ( writer === metaNickname ) {
+                            alert(message);
+                            // 작성자가 강퇴 당할 때는 경고창 없이 즉시 나가지도록 이벤트 핸들러를 비활성화한다.
+                            // beforeunload 이벤트 핸들러를 비활성화한다.
+                            window.removeEventListener("beforeunload", handleBeforeUnload);
+                            // onunload 이벤트 핸들러를 비활성화한다.
+                            document.body.removeAttribute("onunload");
+                            location.href = "/meta/btnexit?idx=" + metaIdx + "&nickname=" + writer;
+                        } // metaNickname
+                    } // KickOut
+
+                    // 10-7. 메시지 타입이 "delete"일 경우
                     // 방장 퇴장
                     if ( metaType == "delete" ) {
                         // fetch를 사용하여 방 퇴장 URL에 파라미터로 방 번호와 작성자 닉네임을 가져가 퇴장 처리한다.
@@ -356,7 +517,7 @@
 
                         // 메시지 코드를 작성한다.
                         str = '<div style="text-align: left; color: red;">';
-                        str += '<b>' + '공지 : 방장이 탈주하여 1분뒤 방이 터집니다' + '</b>';
+                        str += '<b>' + '방장이 탈주하여 1분뒤 방이 터집니다' + '</b>';
                         str += '</div>'
                         // 작성한 메시지 코드를 채팅 구역에 올린다.
                         // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
@@ -380,17 +541,17 @@
                         // 1분이 경과되기 전에 방장이 재입장하면 boomTimeoutId로 타이머를 취소해 방이 삭제되지 안되도록 한다.
                         // 이는 방장이 퇴장 후 1분이내 재입장 할 경우를 대비해 1분 대기하는 것이다.
                         boomTimeoutId = setTimeout(function() {
-                            // 방이 삭제될 때는 아무 경고창 없이 바로 나가질 수 있게 이벤트 핸들러를 제거해 놓는다.
-                            // beforeunload 이벤트 핸들러를 제거한다.
+                            // 방이 삭제될 때는 경고창 없이 즉시 나가지도록 이벤트 핸들러를 비활성화한다.
+                            // beforeunload 이벤트 핸들러를 비활성화한다.
                             window.removeEventListener("beforeunload", handleBeforeUnload);
-                            // onunload 이벤트 핸들러를 제거한다.
+                            // onunload 이벤트 핸들러를 비활성화한다.
                             document.body.removeAttribute("onunload");
                             // 방 삭제 URL에 파라미터로 방 번호와 닉네임을 가져가 방 삭제 후 바로 퇴장한다.
-                            location.href = "/meta/delete?idx=" + metaIdx + "&nickname=" + nickname;
-                        }, 60000);
-                    }
+                            location.href = "/meta/delete?idx=" + metaIdx + "&nickname=" + metaNickname;
+                        }, 60000); // setTimeout
+                    } // delete
 
-                    // 10-6. 메시지 타입이 "cancel"일 경우
+                    // 10-8. 메시지 타입이 "cancel"일 경우
                     // 방장 퇴장 후 1분 이내 재입장
                     if ( metaType == "cancel" ) {
                         // boomTimeoutId에 저장된 setTimeout ID를 사용하여 실행 중인 타이머를 취소한다.
@@ -398,7 +559,7 @@
 
                         // 메시지 코드를 작성한다.
                         str = '<div style="text-align: left; color: blue;">';
-                        str += '<b>' + '공지 : 방장이 다시 입장하여 방이 유지됩니다.' + '</b>';
+                        str += '<b>' + '방장이 다시 입장하여 방이 유지됩니다.' + '</b>';
                         str += '</div>'
                         // 작성한 메시지 코드를 채팅 구역에 올린다.
                         // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
@@ -410,9 +571,9 @@
                         chatArea.insertAdjacentHTML("beforeend", str);
                         // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                         chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
-                    }
+                    } // cancel
 
-                    // 10-7. 메시지 타입이 "exit"일 경우
+                    // 10-9. 메시지 타입이 "exit"일 경우
                     // 유저 퇴장
                     if ( metaType == "exit" ) {
                         // setTimeout 메소드를 사용하여 작성자가 퇴장한지 0.1초가 경과하면 작성자가 퇴장되도록 한다.
@@ -421,7 +582,7 @@
                         // 이는 재입장이 에러 날 경우를 대비해 0.1초 대기하는 것이다.
                         exitTimeoutId = setTimeout(function() {
                             // 방장 닉네임과 로그인 유저 닉네임이 같은 경우 - 방장이 퇴장 유저를 처리한다.
-                            if ( metaMaster == nickname ) {
+                            if ( metaNickname == metaMaster ) {
                                 // fetch를 사용하여 방 퇴장 URL에 파라미터로 방 번호와 작성자 닉네임을 가져가 퇴장 처리한다.
                                 // fetch(url, options) - 브라우저에서 제공하는 API 중 하나로, 네트워크 요청을 보내고 응답을 받아오는 메소드이다.
                                 //                       fetch() 메소드는 첫 번째 인자로 서버에 데이터를 요청할 URL을 전달받고, 두 번째 인자로 선택적으로 HTTP 요청과 관련된 다양한 옵션을 설정하는 객체를 전달받는다.
@@ -444,7 +605,7 @@
                                 // 만약 요청이 실패하면 catch 메소드에서 에러를 출력한다.
                                 fetch("/meta/exit?idx=" + metaIdx + "&nickname=" + writer);
                                 // 여기서는 fetch를 사용하여 서버에서 퇴장 유저를 처리한 뒤, 클라이언트에서는 추가로 더 할 일이 없기에 then() 메소드를 사용하지 않는다.
-                            }
+                            } // metaMaster
 
                             // 메시지 코드를 작성한다.
                             str = '<div style="text-align: left; color: purple;">';
@@ -462,22 +623,123 @@
                             chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
 
                             // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
-                            if ( writer === nickname ) {
+                            if ( writer === metaNickname ) {
                                 // 로컬 스토리지를 제거한다.
                                 localStorage.clear();
                                 // 퇴장 URL에 파라미터로 방 번호와 닉네임을 가져가 퇴장한다.
-                                location.href = "/meta/exit?idx=" + metaIdx + "&nickname=" + nickname;
+                                location.href = "/meta/exit?idx=" + metaIdx + "&nickname=" + metaNickname;
                             // 작성자 닉네임과 로그인 유저 닉네임이 다른 경우 (타 유저)
                             } else {
-                                // 작성자 닉네임의 id를 통해 참가자 구역에 작성되어 있는 작성자를 가져와 mtr 변수에 저장한다.
+                                // 작성자(퇴장자) 닉네임의 id를 통해 참가자 구역에 작성되어 있는 작성자(퇴장자)를 가져와 mtr 변수에 저장한다.
                                 var mtr = document.getElementById(writer);
-                                // mtr에 저장된 참가자 id를 사용하여 해당 참가자를 삭제한다.
+                                // mtr에 저장된 작성자(퇴장자) id를 사용하여 해당 참가자를 삭제한다.
                                 mtr.remove();
+                            } // metaNickname
+                        }, 100); // setTimeout
+                    } // exit
+
+                    // 11. 상세 프로필 기능
+                    //     참가자 구역에서 참가자를 클릭할 경우 상세 프로필 구역이 등장한다.
+                    let participants = document.querySelectorAll(".participant");
+                    // forEach 메소드를 사용하여 audioTags 변수에 저장되어 있는 NodeList의 각 요소에 대하여 이벤트 리스너를 등록한다.
+                    participants.forEach(participant => {
+                        participant.addEventListener("click", () => {
+                            var detailProfileArea = document.getElementById("detailProfileArea");
+                            detailProfileArea.style.display = "block";
+                            var profileCloseBtn = detailProfileArea.querySelector("#profileCloseBtn");
+
+                            var profileMaster = detailProfileArea.querySelector("#profileMaster");
+                            if ( profileMaster != null ) {
+                                profileMaster.remove();
                             }
-                        }, 100);
-                    }
-                }
-            });
+                            var profileBtn = detailProfileArea.querySelector("#profileBtn");
+                            if ( profileBtn != null ) {
+                                profileBtn.remove();
+                            }
+
+                            var participantNickname = participant.id
+                            var participantImage = participant.querySelector("img").src;
+
+                            // 참가자 닉네임이 방장 닉네임과 같을 경우
+                            if ( participantNickname === metaMaster ) {
+                                var profileMasterBTag = document.createElement("b");
+                                profileMasterBTag.setAttribute("id", "profileMaster");
+                                profileMasterBTag.setAttribute("style", "color: red;");
+                                var profileMasterInnerBContent = document.createTextNode("방장");
+                                profileMasterBTag.appendChild(profileMasterInnerBContent);
+
+                                var profileNicknameArea = detailProfileArea.querySelector("#profileNicknameArea");
+                                profileNicknameArea.appendChild(profileMasterBTag);
+                            } else {
+                                var profileMaster = detailProfileArea.querySelector("#profileMaster");
+                                if ( profileMaster != null ) {
+                                    profileMaster.remove();
+                                }
+                            } // participantNickname === metaMaster
+
+                            var detailProfileNickname = detailProfileArea.querySelector("#profileNickname");
+                            detailProfileNickname.innerText = participantNickname;
+                            var detailProfileImage = detailProfileArea.querySelector("#profileImage");
+                            detailProfileImage.setAttribute("src", participantImage);
+
+                            // 방장일 경우
+                            if ( metaNickname === metaMaster ) {
+                                var profileBtnInnerLeftInputTag = document.createElement("input");
+                                profileBtnInnerLeftInputTag.setAttribute("id", "btnProfileDelegateMaster");
+                                profileBtnInnerLeftInputTag.setAttribute("type", "button");
+                                profileBtnInnerLeftInputTag.setAttribute("value", "방장 위임");
+                                profileBtnInnerLeftInputTag.setAttribute("style", "width: 50%;");
+
+                                var profileBtnInnerLeftDivTag = document.createElement("div");
+                                profileBtnInnerLeftDivTag.setAttribute("style", "width: 50%; display: flex; justify-content: center; align-items: center;");
+                                profileBtnInnerLeftDivTag.appendChild(profileBtnInnerLeftInputTag);
+
+                                var profileBtnInnerRightInputTag = document.createElement("input");
+                                profileBtnInnerRightInputTag.setAttribute("id", "btnProfileKickOut");
+                                profileBtnInnerRightInputTag.setAttribute("type", "button");
+                                profileBtnInnerRightInputTag.setAttribute("value", "강퇴");
+                                profileBtnInnerRightInputTag.setAttribute("style", "width: 50%;");
+
+                                var profileBtnInnerRightDivTag = document.createElement("div");
+                                profileBtnInnerRightDivTag.setAttribute("style", "width: 50%; display: flex; justify-content: center; align-items: center;");
+                                profileBtnInnerRightDivTag.appendChild(profileBtnInnerRightInputTag);
+
+                                var profileBtnDivTag = document.createElement("div");
+                                profileBtnDivTag.setAttribute("id", "profileBtn");
+                                profileBtnDivTag.setAttribute("style", "display: flex; justify-content: space-between; align-items: flex-end; height: 10%; width: 100%;");
+                                profileBtnDivTag.appendChild(profileBtnInnerLeftDivTag);
+                                profileBtnDivTag.appendChild(profileBtnInnerRightDivTag);
+
+                                detailProfileArea.appendChild(profileBtnDivTag);
+
+                                var btnProfileDelegateMaster = detailProfileArea.querySelector("#btnProfileDelegateMaster");
+                                btnProfileDelegateMaster.addEventListener("click", () => {
+                                    fetch("/meta/delegatemaster?idx=" + metaIdx + "&nickname=" + participantNickname)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if ( data == 1 ) {
+                                                stomp.send('/pub/meta/studyRoom/delegatemaster', {}, JSON.stringify({type: "DelegateMaster", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaMaster, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel, master: participantNickname, masterProfileImage: participantImage}));
+                                                detailProfileArea.style.display = "none";
+                                            }
+                                        })
+                                        .catch(error => console.error(error)); // fetch
+                                }); // addEventListener
+
+                                var btnProfileKickOut = detailProfileArea.querySelector("#btnProfileKickOut");
+                                btnProfileKickOut.addEventListener("click", () => {
+                                    stomp.send('/pub/meta/studyRoom/kickout', {}, JSON.stringify({type: "KickOut", metaIdx: metaIdx, metaTitle: metaTitle, writer: participantNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
+                                    detailProfileArea.style.display = "none";
+                                }); // addEventListener
+                            } // metaNickname === metaMaster
+
+                            // 닫기
+                            profileCloseBtn.addEventListener("click", () => {
+                                detailProfileArea.style.display = "none";
+                            }); // addEventListener
+                        }); // addEventListener
+                    }); // forEach
+                } // record
+            }); // stomp
         //////////////////////////////////////////////////// 입장 구역 ////////////////////////////////////////////////////
             // 입장 시작!! - 먼저 입장 체크값을 이용하여 해당 유저가 첫 입장인지 재입장(새로고침)인지 체크한다.
             // 첫 입장일 경우 - 입장 체크값이 존재하지 않는다.
@@ -496,14 +758,14 @@
                 // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장할때 딱 한번만 여기서 입장 메시지를 전송한다.)
                 //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                stomp.send('/pub/meta/studyRoom/enter', {}, JSON.stringify({type: "enter", metaIdx: metaIdx, metaTitle: metaTitle, writer: nickname, profileImage: profileImage, metaRecruitingPersonnel: metaRecruitingPersonnel}));
+                stomp.send('/pub/meta/studyRoom/enter', {}, JSON.stringify({type: "enter", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel}));
             // 재입장(새로고침)일 경우 - 입장 체크값이 존재한다.
             } else {
                 // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
                 // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장 이후 모든 재입장(새로고침)은 여기서 입장 메시지를 전송한다.)
                 //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                stomp.send('/pub/meta/studyRoom/reenter', {}, JSON.stringify({type: "reEnter", metaIdx: metaIdx, writer: nickname, profileImage: profileImage, metaRecruitingPersonnel: metaRecruitingPersonnel}));
+                stomp.send('/pub/meta/studyRoom/reenter', {}, JSON.stringify({type: "reEnter", metaIdx: metaIdx, writer: metaNickname, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel}));
             }
         });
         //////////////////////////////////////////////////// 채팅 구역 ////////////////////////////////////////////////////
@@ -584,7 +846,7 @@
                         // send(path, header, message)로 채팅 메시지를 전송한다. (입장 이후 작성되는 모든 메시지는 여기서 전송한다.)
                         // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                         // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                        stomp.send('/pub/meta/studyRoom/message', {}, JSON.stringify({type: "chat", metaIdx: metaIdx, message: message.value, writer: nickname}));
+                        stomp.send('/pub/meta/studyRoom/message', {}, JSON.stringify({type: "chat", metaIdx: metaIdx, message: message.value, writer: metaNickname}));
                         message.value = ""; // 메시지를 전송한 뒤 공백 상태로 만든다.
                         // 먼저 전송된 메시지 수를 1 증가시킨다.
                         count++;
@@ -714,9 +976,9 @@
                 }
             });
             // send(path, header, message)를 사용하여 녹음된 오디오 데이터를 메시지로 전송한다. (모든 녹음된 오디오 데이터는 여기서 메시지를 전송한다.)
-            // {metaIdx: metaIdx, writer: nickname} - 전송할 메시지의 Header로, Header를 통해 metaIdx와 nickname을 전송한다.
+            // {metaIdx: metaIdx, writer: metaNickname} - 전송할 메시지의 Header로, Header를 통해 metaIdx와 nickname을 전송한다.
             // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 파라미터를 통해 받는다.
-            stomp.send('/pub/meta/studyRoom/record', {metaIdx: metaIdx, writer: nickname}, base64Data);
+            stomp.send('/pub/meta/studyRoom/record', {metaIdx: metaIdx, writer: metaNickname}, base64Data);
             // recordedChunks 배열을 초기화한다.
             recordedChunks = [];
             // 오디오 태그에 작성되있는 소스를 초기화한다.
@@ -844,20 +1106,21 @@
         function exit() {
             // 방장 닉네임과 퇴장 유저 닉네임이 같은지 체크한다.
             // 닉네임이 같은 경우 - 방장 퇴장
-            if ( metaMaster == nickname ) {
+            if ( metaNickname == metaMaster ) {
                 // send(path, header, message)로 퇴장 메시지를 전송한다. (방장이 퇴장할때 딱 한번만 전송한다.)
                 // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({type: "delete", metaIdx: metaIdx, metaTitle: metaTitle, writer: nickname, metaRecruitingPersonnel: metaRecruitingPersonnel, master: metaMaster}));
+                stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({type: "delete", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, metaRecruitingPersonnel: metaRecruitingPersonnel, master: metaMaster}));
             // 닉네임이 다른 경우 - 유저 퇴장
             } else {
                 // send(path, header, message)로 퇴장 메시지를 전송한다. (퇴장할때 딱 한번만 전송한다.)
                 // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({type: "exit", metaIdx: metaIdx, metaTitle: metaTitle, writer: nickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
+                stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({type: "exit", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
             }
         }
     </script>
+    <!---------------------------------------------------- 채팅 구역 ----------------------------------------------------->
 
     <!--------------------------------------------------- 캔버스 구역 ---------------------------------------------------->
     <script th:inline="javascript">
@@ -911,7 +1174,7 @@
 
             // 5. subscribe(path, callback)으로 메시지를 받을 수 있다.
             //    StompChatController에서 SimpMessagingTemplate를 통해 전달한 DTO를 여기서 콜백 메소드 파라미터로 전달 받는다.
-            canvasStomp.subscribe("/sub/meta/studyRoom/canvas/" + metaIdx, function (message) {
+            canvasStomp.subscribe("/sub/meta/studyRoom/canvas/" + canvasMetaIdx, function (message) {
                 // 6. JSON.parse(변환 대상) - JSON 문자열을 JavaScript 값이나 객체로 변환한다.
                 //    JSON형식으로 넘어온 DTO를 JavaScript형식으로 변환한다.
                 var canvasContent = JSON.parse(message.body);
@@ -975,6 +1238,14 @@
                         // 퇴장한 유저를 제외한 캐릭터 Map으로 다시 그린다.
                         drawChar();
                     }, 100);
+                }
+
+                if ( canvasType == "KickOut" ) {
+                    serverCharacters = canvasContent.exit; // 퇴장한 유저를 제외한 캐릭터 Map - 서버로 보내기용
+                    canvasCharacters = JSON.parse(serverCharacters); // 퇴장한 유저를 제외한 캐릭터 Map 파싱 - 캔버스에 그리기용
+                    // 캐릭터 그리기 메소드로 이동한다.
+                    // 퇴장한 유저를 제외한 캐릭터 Map으로 다시 그린다.
+                    drawChar();
                 }
             });
         //////////////////////////////////////////////////// 입장 구역 ////////////////////////////////////////////////////
