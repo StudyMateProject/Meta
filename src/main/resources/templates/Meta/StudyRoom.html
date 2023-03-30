@@ -12,9 +12,9 @@
 </head>
 <!-- unload - beforeunload 이벤트에서 반환한 값을 처리한다. -->
 <body onkeydown="keyDown()" onkeyup="keyUp()" onunload="exit()">
-    <!-- 방 정보 구역 -->
+    <!-- 방 제목 구역 -->
     <div id="titleArea" style="border: 2px solid black; height: 1.5%; margin-bottom: 0.1%;">
-        <b id="title" th:text="'방 번호 : ' + ${metaRoom.idx} + '   |   ' + '(스터디)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
+        <b id="title" th:text="'방 번호 : ' + ${metaRoom.idx} + '    |    ' + '(스터디)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
     </div>
 
     <!-- 상단 구역 -->
@@ -48,16 +48,16 @@
             <div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
                 <!-- 프로필 구역 -->
                 <div id="detailProfileArea" style="display: none; border: 2px solid black; box-sizing: border-box; width: 100%; height: 25%; margin-bottom: 2.5%; background: white;">
-                    <b id="profileCloseBtn" style="border: 1px solid black; box-sizing: border-box; cursor: pointer; float: right;">X</b>
+                    <b id="detailProfileCloseBtn" style="border: 1px solid black; box-sizing: border-box; cursor: pointer; float: right;">X</b>
                     <!-- 프로필 사진 구역 -->
                     <!-- 공통 구역 -->
                     <div style="display: flex; justify-content: center; align-items: center; height: 50%; width: 100%;">
-                        <img id="profileImage" style="max-height: 100%; max-width: 100%;">
+                        <img id="detailProfileImage" style="max-height: 100%; max-width: 100%;">
                     </div>
                     <!-- 프로필 닉네임 구역 -->
-                    <div id="profileNicknameArea" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 30%; width: 100%;">
+                    <div id="detailProfileNicknameArea" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 30%; width: 100%;">
                         <!-- 공통 구역 -->
-                        <b id="profileNickname"></b>
+                        <b id="detailProfileNickname"></b>
                     </div>
                 </div>
 
@@ -129,48 +129,54 @@
             // 5. subscribe(path, callback)으로 메시지를 받을 수 있다.
             //    StompChatController에서 SimpMessagingTemplate를 통해 전달한 DTO를 여기서 콜백 메소드 파라미터로 전달 받는다.
             stomp.subscribe("/sub/meta/studyRoom/" + metaIdx, function (chat) {
-                // 채팅에 필요한 것들
+                // 5-1. 채팅에 필요한 것들
                 var chatArea = document.getElementById("chatArea"); // 메시지가 작성될 채팅 구역
                 var str = ""; // 메시지 코드가 작성될 변수
                 // 6. 5에서 전달받은 메시지의 headers에서 type 값이 "record"인지 체크한다.
                 // 6-1. type 값이 "record"인 경우
                 if ( chat.headers.type == "record" ) {
+                    //////////////////////////////////////////전달 받은 녹음 올리기//////////////////////////////////////////
                     // 7. document.createElement()를 사용하여, 전달 받은 녹음된 오디오 메시지를 코드로 작성해 채팅 구역에 올린다.
                     // document.createElement() - 지정한 태그 이름을 가진 HTML 요소를 생성하는 메소드이다.
                     //                            이 메소드를 사용하면 동적으로 HTML 요소를 생성할 수 있다.
-                    // audio(오디오) 태그를 생성한다.
+
+                    // 1. audio(오디오) 태그를 생성한다.
                     var audioTag = document.createElement("audio");
-                    // 5에서 전달 받은 메시지의 body에서 녹음된 오디오 데이터를 가져와 audio(오디오) 태그의 소스로 전달한다.
+                    // 1-1. 5에서 전달 받은 메시지의 body에서 녹음된 오디오 데이터를 가져와 audio(오디오) 태그의 소스로 전달한다.
                     audioTag.src = chat.body;
-                    // audio(오디오) 태그의 컨트롤러를 설정한다.
+                    // 1-2. audio(오디오) 태그의 컨트롤러를 설정한다.
                     audioTag.controls = true;
-                    // b 태그를 생성한다.
+
+                    // 2. b 태그를 생성한다.
                     var bTag = document.createElement("b");
-                    // b 태그의 display를 flex로 설정하는 style을 추가한다.
+                    // 2-1. b 태그의 display를 flex로 설정하는 style을 추가한다.
                     bTag.style.display = "flex";
-                    // b 태그의 align-items를 center로 설정하는 style을 추가한다.
+                    // 2-2. b 태그의 align-items를 center로 설정하는 style을 추가한다.
                     bTag.style.alignItems = "center";
                     // document.createTextNode() - 지정한 텍스트를 포함하는 새로운 Text 노드를 생성하는 메소드이다.
                     //                             이 메소드를 사용하여 동적으로 HTML 요소의 텍스트를 업데이트할 수 있다.
                     //                             이 메소드는 document.createElement()와 함께 사용하여 동적으로 HTML 요소를 생성하는 데 사용된다.
-                    // b 태그에 작성할 내용을 TextNode로 생성한다.
+                    // 2-3. b 태그에 작성할 내용을 TextNode로 생성한다.
                     var bContent = document.createTextNode(chat.headers.writer + " : ");
-                    // b 태그에 TextNode로 생성한 내용을 전달한다.
+                    // 2-4. b 태그에 TextNode로 생성한 내용을 전달한다.
                     bTag.appendChild(bContent);
-                    // b 태그에 audio(오디오) 태그를 전달한다.
+                    // 2-5. b 태그에 audio(오디오) 태그를 전달한다.
                     bTag.appendChild(audioTag);
-                    // div 태그를 생성한다.
+
+                    // 3. div 태그를 생성한다.
                     var divTag = document.createElement("div");
-                    // div 태그의 text-align을 left로 설정하는 style을 추가한다.
+                    // 3-1. div 태그의 text-align을 left로 설정하는 style을 추가한다.
                     divTag.style.textAlign = "left";
-                    // div 태그에 b 태그를 전달한다.
+                    // 3-2. div 태그에 b 태그를 전달한다.
                     divTag.appendChild(bTag);
-                    // 채팅 구역에 div 태그를 올린다.
+
+                    // 4. 채팅 구역에 div 태그를 올린다.
                     chatArea.appendChild(divTag);
+
                     // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                     chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
-                    ////////////////////////////////////////////////////////////////////////////////////////////////////
-                    // 채팅 구역에 올라간 audio(오디오) 태그를 모두 선택하여 audioTags 변수에 NodeList 형태로 저장한다.
+                    ///////////////////////////////////////////전달 받은 녹음 재생///////////////////////////////////////////
+                    // 8. 채팅 구역에 올라가 있는 audio(오디오) 태그를 모두 선택하여 audioTags 변수에 NodeList 형태로 저장한다.
                     // querySelectorAll - HTML 문서 내에서 특정 CSS 선택자에 해당하는 요소들을 찾아 NodeList 형태로 반환하는 메소드이다.
                     // NodeList - DOM에서 사용되는 객체로, 여러 개의 노드(HTML 요소, 속성, 텍스트 등)가 포함될 수 있는 리스트 형태의 객체를 나타낸다.
                     //            일반적으로 querySelectorAll 메소드로 선택된 요소들을 반환하는데 사용된다.
@@ -181,7 +187,7 @@
                     audioTags.forEach(audio => {
                         // forEach 메소드를 사용하여 audioTags 변수에 저장되어 있는 NodeList에서 가져온 각 audio(오디오) 태그마다,
                         // "ended" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
-                        // ended - 오디오나 비디오 등의 미디어가 재생이 끝났을 때 발생한다.
+                        // ended - 오디오나 비디오 등의 미디어가 재생이 끝났을 때 발생하는 이벤트이다.
                         audio.addEventListener("ended", () => {
                             // 각 audio(오디오) 태그의 재생이 종료되면, audio(오디오) 태그에 작성되어 있는 소스를 그대로 재작성한다.
                             // 이는 오디오 재생이 끝나고 다시 재생할 때, 오디오 소스가 초기화되도록 하는 역할을 한다.
@@ -211,34 +217,29 @@
                     if ( recruitingPersonnel != null ) {
                         // 현재 작성되어 있는 방 정보를 바뀐 인원대로 변경해줘야 하기에 먼저 이전 방 정보를 제거하고 다시 올린다.
 
-                        // id를 통해 작성되어 있는 방 정보을 가져와 title 변수에 저장한다.
+                        // id를 통해 방 제목 구역에 작성되어 있는 방 정보을 가져와 title 변수에 저장한다.
                         var title = document.getElementById("title");
-                        // title에 저장된 방 정보 id를 사용하여 해당 참가자를 삭제한다.
+                        // title에 저장된 방 정보 id를 사용하여 해당 방 정보를 제거한다.
                         title.remove();
 
-                        // id를 통해 방 정보가 작성될 구역을 가져와 titleArea 변수에 저장한다.
+                        // 0. id를 통해 방 정보가 작성될 구역을 가져와 titleArea 변수에 저장한다.
                         var titleArea = document.getElementById("titleArea");
 
-                        // 방 정보 코드를 작성한다.
-                        var prt = '<b id="title">';
-                        prt += '방 번호 : ';
-                        prt += metaIdx;
-                        prt += '   |    (스터디) 방 제목 : ';
-                        prt += metaTitle;
-                        prt += ' ( '
-                        prt += recruitingPersonnel;
-                        prt += ' / ';
-                        prt += metaPersonnel;
-                        prt += ' )';
-                        prt += '</b>';
-                        // 작성한 방 정보 코드를 방 정보 구역에 올린다.
-                        // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
-                        // position에는 총 4가지의 옵션이 있다.
-                        // 1. beforebegin : 타겟 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
-                        // 2. afterbegin : 타겟 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
-                        // 3. beforeend : 타겟 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
-                        // 4. afterend : 타겟 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
-                        titleArea.insertAdjacentHTML("afterbegin", prt);
+                        // document.createElement()를 사용하여, 참가자 코드를 작성해 참가자 구역에 올린다.
+                        // document.createElement() - 지정한 태그 이름을 가진 HTML 요소를 생성하는 메소드이다.
+                        //                            이 메소드를 사용하면 동적으로 HTML 요소를 생성할 수 있다.
+
+                        // 1. 방 제목 b 태그를 생성한다.
+                        var titleBTag = document.createElement("b");
+                        // 1-1. 방 제목 b 태그에 id 속성을 추가한다.
+                        titleBTag.setAttribute("id", "title");
+                        // 1-2. 방 제목 b 태그에 작성할 방 정보를 TextNode로 생성한다.
+                        var titleBContent = document.createTextNode("방 번호 : " + metaIdx + "    |    (스터디) 방 제목 : " + metaTitle + " ( " + recruitingPersonnel + " / " + metaPersonnel + " )");
+                        // 1-3. 방 제목 b 태그에 TextNode로 생성한 방 정보를 전달한다.
+                        titleBTag.appendChild(titleBContent);
+
+                        // 2. 방 제목 구역에 방 제목 b 태그를 올린다.
+                        titleArea.appendChild(titleBTag);
 
                         // 전역 변수에 선언되어 있는 참여중인 인원을 새로 받아온 참여중인 인원으로 변경한다.
                         metaRecruitingPersonnel = recruitingPersonnel;
@@ -246,109 +247,95 @@
 
                     // 9. 새로 들어온 참가자가 있는 경우
                     if ( participant != null ) {
-                        // 참가자가 새로 들어온게 아닌 새로고침한 경우 - 현재 작성되어 있는 참가자랑 중복되지 않게 먼저 이전 참가자를 삭제하고 다시 올린다.
+                        // 참가자가 새로 들어온게 아닌 새로고침한 경우 - 현재 작성되어 있는 참가자랑 중복되지 않게 먼저 이전 참가자를 제거하고 다시 올린다.
 
                         // 작성자(참가자) 닉네임 id를 통해 참가자 구역에 작성되어 있는 작성자(참가자)를 가져와 ptr 변수에 저장한다.
                         var ptr = document.getElementById(writer);
                         // 가져온 작성자(참가자)가 존재하는 경우
                         if ( ptr != null ) {
-                            // ptr에 저장된 작성자(참가자) id를 사용하여 해당 작성자(참가자)를 삭제한다.
+                            // ptr에 저장된 작성자(참가자) id를 사용하여 해당 작성자(참가자)를 제거한다.
                             ptr.remove();
                         }
 
-                        // id를 통해 참가자가 작성될 구역을 가져와 profileArea 변수에 저장한다.
+                        // 0. id를 통해 참가자가 작성될 구역을 가져와 profileArea 변수에 저장한다.
                         var profileArea = document.getElementById("profileArea");
 
                         // document.createElement()를 사용하여, 참가자 코드를 작성해 참가자 구역에 올린다.
                         // document.createElement() - 지정한 태그 이름을 가진 HTML 요소를 생성하는 메소드이다.
                         //                            이 메소드를 사용하면 동적으로 HTML 요소를 생성할 수 있다.
-                        // 이미지 태그를 생성한다.
+
+                        // 1. 이미지 태그를 생성한다.
                         var imgTag = document.createElement("img");
                         // element.setAttribute("AttributeName", "AttributeValue") - 지정한 HTML 요소의 속성과 값을 설정하는 메소드이다.
                         //                                                           setAttribute 메소드는 두 개의 인자를 받는데, 첫 번째 인자는 설정할 속성의 이름이고, 두 번째 인자는 설정할 속성의 값이다.
                         //                                                           만약 설정하려는 속성이 이미 존재하다면 해당 속성의 값만 설정할 속성의 값으로 업데이트되고, 그렇지 않다면 설정할 속성의 이름과 값으로 새 속성이 추가된다.
-                        // 이미지 태그에 style 속성을 추가한다.
+                        // 1-1. 이미지 태그에 style 속성을 추가한다.
                         imgTag.setAttribute("style", "width: 50%; height: 100%;");
-                        // 참가자 프로필 사진을 가져와 이미지 태그의 소스로 전달한다.
+                        // 1-2. 참가자 프로필 사진을 가져와 이미지 태그의 소스로 전달한다.
                         imgTag.src = "/imagePath/" + profileImage;
 
-                        // 닉네임 b 태그를 생성한다.
+                        // 2. 닉네임 b 태그를 생성한다.
                         var nicknameBTag = document.createElement("b");
+                        // 2-1. 닉네임 b 태그에 style 속성을 추가한다.
                         nicknameBTag.setAttribute("style", "display: flex; flex-direction: column; width: 100%; height: 50%; justify-content: flex-start;");
                         // document.createTextNode() - 지정한 텍스트를 포함하는 새로운 Text 노드를 생성하는 메소드이다.
                         //                             이 메소드를 사용하여 동적으로 HTML 요소의 텍스트를 업데이트할 수 있다.
                         //                             이 메소드는 document.createElement()와 함께 사용하여 동적으로 HTML 요소를 생성하는 데 사용된다.
-                        // 닉네임 b 태그에 작성할 작성자(참가자) 닉네임을 TextNode로 생성한다.
+                        // 2-2. 닉네임 b 태그에 작성할 작성자(참가자) 닉네임을 TextNode로 생성한다.
                         var nicknameBContent = document.createTextNode(writer);
-                        // 닉네임 b 태그에 TextNode로 생성한 작성자(참가자) 닉네임을 전달한다.
+                        // 2-3. 닉네임 b 태그에 TextNode로 생성한 작성자(참가자) 닉네임을 전달한다.
                         nicknameBTag.appendChild(nicknameBContent);
 
-                        // 작성자(참가자)가 방장 닉네임과 같은 경우 - 방장 참가
+                        // 3. 작성자가 방장인지 체크한다.
+                        // 3-1. 작성자(참가자)가 방장 닉네임과 같은 경우 - 방장 참가
                         if ( writer == metaMaster ) {
-                            // 방장 b 태그를 생성한다.
+                            // 3-1-1. 방장 b 태그를 생성한다.
                             var masterBTag = document.createElement("b");
-                            // 방장 b 태그에 style 속성을 추가한다.
+                            // 3-1-1-1. 방장 b 태그에 style 속성을 추가한다.
                             masterBTag.setAttribute("style", "display: flex; flex-direction: column; width: 100%; height: 50%; justify-content: flex-end; color: red;");
-                            // 방장 b 태그에 작성할 내용을 TextNode로 생성한다. - 방장 표시
+                            // 3-1-1-2. 방장 b 태그에 작성할 내용을 TextNode로 생성한다. - 방장 표시
                             var masterBContent = document.createTextNode("방장");
-                            // 방장 b 태그에 TextNode로 생성한 내용을 전달한다.
+                            // 3-1-1-3. 방장 b 태그에 TextNode로 생성한 내용을 전달한다.
                             masterBTag.appendChild(masterBContent);
 
-                            // 내부 div 태그를 생성한다.
+                            // 3-1-2. 닉네임 구역 div 태그를 생성한다.
                             var innerDivTag = document.createElement("div");
-                            // 내부 div 태그에 style 속성을 추가한다.
+                            // 3-1-2-1. 닉네임 구역 div 태그에 style 속성을 추가한다.
                             innerDivTag.setAttribute("style", "display: flex; flex-direction: column; width: 50%; height: 100%;");
-                            // 내부 div 태그에 내부 닉네임 b 태그를 전달한다.
+                            // 3-1-2-2. 닉네임 구역 div 태그에 내부 닉네임 b 태그를 전달한다.
                             innerDivTag.appendChild(nicknameBTag);
-                            // 내부 div 태그에 내부 방장 b 태그를 전달한다.
+                            // 3-1-2-3. 닉네임 구역 div 태그에 내부 방장 b 태그를 전달한다.
                             innerDivTag.appendChild(masterBTag);
-
-                            // div 태그를 생성한다.
-                            var divTag = document.createElement("div");
-                            // div 태그에 class 속성을 추가한다.
-                            divTag.setAttribute("class", "participant");
-                            // div 태그에 id 속성을 작성자(참가자) 닉네임 값으로 설정해 추가한다.
-                            divTag.setAttribute("id", writer);
-                            // div 태그에 style 속성을 추가한다.
-                            divTag.setAttribute("style", "display: flex; justify-content: space-between; border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%;");
-                            // div 태그에 이미지 태그를 전달한다.
-                            divTag.appendChild(imgTag);
-                            // div 태그에 내부 div 태그를 전달한다.
-                            divTag.appendChild(innerDivTag);
-
-                            // 참가자 구역에 div 태그를 전달한다.
-                            profileArea.appendChild(divTag);
-                        // 작성자(참가자)가 방장 닉네임과 다를 경우 - 유저 참가
+                        // 3-2. 작성자(참가자)가 방장 닉네임과 다를 경우 - 유저 참가
                         } else {
-                            // 내부 div 태그를 생성한다.
+                            // 3-2-1. 닉네임 구역 div 태그를 생성한다.
                             var innerDivTag = document.createElement("div");
-                            // 내부 div 태그에 style 속성을 추가한다.
+                            // 3-2-1-1. 닉네임 구역 div 태그에 style 속성을 추가한다.
                             innerDivTag.setAttribute("style", "display: flex; flex-direction: column; width: 50%; height: 100%;");
-                            // 내부 div 태그에 내부 닉네임 b 태그를 전달한다.
+                            // 3-2-1-2. 닉네임 구역 div 태그에 내부 닉네임 b 태그를 전달한다.
                             innerDivTag.appendChild(nicknameBTag);
-
-                            // div 태그를 생성한다.
-                            var divTag = document.createElement("div");
-                            // div 태그에 class 속성을 추가한다.
-                            divTag.setAttribute("class", "participant");
-                            // div 태그에 id 속성을 작성자(참가자) 닉네임 값으로 설정해 추가한다.
-                            divTag.setAttribute("id", writer);
-                            // div 태그에 style 속성을 추가한다.
-                            divTag.setAttribute("style", "display: flex; justify-content: space-between; border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%;");
-                            // div 태그에 이미지 태그를 전달한다.
-                            divTag.appendChild(imgTag);
-                            // div 태그에 내부 div 태그를 전달한다.
-                            divTag.appendChild(innerDivTag);
-
-                            // 참가자 구역에 div 태그를 전달한다.
-                            profileArea.appendChild(divTag);
                         } // writer == metaMaster
+
+                        // 4. 참가자 div 태그를 생성한다.
+                        var divTag = document.createElement("div");
+                        // 4-1. 참가자 div 태그에 class 속성을 추가한다.
+                        divTag.setAttribute("class", "participant");
+                        // 4-2. 참가자 div 태그에 id 속성을 작성자(참가자) 닉네임 값으로 설정해 추가한다.
+                        divTag.setAttribute("id", writer);
+                        // 4-3. 참가자 div 태그에 style 속성을 추가한다.
+                        divTag.setAttribute("style", "display: flex; justify-content: space-between; border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%;");
+                        // 4-4. 참가자 div 태그에 이미지 태그를 전달한다.
+                        divTag.appendChild(imgTag);
+                        // 4-5. 참가자 div 태그에 닉네임 구역 div 태그를 전달한다.
+                        divTag.appendChild(innerDivTag);
+
+                        // 5. 참가자 구역에 참가자 div 태그를 올린다.
+                        profileArea.appendChild(divTag);
                     } // participant
-
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////
                     // 10. 메시지 타입 값에 따라 나눈다.
-
+                    ////////////////////////////////////////////////첫 입장////////////////////////////////////////////////
                     // 10-1. 메시지 타입이 "enter"일 경우
-                    // 첫 입장
                     if ( metaType == "enter" ) {
                         // 메시지 코드를 작성한다.
                         str = '<div style="text-align: left; color: green;">';
@@ -365,9 +352,8 @@
                         // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                         chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
                     } // enter
-
+                    ////////////////////////////////////////////재입장(새로고침)////////////////////////////////////////////
                     // 10-2. 메시지 타입이 "reEnter"일 경우
-                    // 재입장(새로고침)
                     if ( metaType == "reEnter" ) {
                         // 전달 받은 메시지가 존재하는지 체크한다.
                         // 메시지가 존재하지 않는 경우
@@ -392,9 +378,8 @@
                             chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
                         } // null
                     } // reEnter
-
+                    //////////////////////////////////////////재입장(새로고침) 에러//////////////////////////////////////////
                     // 10-3. 메시지 타입이 "reErr"일 경우
-                    // 재입장(새로고침) 에러
                     if ( metaType == "reErr" ) {
                         // exitTimeoutId에 저장된 setTimeout ID를 사용하여 실행 중인 타이머를 취소한다.
                         clearTimeout(exitTimeoutId);
@@ -404,9 +389,8 @@
                             stomp.send('/pub/meta/studyRoom/enter', {}, JSON.stringify({type: "enter", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel, err: "reErr"}));
                         } // metaNickname
                     } // reErr
-
+                    /////////////////////////////////////////////////채팅/////////////////////////////////////////////////
                     // 10-4. 메시지 타입이 "chat"일 경우
-                    // 채팅
                     if ( metaType == "chat" ) {
                         // 메시지 코드를 작성한다.
                         str = '<div style="text-align: left;">';
@@ -423,9 +407,8 @@
                         // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                         chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
                     } // chat
-
+                    ///////////////////////////////////////////////방장 위임///////////////////////////////////////////////
                     // 10-5 메시지 타입이 "DelegateMaster"일 경우
-                    // 방장 위임
                     if ( metaType == "DelegateMaster" ) {
                         // 메시지 코드를 작성한다.
                         str = '<div style="text-align: left; color: orange;">';
@@ -444,15 +427,15 @@
 
                         metaMaster = master;
 
-                        // 현재 작성되어 있는 위임 전 방장과 위임 후 방장을 삭제하고 다시 올린다.
+                        // 현재 작성되어 있는 위임 전 방장과 위임 후 방장을 제거하고 다시 올린다.
 
                         // 작성자(위임 전 방장) 닉네임 id를 통해 참가자 구역에 작성되어 있는 작성자(위임 전 방장)를 가져와 beforeMaster 변수에 저장한다.
                         var beforeMaster = document.getElementById(writer);
                         // 방장(위임 후 방장) 닉네임 id를 통해 참가자 구역에 작성되어 있는 방장(위임 후 방장)을 가져와 afterMaster 변수에 저장한다.
                         var afterMaster = document.getElementById(master);
-                        // beforeMaster에 저장된 작성자(위임 전 방장) id를 사용하여 해당 참가자를 삭제한다.
+                        // beforeMaster에 저장된 작성자(위임 전 방장) id를 사용하여 해당 참가자를 제거한다.
                         beforeMaster.remove();
-                        // afterMaster에 저장된 방장(위임 후 방장) id를 사용하여 해당 참가자를 삭제한다.
+                        // afterMaster에 저장된 방장(위임 후 방장) id를 사용하여 해당 참가자를 제거한다.
                         afterMaster.remove();
 
                         // id를 통해 작성자(위임 전 방장)와 방장(위임 후 방장)이 작성될 구역을 가져와 profileArea 변수에 저장한다.
@@ -491,9 +474,8 @@
                         // 4. afterend : 타겟 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
                         profileArea.insertAdjacentHTML("beforeend", afterMasterCode);
                     } // DelegateMaster
-
+                    ///////////////////////////////////////////////유저 강퇴///////////////////////////////////////////////
                     // 10-6. 메시지 타입이 "KickOut"일 경우
-                    // 유저 강퇴
                     if ( metaType == "KickOut" ) {
                         // 메시지 코드를 작성한다.
                         str = '<div style="text-align: left; color: purple;">';
@@ -512,7 +494,7 @@
 
                         // 작성자(강퇴자) 닉네임 id를 통해 참가자 구역에 작성되어 있는 작성자(강퇴자)를 가져와 ptr 변수에 저장한다.
                         var ptr = document.getElementById(writer);
-                        // ptr에 저장된 작성자(강퇴자) id를 사용하여 해당 참가자를 삭제한다.
+                        // ptr에 저장된 작성자(강퇴자) id를 사용하여 해당 참가자를 제거한다.
                         ptr.remove();
 
                         // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
@@ -523,12 +505,12 @@
                             window.removeEventListener("beforeunload", handleBeforeUnload);
                             // onunload 이벤트 핸들러를 비활성화한다.
                             document.body.removeAttribute("onunload");
+                            // 방 퇴장 URL에 파라미터로 방 번호와 닉네임을 가져가 방에서 퇴장한다.
                             location.href = "/meta/btnexit?idx=" + metaIdx + "&nickname=" + writer;
                         } // metaNickname
                     } // KickOut
-
+                    ///////////////////////////////////////////////방장 퇴장///////////////////////////////////////////////
                     // 10-7. 메시지 타입이 "delete"일 경우
-                    // 방장 퇴장
                     if ( metaType == "delete" ) {
                         // fetch를 사용하여 방 퇴장 URL에 파라미터로 방 번호와 작성자 닉네임을 가져가 퇴장 처리한다.
                         // fetch(url, options) - 브라우저에서 제공하는 API 중 하나로, 네트워크 요청을 보내고 응답을 받아오는 메소드이다.
@@ -570,10 +552,10 @@
 
                         // id를 통해 참가자 구역에서 방장을 가져온다.
                         var mtr = document.getElementById(writer);
-                        // 가져온 방장 id를 이용하여 방장을 참가자 구역에서 삭제한다.
+                        // 가져온 방장 id를 이용하여 방장을 참가자 구역에서 제거한다.
                         mtr.remove();
 
-                        // 방장 퇴장 후 방 삭제 메시지를 채팅 구역에 올리고, 방장을 참가자 구역에서 삭제한 뒤,
+                        // 방장 퇴장 후 방 삭제 메시지를 채팅 구역에 올리고, 방장을 참가자 구역에서 제거한 뒤,
                         // setTimeout 메소드를 사용하여 방장이 퇴장한지 1분이 경과하면 방이 삭제되도록 한다.
                         // 그리고 boomTimeoutId 변수에 setTimeout 메소드로 반환된 타이머 ID를 저장하여,
                         // 1분이 경과되기 전에 방장이 재입장하면 boomTimeoutId로 타이머를 취소해 방이 삭제되지 안되도록 한다.
@@ -588,9 +570,8 @@
                             location.href = "/meta/delete?idx=" + metaIdx + "&nickname=" + metaNickname;
                         }, 60000); // setTimeout
                     } // delete
-
+                    ///////////////////////////////////////방장 퇴장 후 1분 이내 재입장///////////////////////////////////////
                     // 10-8. 메시지 타입이 "cancel"일 경우
-                    // 방장 퇴장 후 1분 이내 재입장
                     if ( metaType == "cancel" ) {
                         // boomTimeoutId에 저장된 setTimeout ID를 사용하여 실행 중인 타이머를 취소한다.
                         clearTimeout(boomTimeoutId);
@@ -610,9 +591,8 @@
                         // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                         chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
                     } // cancel
-
+                    ///////////////////////////////////////////////유저 퇴장///////////////////////////////////////////////
                     // 10-9. 메시지 타입이 "exit"일 경우
-                    // 유저 퇴장
                     if ( metaType == "exit" ) {
                         // setTimeout 메소드를 사용하여 작성자가 퇴장한지 0.1초가 경과하면 작성자가 퇴장되도록 한다.
                         // 그리고 exitTimeoutId 변수에 setTimeout 메소드로 반환된 타이머 ID를 저장하여,
@@ -670,109 +650,211 @@
                             } else {
                                 // 작성자(퇴장자) 닉네임의 id를 통해 참가자 구역에 작성되어 있는 작성자(퇴장자)를 가져와 mtr 변수에 저장한다.
                                 var mtr = document.getElementById(writer);
-                                // mtr에 저장된 작성자(퇴장자) id를 사용하여 해당 참가자를 삭제한다.
+                                // mtr에 저장된 작성자(퇴장자) id를 사용하여 해당 참가자를 제거한다.
                                 mtr.remove();
                             } // metaNickname
                         }, 100); // setTimeout
                     } // exit
-
+                    //////////////////////////////////참가자를 클릭할 경우 상세 프로필 구역 등장//////////////////////////////////
                     // 11. 상세 프로필 기능
-                    //     참가자 구역에서 참가자를 클릭할 경우 상세 프로필 구역이 등장한다.
+                    // 참가자 구역에 올라가 있는 "participant" class에 해당하는 태그를 모두 선택하여 participants 변수에 NodeList 형태로 저장한다.
+                    // querySelectorAll - HTML 문서 내에서 특정 CSS 선택자에 해당하는 요소들을 찾아 NodeList 형태로 반환하는 메소드이다.
+                    // NodeList - DOM에서 사용되는 객체로, 여러 개의 노드(HTML 요소, 속성, 텍스트 등)가 포함될 수 있는 리스트 형태의 객체를 나타낸다.
+                    //            일반적으로 querySelectorAll 메소드로 선택된 요소들을 반환하는데 사용된다.
+                    //            NodeList 객체는 배열과 유사하게 인덱스를 사용하여 접근할 수 있으며, length 속성을 통해 그 길이를 알 수 있다.
+                    //            하지만 NodeList는 배열이 아니므로, 배열 메소드를 사용할 수 없다.
                     let participants = document.querySelectorAll(".participant");
-                    // forEach 메소드를 사용하여 audioTags 변수에 저장되어 있는 NodeList의 각 요소에 대하여 이벤트 리스너를 등록한다.
+                    // forEach 메소드를 사용하여 participants 변수에 저장되어 있는 NodeList의 각 요소에 대하여 이벤트 리스너를 등록한다.
                     participants.forEach(participant => {
+                        // forEach 메소드를 사용하여 participants 변수에 저장되어 있는 NodeList에서 가져온 각 "participant" class에 해당하는 태그마다,
+                        // "click" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
+                        // click - 마우스나 터치 디바이스의 클릭이나 탭을 할 때 발생하는 이벤트이다.
                         participant.addEventListener("click", () => {
-                            var detailProfileArea = document.getElementById("detailProfileArea");
-                            detailProfileArea.style.display = "block";
-                            var profileCloseBtn = detailProfileArea.querySelector("#profileCloseBtn");
+                            // id를 통해 상세 프로필이 작성될 구역을 가져와 detailProfileArea 변수에 저장한다.
+                            var detailProfileArea = document.getElementById("detailProfileArea"); // 상세 프로필 창
+                            // 상세 프로필 구역의 style에 "display"를 "block"으로 설정한다.
+                            detailProfileArea.style.display = "block"; // 상세 프로필 창 열기
 
-                            var profileMaster = detailProfileArea.querySelector("#profileMaster");
-                            if ( profileMaster != null ) {
-                                profileMaster.remove();
+                            // id를 통해 상세 프로필 구역에 올라가 있는 창 닫기 버튼을 가져와 detailProfileCloseBtn 변수에 저장한다.
+                            var detailProfileCloseBtn = document.getElementById("detailProfileCloseBtn"); // 상세 프로필 창 닫기 버튼
+
+                            ////////////////////////////////////////////////////////////////////////////////////////////
+                            // 참가자를 클릭하여 상세 프로필을 열람할 때는 항상 가장 먼저 이전 상세 프로필에서 생성된 "방장" 글과 버튼 구역이 계속 존재하는지부터 체크해, 계속 존재한다면 모두 제거한다.
+                            // 이 작업을 안 거칠 경우 참가자를 클릭할 때마다 이전 상세 프로필에서 생성된 "방장" 글과 버튼 구역에 이어서 중복으로 계속 생성된다.
+
+                            // 상세 프로필 구역에 올라가 있는 "detailProfileMaster" id에 해당하는 태그를 선택하여 detailProfileMaster 변수에 NodeList 형태로 저장한다.
+                            var detailProfileMaster = detailProfileArea.querySelector("#detailProfileMaster"); // 상세 프로필에 작성되어 있는 "방장" 글
+                            // detailProfileMaster에 저장한 값이 존재하는지 체크한다.
+                            // detailProfileMaster에 값이 존재하는 경우
+                            if ( detailProfileMaster != null ) {
+                                // profileBtn에 저장된 상세 프로필 방장 id를 사용하여 해당 상세 프로필에 작성되어 있는 "방장" 글을 제거한다.
+                                detailProfileMaster.remove();
                             }
-                            var profileBtn = detailProfileArea.querySelector("#profileBtn");
-                            if ( profileBtn != null ) {
-                                profileBtn.remove();
+
+                            // 상세 프로필 구역에 올라가 있는 "detailProfileBtnArea" id에 해당하는 태그를 선택하여 detailProfileBtnArea 변수에 NodeList 형태로 저장한다.
+                            var detailProfileBtnArea = detailProfileArea.querySelector("#detailProfileBtnArea"); // 상세 프로필에 생성되어 있는 버튼 구역
+                            // detailProfileBtnArea에 저장한 값이 존재하는지 체크한다.
+                            // detailProfileBtnArea에 값이 존재하는 경우
+                            if ( detailProfileBtnArea != null ) {
+                                // profileBtn에 저장된 상세 프로필 버튼 구역 id를 사용하여 해당 상세 프로필에 생성되어 있는 버튼들을 제거한다.
+                                detailProfileBtnArea.remove();
                             }
+                            ////////////////////////////////////////////////////////////////////////////////////////////
+                            // 클릭한 참가자의 id를 가져와 participantNickname 변수에 저장한다.
+                            var participantNickname = participant.id; // 참가자 닉네임
+                            // 클릭한 참가자의 프로필 구역에서 img(이미지) 태그를 선택하여 participantImage 변수에 프로필 사진 소스를 NodeList 형태로 저장한다.
+                            var participantImage = participant.querySelector("img").src; // 참가자 프로필 사진
 
-                            var participantNickname = participant.id
-                            var participantImage = participant.querySelector("img").src;
-
-                            // 참가자 닉네임이 방장 닉네임과 같을 경우
-                            if ( participantNickname === metaMaster ) {
-                                var profileMasterBTag = document.createElement("b");
-                                profileMasterBTag.setAttribute("id", "profileMaster");
-                                profileMasterBTag.setAttribute("style", "color: red;");
-                                var profileMasterInnerBContent = document.createTextNode("방장");
-                                profileMasterBTag.appendChild(profileMasterInnerBContent);
-
-                                var profileNicknameArea = detailProfileArea.querySelector("#profileNicknameArea");
-                                profileNicknameArea.appendChild(profileMasterBTag);
-                            } else {
-                                var profileMaster = detailProfileArea.querySelector("#profileMaster");
-                                if ( profileMaster != null ) {
-                                    profileMaster.remove();
-                                }
-                            } // participantNickname === metaMaster
-
-                            var detailProfileNickname = detailProfileArea.querySelector("#profileNickname");
-                            detailProfileNickname.innerText = participantNickname;
-                            var detailProfileImage = detailProfileArea.querySelector("#profileImage");
+                            // id를 통해 상세 프로필 구역에 올라가 있는 프로필 사진을 가져와 detailProfileImage 변수에 저장한다.
+                            var detailProfileImage = document.getElementById("detailProfileImage");
+                            // detailProfileImage에 소스를 클릭한 참가자의 프로필 사진 소스로 설정한다.
                             detailProfileImage.setAttribute("src", participantImage);
 
-                            // 방장일 경우
+                            // id를 통해 상세 프로필 구역에 올라가 있는 프로필 닉네임을 가져와 detailProfileNickname 변수에 저장한다.
+                            var detailProfileNickname = document.getElementById("detailProfileNickname");
+                            // detailProfileNickname에 클릭한 참가자의 닉네임으로 작성한다.
+                            detailProfileNickname.innerText = participantNickname;
+
+                            // 참가자 닉네임과 방장 닉네임이 같은 경우 - 방장'을' 클릭
+                            if ( participantNickname === metaMaster ) {
+                                // 방장 b 태그를 생성한다.
+                                var detailProfileMasterBTag = document.createElement("b");
+                                // 방장 b 태그에 id 속성을 추가한다.
+                                detailProfileMasterBTag.setAttribute("id", "detailProfileMaster");
+                                // 방장 b 태그에 style 속성을 추가한다.
+                                detailProfileMasterBTag.setAttribute("style", "color: red;");
+                                // document.createTextNode() - 지정한 텍스트를 포함하는 새로운 Text 노드를 생성하는 메소드이다.
+                                //                             이 메소드를 사용하여 동적으로 HTML 요소의 텍스트를 업데이트할 수 있다.
+                                //                             이 메소드는 document.createElement()와 함께 사용하여 동적으로 HTML 요소를 생성하는 데 사용된다.
+                                // 방장 b 태그에 작성할 내용을 TextNode로 생성한다.
+                                var detailProfileMasterInnerBContent = document.createTextNode("방장");
+                                // 방장 b 태그에 TextNode로 생성한 내용을 전달한다.
+                                detailProfileMasterBTag.appendChild(detailProfileMasterInnerBContent);
+
+                                // id를 통해 상세 프로필 구역에 올라가 있는 프로필 닉네임 구역을 가져와 detailProfileNicknameArea 변수에 저장한다.
+                                var detailProfileNicknameArea = document.getElementById("detailProfileNicknameArea");
+                                // 상세 프로필 구역에 올라가 있는 프로필 닉네임 구역에 b 태그를 올린다.
+                                detailProfileNicknameArea.appendChild(detailProfileMasterBTag);
+                            } // participantNickname === metaMaster
+
+                            // 로그인 유저 닉네임과 방장 닉네임이 같은 경우  - 방장'이' 클릭
                             if ( metaNickname === metaMaster ) {
-                                var profileBtnInnerLeftInputTag = document.createElement("input");
-                                profileBtnInnerLeftInputTag.setAttribute("id", "btnProfileDelegateMaster");
-                                profileBtnInnerLeftInputTag.setAttribute("type", "button");
-                                profileBtnInnerLeftInputTag.setAttribute("value", "방장 위임");
-                                profileBtnInnerLeftInputTag.setAttribute("style", "width: 50%;");
+                                // 로그인 유저 닉네임과 참가자 닉네임이 다른 경우 - 방장 본인 제외 타 유저 클릭
+                                if ( metaNickname != participantNickname ) {
+                                    // 방장 위임 버튼 input 태그를 생성한다.
+                                    var detailProfileBtnInnerLeftInputTag = document.createElement("input");
+                                    // 방장 위임 버튼 input 태그에 id 속성을 추가한다.
+                                    detailProfileBtnInnerLeftInputTag.setAttribute("id", "btnDetailProfileDelegateMaster");
+                                    // 방장 위임 버튼 input 태그에 type 속성을 버튼으로 설정해 추가한다. - input 버튼 태그 생성
+                                    detailProfileBtnInnerLeftInputTag.setAttribute("type", "button");
+                                    // 방장 위임 버튼 input 태그에 value 속성으로 버튼 이름을 설정해 추가한다.
+                                    detailProfileBtnInnerLeftInputTag.setAttribute("value", "방장 위임");
+                                    // 방장 위임 버튼 input 태그에 style 속성을 추가한다.
+                                    detailProfileBtnInnerLeftInputTag.setAttribute("style", "width: 50%;");
 
-                                var profileBtnInnerLeftDivTag = document.createElement("div");
-                                profileBtnInnerLeftDivTag.setAttribute("style", "width: 50%; display: flex; justify-content: center; align-items: center;");
-                                profileBtnInnerLeftDivTag.appendChild(profileBtnInnerLeftInputTag);
+                                    // 왼쪽 div 태그를 생성한다.
+                                    var detailProfileBtnInnerLeftDivTag = document.createElement("div");
+                                    // 왼쪽 div 태그에 style 속성을 추가한다.
+                                    detailProfileBtnInnerLeftDivTag.setAttribute("style", "width: 50%; display: flex; justify-content: center; align-items: center;");
+                                    // 왼쪽 div 태그에 방장 위임 버튼 input 태그를 전달한다.
+                                    detailProfileBtnInnerLeftDivTag.appendChild(detailProfileBtnInnerLeftInputTag);
 
-                                var profileBtnInnerRightInputTag = document.createElement("input");
-                                profileBtnInnerRightInputTag.setAttribute("id", "btnProfileKickOut");
-                                profileBtnInnerRightInputTag.setAttribute("type", "button");
-                                profileBtnInnerRightInputTag.setAttribute("value", "강퇴");
-                                profileBtnInnerRightInputTag.setAttribute("style", "width: 50%;");
+                                    // 강퇴 버튼 input 태그를 생성한다.
+                                    var detailProfileBtnInnerRightInputTag = document.createElement("input");
+                                    // 강퇴 버튼 input 태그에 id 속성을 추가한다.
+                                    detailProfileBtnInnerRightInputTag.setAttribute("id", "btnDetailProfileKickOut");
+                                    // 강퇴 버튼 input 태그에 type 속성을 버튼으로 설정해 추가한다. - input 버튼 태그 생성
+                                    detailProfileBtnInnerRightInputTag.setAttribute("type", "button");
+                                    // 강퇴 버튼 input 태그에 value 속성으로 버튼 이름을 설정해 추가한다.
+                                    detailProfileBtnInnerRightInputTag.setAttribute("value", "강퇴");
+                                    // 강퇴 버튼 input 태그에 style 속성을 추가한다.
+                                    detailProfileBtnInnerRightInputTag.setAttribute("style", "width: 50%;");
 
-                                var profileBtnInnerRightDivTag = document.createElement("div");
-                                profileBtnInnerRightDivTag.setAttribute("style", "width: 50%; display: flex; justify-content: center; align-items: center;");
-                                profileBtnInnerRightDivTag.appendChild(profileBtnInnerRightInputTag);
+                                    // 오른쪽 div 태그를 생성한다.
+                                    var detailProfileBtnInnerRightDivTag = document.createElement("div");
+                                    // 오른쪽 div 태그에 style 속성을 추가한다.
+                                    detailProfileBtnInnerRightDivTag.setAttribute("style", "width: 50%; display: flex; justify-content: center; align-items: center;");
+                                    // 오른쪽 div 태그에 강퇴 버튼 input 태그를 전달한다.
+                                    detailProfileBtnInnerRightDivTag.appendChild(detailProfileBtnInnerRightInputTag);
 
-                                var profileBtnDivTag = document.createElement("div");
-                                profileBtnDivTag.setAttribute("id", "profileBtn");
-                                profileBtnDivTag.setAttribute("style", "display: flex; justify-content: space-between; height: 10%; width: 100%;");
-                                profileBtnDivTag.appendChild(profileBtnInnerLeftDivTag);
-                                profileBtnDivTag.appendChild(profileBtnInnerRightDivTag);
+                                    // 상세 프로필 버튼 구역 div 태그를 생성한다.
+                                    var detailProfileBtnAreaDivTag = document.createElement("div");
+                                    // 상세 프로필 버튼 구역 div 태그에 id 속성을 추가한다.
+                                    detailProfileBtnAreaDivTag.setAttribute("id", "detailProfileBtnArea");
+                                    // 상세 프로필 버튼 구역 div 태그에 style 속성을 추가한다.
+                                    detailProfileBtnAreaDivTag.setAttribute("style", "display: flex; justify-content: space-between; height: 10%; width: 100%;");
+                                    // 상세 프로필 버튼 구역 div 태그에 왼쪽 div 태그를 전달한다.
+                                    detailProfileBtnAreaDivTag.appendChild(detailProfileBtnInnerLeftDivTag);
+                                    // 상세 프로필 버튼 구역 div 태그에 오른쪽 div 태그를 전달한다.
+                                    detailProfileBtnAreaDivTag.appendChild(detailProfileBtnInnerRightDivTag);
 
-                                detailProfileArea.appendChild(profileBtnDivTag);
+                                    // 상세 프로필 구역에 상세 프로필 버튼 구역 div 태그를 올린다.
+                                    detailProfileArea.appendChild(detailProfileBtnAreaDivTag);
+                                    ////////////////////////////////////////////////////////////////////////////////////
+                                    // id를 통해 상세 프로필 버튼 구역에 올라가 있는 방장 위임 버튼을 가져와 detailProfileNicknameArea 변수에 저장한다.
+                                    var btnDetailProfileDelegateMaster = document.getElementById("btnDetailProfileDelegateMaster");
+                                    // 방장 위임 버튼에서 "click" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
+                                    // click - 마우스나 터치 디바이스의 클릭이나 탭을 할 때 발생하는 이벤트이다.
+                                    btnDetailProfileDelegateMaster.addEventListener("click", () => {
+                                        // fetch를 사용하여 방장 위임 URL에 파라미터로 방 번호와 방장을 위임할 참가자 닉네임을 가져가 방장을 위임한다.
+                                        // fetch(url, options) - 브라우저에서 제공하는 API 중 하나로, 네트워크 요청을 보내고 응답을 받아오는 메소드이다.
+                                        //                       fetch() 메소드는 첫 번째 인자로 서버에 데이터를 요청할 URL을 전달받고, 두 번째 인자로 선택적으로 HTTP 요청과 관련된 다양한 옵션을 설정하는 객체를 전달받는다.
+                                        //                       여기서 옵션 객체는 HTTP 요청에 대한 옵션을 설정할 수 있는 여러 가지 속성을 가지고 있는데,
+                                        //                       예를 들어 method 속성을 이용하여 HTTP 요청 메소드(GET, POST, PUT, DELETE 등)를 지정할 수 있으며,
+                                        //                       method 속성을 지정하지 않으면 기본적으로 HTTP 요청 메서드는 GET이 된다.
+                                        //                       그러기에 두 번째 인자로 옵션 객체를 전달하지 않으면 기본적으로 HTTP 요청 메서드는 GET으로 지정된다.
+                                        //                       또 다른 속성으로는 headers, mode, cache, credentials 등이 있다.
+                                        //                       fetch() 메소드는 Promise 객체를 반환하며, 이를 통해 비동기적으로 서버로부터 데이터를 받아올 수 있다.
+                                        //                       응답을 받아오는 데 성공하면 Response 객체를 반환하고, 실패하면 Error 객체를 반환한다.
+                                        // 예시 - 아래와 같이 fetch 메소드를 사용하여 JSON 데이터를 요청할 수 있다.
+                                        // fetch("/meta/delegatemaster?idx=" + metaIdx + "&nickname=" + participantNickname)
+                                        //     .then(response => response.json()) // JSON 형식으로 파싱
+                                        //     .then(data => console.log(data)) // 응답 데이터 처리
+                                        //     .catch(error => console.error(error)); // 오류 처리
+                                        // fetch 메소드는 Promise를 반환하기 때문에, then 메서드를 사용하여 비동기 처리를 할 수 있다.
+                                        // fetch 메소드를 사용하여 "/meta/delegatemaster?idx=방 번호&nickname=방장을 위임할 참가자 닉네임" 주소로 GET 요청을 보내고,
+                                        // then() 메소드를 사용하여 요청이 성공했을 때 반환된 Response 객체를 json() 메소드를 통해 JSON 형식으로 변환한다.
+                                        // 그리고 다시 then() 메소드를 사용하여 변환된 JSON 데이터를 콘솔에 출력한다.
+                                        // 만약 요청이 실패하면 catch 메소드에서 에러를 출력한다.
+                                        fetch("/meta/delegatemaster?idx=" + metaIdx + "&nickname=" + participantNickname)
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                // 방장 위임 URL에서 방장을 위임 처리하고 받아온 결과 값을 체크한다.
+                                                // 1 - 성공 / 0 - 실패
+                                                // 결과 값이 1인 경우 - 성공
+                                                if ( data == 1 ) {
+                                                    // send(path, header, message)로 방장 위임 메시지를 전송한다. (방장 위임은 여기서 메시지를 전송한다.)
+                                                    // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+                                                    // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 파라미터를 통해 받는다.
+                                                    stomp.send('/pub/meta/studyRoom/delegatemaster', {}, JSON.stringify({type: "DelegateMaster", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaMaster, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel, master: participantNickname, masterProfileImage: participantImage}));
+                                                    // 상세 프로필 구역의 style에 "display"를 "none"으로 설정한다.
+                                                    detailProfileArea.style.display = "none"; // 상세 프로필 창 닫기
+                                                }
+                                            })
+                                            .catch(error => console.error(error)); // fetch
+                                    }); // addEventListener
 
-                                var btnProfileDelegateMaster = detailProfileArea.querySelector("#btnProfileDelegateMaster");
-                                btnProfileDelegateMaster.addEventListener("click", () => {
-                                    fetch("/meta/delegatemaster?idx=" + metaIdx + "&nickname=" + participantNickname)
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if ( data == 1 ) {
-                                                stomp.send('/pub/meta/studyRoom/delegatemaster', {}, JSON.stringify({type: "DelegateMaster", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaMaster, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel, master: participantNickname, masterProfileImage: participantImage}));
-                                                detailProfileArea.style.display = "none";
-                                            }
-                                        })
-                                        .catch(error => console.error(error)); // fetch
-                                }); // addEventListener
-
-                                var btnProfileKickOut = detailProfileArea.querySelector("#btnProfileKickOut");
-                                btnProfileKickOut.addEventListener("click", () => {
-                                    stomp.send('/pub/meta/studyRoom/kickout', {}, JSON.stringify({type: "KickOut", metaIdx: metaIdx, metaTitle: metaTitle, writer: participantNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
-                                    detailProfileArea.style.display = "none";
-                                }); // addEventListener
+                                    // id를 통해 상세 프로필 버튼 구역에 올라가 있는 강퇴 버튼을 가져와 detailProfileNicknameArea 변수에 저장한다.
+                                    var btnDetailProfileKickOut = document.getElementById("#btnDetailProfileKickOut");
+                                    // 강퇴 버튼에서 "click" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
+                                    // click - 마우스나 터치 디바이스의 클릭이나 탭을 할 때 발생하는 이벤트이다.
+                                    btnDetailProfileKickOut.addEventListener("click", () => {
+                                        // send(path, header, message)로 강퇴 메시지를 전송한다. (모든 강퇴는 여기서 메시지를 전송한다.)
+                                        // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+                                        // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 파라미터를 통해 받는다.
+                                        stomp.send('/pub/meta/studyRoom/kickout', {}, JSON.stringify({type: "KickOut", metaIdx: metaIdx, metaTitle: metaTitle, writer: participantNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
+                                        // 상세 프로필 구역의 style에 "display"를 "none"으로 설정한다.
+                                        detailProfileArea.style.display = "none"; // 상세 프로필 창 닫기
+                                    }); // addEventListener
+                                    ////////////////////////////////////////////////////////////////////////////////////
+                                } // metaNickname != participantNickname
                             } // metaNickname === metaMaster
 
-                            // 닫기
-                            profileCloseBtn.addEventListener("click", () => {
-                                detailProfileArea.style.display = "none";
+                            // 상세 프로필 창 닫기 버튼에서 "click" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
+                            // click - 마우스나 터치 디바이스의 클릭이나 탭을 할 때 발생하는 이벤트이다.
+                            detailProfileCloseBtn.addEventListener("click", () => {
+                                // 상세 프로필 구역의 style에 "display"를 "none"으로 설정한다.
+                                detailProfileArea.style.display = "none"; // 상세 프로필 창 닫기
                             }); // addEventListener
                         }); // addEventListener
                     }); // forEach
@@ -807,7 +889,8 @@
             }
         });
         //////////////////////////////////////////////////// 채팅 구역 ////////////////////////////////////////////////////
-        // 키가 눌릴 경우 발생하는 이벤트 핸들러 등록
+        // input 텍스트 태그에서 "keypress" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
+        // keypress - 웹 페이지에서 키보드를 눌렀을 때 발생한다.
         message.addEventListener("keypress", function(event) {
             // 눌린 키가 무엇인지 체크한다.
             // 눌린 키가 엔터 키인 경우
@@ -834,7 +917,7 @@
                 // ( end - start ) - 처음 메시지 전송후 1초 이내 다음 메시지 전송까지의 경과 시간
                 if ( ( end - start ) <= 1000 && count >= 5 ) {
                     alert("짧은 시간에 많은 메시지를 보낼 수 없습니다. 잠시 후 다시 시도해주세요.");
-                    // 먼저 로컬 스토리지에서 현재 가지고 있는 메시지 전송 상태를 삭제한다.
+                    // 먼저 로컬 스토리지에서 현재 가지고 있는 메시지 전송 상태를 제거한다.
                     localStorage.removeItem("sendMessage");
                     // 그 다음 메시지 전송 상태 값을 메시지를 보낼 수 없는 상태로 변경하여 다시 로컬 스토리지에 추가한다.
                     localStorage.setItem("sendMessage", "false");
@@ -842,7 +925,7 @@
                     sendMessage = localStorage.getItem("sendMessage");
                     // 5초 대기 후 내부 메소드를 실행한다.
                     setTimeout(function() {
-                        // 먼저 로컬 스토리지에서 현재 가지고 있는 시작 시간과 전송된 메시지 수와 메시지 전송 상태를 삭제한다.
+                        // 먼저 로컬 스토리지에서 현재 가지고 있는 시작 시간과 전송된 메시지 수와 메시지 전송 상태를 제거한다.
                         localStorage.removeItem("start");
                         localStorage.removeItem("count");
                         localStorage.removeItem("sendMessage");
@@ -863,7 +946,7 @@
                         return;
                     // 메시지를 보낼 수 있는 상태인 경우
                     } else {
-                        // 먼저 로컬 스토리지에서 현재 가지고 있는 메시지 전송 시간을 삭제한다.
+                        // 먼저 로컬 스토리지에서 현재 가지고 있는 메시지 전송 시간을 제거한다.
                         localStorage.removeItem("end");
                         // 그 다음 메시지 전송 시간 값을 다시 초기값으로 변경하여 로컬 스토리지에 추가한다.
                         localStorage.setItem("end", Date.now());
@@ -871,7 +954,7 @@
                         end = localStorage.getItem("end");
                         // 메시지를 전송한지 1초가 지날 경우 - 다시 초기 상태로 돌아간다.
                         if ( ( end - start ) > 1000 ) {
-                            // 먼저 로컬 스토리지에서 현재 가지고 있는 시작 시간과 전송된 메시지 수를 삭제한다.
+                            // 먼저 로컬 스토리지에서 현재 가지고 있는 시작 시간과 전송된 메시지 수를 제거한다.
                             localStorage.removeItem("start");
                             localStorage.removeItem("count");
                             // 그 다음 시작 시간과 전송된 메시지 수의 값을 다시 초기값으로 변경하여 로컬 스토리지에 추가한다.
@@ -888,7 +971,7 @@
                         message.value = ""; // 메시지를 전송한 뒤 공백 상태로 만든다.
                         // 먼저 전송된 메시지 수를 1 증가시킨다.
                         count++;
-                        // 그 다음 로컬 스토리지에서 현재 가지고 있는 전송된 메시지 수를 삭제한다.
+                        // 그 다음 로컬 스토리지에서 현재 가지고 있는 전송된 메시지 수를 제거한다.
                         localStorage.removeItem("count");
                         // 그 다음 메시지 수의 값을 증가한 값으로 변경하여 다시 로컬 스토리지에 추가한다.
                         localStorage.setItem("count", count);
@@ -938,7 +1021,7 @@
                         }
 
                         // MediaRecorder 객체에서 "dataavailable" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
-                        // dataavailable - MediaRecorder 객체에서 발생하는 이벤트 중 하나로 MediaRecorder가 녹음을 진행하면서 데이터를 누적할 때마다 발생한다.
+                        // dataavailable - MediaRecorder 객체에서 발생하는 이벤트 중 하나로 MediaRecorder가 녹음을 진행하면서 데이터를 누적할 때마다 발생하는 이벤트이다.
                         //                 즉, 녹음된 오디오 데이터가 사용 가능해질 때마다 이 이벤트가 발생한다.
                         //                 이 때 발생한 녹음된 오디오 데이터는 Blob 형태로 event.data에 담긴다.
                         //                 그러기에 이 이벤트를 이용하면 MediaRecorder가 녹음한 오디오 데이터를 직접 다룰 수 있게 된다.
@@ -1026,7 +1109,7 @@
         }
 
         // 오디오 태그에서 "ended" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
-        // ended - 오디오나 비디오 등의 미디어가 재생이 끝났을 때 발생한다.
+        // ended - 오디오나 비디오 등의 미디어가 재생이 끝났을 때 발생하는 이벤트이다.
         record.addEventListener("ended", function() {
             // 오디오 태그의 재생이 종료되면, 오디오 태그에 작성되어 있는 소스를 그대로 재작성한다.
             // 이는 오디오 재생이 끝나고 다시 재생할 때, 오디오 소스가 초기화되도록 하는 역할을 한다.
@@ -1037,6 +1120,7 @@
         });
 
         // 시작 및 초기화 버튼에서 "click" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
+        // click - 마우스나 터치 디바이스의 클릭이나 탭을 할 때 발생하는 이벤트이다.
         btnRecordStart.addEventListener("click", function() {
             // 시작 버튼 이름을 체크한다.
             // "녹음 시작" 버튼을 클릭한 경우
@@ -1071,6 +1155,7 @@
         });
 
         // 정지 및 재시작 버튼에서 "click" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
+        // click - 마우스나 터치 디바이스의 클릭이나 탭을 할 때 발생하는 이벤트이다.
         btnRecordStop.addEventListener("click", function() {
             // 정지 버튼 이름을 체크한다.
             // "녹음 정지" 버튼을 클릭한 경우
@@ -1109,6 +1194,7 @@
         });
 
         // 전송 버튼에서 "click" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
+        // click - 마우스나 터치 디바이스의 클릭이나 탭을 할 때 발생하는 이벤트이다.
         btnRecordSend.addEventListener("click", function() {
             // 녹음된 오디오 메시지 전송 메소드를 호출하여 녹음된 오디오를 메시지로 전송한다.
             sendRecording();
@@ -1323,7 +1409,7 @@
             // 시작!!
             //runGame();
             // 시작 알람
-            // 실행되고있는 AnimationFrame 삭제 - 이 작업을 먼저 안하면 실행중인 AnimationFrame이 제거되지 않고 계속 쌓이게 된다.
+            // 실행되고있는 AnimationFrame 제거 - 이 작업을 먼저 안하면 실행중인 AnimationFrame이 제거되지 않고 계속 쌓이게 된다.
             cancelAnimationFrame(runGame);
             // AnimationFrame 실행 (콜백 메소드) - AnimationFrame으로 실행시킬 메소드를 괄호에 넣는다.
             requestAnimationFrame(runGame);
@@ -1376,7 +1462,7 @@
                 imgChar.src = "/imagePath/" + coordinate[0]; // 캐릭터 이미지 주소
                 context.drawImage(imgChar, coordinate[1]-w, coordinate[2]-h, w*2, h*2);
             }
-            cancelAnimationFrame(runGame); // 실행되고있는 AnimationFrame 삭제
+            cancelAnimationFrame(runGame); // 실행되고있는 AnimationFrame 제거
             requestAnimationFrame(runGame); // AnimationFrame 실행
         }
 
