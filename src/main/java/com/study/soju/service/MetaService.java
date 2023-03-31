@@ -201,19 +201,21 @@ public class MetaService {
         return rpMetaRoomIdxList;
     }
 
-    public int delegateMaster(long idx, String nickname) {
-//        metaRoomRepository.updateMetaMaster(idx);
+    // 방장 위임
+    public int delegateMaster(long idx, String nickname) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
+        // 2. 1에서 파라미터로 받아온 방 번호에 해당하는 방에 방장을 1에서 파라미터로 받아온 닉네임으로 갱신하고, 갱신된 결과 값을 받아온다. (@Query 어노테이션 사용)
         int res = metaRepository.updateMetaMaster(idx, nickname);
+        // 3. 2에서 갱신된 결과 값을 반환한다.
         return res;
     }
 
     // 입장한 메타 방 조회 후 모집된 인원 감소 및 참가자 삭제
     public int exit(long idx, String nickname) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
-        // 2. 1에서 파라미터로 받아온 방 번호와 닉네임으로 방 내부 참여자 명단에서 해당 유저를 삭제하고, 삭제된 결과값을 받아온다. (@Query 어노테이션 사용)
+        // 2. 1에서 파라미터로 받아온 방 번호와 닉네임으로 방 내부 참여자 명단에서 해당 유저를 삭제하고, 삭제된 결과 값을 받아온다. (@Query 어노테이션 사용)
         int res = metaRoomRepository.exitMetaRoom(idx, nickname);
         // 3. 1에서 파라미터로 받아온 방 번호로 먼저 방 내부 참여자 명단 수를 조회하고, 그 다음 조회된 값으로 참여중인 인원을 갱신한다. (@Query 어노테이션에 서브쿼리 사용)
         metaRepository.updateMetaRecruitingPersonnelCount(idx);
-        // 4. 2에서 삭제된 결과값을 반환한다.
+        // 4. 2에서 삭제된 결과 값을 반환한다.
         return res;
     }
 
@@ -221,7 +223,7 @@ public class MetaService {
     public void delete(long idx) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호에 해당하는 방을 삭제한다. (@Query 어노테이션 사용)
         metaRepository.deleteByIdx(idx);
-        // 3. 1에서 파라미터로 받아온 방 번호에 해당하는 방에 참여중인 참가자들을 모두 삭제한다. (@Query 어노테이션 사용)
+        // 3. 1에서 파라미터로 받아온 방 번호에 해당하는 방 내부 참여자 명단에 존재하는 참가자들을 모두 삭제한다. (@Query 어노테이션 사용)
         metaRoomRepository.deleteByMetaIdx(idx);
     }
 }

@@ -14,7 +14,7 @@ public class MetaCanvasDTO {
     private String character; // 캐릭터
     private int x; // x축 좌표
     private int y; // y축 좌표
-    private String characters; // 캐릭터 정보 Map
+    private String characters; // 캐릭터 Map
     private int canvasLeft; // 캔버스 왼쪽 벽 좌표
     private int canvasTop; // 캔버스 위쪽 벽 좌표
     private int canvasRight; // 캔버스 오른쪽 벽 좌표

@@ -345,10 +345,13 @@ public class MetaController {
         }
     }
 
+    // 방장 위임
     @GetMapping("delegatemaster")
     @ResponseBody // 비동기 통신 fetch를 사용하였기에 필요한 어노테이션
-    public int delegateMaster(@RequestParam long idx, @RequestParam String nickname) {
+    public int delegateMaster(@RequestParam long idx, @RequestParam String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
+        // 2. 1에서 파라미터로 받아온 방 번호와 닉네임을 서비스에 전달한다.
         int res = metaService.delegateMaster(idx, nickname);
+        // 3. 2에서 반환받은 방장 위임 결과 값을 클라이언트로 반환한다.
         return res;
     }
 
@@ -358,7 +361,7 @@ public class MetaController {
     public int exitRoom(@RequestParam long idx, @RequestParam String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호와 닉네임을 서비스에 전달한다.
         int res = metaService.exit(idx, nickname);
-        // 3. 2에서 반환받은 삭제된 결과값을 클라이언트로 반환한다.
+        // 3. 2에서 반환받은 방 퇴장 결과 값을 클라이언트로 반환한다.
         return res;
     }
 
