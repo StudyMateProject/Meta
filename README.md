@@ -263,7 +263,7 @@
 		metaTitle VARCHAR(50) NOT NULL, #방 제목
 		metaType VARCHAR(10) NOT NULL, #방 분야
 		metaPersonnel INT NOT NULL, #방 모집 인원
-		metaRecruitingPersonnel INT NOT NULL, #방 모집된 인원
+		metaRecruitingPersonnel INT NOT NULL, #방 참여중인 인원
 		metaMaster VARCHAR(20) #방장 닉네임
 	);
 
@@ -330,7 +330,7 @@
 		metaTitle VARCHAR(50) NOT NULL, #방 제목
 		metaType VARCHAR(10) NOT NULL, #방 분야
 		metaPersonnel INT NOT NULL, #방 모집 인원
-		metaRecruitingPersonnel INT NOT NULL, #방 모집된 인원
+		metaRecruitingPersonnel INT NOT NULL, #방 참여중인 인원
 		metaMaster VARCHAR(20) UNIQUE #방장 닉네임
 	);
 
