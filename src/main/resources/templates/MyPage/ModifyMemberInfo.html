@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>MyPage</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" type="text/css" href="/css/mymenu.css">
+    <link rel="stylesheet" type="text/css" href="/css/mymodify.css">
+    <link rel="stylesheet" type="text/css" href="/css/footer.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="headerContainer">
+            <div class="headerImg">
+                <a href="/" alt="SOJU">
+                    <img src="/img/logo_mate.png" class="mainLogo">
+                </a>
+            </div>
+
+            <div class="headerMenu">
+                <div class="headerMenuLeft">
+
+                    <div class="categoryMenu">
+                        <span>스터디원</span>
+                        <div class="dropTable">
+                            <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
+                            <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
+                            <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘토 프로필</a>
+                        </div>
+                    </div>
+
+                    <div class="categoryMenu">
+                        <a href="/meta" class="metaMenu">
+                            <span class="categoryMenu">스터디룸</span>
+                        </a>
+                    </div>
+                    <div class="categoryMenu">
+                        <a href="/noticeroom" class="noticeRoomMenu">
+                            <span class="categoryMenu">게시판</span>
+                        </a>
+                    </div>
+                    <div class="categoryMenu">
+                        <a href="/store" class="storeMenu">
+                            <span class="categoryMenu">스토어</span>
+                        </a>
+                    </div>
+                    <div class="categoryMenu">
+                        <a href="/mypage" class="myPageMenu">
+                            <span class="categoryMenu">마이페이지</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="headerMenuRight">
+                    <div class="whenLogin">
+                        <div class="welcome"> [[${member.nickname}]]님 반갑습니다! </div>
+                        <div class="notificationsMenu">
+                            <div class="icon" data-number="5">
+                                <i class="ri-notification-4-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btnLogin">
+                        <input class="inputButtonLogin" sec:authorize="isAnonymous()" type="button" value="로그인" onclick="location.href='/loginform'">
+                        <input class="inputButtonLogin" sec:authorize="isAuthenticated()" type="button" value="로그아웃" onclick="location.href='/logout'">
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="containerLeft">
+            <h2 class="my">My Page</h2>
+            <input type="button" class="memberInfo mypageBtn accordion" value="개인정보 관리">
+            <div class="memberInfoList panel">
+                <a class="profile content" href="/mypage">내 프로필</a>
+                <a class="modifyMemberInfo content" href="/mypage/modifyform">개인정보 수정</a>
+                <a class="modifyPwd content" href="/mypage/modifyform/editpwd">비밀번호 수정</a>
+                <a class="withdraw content" href="/mypage/modifyform/withdrawalcheck">탈퇴하기</a>
+            </div>
+            <div class="menu">
+                <input type="button" class="likeList mypageBtn" onclick="location.href='/mypage';" value="찜목록">
+                <input type="button" class="studying mypageBtn" onclick="location.href='/mypage';" value="현재 Mate">
+                <input type="button" class="chatList mypageBtn" onclick="location.href='/mypage';" value="채팅목록">
+                <input type="button" class="purchaseList mypageBtn" onclick="location.href='/mypage';" value="구매내역">
+            </div>
+        </div>
+
+
+        <div class="containerRight">
+            <div class="modifyForm" th:object="${memberDTO}">
+                <h2 class="modifyTitle">개인정보 수정</h2>
+                <form th:object="${memberDTO}" method="post" enctype="multipart/form-data" action="/mypage/modifyform/modify">
+                    <div class="memberInfoForm">
+                        <div class="hiddenDiv">
+                            <input type="hidden" name="roleName" th:value="${member.roleName}">
+                        </div>
+
+                        <div class="inputForm">
+                            <div class="editTitle">가입경로</div>
+                            <input name="platform" th:value="${member.platform}" class="inputText" type="text" readonly>
+                        </div>
+                        <div class="inputForm">
+                            <div class="editTitle">이메일</div>
+                            <input name="emailId" th:value="${member.emailId}" class="inputText" type="text" readonly>
+                        </div>
+
+                        <div class="inputForm">
+                            <div class="editTitle">이름</div>
+                            <input id="name" name="name" th:value="${member.name}" class="inputText" type="text" readonly>
+                        </div>
+
+                        <div class="inputForm">
+                            <div class="editTitle">닉네임</div>
+                            <input id="hNickname" type="hidden" th:value="${member.nickname}">
+                            <input name="nickname" th:value="${member.nickname}" class="inputText" type="text">
+                            <input type="button" value="중복확인" class="checkBtn" onclick="checkNickname(this.form)"> <br>
+                            <div id="nicknameCheck" class="errorMsg"></div>
+                        </div>
+
+                        <div class="inputForm">
+                            <div class="editTitle">프로필 사진</div>
+                            <div style="display: flex">
+                                <img class="profileImgEdit" th:src="'/imagePath/' + ${member.profileImage}">
+                                <img class="profileImgEdit" id="previewProfileImage">
+                            </div>
+                            <input name="profileImage" type="hidden" th:value="${member.profileImage}">
+                            <div class="editImg"><label for="img" class="checkBtn editImgBtn">수정하기</label></div>
+                            <input type="file" id="img" name="imageFile" onchange="previewImage()" style="display:none;">
+                        </div>
+
+                        <div class="inputForm">
+                            <div class="editTitle">생년월일</div>
+                            <input id="birthday" name="birthday" th:value="${member.birthday}" class="inputText" type="date" readonly>
+                        </div>
+
+                        <div class="inputForm">
+                            <div class="editTitle">성별</div>
+                            <input name="gender" th:value="${member.gender}" class="inputText" type="text" readonly>
+                        </div>
+
+                        <div class="inputForm">
+                            <div class="editTitle">휴대폰 번호</div>
+                            <input id="phoneNumber" name="phoneNumber" th:value="${member.phoneNumber}" type="tel" class="inputText" readonly>
+                            <input id="btnPhone" value="인증하기" type="button" class="checkBtn">
+                        </div>
+
+                        <div class="inputForm">
+                            <div class="editTitle">주소</div>
+                            <input id="address" name="address" th:value="${member.address}" class="inputText" type="text">
+                            <input id="btnAddress" type="button" value="주소찾기" class="checkBtn">
+                        </div>
+
+                        <div class="inputForm">
+                            <div class="editTitle">상세 주소</div>
+                            <input id="detailAddress" name="detailAddress" th:value="${member.detailAddress}" class="inputText" type="text">
+                        </div>
+
+                        <div class="inputForm">
+                            <div class="editTitle">관심있는 분야</div>
+                            <select name="studyType" th:value="${member.studyType}" class="inputText studyType"><option value="computer" th:selected="${member.studyType == 'computer'}">컴퓨터 / IT</option>
+                                                                                                                <option value="math" th:selected="${member.studyType == 'math'}">수학</option>
+                                                                                                                <option value="management" th:selected="${member.studyType == 'management'}">경영 / 마케팅</option>
+                                                                                                                <option value="design" th:selected="${member.studyType == 'design'}">디자인</option>
+                                                                                                                <option value="education" th:selected="${member.studyType == 'education'}">교육</option>
+                                                                                                                <option value="literature" th:selected="${member.studyType == 'literature'}">문학</option>
+                                                                                                                <option value="engineering" th:selected="${member.studyType == 'engineering'}">공학</option>
+                                                                                                                <option value="language" th:selected="${member.studyType == 'language'}">언어</option>
+                                                                                                                <option value="employment" th:selected="${member.studyType == 'employment'}">취업</option>
+                                                                                                                <option value="entrance" th:selected="${member.studyType == 'entrance'}">입시</option>
+                                                                                                                <option value="etc" th:selected="${member.studyType == 'etc'}">기타</option>
+                            </select>
+                        </div>
+
+                        <div class="inputForm">
+                            <div class="editTitle">자기소개</div>
+                            <input name="selfIntro" th:value="${member.selfIntro}" class="inputText" type="text">
+                        </div>
+
+                        <div class="saveBtnDiv">
+                            <input type="button" class="saveBtn" value="저장하기" onclick="modifyClear(this.form)">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="wrapper">
+            <div class="footer_left">
+                <div class="logo_div">
+                    <a href="/">
+                        <img src="/img/logo_mate.png" class="logo">
+                    </a>
+                </div>
+
+                <ul class="left_ul">
+                    <li class="left_element">
+                        <a href="/" class="left_text">개인정보처리방침</a>
+                    </li>
+                    <li class="left_element">
+                        <a href="/" class="left_text">|  이용약관</a>
+                    </li>
+                </ul>
+
+                <div class="information">
+                    <span class="project_info left_text">프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 </span>
+                </div>
+
+            </div>
+            <div class="footer_right">
+                <p>Contact Us</p>
+                <ul>
+                    <li class="mail">
+                        <a href="mailto:8993jin@naver.com" target="_blank">
+                            <img src="/img/email.png" class="contact_icon">
+                        </a>
+                    </li>
+                    <li class="github">
+                        <a href="https://github.com/AlcoholParty" target="_blank">
+                            <img src="/img/github.png" class="contact_icon">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+<!--JS----------------------------------------------------------------------------------------------------------------->
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
+    <script src="/js/httpRequest.js"></script>
+    <!--닉네임 중복체크 및 글자 수 제한-->
+    <script>
+        function checkNickname(f) {
+            let nickname = f.nickname.value; //입력한 닉네임 가져오기
+            let nicknameCheck = document.getElementById("nicknameCheck");
+
+            if ( nickname.length > 20 ) {
+                nicknameCheck.innerHTML = "닉네임은 10자내로 작성해주세요 (영문만 작성시 20자까지 가능합니다.)";
+            } else {
+                nicknameCheck.innerHTML = "";
+                let url = "/joinform/nicknamecheck";
+                let param = "nickname=" + nickname;
+                sendRequest(url, param, resultCheckNickname, "POST");
+            }
+        }
+
+        function resultCheckNickname() {
+             if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                 let data = xhr.responseText; //닉네임
+                 let hNickname = document.getElementById("hNickname");
+
+                 if ( data == "no" ) {
+                    alert("이미 존재하는 닉네임입니다.");
+                    hNickname.value = "false";
+                 } else {
+                    alert("사용 가능한 닉네임입니다.");
+                    hNickname.value = data;
+                 }
+                 return;
+             }
+        }
+    </script>
+
+    <script>
+        function previewProfileImage() {
+            const previewProfileImage = document.getElementById("previewProfileImage");
+            const file = document.querySelector('#img').files[0];
+            const reader = new FileReader();
+
+            reader.addEventListener("load", function () {
+                previewProfileImage.src = reader.result;
+            }, false);
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+
+    <!-- iamport.payment.js 인증 -->
+    <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <!-- 아임포트 본인인증 및 값 삽입 => '인증하기' 버튼 클릭시 -->
+    <script>
+        // textbox & 버튼(2개이상)을 누르면 함수가 실행되도록 하는 방법
+        // querySelectorAll로 id값(#id)을 불러와서 배열로 생성, 이후 forEach문을 활용해 각각의 것을 눌렀을 때 실행되게 하도록 한다.
+        let openPort = document.querySelectorAll("#birthday, #phoneNumber, #btnPhone");
+        openPort.forEach(function(element){
+            element.addEventListener("click", function() {
+                var IMP = window.IMP; // init로 객체초기화 (가맹점식별코드)
+                IMP.init("imp88140833"); // 가맹점 번호
+                IMP.certification({
+                    popup : true // 팝업 사용
+                } ,function (rsp) { // 1. 파라미터로 rsp를 받아온다.
+                    if ( rsp.success ){ // 인증에 성공할 경우
+                        // 2. 1에서 파라미터로 받아온 rsp에서 imp_uid를 가져온다.
+                        let impUid = rsp.imp_uid;
+                        // 3. Ajax를 사용하여 2에서 가져온 imp_uid를 컨트롤러로 보낸다.
+                        let url = "/joinform/certifications";
+                        let param = "impUid=" + impUid;
+                        sendRequest(url, param, resultCertifications, "POST");
+                        return;
+                    } else { //인증 실패 시
+                        alert("인증 실패하였습니다.");
+                        return;
+                    }
+                });
+            });
+        });
+        // 휴대폰 인증 콜백 메소드
+        function resultCertifications () {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                // 32. 컨트롤러에서 반환된 유저 정보 Map을 받아온다.
+                let data = xhr.responseText;
+                // 33. 32에서 받아온 Map을 JavaScript 객체로 변환한다.
+                let jsData = JSON.parse(data);
+                let name = document.getElementById("name"); // 이름
+                let birthday = document.getElementById("birthday"); // 생년월일
+                let phoneNumber = document.getElementById("phoneNumber"); // 휴대폰 번호
+
+                if ( name.value == jsData.name && birthday.value == jsData.birthday ) {
+                    phoneNumber.value = json.phoneNumber;
+                    phoneNumber.readOnly = true;
+                    return;
+                }
+
+                alert("가입자 명의로 된 휴대폰으로 인증하시기 바랍니다.");
+            }
+        }
+    </script>
+
+    <!--주소입력 API-->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        window.onload = function() {
+            document.getElementById("address").addEventListener("click", function() {
+                new daum.Postcode({
+                    oncomplete: function(data) {
+                        document.getElementById("address").value = data.address;
+                        document.getElementById("detailAddress").focus();
+                    }
+                }).open();
+            });
+            document.getElementById("btnAddress").addEventListener("click", function() {
+                new daum.Postcode({
+                    oncomplete: function(data) {
+                        document.getElementById("address").value = data.address;
+                        document.getElementById("detailAddress").focus();
+                    }
+                }).open();
+            });
+        }
+    </script>
+
+    <script>
+        function modifyClear(f){
+            //입력한 정보들
+            //emailId
+            let emailId = f.emailId.value; //Email
+
+            //name
+            let name = f.name.value;
+
+            //nickname
+            let nickname = f.nickname.value;
+            let hNickname = f.hNickname.value; //닉네임 중복체크
+
+            //birthday
+            let birthday = f.birthday.value; //birthday
+
+            //gender
+            let gender = f.gender.value; //gender
+
+            //phoneNumber
+            let phoneNumber = f.phoneNumber.value; //phoneNumber
+
+            //address
+            let address = f.address.value;
+            let detailAddress = f.detailAddress.value;
+
+            //studyType
+            let studyType = f.studyType.value;
+
+            //selfIntro
+            let selfIntro = f.selfIntro.value;
+
+            let platform = f.platform.value;
+            let roleName = f.roleName.value;
+
+            console.log("emailId  " + emailId);
+            console.log("platform  " + platform);
+            console.log("roleName  " + roleName);
+            console.log("nickname  " + nickname);
+            console.log("hNickname  " + hNickname);
+
+            //유효성 검사
+            //닉네임
+            if ( nickname == '' ) {
+                alert("닉네임을 입력하세요");
+                return;
+            }
+            //닉네임 형식
+            if ( nickname.length > 20 ) {
+                alert("닉네임의 길이는 10자 이내입니다.");
+                return;
+            }
+            if ( nickname != hNickname ) {
+                alert("닉네임 중복확인을 해주세요");
+                return;
+            }
+
+            //phoneNumber
+            if ( phoneNumber == '' ) {
+                alert("핸드폰 번호를 입력하세요");
+                return;
+            }
+
+            //address
+            if ( address == '' ) {
+                alert("주소를 입력하세요");
+                return;
+            }
+            //detailAddress
+            if ( detailAddress == '' ) {
+                alert("상세주소를 입력하세요");
+                return;
+            }
+
+            //studyType
+            if ( studyType == '' ) {
+                alert("관심분야를 선택하세요");
+                return;
+            }
+
+            f.submit();
+        }
+    </script>
+</body>
+</html>

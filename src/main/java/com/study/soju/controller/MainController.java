@@ -1,5 +1,9 @@
 package com.study.soju.controller;
 
+import com.study.soju.entity.Member;
+import com.study.soju.service.MyPageService;
+import com.study.soju.service.SignUpService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,9 +14,14 @@ import java.security.Principal;
 
 @Controller
 public class MainController {
+    @Autowired
+    SignUpService signUpService;
+    @Autowired
+    MyPageService myPageService;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 로그인 후 메인 페이지
     @GetMapping("/")
-    public String main(Principal principal) {
+    public String main(Principal principal, Model model) {
         // 1. 로그인을 했는지 체크한다.
         // 1-1. 로그인을 안한 경우
         if ( principal == null ) {
@@ -20,7 +29,11 @@ public class MainController {
             return "redirect:/n";
         // 1-2. 로그인을 한 경우
         } else {
-            // 1-2-1. 메인 페이지로 이동한다.
+            // 1-2-1. 1에서 파라미터로 받아온 로그인 유저 아이디를 서비스에 전달한다.
+            Member.rpNickname rpNickname = signUpService.memberNickname(principal.getName());
+            // 1-2-2. 1-2-1에서 받아온 로그인 유저 닉네임을 바인딩한다.
+            model.addAttribute("nickname", rpNickname.getNickname());
+            // 1-2-3. 메인 페이지로 이동한다.
             return "Main";
         }
     }
@@ -58,6 +71,14 @@ public class MainController {
         model.addAttribute("loginErrMsg", loginErrMsg);
         // 7. 로그인 페이지로 이동한다.
         return "SignUp/LoginForm";
+    }
+
+    // 마이 페이지
+    @GetMapping("/mypage")
+    public String mypageList(Principal principal, Model model) {
+        Member.rpProfile rpProfile = myPageService.selectProfile(principal);
+        model.addAttribute("member", rpProfile);
+        return "/MyPage/MyPageHome";
     }
 
     // 로그아웃 페이지

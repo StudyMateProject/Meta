@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>MyPage</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" type="text/css" href="/css/mymenu.css">
+    <link rel="stylesheet" type="text/css" href="/css/footer.css">
+    <link rel="stylesheet" type="text/css" href="/css/profile.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="headerContainer">
+            <div class="headerImg">
+                <a href="/" alt="SOJU">
+                    <img src="/img/logo_mate.png" class="mainLogo">
+                </a>
+            </div>
+
+            <div class="headerMenu">
+                <div class="headerMenuLeft">
+
+                    <div class="categoryMenu">
+                        <span>스터디원</span>
+                        <div class="dropTable">
+                            <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
+                            <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
+                            <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘토 프로필</a>
+                        </div>
+                    </div>
+
+                    <div class="categoryMenu">
+                        <a href="/meta" class="metaMenu">
+                            <span class="categoryMenu">스터디룸</span>
+                        </a>
+                    </div>
+                    <div class="categoryMenu">
+                        <a href="/noticeroom" class="noticeRoomMenu">
+                            <span class="categoryMenu">게시판</span>
+                        </a>
+                    </div>
+                    <div class="categoryMenu">
+                        <a href="/store" class="storeMenu">
+                            <span class="categoryMenu">스토어</span>
+                        </a>
+                    </div>
+                    <div class="categoryMenu">
+                        <a href="/mypage" class="myPageMenu">
+                            <span class="categoryMenu">마이페이지</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="headerMenuRight">
+                    <div class="whenLogin">
+                        <div class="welcome"> [[${member.nickname}]]님 반갑습니다! </div>
+                        <div class="notificationsMenu">
+                            <div class="icon" data-number="5">
+                                <i class="ri-notification-4-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btnLogin">
+                        <input class="inputButtonLogin" sec:authorize="isAnonymous()" type="button" value="로그인" onclick="location.href='/loginform'">
+                        <input class="inputButtonLogin" sec:authorize="isAuthenticated()" type="button" value="로그아웃" onclick="location.href='/logout'">
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+    <div class="container">
+        <div class="containerLeft">
+            <h2 class="my">My Page</h2>
+            <input type="button" class="memberInfo mypageBtn accordion" value="개인정보 관리">
+            <div class="memberInfoList panel">
+                <a class="profile content" href="/mypage">내 프로필</a>
+                <a class="modifyMemberInfo content" href="/mypage/modifyform">개인정보 수정</a>
+                <a class="modifyPwd content" href="/mypage/modifyform/editpwd">비밀번호 수정</a>
+                <a class="withdraw content" href="/mypage/modifyform/withdrawalcheck">탈퇴하기</a>
+            </div>
+            <div class="menu">
+                <input type="button" class="likeList mypageBtn" onclick="location.href='/mypage';" value="찜목록">
+                <input type="button" class="studying mypageBtn" onclick="location.href='/mypage';" value="현재 Mate">
+                <input type="button" class="chatList mypageBtn" onclick="location.href='/mypage';" value="채팅목록">
+                <input type="button" class="purchaseList mypageBtn" onclick="location.href='/mypage';" value="구매내역">
+            </div>
+        </div>
+
+        <div class="containerRight">
+            <div class="profileForm">
+                <h2 class="modifyTitle">내 프로필</h2>
+                <div class="profileTop">
+                    <div class="profileTopLeft">
+                        <img class="profileImg" th:src="'/imagePath/' + ${member.profileImage}">
+                    </div>
+                    <div class="profileTopRight">
+                        <div class="profileNick">
+                            <div th:text="${nickname}" class="profileText"></div>
+                            <div th:text="${studyType}" class="profileText"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="profileBottom">
+                    <div th:text="${selfIntro}" class="profileText"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <footer>
+        <div class="wrapper">
+            <div class="footer_left">
+                <div class="logo_div">
+                    <a href="/">
+                        <img src="/img/logo_mate.png" class="logo">
+                    </a>
+                </div>
+
+                <ul class="left_ul">
+                    <li class="left_element">
+                        <a href="/" class="left_text">개인정보처리방침</a>
+                    </li>
+                    <li class="left_element">
+                        <a href="/" class="left_text">|  이용약관</a>
+                    </li>
+                </ul>
+
+                <div class="information">
+                    <span class="project_info left_text">프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 </span>
+                </div>
+
+            </div>
+            <div class="footer_right">
+                <p>Contact Us</p>
+                <ul>
+                    <li class="mail">
+                        <a href="mailto:8993jin@naver.com" target="_blank">
+                            <img src="/img/email.png" class="contact_icon">
+                        </a>
+                    </li>
+                    <li class="github">
+                        <a href="https://github.com/AlcoholParty" target="_blank">
+                            <img src="/img/github.png" class="contact_icon">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+<script>
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight) {
+                panel.style.maxHeight = null;
+            } else {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+            }
+        });
+    }
+</script>
+</body>
+</html>

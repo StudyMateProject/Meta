@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>비밀번호 변경</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" type="text/css" href="/css/mymenu.css">
+    <link rel="stylesheet" type="text/css" href="/css/mymodify.css">
+    <link rel="stylesheet" type="text/css" href="/css/footer.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="headerContainer">
+            <div class="headerImg">
+                <a href="/" alt="SOJU">
+                    <img src="/img/logo_mate.png" class="mainLogo">
+                </a>
+            </div>
+
+            <div class="headerMenu">
+                <div class="headerMenuLeft">
+
+                    <div class="categoryMenu">
+                        <span>스터디원</span>
+                        <div class="dropTable">
+                            <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
+                            <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
+                            <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘토 프로필</a>
+                        </div>
+                    </div>
+
+                    <div class="categoryMenu">
+                        <a href="/meta" class="metaMenu">
+                            <span class="categoryMenu">스터디룸</span>
+                        </a>
+                    </div>
+                    <div class="categoryMenu">
+                        <a href="/noticeroom" class="noticeRoomMenu">
+                            <span class="categoryMenu">게시판</span>
+                        </a>
+                    </div>
+                    <div class="categoryMenu">
+                        <a href="/store" class="storeMenu">
+                            <span class="categoryMenu">스토어</span>
+                        </a>
+                    </div>
+                    <div class="categoryMenu">
+                        <a href="/mypage" class="myPageMenu">
+                            <span class="categoryMenu">마이페이지</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="headerMenuRight">
+                    <div class="whenLogin">
+                        <div class="welcome"> [[${nickname}]]님 반갑습니다! </div>
+                        <div class="notificationsMenu">
+                            <div class="icon" data-number="5">
+                                <i class="ri-notification-4-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btnLogin">
+                        <input class="inputButtonLogin" sec:authorize="isAnonymous()" type="button" value="로그인" onclick="location.href='/loginform'">
+                        <input class="inputButtonLogin" sec:authorize="isAuthenticated()" type="button" value="로그아웃" onclick="location.href='/logout'">
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+    <div class="container">
+        <div class="containerLeft">
+            <h2 class="my">My Page</h2>
+            <input type="button" class="memberInfo mypageBtn accordion" value="개인정보 관리">
+            <div class="memberInfoList panel">
+                <a class="profile content" href="/mypage">내 프로필</a>
+                <a class="modifyMemberInfo content" href="/mypage/modifyform">개인정보 수정</a>
+                <a class="modifyPwd content" href="/mypage/modifyform/editpwd">비밀번호 수정</a>
+                <a class="withdraw content" href="/mypage/modifyform/withdrawalcheck">탈퇴하기</a>
+            </div>
+            <div class="menu">
+                <input type="button" class="likeList mypageBtn" onclick="location.href='/mypage';" value="찜목록">
+                <input type="button" class="studying mypageBtn" onclick="location.href='/mypage';" value="현재 Mate">
+                <input type="button" class="chatList mypageBtn" onclick="location.href='/mypage';" value="채팅목록">
+                <input type="button" class="purchaseList mypageBtn" onclick="location.href='/mypage';" value="구매내역">
+            </div>
+        </div>
+
+        <div class="containerRight">
+            <h2 class="modifyTitle">비밀번호 수정</h2>
+            <form action="/loginform/findpwdform/resetpwdform" method="post">
+                <input type="hidden" name="emailId" th:value="${emailId}">
+                <div class="editPwdForm">
+                    <div class="inputForm">
+                        <div class="editTitle">새 비밀번호</div>
+                        <input id="pwd" name="pwd" class="inputText" placeholder="영문, 숫자, 특수기호를 포함하여 5자리 이상" type="password" oninput="pwdCheck(this.form)">
+                        <div id="pwdText1" class="errorMsg"></div>
+                    </div>
+                    <div class="inputForm">
+                        <div class="editTitle">새 비밀번호 확인</div>
+                        <input id="pwd2" class="inputText" placeholder="영문, 숫자, 특수기호를 포함하여 5자리 이상" type="password" oninput="pwdCheck2(this.form)">
+                        <div id="pwdText2" class="errorMsg"></div>
+                    </div>
+                </div>
+
+                <div class="saveBtnDiv">
+                    <input value="비밀번호 변경" class="saveBtn" type="button" onclick="resetPwd(this.form)">
+                    <input value="취소" class="saveBtn" type="button" onclick="location.href='/'">
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <footer>
+        <div class="wrapper">
+            <div class="footer_left">
+                <div class="logo_div">
+                    <a href="/">
+                        <img src="/img/logo_mate.png" class="logo">
+                    </a>
+                </div>
+
+                <ul class="left_ul">
+                    <li class="left_element">
+                        <a href="/" class="left_text">개인정보처리방침</a>
+                    </li>
+                    <li class="left_element">
+                        <a href="/" class="left_text">|  이용약관</a>
+                    </li>
+                </ul>
+
+                <div class="information">
+                    <span class="project_info left_text">프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 </span>
+                </div>
+
+            </div>
+            <div class="footer_right">
+                <p>Contact Us</p>
+                <ul>
+                    <li class="mail">
+                        <a href="mailto:8993jin@naver.com" target="_blank">
+                            <img src="/img/email.png" class="contact_icon">
+                        </a>
+                    </li>
+                    <li class="github">
+                        <a href="https://github.com/AlcoholParty" target="_blank">
+                            <img src="/img/github.png" class="contact_icon">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+<!--JS----------------------------------------------------------------------------------------------------------------->
+    <script src="/js/httpRequest.js"></script>
+
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
+
+    <script>
+        //비밀번호 형식 제한
+        function pwdCheck(f) {
+            let pwd = f.pwd.value;
+            let pwdText1 = document.getElementById("pwdText1");
+
+            let pattern1 = /[0-9]/; // 숫자 입력
+            let pattern2 = /[a-zA-Z]/; // 영어 소문자, 대문자 입력
+            let pattern3 = /[~!@#$%^&*()_+]/; // 특수기호 입력
+
+            if ( !pattern1.test(pwd) || !pattern2.test(pwd) || !pattern3.test(pwd) || pwd.length < 5 ) {
+                pwdText1.innerHTML = "영문, 숫자, 특수기호(~!@#$%^&*()_+)를 포함하여 5자리 이상으로 구성하여야 합니다";
+            } else {
+                pwdText1.innerHTML = "";
+            }
+        }
+
+        function pwdCheck2(f) {
+            let pwd = f.pwd.value;
+            let pwd2 = f.pwd2.value;
+            let pwdText2 = document.getElementById("pwdText2");
+
+            if ( pwd2 != pwd ) {
+                pwdText2.innerHTML = "비밀번호가 일치하지 않습니다";
+            } else {
+                pwdText2.innerHTML = "";
+            }
+        }
+    </script>
+
+    <script>
+        function resetPwd(f) {
+            let emailId = f.emailId.value;
+            let pwd = f.pwd.value;
+            let pwd2 = f.pwd2.value;
+
+            let pattern1 = /[0-9]/; // 숫자 입력
+            let pattern2 = /[a-zA-Z]/; // 영어 소문자, 대문자 입력
+            let pattern3 = /[~!@#$%^&*()_+]/; // 특수기호 입력
+
+            //비밀번호
+            if ( pwd == '' ) {
+                alert("비밀번호를 입력하세요");
+                return;
+            }
+            //비밀번호 확인
+            if ( pwd2 == '' ) {
+                alert("비밀번호 확인을 입력하세요");
+                return;
+            }
+            //pwd 형식
+            if ( !pattern1.test(pwd) || !pattern2.test(pwd) || !pattern3.test(pwd) || pwd.length < 5 ) {
+                alert("비밀번호 형식을 확인해주세요");
+                return;
+            }
+            // 비밀번호 확인
+            if ( pwd != pwd2 ) {
+                alert("비밀번호 확인이 비밀번호와 일치하지 않습니다.");
+                return;
+            }
+
+
+            let url = "/loginform/findpwdform/resetpwdform/resetpwd";
+            let param = "emailId=" + emailId +
+                        "&pwd=" + pwd;
+            sendRequest(url, param, ResultResetPwd, "POST");
+        }
+        function ResultResetPwd () {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                let data = xhr.responseText;
+                location.href = "/";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.study.soju.entity;
 
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.Map;
@@ -368,6 +369,111 @@ public class Member {
                     .attributes(attributes) // 유저 정보 Map
                     .nameAttributeKey(userNameAttributeName) // 필드값
                     .build();
+        }
+    }
+
+    // 마이페이지 조회 Response DTO
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class rpProfile {
+        private String emailId;
+        private String nickname;
+        private String selfIntro;
+        private String studyType;
+        private String profileImage;
+
+        public rpProfile (Member member) {
+            this.emailId = member.getEmailId();
+            this.nickname = member.getNickname();
+            this.selfIntro = member.getSelfIntro();
+            this.studyType = member.getStudyType();
+            this.profileImage = member.getProfileImage();
+        }
+    }
+
+    // 마이페이지 회원정보 수정 Request DTO
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class rqModifyMember {
+        private String emailId;
+        private String nickname;
+        private String phoneNumber;
+        private String address;
+        private String detailAddress;
+        private String studyType;
+        private String birthday;
+        private String name;
+        private String gender;
+        private String selfIntro;
+        private String platform;
+        private String roleName;
+        private String profileImage;
+        private MultipartFile imageFile;
+
+        public Member toEntity() {
+            //변환된 Entity반환
+            return Member.builder()
+                    .emailId(emailId)
+                    .name(name)
+                    .nickname(nickname)
+                    .birthday(birthday)
+                    .gender(gender)
+                    .phoneNumber(phoneNumber)
+                    .address(address)
+                    .detailAddress(detailAddress)
+                    .studyType(studyType)
+                    .platform(platform)
+                    .roleName(roleName)
+                    .selfIntro(selfIntro)
+                    .profileImage(profileImage)
+                    .build();
+        }
+    }
+
+    // 마이페이지 회원정보 수정 Response DTO
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class rpModifyMember {
+        private String emailId;
+        private String nickname;
+        private String phoneNumber;
+        private String address;
+        private String detailAddress;
+        private String studyType;
+        private String birthday;
+        private String name;
+        private String gender;
+        private String selfIntro;
+        private String platform;
+        private String roleName;
+        private String profileImage;
+
+        public rpModifyMember(Member member){
+            this.emailId = member.getEmailId();
+            this.nickname = member.getNickname();
+            this.phoneNumber = member.getPhoneNumber();
+            this.address = member.getAddress();
+            this.detailAddress = member.getDetailAddress();
+            this.studyType = member.getStudyType();
+            this.birthday = member.getBirthday();
+            this.name = member.getName();
+            this.gender = member.getGender();
+            this.selfIntro = member.getSelfIntro();
+            this.platform = member.getPlatform();
+            this.roleName = member.getRoleName();
+            this.profileImage = member.getProfileImage();
         }
     }
 

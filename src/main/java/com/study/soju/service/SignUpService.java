@@ -131,7 +131,6 @@ public class SignUpService implements UserDetailsService {
             return "yes";
         }
     }
-
     ////////////////////////////////////////////////ID찾기////////////////////////////////////////////////
     //ID찾기
     public Member.rpFindId findIdSearch(Member.rqFindId rqFindId){
@@ -144,9 +143,8 @@ public class SignUpService implements UserDetailsService {
             return rpFindId;
         }
     }
-
     ////////////////////////////////////////////////PWD찾기(재설정)////////////////////////////////////////////////
-    //비밀번호 재설정 전, 본인인증 메일 전송
+    // 비밀번호 재설정 전, 본인인증 메일 전송
     public String pwdEmailCheck(String emailId){
         Member member = memberRepository.findByEmailId(emailId);
         if( member == null ) {
@@ -203,7 +201,7 @@ public class SignUpService implements UserDetailsService {
         }
     }
 
-    //PWD 재설정을 위한 정보확인
+    // PWD 재설정을 위한 정보확인
     public String findPwdSearch(Member.rqFindPwd rqFindPwd){
         Member member = rqFindPwd.toEntity();
         Member findByFindPwd = memberRepository.findPwd(member.getEmailId(), member.getName(), member.getPhoneNumber());
@@ -214,10 +212,20 @@ public class SignUpService implements UserDetailsService {
         }
     }
 
-    //PWD 재설정
+    // PWD 재설정
     public void resetPwd(Member.rqResetPwd rqResetPwd, PasswordEncoder passwordEncoder){
         Member member = rqResetPwd.toEntity(passwordEncoder);
         memberRepository.findChangePwd(member.getEmailId(), member.getPwd());
+    }
+    ///////////////////////////////////////////////// 로그인 유저 정보 조회 /////////////////////////////////////////////////
+    // 로그인 유저 닉네임 조회
+    public Member.rpNickname memberNickname(String emailId) { // 1. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
+        // 2. 1에서 파라미터로 받아온 아이디로 로그인 유저를 조회하고, 조회된 값을 받아온다.
+        Member member = memberRepository.findByEmailId(emailId);
+        // 3. 2에서 조회된 Entity를 DTO로 변환한다.
+        Member.rpNickname rpNickname = new Member.rpNickname(member);
+        // 4. 3에서 변환된 DTO를 반환한다.
+        return rpNickname;
     }
 
     // 로그인 유저 닉네임 및 프로플 사진 조회
