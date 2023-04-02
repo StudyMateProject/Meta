@@ -42,7 +42,7 @@ public class MetaService {
     public Meta.rpCreateMeta createRoom(Meta.rqCreateMeta rqCreateMeta, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 생성 DTO와 로그인 유저 정보 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 생성 DTO를 Entity로 변환한다.
         Meta meta = rqCreateMeta.toEntity();
-        // 3. 2에서 변환된 Entity로 방을 저장하고, 저장한 값을 받아온다.
+        // 3. 2에서 변환된 Entity로 방을 저장하고, 저장된 값을 받아온다.
         Meta createMeta = metaRepository.save(meta);
         // 4. 3에서 저장하고 받아온 Entity와 1에서 파라미터로 받아온 로그인 유저 정보 DTO를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
         MetaRoom metaRoomParticipate = new MetaRoom(); // 방 내부 참여자 명단

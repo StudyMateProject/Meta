@@ -50,7 +50,7 @@ public class SignUpController {
         return "SignUp/JoinForm";
     }
 
-    //이메일 중복체크 & 이메일 전송 SMTP
+    // 이메일 중복체크 & 이메일 전송 SMTP
     @PostMapping("/joinform/emailcheck")
     @ResponseBody
     public Member.rpCheckEmailId emailCheck(String emailId) { // 2. 파라미터로 Ajax를 통해 넘어온 아이디를 받아온다.
@@ -60,7 +60,15 @@ public class SignUpController {
         return rpCheckEmailId;
     }
 
-    //본인인증 IamPort서버 통신
+    // 닉네임 중복체크
+    @PostMapping("/joinform/nicknamecheck")
+    @ResponseBody
+    public String nicknameCheck(String nickname) {
+        String checkNickname = signUpService.checkNickname(nickname); //닉네임 존재 여부
+        return checkNickname;
+    }
+
+    // 휴대폰 본인인증 IamPort서버 통신
     @PostMapping("/joinform/certifications")
     @ResponseBody
     public HashMap<String, String> certifications(String impUid) { // 4. 파라미터로 Ajax를 통해 넘어온 imp_uid를 받아온다.
@@ -108,15 +116,14 @@ public class SignUpController {
 
     // 회원가입 진행 URL
     @PostMapping("/joinform/join")
+    @ResponseBody
     public String join(Member.rqJoinMember rqJoinMember, Model model) { // 1. 파라미터로 form을 통해 넘어온 DTO를 받아온다.
         // 2. 1에서 파라미터로 넘어온 DTO와 비밀번호 암호화 메소드를 같이 서비스에 전달한다.
-        Member.rpJoinMember member = signUpService.joinMember(rqJoinMember, passwordEncoder);
-        // 11. 2에서 반환받은 DTO를 바인딩한다.
-        model.addAttribute("member", member);
-        // 12. 환영 페이지로 이동한다.
-        return "SignUp/Welcome";
+        String res = signUpService.joinMember(rqJoinMember, passwordEncoder);
+        // 7. 2에서 반환받은 회원가입 결과 값을 클라이언트로 반환한다.
+        return res;
     }
-    ////////////////////////////// 소셜 로그인 API //////////////////////////////
+    /////////////////////////////////////////////////// 소셜 로그인 API ///////////////////////////////////////////////////
     // 구글 로그인 토큰 발급 및 유저 정보 조회
     @GetMapping("/loginform/googletoken")
     public String googleAuthentication(String code, Model model) { // 4. 파라미터로 3에서 구글 로그인 URL을 통해 가져온 code를 받아온다.
@@ -200,11 +207,12 @@ public class SignUpController {
 
     // 구글 회원가입 URL
     @PostMapping("/loginform/googlejoin")
+    @ResponseBody
     public String googleJoin(Member.rqJoinSocialMember rqJoinSocialMember) { // 1. 파라미터로 form을 통해 넘어온 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 DTO를 서비스에 전달한다.
-        signUpOAuthService.socialJoin(rqJoinSocialMember);
-        // 6. 로그인 페이지로 리다이렉트한다.
-        return "redirect:/loginform";
+        String res = signUpOAuthService.socialJoin(rqJoinSocialMember);
+        // 7. 2에서 반환받은 회원가입 결과 값을 클라이언트로 반환한다.
+        return res;
     }
 
     // 네이버 콜백 페이지
@@ -264,10 +272,75 @@ public class SignUpController {
 
     // 네이버 회원가입 URL
     @PostMapping("/loginform/naverjoin")
+    @ResponseBody
     public String naverJoin(Member.rqJoinSocialMember rqJoinSocialMember) { // 1. 파라미터로 form을 통해 넘어온 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 DTO를 서비스에 전달한다.
-        signUpOAuthService.socialJoin(rqJoinSocialMember);
-        // 6. 로그인 페이지로 리다이렉트한다.
-        return "redirect:/loginform";
+        String res = signUpOAuthService.socialJoin(rqJoinSocialMember);
+        // 7. 2에서 반환받은 회원가입 결과 값을 클라이언트로 반환한다.
+        return res;
+    }
+    ////////////////////////////////////////////////////// ID 찾기 //////////////////////////////////////////////////////
+    //ID 찾기 페이지 이동
+    @GetMapping("/loginform/findidform")
+    public String findIdForm(Model model) {
+        //바인딩
+        model.addAttribute("memberDTO", new Member.rqFindId());
+        return "/SignUp/FindId";
+    }
+
+    //ID 찾기
+    @PostMapping("/loginform/findidform/findid")
+    @ResponseBody
+    public Member.rpFindId findId(Member.rqFindId rqFindId){
+        Member.rpFindId rpFindId = signUpService.findIdSearch(rqFindId);
+        return rpFindId;
+    }
+
+    //ID 찾기 결과 확인 페이지 이동
+    @GetMapping("/loginform/findidform/checkid")
+    public String checkId(String emailId, String platform, Model model) {
+        model.addAttribute("emailId", emailId);
+        model.addAttribute("platform", platform);
+        return "/SignUp/FindIdResult";
+    }
+    /////////////////////////////////////////////////// PWD 찾기(재설정) ///////////////////////////////////////////////////
+    //PWD 찾기 이동
+    @GetMapping("/loginform/findpwdform")
+    public String findPwdForm(Model model) {
+        //바인딩
+        model.addAttribute("memberDTO", new Member.rqFindPwd());
+        return "/SignUp/FindPwd";
+    }
+
+    //비밀번호 재설정 이메일 인증
+    @PostMapping("/loginform/findpwdform/emailcheck")
+    @ResponseBody
+    public String findPwdEmailCheck(String emailId) {
+        String checkEmailId = signUpService.pwdEmailCheck(emailId);
+        return checkEmailId;
+    }
+
+    //PW 재설정을 위한 정보확인
+    @PostMapping("/loginform/findpwdform/findpwd")
+    @ResponseBody
+    public String resetPwd(Member.rqFindPwd rqFindPwd) {
+        String findPwd = signUpService.findPwdSearch(rqFindPwd);
+        System.out.println(findPwd);
+        return findPwd;
+    }
+
+    //PWD 재설정 페이지 이동
+    @GetMapping("/loginform/findpwdform/resetpwdform")
+    public String resetPwdForm(String emailId, Model model) {
+        //바인딩
+        model.addAttribute("emailId", emailId);
+        return "/SignUp/ResetPwd";
+    }
+
+    //PWD 재설정
+    @PostMapping("/loginform/findpwdform/resetpwdform/resetpwd")
+    public String resetPwd(Member.rqResetPwd rqResetPwd){
+        signUpService.resetPwd(rqResetPwd, passwordEncoder);
+        return "/Main";
     }
 }

@@ -1,0 +1,55 @@
+.my{
+    padding-left: 10px;
+}
+.modifyTitle{
+    border-bottom: 2px solid rgba(240, 240, 240);
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+}
+.container{
+    width: 100%;
+    height: auto;
+    padding-top: 150px;
+    display: flex;
+    justify-content: start;
+    margin: 0 auto;
+}
+.containerLeft{
+    width: 200px;
+    height: 100%;
+    margin: 0 30px;
+}
+.memberInfo{
+     transition: 0.4s;
+}
+.mypageBtn{
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    text-align: left;
+}
+.mypageBtn:hover, .mypageBtn:active{
+    background-color: #acacac;
+    font-weight: bold;
+}
+.memberInfoList{
+    padding: 0 18px;
+    background-color: #ffffff;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    border-bottom: 1px solid #eeeeee;
+}
+.content:hover, .content:active{
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: bold;
+}
+.content{
+    display: block;
+    margin: 16px 10px;
+    font-size: 14px;
+}

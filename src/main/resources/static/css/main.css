@@ -1,0 +1,72 @@
+.imgDiv{
+    margin:0px;
+    width: 100%;
+    height: 400px;
+    background-color: #ececec;
+}
+
+.interestContainer{
+    width: 100%;
+    height: 200px;
+}
+.interestTitle{
+    width: 100%;
+    height: 30px;
+    padding: 30px 0px 0px 20px;
+    font-size: 22px;
+}
+.interestDivBody{
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content:space-evenly;
+    align-items: center;
+}
+.interestElement{
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    text-align: center;
+    border-radius: 50%;
+}
+
+.interestElement:hover{
+    background-color: #ececec;
+}
+.interestElement:active{
+    background-color: #57B862;
+}
+.interestElementImg{
+    width: 50px;
+    height: 50px;
+    padding-top: 6px;
+}
+.interestElementText{
+    margin: 0px;
+    font-size: 15px;
+}
+.bestStudyContainer{
+    width: 100%;
+    height: 450px;
+    overflow-x: hidden;
+}
+.BestTitle{
+    width: 100%;
+    height: 30px;
+    padding: 30px 0px 0px 20px;
+    font-size: 22px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.25);
+}
+.bestStudyInner{
+    width: 200%;
+    height: 340px;
+    padding-top: 10px;
+    display: flex-inline;
+    justify-content: start;
+    align-items: center;
+}
+.bestStudyElement{
+    width: 213px;
+    height: 350px;
+    margin: 0px 5px;
+}

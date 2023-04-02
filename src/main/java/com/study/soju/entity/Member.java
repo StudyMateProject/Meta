@@ -31,7 +31,7 @@ public class Member {
     @Column(length = 10, nullable = false)
     private String name;
 
-    @Column(length = 20, unique = true, nullable = false)
+    @Column(length = 10, unique = true, nullable = false)
     private String nickname;
 
     @Column(length = 10, nullable = false)
@@ -46,7 +46,10 @@ public class Member {
     @Column(length = 100, nullable = false)
     private String address;
 
-    @Column(length = 10, nullable = false)
+    @Column(length = 100, nullable = false)
+    private String detailAddress;
+
+    @Column(length = 11, nullable = false)
     private String studyType;
 
     @Column(length = 10, nullable = false)
@@ -57,6 +60,9 @@ public class Member {
 
     @Column(length = 100)
     private String profileImage;
+
+    @Column(length = 255)
+    private String selfIntro;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // DTO 구역
 
@@ -96,6 +102,7 @@ public class Member {
         private String gender;
         private String phoneNumber;
         private String address;
+        private String detailAddress;
         private String studyType;
 
         // DTO를 Entity로 변환 (빌더 방식)
@@ -113,28 +120,90 @@ public class Member {
                     .gender(gender)
                     .phoneNumber(phoneNumber)
                     .address(address)
+                    .detailAddress(detailAddress)
                     .studyType(studyType)
-                    .platform("soju") // 가입 플랫폼 설정
+                    .platform("Soju") // 가입 플랫폼 설정
                     .roleName("USER") // Spring Security 권한에 USER로 설정
                     .profileImage("noImage.jpeg") // 가입할때는 아무 사진도 지정되어 있지 않다.
                     .build();
         }
     }
 
-    // 자사 회원가입 Response DTO
+    // ID 찾기 Request DTO
     @Getter
     @Setter
-    @AllArgsConstructor
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     @ToString
-    public static class rpJoinMember {
-        private String nickname;
-        private String roleName;
+    public static class rqFindId {
+        private String name;
+        private String phoneNumber;
 
-        // Entity를 DTO로 변환 (생성자 방식)
-        public rpJoinMember(Member member) {
-            this.nickname = member.getNickname();
-            this.roleName = member.getRoleName();
+        public Member toEntity() {
+            return Member.builder()
+                    .name(name)
+                    .phoneNumber(phoneNumber)
+                    .build();
+        }
+    }
+
+    // ID 찾기 Response DTO
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class rpFindId {
+        private String emailId;
+        private String platform;
+
+        public rpFindId (String emailId) {
+            this.emailId = getEmailId();
+            this.platform = getPlatform();
+        }
+    }
+
+    // PWD 찾기 Request DTO
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class rqFindPwd {
+        private String emailId;
+        private String name;
+        private String phoneNumber;
+
+        public Member toEntity() {
+            return Member.builder()
+                    .emailId(emailId)
+                    .name(name)
+                    .phoneNumber(phoneNumber)
+                    .build();
+        }
+    }
+
+    // PWD 재설정 Response DTO
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class rqResetPwd {
+        private String emailId;
+        private String pwd;
+
+        public Member toEntity(PasswordEncoder passwordEncoder){
+            String enPassword = passwordEncoder.encode(pwd);
+            //비밀번호 암호화
+            return Member.builder()
+                    .emailId(emailId)
+                    .pwd(enPassword)
+                    .build();
         }
     }
 
@@ -153,6 +222,7 @@ public class Member {
         private String gender;
         private String phoneNumber;
         private String address;
+        private String detailAddress;
         private String studyType;
         private String platform;
 
@@ -167,6 +237,7 @@ public class Member {
                     .gender(gender)
                     .phoneNumber(phoneNumber)
                     .address(address)
+                    .detailAddress(detailAddress)
                     .studyType(studyType)
                     .platform(platform)
                     .roleName("ROLE_USER") // Spring Security 권한에 USER로 설정

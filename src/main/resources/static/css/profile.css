@@ -1,0 +1,20 @@
+.profileTop{
+    width: 100%;
+    height: auto;
+    display: inline-flex;
+}
+.profileImg{
+    height: 200px;
+    width: 200px;
+    margin: 10px;
+    background-color: #ececec;
+    border: solid 2px #87AF6E;
+    border-radius: 50%;
+}
+.profileText{
+    height: 50px;
+    width: 200px;
+    font-size: 15px;
+    font-color: black;
+}
+

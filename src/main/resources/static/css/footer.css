@@ -1,0 +1,59 @@
+ul{
+    display: flex;
+    padding: 0px;
+}
+li{
+    list-style: none;
+    display: inline;
+}
+
+footer{
+    height: 200px;
+    border-top: 1px solid #57B862;
+    padding-top: 30px;
+    margin-top: 50px;
+    display: block;
+}
+.wrapper{
+    float: left;
+    display: flex;
+}
+
+.footer_left{
+    display-inline: block;
+    float: left;
+    margin-left: 50px;
+}
+.logo_div{
+    height: 30px;
+    width: 70px;
+    object-fit: contain;
+}
+.left_ul{
+    margin: 0px;
+}
+.left_element{
+    height: 20px;
+     margin-right: 5px;
+}
+.left_text{
+     font-size: 8.5px;
+}
+
+.footer_right{
+     display-inline: block;
+     margin-left: 50px;
+}
+.contact_icon{
+     width: 40px;
+     height: 40px;
+     margin-right: 20px;
+}
+.contact_icon:hover{
+    opacity:0.2;
+}
+.footer_right p{
+     font-size: 20px;
+     font-weight: bold;
+     margin: 0px;
+}

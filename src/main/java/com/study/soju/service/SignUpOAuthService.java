@@ -83,11 +83,22 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
         }
     }
 
-    public void socialJoin(Member.rqJoinSocialMember rqJoinSocial) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO를 받아온다.
+    // 소셜 회원가입
+    public String socialJoin(Member.rqJoinSocialMember rqJoinSocial) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO를 받아온다.
         // 4. 3에서 파라미터로 받아온 DTO를 Entity로 변환한다.
-        Member member = rqJoinSocial.toEntity();
+        Member socialJoin = rqJoinSocial.toEntity();
         // 5. 4에서 변환된 Entity로 방을 저장한다.
-        memberRepository.save(member);
+        Member member = memberRepository.save(socialJoin);
+        // 6. 5에서 저장된 값이 있는지 체크한다.
+        // 6-1. 저장된 값이 없는 경우 - 가입 실패
+        if ( member == null ) {
+            // 6-1-1. no를 반환한다.
+            return "no";
+        // 6-2. 저장된 값이 있는 경우 - 가입 성공
+        } else {
+            // 6-2-1. yes를 반환한다.
+            return "yes";
+        }
     }
 
     // 소셜 로그인시 인증 방식

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>비밀번호 재설정</title>
+    <link rel="stylesheet" type="text/css" href="/css/join_find.css">
+</head>
+<body>
+    <div class="container">
+        <h2>비밀번호 재설정</h2>
+        <form action="/loginform/findpwdform/resetpwdform" method="post">
+            <input type="hidden" name="emailId" th:value="${emailId}">
+            <ul class="ulJoinForm">
+                <li class="liJoinInput"><label class="labelText">새 비밀번호 </label><br><input id="pwd" name="pwd" class="inputText" placeholder="영문, 숫자, 특수기호를 포함하여 5자리 이상" type="password" oninput="pwdCheck(this.form)"><br></li>
+                <li class="liJoinInput"><label id="pwdText1" class="errorMsg"></label></li>
+                <li class="liJoinInput"><label class="labelText">새 비밀번호 확인 </label><br><input id="pwd2" class="inputText" placeholder="영문, 숫자, 특수기호를 포함하여 5자리 이상" type="password" oninput="pwdCheck2(this.form)"><br></li>
+                <li class="liJoinInput"><label id="pwdText2" class="errorMsg"></label></li>
+            </ul>
+            <div class="divBtnJoin">
+                <input value="비밀번호 변경" class="btnJoin" type="button" onclick="resetPwd(this.form)">
+                <input value="취소" class="btnJoin" type="button" onclick="location.href='/loginform'">
+            </div>
+        </form>
+    </div>
+
+<!--JS----------------------------------------------------------------------------------------------------------------->
+    <script src="/js/httpRequest.js"></script>
+    <script>
+        //비밀번호 형식 제한
+        function pwdCheck(f) {
+            let pwd = f.pwd.value;
+            let pwdText1 = document.getElementById("pwdText1");
+
+            let pattern1 = /[0-9]/; // 숫자 입력
+            let pattern2 = /[a-zA-Z]/; // 영어 소문자, 대문자 입력
+            let pattern3 = /[~!@#$%^&*()_+]/; // 특수기호 입력
+
+            if ( !pattern1.test(pwd) || !pattern2.test(pwd) || !pattern3.test(pwd) || pwd.length < 5 ) {
+                pwdText1.innerHTML = "영문, 숫자, 특수기호(~!@#$%^&*()_+)를 포함하여 5자리 이상으로 구성하여야 합니다";
+            } else {
+                pwdText1.innerHTML = "";
+            }
+        }
+
+        function pwdCheck2(f) {
+            let pwd = f.pwd.value;
+            let pwd2 = f.pwd2.value;
+            let pwdText2 = document.getElementById("pwdText2");
+
+            if ( pwd2 != pwd ) {
+                pwdText2.innerHTML = "비밀번호가 일치하지 않습니다";
+            } else {
+                pwdText2.innerHTML = "";
+            }
+        }
+    </script>
+    <script>
+        function resetPwd(f) {
+            let emailId = f.emailId.value;
+            let pwd = f.pwd.value;
+            let pwd2 = f.pwd2.value;
+
+            let pattern1 = /[0-9]/; // 숫자 입력
+            let pattern2 = /[a-zA-Z]/; // 영어 소문자, 대문자 입력
+            let pattern3 = /[~!@#$%^&*()_+]/; // 특수기호 입력
+
+            //비밀번호
+            if ( pwd == '' ) {
+                alert("비밀번호를 입력하세요");
+                return;
+            }
+            //비밀번호 확인
+            if ( pwd2 == '' ) {
+                alert("비밀번호 확인을 입력하세요");
+                return;
+            }
+            //pwd 형식
+            if ( !pattern1.test(pwd) || !pattern2.test(pwd) || !pattern3.test(pwd) || pwd.length < 5 ) {
+                alert("비밀번호 형식을 확인해주세요");
+                return;
+            }
+            // 비밀번호 확인
+            if ( pwd != pwd2 ) {
+                alert("비밀번호 확인이 비밀번호와 일치하지 않습니다.");
+                return;
+            }
+
+
+            let url = "/loginform/findpwdform/resetpwdform/resetpwd";
+            let param = "emailId=" + emailId +
+                        "&pwd=" + pwd;
+            sendRequest(url, param, ResultResetPwd, "POST");
+        }
+
+        function ResultResetPwd () {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                let data = xhr.responseText;
+                location.href = "/loginform";
+            }
+        }
+    </script>
+</body>
+</html>

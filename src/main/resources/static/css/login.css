@@ -1,0 +1,113 @@
+        html {
+            height: 100%;
+        }
+        body{
+            background-color: #E6E6E6;
+        }
+        .container{
+            width: 500px;
+            height: 560px;
+            margin: 8% 35% 8% 35%;
+            padding: 2% 1.5% 1.5% 1.5%;
+            border: solid 1px #BBBBBB;
+            border-radius: 30px;
+            background-color: #ffffff;
+        }
+        ///////////////////////////////////////////메인로고///////////////////////////////////////////
+        .mainLogo{
+            margin-top: 5%;
+            margin-bottom: 10px;
+            height: 30%;
+        }
+        .mainLogoImg{
+            height: 80px;
+            width: 250px;
+            text-align: center;
+            margin: auto;
+            display: flex;
+        }
+
+        ///////////////////////////////////////////로그인///////////////////////////////////////////
+        form{
+            padding: 5px 5px 5px 5px;
+            margin: 10px 0px 10px 0px;
+        }
+        .toEmail{
+            padding-top: 15px;
+            padding-left: 5px;
+        }
+        .inputLoginBox{
+            display: flex;
+            height: 130px;
+        }
+        .inputLogin{
+            width: 380px;
+        }
+        .loginInput{
+            width:340px;
+            height:40px;
+            font-size:15px;
+            border: solid 1px #87AF6E;
+            border-radius: 10px;
+            margin: 5px 5px 5px 5px;
+            padding: 5px 5px 5px 5px;
+        }
+        .btnLogin{
+            width:110px;
+            height:115px;
+            text-align: center;
+            font-size: 15px;
+            border: solid 1px #87AF6E;
+            border-radius: 10px;
+            background-color: #BDE7A4;
+            margin: 5px 5px 5px 1px;
+        }
+        .statusLogin{
+            height: 25px;
+            font-size:15px;
+            display: flex;
+            margin: 5px 5px 5px 5px;
+        }
+        .remember{
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+        }
+        .error{
+            font-size:15px;
+            color: #FF6C6C;
+            margin: 5px 5px 5px 5px;
+        }
+        .findAndJoin{
+            text-align: center;
+            margin: 10px 5px 5px 5px;
+        }
+        .aLink{
+            color: black;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .divOr{
+            display: flex;
+            margin: 30px 5px 30px 5px;
+        }
+        hr{
+            width: 220px;
+            height: 1px;
+            margin-left: 5px;
+            margin-right: 5px;
+            background-color: #999999;
+        }
+
+        .toSocial{
+            margin-left: 15px;
+            height: 30px;
+        }
+        .btnSocial{
+            justify-content : center;
+            display: flex;
+            float: center;
+            margin-left: 5px;
+            margin-right: 5px;
+        }

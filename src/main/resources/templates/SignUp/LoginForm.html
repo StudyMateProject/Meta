@@ -2,11 +2,21 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="/css/ul.css">
+    <title>로그인</title>
+    <link rel="stylesheet" type="text/css" href="/css/login.css">
+    <!-- 아이디 및 비밀번호가 틀릴 경우 에러 알림창이 등장 -->
     <script th:inline="javascript">
+        // 컨트롤러에서 모델로 바인딩한 에러 체크값
+        let error = [[${error}]];
+        // 컨트롤러에서 모델로 바인딩한 에러 메세지
+        let errorMsg = [[${errorMsg}]];
         // 컨트롤러에서 모델로 바인딩한 소셜 로그인 에러 메세지
         let loginErrMsg = [[${loginErrMsg}]];
+
+        // 에러 체크값이 true일 경우 에러 알림창 등장
+        if ( error == "true" ) {
+            alert(errorMsg);
+        }
 
         // 소셜 로그인 에러 메세지가 null이 아닌 경우 에러 알림창 등장
         if ( loginErrMsg != null ) {
@@ -15,43 +25,68 @@
     </script>
 </head>
 <body>
-    <!-- Spring Security를 사용하기 위해선 반드시 method는 POST를 사용해야 한다. -->
-    <form action="/loginform/login" method="post">
-        <ul>
-            <!-- name은 하나라도 빠짐없이 다 작성해야하며, 각 name명은 시큐리티에서 잡고있는 아이디 비빌번호 변수명과 반드시 일치해야 한다. -->
-            <li><label>아이디 : </label><input name="emailId" type="text"></li>
-            <li><label>비밀번호 : </label><input name="pwd" type="password"></li>
-            <!-- 직접 로그아웃 하기전까지 로그인을 유지시켜주는 체크박스 -->
-            <li><label>로그인 유지하기</label><input name="remember-me" type="checkbox"></li>
-            <!-- 아이디 및 비밀번호가 틀릴 경우 에러 메세지가 등장하는 구역 -->
-            <li><div th:if="${param.error}">
-                <p th:text="${errorMsg}"></p>
-            </div></li>
-        </ul>
-        <input type="submit" value="로그인">
-        <input name="btnJoin" type="button" value="회원가입" onclick="location.href='/joinform'">
-    </form>
+    <div class="container">
+        <a class="mainLogo" href="/" alt="SOJU">
+            <img src="/img/logo_mate.png" class="mainLogoImg">
+        </a>
+        <div class="loginForm">
+            <!-- Spring Security를 사용하기 위해선 반드시 method는 POST를 사용해야 한다. -->
+            <form action="/loginform/login" method="post">
+                <div>
+                    <p class="toEmail">이메일 로그인</p>
+                </div>
 
-    <!-- 구글 로그인 -->
-    <!-- 3. MainController에서 미리 만들어서 바인딩한 구글 로그인 URL을 가져와 사용한다. -->
-    <a th:href="${googleUrl}"><img src="/img/GoogleLogin.png" style="height: 40px; width: auto"></a>
+                <div class="emailLoginForm">
+                    <div class="inputLoginBox">
+                        <div class="inputLogin">
+                            <!-- name은 하나라도 빠짐없이 다 작성해야하며, 각 name명은 시큐리티에서 잡고있는 아이디 비빌번호 변수명과 반드시 일치해야 한다. -->
+                            <input name="emailId" class="loginInput" type="text" placeholder="이메일 주소">
+                            <input name="pwd" class="loginInput" type="password" placeholder="비밀번호">
+                        </div>
+                        <input type="submit" value="로그인">
+                    </div>
 
-    <!-- 네이버 로그인 -->
-    <div  class="naver" id="naverIdLogin"></div>
+                    <div class="statusLogin">
+                        <!-- 직접 로그아웃 하기전까지 로그인을 유지시켜주는 체크박스 -->
+                        <input name="remember-me" class="remember" type="checkbox"><label>로그인 상태 유지하기 </label>
+                    </div>
+
+                    <!-- 아이디 및 비밀번호가 틀릴 경우 에러 메세지가 등장하는 구역 -->
+                    <div th:if="${error}" class="error">
+                        <p th:text="${errorMsg}"></p>
+                    </div>
+                </div>
+            </form>
+
+            <div class="findAndJoin">
+                <a name="aFindId" class="aLink" href="/loginform/findidform">아이디 찾기</a>
+                <label> | </label>
+                <a name="aFindPwd" class="aLink" href="/loginform/findpwdform">비밀번호 찾기</a>
+                <label> | </label>
+                <a name="aJoin" class="aLink" href="/joinform">회원가입하기</a>
+            </div>
+
+            <div class="divOr">
+                <hr />
+                OR
+                <hr />
+            </div>
+
+            <div class="socialLogin">
+                <p class="toSocial">간편 로그인</p>
+                <div class="btnSocial">
+                    <!-- 네이버 로그인 -->
+                    <div class="naver btnSocial" id="naverIdLogin"></div>
+                    <!-- 구글 로그인 -->
+                    <!-- 3. MainController에서 미리 만들어서 바인딩한 구글 로그인 URL을 가져와 사용한다. -->
+                    <a th:href="${googleUrl}" class="google btnSocial">
+                        <img src="/img/btn_google.png" style="height:45px;width:233px">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-    <!-- 아이디 및 비밀번호가 틀릴 경우 에러 알림창이 등장 -->
-    <script th:inline="javascript">
-        // 컨트롤러에서 모델로 바인딩한 에러 체크값
-        let error = [[${error}]];
-        // 컨트롤러에서 모델로 바인딩한 에러 메세지
-        let errorMsg = [[${errorMsg}]];
-
-        // 에러 체크값이 true일 경우 에러 알림창 등장
-        if ( error == "true" ) {
-            alert(errorMsg);
-        }
-    </script>
-
     <!-- 네이버 로그인 API -->
     <script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" charset="utf-8"></script>
     <script>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>비밀번호 찾기</title>
+    <link rel="stylesheet" type="text/css" href="/css/join_find.css">
+</head>
+<body>
+    <div class="container">
+        <h2>비밀번호 찾기</h2>
+        <form action="/loginform/findpwdform" method="post" th:object="${memberDTO}">
+            <ul class="ulJoinForm">
+                <input id="hEmailCheck" type="hidden">
+                <input id="hEmailKey" type="hidden">
+                <li class="liJoinInput"><label class="labelText">아이디</label><br><input th:field="*{emailId}" class="inputText" type="text" placeholder="이메일 주소">
+                                                                                     <input type="button" value="인증번호 전송" class="btnJoinForm" onclick="sendEmail(this.form)"></li>
+                <li class="liJoinInput"><label class="labelText">인증번호 입력 </label><br><input id="emailKey" class="inputText" type="text" placeholder="인증번호">
+                                                                                     <input type="button" value="인증번호 확인" class="btnJoinForm" onclick="checkNum()"></li>
+                <li class="liJoinInput"><label class="labelText">이름</label><br><input th:field="*{name}" class="inputText" type="text" placeholder="이름"></li>
+                <li class="liJoinInput"><label class="labelText">핸드폰번호</label><br><input th:field="*{phoneNumber}" class="inputText" type="text" placeholder="핸드폰번호(하이픈'-'없이)"></li>
+            </ul>
+            <div class="divBtnJoin">
+                <input type="button" value="비밀번호 재설정" class="btnJoin" onclick="findPwd(this.form)">
+                <input type="button" value="취소하기" class="btnJoin" onclick="location.href='/loginform'">
+            </div>
+        </form>
+    </div>
+
+<!--JS----------------------------------------------------------------------------------------------------------------->
+    <script src="/js/httpRequest.js"></script>
+    <script>
+
+        //인증번호 전송
+        function sendEmail(f) {
+            let emailId = f.emailId.value; //이메일 입력값 가져오기
+            let pattern = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
+
+            if( !pattern.test(emailId) ) {
+                alert("이메일 형식을 다시 확인해주세요\n ex) abc@naver.com");
+                return;
+            } else {
+                let url = "/loginform/findpwdform/emailcheck";
+                let param = "emailId=" + emailId;
+                sendRequest(url, param, resultSendEmail, "POST");
+            }
+        }
+
+        function resultSendEmail() {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                let data = xhr.responseText; //email check 값
+                let hEmailCheck = document.getElementById("hEmailCheck"); //중복체크용 값
+                let hEmailKey = document.getElementById("hEmailKey"); //이메일키 확인
+
+                if ( data == "no" ) {
+                    alert("존재하지 않는 아이디입니다.");
+                    hEmailCheck.value = "false";
+                    return;
+                } else {
+                    alert("인증메일을 전송했습니다.");
+                    hEmailKey.value = data;
+                    return;
+                }
+            }
+        }
+
+        function checkNum() {
+            let emailKey = document.getElementById("emailKey");
+            let hEmailKey = document.getElementById("hEmailKey");
+            let hEmailCheck = document.getElementById("hEmailCheck");
+            let emailId = document.getElementById("emailId");
+
+            if ( emailKey.value == hEmailKey.value ) {
+                alert("인증되었습니다.");
+                hEmailCheck.value = "true"; //이메일체크값 밸류변경
+                return;
+            } else {
+                alert("인증번호를 다시 확인해주세요");
+                hEmailCheck.value = "false";
+                emailKey.value = "";
+                return;
+            }
+        }
+    </script>
+    <script>
+        function findPwd(f) {
+            let emailId = f.emailId.value;
+            let name = f.name.value;
+            let phoneNumber = f.phoneNumber.value;
+            phoneNumber = phoneNumber.replace(/[^0-9]/g, '');
+            let emailKey = document.getElementById("emailKey").value;
+            let hEmailCheck = document.getElementById("hEmailCheck").value;
+
+            //emailId
+            if ( emailId == '' ) {
+                alert("이메일을 입력하세요");
+                return;
+            }
+            //인증번호
+            if ( emailKey == '' ) {
+                alert("인증번호를 확인해주세요");
+                return;
+            }
+            //인증번호 확인
+            if ( hEmailCheck != "true" ) {
+                alert("인증번호를 확인해주세요");
+                return;
+            }
+            //이름
+            if ( name == '' ) {
+                alert("이름을 입력하세요");
+                return;
+            }
+            //phoneNumber
+            if ( phoneNumber == '' ) {
+                alert("핸드폰 번호를 입력하세요");
+                return;
+            }
+
+
+            let url = "/loginform/findpwdform/findpwd";
+            let param = "emailId=" + emailId +
+                        "&name=" + name +
+                        "&phoneNumber=" + phoneNumber;
+            sendRequest(url, param, resultFindPwd, "POST");
+        }
+
+        function resultFindPwd() {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                let data = xhr.responseText;
+                let emailId = document.getElementById("emailId").value;
+
+                if ( data == "no" ) {
+                    alert("입력하신 정보로 가입된 회원이 아닙니다.\n입력하신 정보를 다시 확인해 주세요.");
+                    return;
+                } else if ( data == "Google" ) {
+                    alert("Google 소셜 회원가입자로,\n'Google로 로그인 하기'로 로그인해주세요");
+                    return;
+                } else if ( data == "Naver" ) {
+                    alert("Naver 소셜 회원가입자로,\n'Naver로 로그인 하기'로 로그인해주세요");
+                    return;
+                } else {
+                    alert("비밀번호 재설정 페이지로 이동합니다.");
+                    //비밀번호 재설정 페이지로 이동
+                    location.href = "/loginform/findpwdform/resetpwdform?emailId=" + emailId;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -66,7 +66,7 @@ public class SignUpService implements UserDetailsService {
                 email.setFrom(fromEmail, fromName, charSet); // 메일 발신자 정보
                 email.setSubject("[Study with me] 이메일 인증번호 발송 안내입니다."); // 메일 제목
                 email.setHtmlMsg("<p>" + "[메일 인증 안내입니다.]" + "</p>" +
-                                 "<p>" + "Study with me를 사용해 주셔서 감사드립니다." + "</p>" +
+                                 "<p>" + "Mate를 사용해 주셔서 감사드립니다." + "</p>" +
                                  "<p>" + "아래 인증 코드를 '인증번호'란에 입력해 주세요." + "</p>" +
                                  "<p>" + mailKey + "</p>"); // 메일 내용 - 7에서 생성한 인증 번호를 여기서 전달한다.
                 // 11. 10에서 전달한 값들을 토대로 9에서 생성한 HtmlEmail을 사용하여 메일을 발송한다.
@@ -88,6 +88,16 @@ public class SignUpService implements UserDetailsService {
         }
     }
 
+    //닉네임 중복체크
+    public String checkNickname (String nickname) {
+        Member member = memberRepository.findByNickname(nickname);
+        if ( member != null ) {
+            return "no";
+        } else {
+            return nickname;
+        }
+    }
+
     // 휴대폰 번호로 중복 가입자 체크
     public String checkPhone (String phoneNumber) { // 38. 파라미터로 컨트롤러에서 넘어온 휴대폰 번호를 받아온다.
         // 39. 38에서 파라미터로 받아온 휴대폰 번호로 유저를 조회하고, 조회된 값을 받아온다.
@@ -105,15 +115,109 @@ public class SignUpService implements UserDetailsService {
     }
 
     // 자사 회원가입
-    public Member.rpJoinMember joinMember(Member.rqJoinMember rqJoinMember, PasswordEncoder passwordEncoder) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO와 비밀번호 암호화 메소드를 받아온다.
+    public String joinMember(Member.rqJoinMember rqJoinMember, PasswordEncoder passwordEncoder) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO와 비밀번호 암호화 메소드를 받아온다.
         // 4. 3에서 파라미터로 받아온 DTO를 Entity로 변환하면서 3에서 파라미터로 같이 받아온 비밀번호 암호화 메소드를 파라미터로 넘겨준다.
         Member joinMember = rqJoinMember.toEntity(passwordEncoder);
-        // 8. 4에서 변환된 Entity로 유저를 저장하고, 저장한 값을 받아온다.
+        // 5. 4에서 변환된 Entity로 유저를 저장하고, 저장된 값을 받아온다.
         Member member = memberRepository.save(joinMember);
-        // 9. 8에서 저장하고 받아온 Entity를 DTO로 변환한다.
-        Member.rpJoinMember rpJoinMember = new Member.rpJoinMember(member);
-        // 10. 9에서 변환된 DTO를 반환한다.
-        return rpJoinMember;
+        // 6. 5에서 저장된 값이 있는지 체크한다.
+        // 6-1. 저장된 값이 없는 경우 - 가입 실패
+        if ( member == null ) {
+            // 6-1-1. no를 반환한다.
+            return "no";
+        // 6-2. 저장된 값이 있는 경우 - 가입 성공
+        } else {
+            // 6-2-1. yes를 반환한다.
+            return "yes";
+        }
+    }
+
+    ////////////////////////////////////////////////ID찾기////////////////////////////////////////////////
+    //ID찾기
+    public Member.rpFindId findIdSearch(Member.rqFindId rqFindId){
+        Member member = rqFindId.toEntity();
+        Member findEmailId = memberRepository.findEmailId(member.getName(), member.getPhoneNumber());
+        if ( findEmailId == null ) {
+            return null;
+        } else {
+            Member.rpFindId rpFindId = new Member.rpFindId(findEmailId.getEmailId(), findEmailId.getPlatform());
+            return rpFindId;
+        }
+    }
+
+    ////////////////////////////////////////////////PWD찾기(재설정)////////////////////////////////////////////////
+    //비밀번호 재설정 전, 본인인증 메일 전송
+    public String pwdEmailCheck(String emailId){
+        Member member = memberRepository.findByEmailId(emailId);
+        if( member == null ) {
+            return "no";
+        } else {
+            //MailKeyDTO불러와서 사용
+            String mailKey = new MailKeyDTO().getKey(7, false);
+
+            //Mail Server 설정
+            String charSet = "UTF-8"; // 사용할 언어셋
+            String hostSMTP = "smtp.naver.com"; // 사용할 SMTP
+            String hostSMTPid = ""; // 사용할 SMTP에 해당하는 ID - 이메일 형식
+            String hostSMTPpwd = ""; // 사용할 ID에 해당하는 PWD
+
+            // 가장 중요한 TLS설정 - 이것이 없으면 신뢰성 에러가 나온다
+            Properties props = System.getProperties();
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+
+            // 보내는 사람 E-Mail, 제목, 내용
+            String fromEmail = ""; // 보내는 사람 email - - hostSMTPid와 동일하게 작성
+            String fromName = "관리자"; // 보내는 사람 이름
+            String subject = "[Mate] 이메일 인증번호 발송 안내입니다."; // 제목
+
+            // 받는 사람 E-Mail 주소
+            String mail = emailId; // 받는 사람 email
+
+            try {
+                HtmlEmail email = new HtmlEmail(); // Email 생성
+                email.setDebug(true);
+                email.setCharset(charSet); // 언어셋 사용
+                email.setSSL(true);
+                email.setHostName(hostSMTP); // SMTP 사용
+                email.setSmtpPort(587);	// SMTP 포트 번호 입력
+
+                email.setAuthentication(hostSMTPid, hostSMTPpwd); // 메일 ID, PWD
+                email.setTLS(true);
+                email.addTo(mail); // 받는 사람
+                email.setFrom(fromEmail, fromName, charSet); // 보내는 사람
+                email.setSubject(subject); // 제목
+                email.setHtmlMsg(
+                                "<p>" + "[메일 인증 안내입니다.]" + "</p>" +
+                                "<p>" + "Mate를 사용해 주셔서 감사드립니다." + "</p>" +
+                                "<p>" + "아래 인증 코드를 '인증번호'란에 입력해 주세요." + "</p>" +
+                                "<p>" + mailKey + "</p>"); // 본문 내용
+                email.send(); // 메일 보내기
+                // 메일 보내기가 성공하면 메일로 보낸 랜덤키를 콜백 메소드에도 전달
+                return mailKey;
+            } catch (Exception e) {
+                System.out.println(e);
+                // 메일 보내기가 실패하면 "no"를 콜백 메소드에 전달
+                return "no";
+            }
+        }
+    }
+
+    //PWD 재설정을 위한 정보확인
+    public String findPwdSearch(Member.rqFindPwd rqFindPwd){
+        Member member = rqFindPwd.toEntity();
+        Member findByFindPwd = memberRepository.findPwd(member.getEmailId(), member.getName(), member.getPhoneNumber());
+        if ( findByFindPwd == null ) {
+            return "no";
+        } else {
+            return findByFindPwd.getPlatform();
+        }
+    }
+
+    //PWD 재설정
+    public void resetPwd(Member.rqResetPwd rqResetPwd, PasswordEncoder passwordEncoder){
+        Member member = rqResetPwd.toEntity(passwordEncoder);
+        memberRepository.findChangePwd(member.getEmailId(), member.getPwd());
     }
 
     // 로그인 유저 닉네임 및 프로플 사진 조회

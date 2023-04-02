@@ -1,0 +1,64 @@
+.profileImgEdit{
+    height: 200px;
+    width: 200px;
+    margin: 10px;
+    background-color: #ececec;
+    border: solid 2px #87AF6E;
+    border-radius: 50%;
+}
+.editProfileImgForm{
+    display: flex;
+}
+.memberInfoForm{
+    float: center;
+    margin-bottom: 80px;
+}
+.editTitle{
+    font-size: 16px;
+    font-weight: bold;
+    margin: 5px;
+    padding-left: 5px;
+}
+.inputForm{
+    margin: 20px 5px;
+}
+.inputText{
+    width: 400px;
+    height: 35px;
+    font-size:14px;
+    border: solid 1px #87AF6E;
+    border-radius: 5px;
+    margin: 5px 5px 5px 5px;
+    padding-left: 5px;
+}
+.checkBtn, .saveBtn{
+    width: 100px;
+    height: 35px;
+    margin: 5px 5px 5px 5px;
+    border: solid 1px #87AF6E;
+    background-color: #BDE7A4;
+    border-radius: 5px;
+    color: #4A8D51;
+    font-size: 14px;
+    font-weight: bold;
+}
+.editImgBtn{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+.editImg{
+    padding-left: 55px;
+}
+.saveBtnDiv{
+    width: 200px;
+    margin: 20px 5px 30px 5px;
+    display: flex;
+}
+.saveBtn{
+    margin-right: 10px;
+}
+.errorMsg{
+    color: red;
+    font-size: 13px;
+}

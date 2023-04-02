@@ -2,39 +2,75 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="/css/ul.css">
+    <title>회원가입 페이지</title>
+    <link rel="stylesheet" type="text/css" href="/css/join_find.css">
 </head>
 <body>
-    <!-- th:object="${바인딩한 객체의 변수명}" - 모델로 바인딩한 객체를 가져온다. -->
-    <form action="/joinform/join" method="post" th:object="${memberDTO}">
-        <!-- 이메일 중복 체크 값 -->
-        <input id="hEmailCheck" type="hidden">
-        <!-- 이메일 인증 번호 체크 값 -->
-        <input id="hEmailKey" type="hidden">
-        <ul>
-            <!-- th:for="th:field에 작성한 변수명" - label과 input을 연결 해준다. -->
-            <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
-            <li><label th:for="emailId">아이디(이메일) : </label><input th:field="*{emailId}" type="text">
-                <input type="button" value="인증번호 전송" onclick="sendEmail(this.form)"></li>
-            <li><label>인증번호 입력 </label><input id="emailKey" type="text">
-                <input type="button" value="인증번호 확인" onclick="checkEmail()"></li>
-            <li><label th:for="pwd">비밀번호 : </label><input th:field="*{pwd}" type="password"></li>
-            <li><label th:for="nickname">닉네임 : </label><input th:field="*{nickname}" type="text"></li>
-            <li><label th:for="name">이름 : </label><input th:field="*{name}" type="text"></li>
-            <li><label th:for="birthday">생년월일 : </label><input th:field="*{birthday}" type="date"></li>
-            <li><label th:for="phoneNumber">휴대폰 번호 : </label><input th:field="*{phoneNumber}" type="tel">
-                <input id="btnPhone" type="button" value="인증하기"></li>
-            <li><label> 성별 : </label><label>남</label><input th:field="*{gender}" type="radio" value="M">
-                                      <label>여</label><input th:field="*{gender}" type="radio" value="W"></li>
-            <li><label th:for="address">주소 : </label><input th:field="*{address}" type="text"></li>
-            <li><label th:for="studyType">관심 분야 : </label><select th:field="*{studyType}"><option value="">관심 분야</option>
-                                                                                            <option value="문과">문과</option>
-                                                                                            <option value="이과">이과</option>
-                                                                                            <option value="공과">공과</option></select></li>
-        </ul>
-        <input type="submit" value="가입">
-    </form>
+    <div class="container">
+        <!-- th:object="${바인딩한 객체의 변수명}" - 모델로 바인딩한 객체를 가져온다. -->
+        <form th:object="${memberDTO}">
+            <!-- 이메일 중복 체크 값 -->
+            <input id="hEmailCheck" type="hidden">
+            <!-- 이메일 인증 번호 체크 값 -->
+            <input id="hEmailKey" type="hidden">
+            <input id="hNickname" type="hidden">
+            <input id="hPhoneCheck" type="hidden">
+
+            <a class="mainLogo" href="/" alt="SOJU">
+                <img src="/img/logo_mate.png" class="mainLogoImg">
+            </a>
+            <h2>회원가입</h2>
+
+            <ul class="ulJoinForm">
+                <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
+                <li class="liJoinInput"><label class="labelText">아이디 </label><br><input th:field="*{emailId}" class="inputText" placeholder="이메일 주소" type="text">
+                                                                                  <input type="button" value="인증번호 전송" class="btnJoinForm" onclick="sendEmail(this.form)"></li>
+                <li class="liJoinInput"><label class="labelText">인증번호 입력 </label><br><input id="emailKey" class="inputText" placeholder="인증번호" type="text">
+                                                                                        <input type="button" value="인증번호 확인" class="btnJoinForm" onclick="checkEmail()"></li>
+
+                <li class="liJoinInput"><label class="labelText">비밀번호 </label><br><input th:field="*{pwd}" type="password" class="inputText" placeholder="영문, 숫자, 특수기호를 포함하여 5자리 이상" oninput="pwdCheck(this.form)"><br></li>
+                <li class="liJoinInput"><label id="pwdText1" class="errorMsg"></label></li>
+                <li class="liJoinInput"><label class="labelText">비밀번호 확인 </label><br><input id="pwd2" type="password" class="inputText" placeholder="영문, 숫자, 특수기호를 포함하여 5자리 이상" oninput="pwdCheck2(this.form)"><br></li>
+                <li class="liJoinInput"><label id="pwdText2" class="errorMsg"></label></li>
+
+                <li class="liJoinInput"><label class="labelText">닉네임(별명) </label><br><input th:field="*{nickname}" class="inputText" placeholder="10자 이내 닉네임" type="text">
+                                                                                       <input type="button" value="중복확인" class="btnJoinForm" onclick="checkNickname(this.form)"><br></li>
+                <li class="liJoinInput"><label id="nicknameCheck" class="errorMsg"></label></li>
+
+                <li class="liJoinInput"><label class="labelText">성별 </label><br><label class="genderLabel">남</label><input th:field="*{gender}" type="radio" value="M">
+                                                                                 <label class="genderLabel">여</label><input th:field="*{gender}" type="radio" value="F"></li>
+
+                <li class="liJoinInput"><label class="labelText">이름 </label><br><input th:field="*{name}" class="inputText" placeholder="이름" type="text"></li>
+
+                <li class="liJoinInput"><label class="labelText">생일 </label><br><input th:field="*{birthday}" class="inputText" type="date" style="color: #757575; font-size: 15px;"></li>
+
+                <li class="liJoinInput"><label class="labelText">휴대전화 </label><br><input th:field="*{phoneNumber}" type="tel" class="inputText" placeholder="휴대전화">
+                                                                                    <input id="btnPhone" value="인증하기" class="btnJoinForm" type="button"></li>
+
+                <li class="liJoinInput"><label class="labelText">주소 </label><br><input th:field="*{address}" class="inputText" type="text" placeholder="주소">
+                                                                                 <input id="btnAddress" type="button" class="btnJoinForm" value="주소찾기"></li>
+                <li class="liJoinInput"><label class="labelText">상세주소 </label><br><input th:field="*{detailAddress}" class="inputText" type="text" placeholder="상세주소"></li>
+
+                <li class="liJoinInput"><label class="labelText">관심분야 </label><br><select class="studyType" th:field="*{studyType}"><option value="">관심분야</option>
+                                                                                                                                      <option value="computer">컴퓨터 / IT</option>
+                                                                                                                                      <option value="math">수학</option>
+                                                                                                                                      <option value="management">경영 / 마케팅</option>
+                                                                                                                                      <option value="design">디자인</option>
+                                                                                                                                      <option value="education">교육</option>
+                                                                                                                                      <option value="literature">문학</option>
+                                                                                                                                      <option value="engineering">공학</option>
+                                                                                                                                      <option value="language">언어</option>
+                                                                                                                                      <option value="employment">취업</option>
+                                                                                                                                      <option value="entrance">입시</option>
+                                                                                                                                      <option value="etc">기타</option></select></li>
+            </ul>
+
+            <div class="divBtnJoin">
+                <input type="button" value="가입" class="btnJoin" onclick="join(this.form)">
+                <input type="button" value="취소" class="btnJoin" onclick="location.href='/loginform'">
+            </div>
+        </form>
+    </div>
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
     <!-- Ajax사용을 위한 js를 추가 -->
     <script src="/js/httpRequest.js"></script>
@@ -115,6 +151,68 @@
         }
     </script>
 
+    <!--비밀번호 형식 제한-->
+    <script>
+        function pwdCheck(f) {
+            let pwd = f.pwd.value;
+            let pwdText1 = document.getElementById("pwdText1");
+
+            let pattern1 = /[0-9]/; // 숫자 입력
+            let pattern2 = /[a-zA-Z]/; // 영어 소문자, 대문자 입력
+            let pattern3 = /[~!@#$%^&*()_+]/; // 특수기호 입력
+
+            if ( !pattern1.test(pwd) || !pattern2.test(pwd) || !pattern3.test(pwd) || pwd.length < 5 ) {
+                pwdText1.innerHTML = "영문, 숫자, 특수기호(~!@#$%^&*()_+)를 포함하여 5자리 이상으로 구성하여야 합니다";
+            } else {
+                pwdText1.innerHTML = "";
+            }
+        }
+
+        function pwdCheck2(f) {
+            let pwd = f.pwd.value;
+            let pwd2 = f.pwd2.value;
+            let pwdText2 = document.getElementById("pwdText2");
+
+            if ( pwd2 != pwd ) {
+                pwdText2.innerHTML = "비밀번호가 일치하지 않습니다";
+            } else {
+                pwdText2.innerHTML = "";
+            }
+        }
+    </script>
+
+    <!--닉네임 중복체크 및 글자 수 제한-->
+    <script>
+        function checkNickname(f) {
+            let nickname = f.nickname.value; //입력한 닉네임 가져오기
+            let nicknameCheck = document.getElementById("nicknameCheck");
+
+            if ( nickname.length > 20 ) {
+                nicknameCheck.innerHTML = "닉네임은 10자내로 작성해주세요.";
+            } else {
+                nicknameCheck.innerHTML = "";
+                let url = "/joinform/nicknamecheck";
+                let param = "nickname=" + nickname;
+                sendRequest(url, param, resultCheckNickname, "POST");
+            }
+        }
+        function resultCheckNickname() {
+             if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                 let data = xhr.responseText; //닉네임
+                 let hNickname = document.getElementById("hNickname");
+
+                 if ( data == "no" ) {
+                    alert("이미 존재하는 닉네임입니다.");
+                    hNickname.value = "false";
+                 } else {
+                    alert("사용 가능한 닉네임입니다.");
+                    hNickname.value = data;
+                 }
+                 return;
+             }
+        }
+    </script>
+
     <!-- iamport.payment.js 인증 -->
     <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
@@ -191,6 +289,182 @@
                 } else {
                     alert("가입 가능한 회원 정보입니다.");
                     return;
+                }
+            }
+        }
+    </script>
+
+    <!--주소입력 API-->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        document.getElementById("address").addEventListener("click", function() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    document.getElementById("address").value = data.address;
+                    document.getElementById("detailAddress").focus();
+                }
+            }).open();
+        });
+        document.getElementById("btnAddress").addEventListener("click", function() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    document.getElementById("address").value = data.address;
+                    document.getElementById("detailAddress").focus();
+                }
+            }).open();
+        });
+    </script>
+
+    <!--회원가입 진행 & 유효성 검사-->
+    <script>
+        function join(f) {
+            //입력한 정보들
+            //emailId
+            let emailId = f.emailId.value; //Email
+            let emailKey = document.getElementById("emailKey").value; //인증번호
+            let hEmailCheck = document.getElementById("hEmailCheck").value; //인증확인
+
+            //pwd
+            let pwd = f.pwd.value; //pwd
+            let pwd2 = document.getElementById("pwd2").value; //pwd 확인
+            //비밀번호 형식
+            let pattern1 = /[0-9]/; // 숫자 입력
+            let pattern2 = /[a-zA-Z]/; // 영어 소문자, 대문자 입력
+            let pattern3 = /[~!@#$%^&*()_+]/; // 특수기호 입력
+
+            //name
+            let name = f.name.value;
+
+            //nickname
+            let nickname = f.nickname.value;
+            let hNickname = document.getElementById("hNickname").value; //닉네임 중복체크
+
+            //birthday
+            let birthday = f.birthday.value; //birthday
+
+            //gender
+            let gender = f.gender.value; //gender
+
+            //phoneNumber
+            let phoneNumber = f.phoneNumber.value; //phoneNumber
+
+            //address
+            let address = f.address.value;
+            let detailAddress = f.detailAddress.value;
+
+            //studyType
+            let studyType = f.studyType.value;
+
+            //유효성 검사
+
+            //ID
+            if ( emailId == '' ) {
+                alert("아이디를 입력하세요");
+                return;
+            }
+            //인증번호
+            if ( emailKey == '' ) {
+                alert("인증번호를 확인해주세요");
+                return;
+            }
+            //인증번호 확인
+            if ( hEmailCheck != "true" ) {
+                alert("인증번호를 확인해주세요");
+                return;
+            }
+            //비밀번호
+            if ( pwd == '' ) {
+                alert("비밀번호를 입력하세요");
+                return;
+            }
+            //비밀번호 확인
+            if ( pwd2 == '' ) {
+                alert("비밀번호 확인을 입력하세요");
+                return;
+            }
+            //pwd 형식
+            if ( !pattern1.test(pwd) || !pattern2.test(pwd) || !pattern3.test(pwd) || pwd.length < 5 ) {
+                alert("비밀번호 형식을 확인해주세요");
+                return;
+            }
+            // 비밀번호 확인
+            if ( pwd != pwd2 ) {
+                alert("비밀번호 확인이 비밀번호와 일치하지 않습니다.");
+                return;
+            }
+            //이름
+            if ( name == '' ) {
+                alert("이름을 입력하세요");
+                return;
+            }
+            //닉네임
+            if ( nickname == '' ) {
+                alert("닉네임을 입력하세요");
+                return;
+            }
+            //닉네임 형식
+            if ( nickname.length > 10 ) {
+                alert("닉네임의 길이는 10자 이내입니다.");
+                return;
+            }
+            if ( nickname != hNickname ) {
+                alert("닉네임 중복확인을 해주세요");
+                return;
+            }
+            //birthday
+            if ( birthday == '' ) {
+                alert("생일을 입력하세요");
+                return;
+            }
+            //gender
+            if ( gender == '' ) {
+                alert("성별을 선택하세요");
+                return;
+            }
+            //phoneNumber
+            if ( phoneNumber == '' ) {
+                alert("핸드폰 번호를 입력하세요");
+                return;
+            }
+            //address
+            if ( address == '' ) {
+                alert("주소를 입력하세요");
+                return;
+            }
+            //detailAddress
+            if ( detailAddress == '' ) {
+                alert("상세주소를 입력하세요");
+                return;
+            }
+            //studyType
+            if ( studyType == '' ) {
+                alert("관심분야를 선택하세요");
+                return;
+            }
+
+            let url = "/joinform/join";
+            let param = "emailId=" + emailId +
+                        "&pwd=" + pwd +
+                        "&name=" + name +
+                        "&nickname=" + nickname +
+                        "&birthday=" + birthday +
+                        "&gender=" + gender +
+                        "&phoneNumber=" + phoneNumber +
+                        "&address=" + address +
+                        "&detailAddress=" + detailAddress +
+                        "&studyType=" + studyType;
+            sendRequest(url, param, resultJoin, "POST");
+        }
+        function resultJoin() {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                let data = xhr.responseText;
+
+                if (data == "no") {
+                    alert("이미 가입된 회원정보가 있습니다.\n 입력한 정보확인 혹은 아이디/비밀번호 찾기를 이용해 주세요");
+                    location.href = "/loginform";
+                } else {
+                    alert("가입이 완료되었습니다.\n 로그인 페이지로 이동합니다.");
+                    location.href = "/loginform";
                 }
             }
         }

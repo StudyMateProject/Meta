@@ -1,0 +1,92 @@
+        html {
+            height: 100%;
+        }
+        .container{
+            width: 650px;
+            margin: auto;
+        }
+        .mainLogoImg{
+            height: 80px;
+            width: 250px;
+            text-align: center;
+            margin: auto;
+            display: flex;
+        }
+        h2{
+            text-align: center;
+            color: #4A8D51;
+            margin: 20px 10px 10px 10px;
+        }
+        .ulJoinInput{
+            width: 500px;
+            padding: 10px 10px 10px 10px;
+        }
+        .liJoinInput{
+            list-style-type: none;
+            width: 100%;
+            margin: 30px 30px 30px 30px;
+            padding-left: 5px;
+        }
+        .labelText{
+            width: 20px;
+            height: 20px;
+            margin: 5px 5px 10px 5px;
+            text-align: center;
+            font-size: 17px;
+            color: #4A8D51;
+        }
+        .inputText{
+            width: 440px;
+            height: 35px;
+            font-size:15px;
+            border: solid 1px #87AF6E;
+            border-radius: 5px;
+            margin: 5px 5px 5px 5px;
+        }
+        placeholder{
+            left-margin: 5px;
+            font-size:15px;
+
+        }
+        .btnJoinForm{
+            width: 100px;
+            height: 35px;
+            margin: 5px 5px 5px 5px;
+            border: solid 1px #87AF6E;
+            background-color: #BDE7A4;
+            border-radius: 5px;
+            color: #4A8D51;
+        }
+        .errorMsg{
+            font-size:15px;
+            color: #FF6C6C;
+        }
+        .genderLabel{
+            font-size: 20px;
+            margin: 5px 5px 5px 5px;
+            color: #757575;
+        }
+        .studyType{
+            width: 440.33px;
+            height: 37.33px;
+            color: #757575;
+            margin: 5px 5px 5px 5px;
+            border: solid 1px #87AF6E;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+        .divBtnJoin{
+            text-align: center;
+        }
+        .btnJoin{
+            width: 150px;
+            height: 40px;
+            text-align: center;
+            font-size: 18px;
+            border: solid 1px #87AF6E;
+            border-radius: 5px;
+            background-color: #BDE7A4;
+            margin: 5px 5px 5px 5px;
+            padding: 0px 0px 0px 5px;
+            color: #4A8D51;
+        }

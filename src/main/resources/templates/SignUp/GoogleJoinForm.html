@@ -2,30 +2,320 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Google 회원가입</title>
+    <link rel="stylesheet" type="text/css" href="/css/join_find.css">
 </head>
 <body>
-    <h1>여기는 구글 회원가입하는 곳입니다.</h1>
-    <form action="/loginform/googlejoin" method="post" th:object="${memberDTO}">
-        <!-- 어느 소셜 플랫폼 가입자인지 구별 -->
-        <input name="platform" type="hidden" value="google">
-        <ul>
-            <!-- th:for="th:field에 작성한 변수명" - label과 input을 연결 해준다. -->
-            <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
-            <li><label th:for="emailId">아이디 : </label><input name="emailId" type="text" th:value="${emailId}" readonly></li>
-            <li><label th:for="name">이름 : </label><input name="name" type="text" th:value="${name}" readonly></li>
-            <li><label th:for="nickname">닉네임 : </label><input th:field="*{nickname}" type="text"></li>
-            <li><label th:for="birthday">생년월일 : </label><input name="birthday" type="text" th:value="${birthday}" readonly></li>
-            <li><label> 성별 : </label><label th:if="${gender == 'M'}">남 <input name="gender" type="radio" th:value="${gender}" checked></label>
-                                      <label th:if="${gender == 'F'}">여 <input name="gender" type="radio" th:value="${gender}" checked></label></li>
-            <li><label th:for="phoneNumber">휴대폰 번호 : </label><input th:field="*{phoneNumber}" type="tel"></li>
-            <li><label th:for="address">주소 : </label><input th:field="*{address}" type="text"></li>
-            <li><label th:for="studyType">관심 분야 : </label><select th:field="*{studyType}"><option value="">관심 분야</option>
-                                                                                            <option value="문과">문과</option>
-                                                                                            <option value="이과">이과</option>
-                                                                                            <option value="공과">공과</option></select></li>
-        </ul>
-        <input type="submit" value="가입">
-    </form>
+    <div class="container">
+        <form th:object="${memberDTO}">
+            <!-- 어느 소셜 플랫폼 가입자인지 구별 -->
+            <input name="platform" type="hidden" value="Google">
+            <input id="hNickname" type="hidden">
+
+            <a class="mainLogo" href="/" alt="SOJU">
+                <img src="/img/betalogo.jpg" class="mainLogoImg">
+            </a>
+            <h2>Google 회원가입</h2>
+
+            <ul>
+                <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
+                <li class="liJoinInput"><label class="labelText">아이디(이메일) </label><br><input name="emailId" class="inputText" type="text" th:value="${emailId}" readonly></li>
+
+                <li class="liJoinInput"><label class="labelText">닉네임(별명) </label><br><input th:field="*{nickname}" placeholder="10자 이내 닉네임" class="inputText" type="text">
+                                                                                       <input type="button" value="중복확인" class="btnJoinForm" onclick="checkNickname(this.form)"><br></li>
+                <li class="liJoinInput"><label id="nicknameCheck" class="errorMsg"></label></li>
+
+                <li class="liJoinInput"><label class="labelText">성별 </label><br><label th:if="${gender == 'M'}" class="genderLabel">남 <input name="gender" type="radio" th:value="${gender}" checked></label>
+                                                                                 <label th:if="${gender == 'F'}" class="genderLabel">여 <input name="gender" type="radio" th:value="${gender}" checked></label></li>
+
+                <li class="liJoinInput"><label class="labelText">이름 </label><br><input name="name" id="name" type="text" class="inputText" th:value="${name}" readonly></li>
+
+                <li class="liJoinInput"><label class="labelText">생일 </label><br><input name="birthday" id="birthday" type="date" class="inputText" th:value="${birthday}" readonly></li>
+
+                <li class="liJoinInput"><label class="labelText">휴대전화 </label><br><input th:field="*{phoneNumber}" type="tel" class="inputText" readonly>
+                                                                                    <input id="btnPhone" value="인증하기" type="button" class="btnJoinForm" onclick="phoneCheck()"></li>
+
+                <li class="liJoinInput"><label class="labelText">주소 </label><br><input th:field="*{address}" class="inputText" type="text">
+                                                                                 <input id="btnAddress" type="button" value="주소찾기" class="btnJoinForm"></li>
+                <li class="liJoinInput"><label class="labelText">상세주소 </label><br><input th:field="*{detailAddress}" class="inputText" type="text"></li>
+
+                <li class="liJoinInput"><label class="labelText">관심분야 </label><br><select th:field="*{studyType}" class="inputText studyType"><option value="">관심분야</option>
+                                                                                                                                                <option value="computer">컴퓨터 / IT</option>
+                                                                                                                                                <option value="math">수학</option>
+                                                                                                                                                <option value="management">경영 / 마케팅</option>
+                                                                                                                                                <option value="design">디자인</option>
+                                                                                                                                                <option value="education">교육</option>
+                                                                                                                                                <option value="literature">문학</option>
+                                                                                                                                                <option value="engineering">공학</option>
+                                                                                                                                                <option value="language">언어</option>
+                                                                                                                                                <option value="employment">취업</option>
+                                                                                                                                                <option value="entrance">입시</option>
+                                                                                                                                                <option value="etc">기타</option></select></li>
+            </ul>
+
+            <div class="divBtnJoin">
+                <input type="button" value="가입하기" class="btnJoin" onclick="join(this.form)">
+                <input type="button" value="취소하기" class="btnJoin" onclick="location.href='/loginform'">
+            </div>
+        </form>
+    </div>
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!-- Ajax사용을 위한 js를 추가 -->
+    <script src="/js/httpRequest.js"></script>
+    <!--닉네임 중복체크 및 글자 수 제한-->
+    <script>
+        function checkNickname(f) {
+            let nickname = f.nickname.value; //입력한 닉네임 가져오기
+            let nicknameCheck = document.getElementById("nicknameCheck");
+
+            if ( nickname.length > 20 ) {
+                nicknameCheck.innerHTML = "닉네임은 10자내로 작성해주세요.";
+            } else {
+                nicknameCheck.innerHTML = "";
+                let url = "/joinform/nicknamecheck";
+                let param = "nickname=" + nickname;
+                sendRequest(url, param, resultCheckNickname, "POST");
+            }
+        }
+        function resultCheckNickname() {
+             if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                 let data = xhr.responseText; //닉네임
+                 let hNickname = document.getElementById("hNickname");
+
+                 if ( data == "no" ) {
+                    alert("이미 존재하는 닉네임입니다.");
+                    hNickname.value = "false";
+                 } else {
+                    alert("사용 가능한 닉네임입니다.");
+                    hNickname.value = data;
+                 }
+                 return;
+             }
+        }
+    </script>
+
+    <!-- iamport.payment.js 인증 -->
+    <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <!-- 아임포트 본인인증 및 값 삽입 => '인증하기' 버튼 클릭시 -->
+    <script>
+        // textbox & 버튼(2개이상)을 누르면 함수가 실행되도록 하는 방법
+        // querySelectorAll로 id값(#id)을 불러와서 배열로 생성, 이후 forEach문을 활용해 각각의 것을 눌렀을 때 실행되게 하도록 한다.
+        let openPort = document.querySelectorAll("#birthday, #phoneNumber, #btnPhone");
+        openPort.forEach(function(element){
+            element.addEventListener("click", function() {
+                var IMP = window.IMP; // init로 객체초기화 (가맹점식별코드)
+                IMP.init("imp88140833"); // 가맹점 번호
+                IMP.certification({
+                    popup : true // 팝업 사용
+                } ,function (rsp) { // 1. 파라미터로 rsp를 받아온다.
+                    if ( rsp.success ){ // 인증에 성공할 경우
+                        // 2. 1에서 파라미터로 받아온 rsp에서 imp_uid를 가져온다.
+                        let impUid = rsp.imp_uid;
+                        // 3. Ajax를 사용하여 2에서 가져온 imp_uid를 컨트롤러로 보낸다.
+                        let url = "/joinform/certifications";
+                        let param = "impUid=" + impUid;
+                        sendRequest(url, param, resultCertifications, "POST");
+                        return;
+                    } else { //인증 실패 시
+                        alert("인증 실패하였습니다.");
+                        return;
+                    }
+                });
+            });
+        });
+        // 휴대폰 인증 콜백 메소드
+        function resultCertifications () {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                // 32. 컨트롤러에서 반환된 유저 정보 Map을 받아온다.
+                let data = xhr.responseText;
+                // 33. 32에서 받아온 Map을 JavaScript 객체로 변환한다.
+                let jsData = JSON.parse(data);
+                let name = document.getElementById("name"); // 이름
+                let birthday = document.getElementById("birthday"); // 생년월일
+                let phoneNumber = document.getElementById("phoneNumber"); // 휴대폰 번호
+
+                // 34. 33에서 변환된 Map에 들어있는 값들을 꺼내서 각 작성란에 맞게 전달한다.
+                name.value = jsData.name; // 변환된 Map 값 중 이름을 가져와 이름 작성란에 전달한다.
+                name.readOnly = true; // 전달된 이름을 변경하지 못하도록 막는다.
+                birthday.value = jsData.birthday; // 변환된 Map 값 중 생년월일을 가져와 생년월일 작성란에 전달한다.
+                birthday.readOnly = true; // 전달된 생년월일을 변경하지 못하도록 막는다.
+                phoneNumber.value = jsData.phoneNumber; // 변환된 Map 값 중 휴대폰 번호를 가져와 휴대폰 번호 작성란에 전달한다.
+                phoneNumber.readOnly = true; // 전달된 휴대폰 번호를 변경하지 못하도록 막는다.
+
+                // 35. Ajax를 사용하여 33에서 변환된 Map 값 중 휴대폰 번호를 컨트롤러로 보낸다. - 중복 가입자인지 체크
+                let url = "/joinform/checkphone";
+                let param = "phoneNumber=" + jsData.phoneNumber;
+                sendRequest(url, param, resultCheckPhone, "POST");
+            }
+        }
+        // 휴대폰 번호로 중복 가입자 체크 콜백 메소드
+        function resultCheckPhone() {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                // 42. 컨트롤러에서 반환된 값을 받아온다.
+                let data = xhr.responseText;
+                let name = document.getElementById("name"); // 이름
+                let birthday = document.getElementById("birthday"); // 생년월일
+                let phoneNumber = document.getElementById("phoneNumber"); // 휴대폰 번호
+
+                // 43. 42에서 받아온 값을 체크한다.
+                // 43-1. 받아온 값이 no일 경우 - 중복 가입자
+                if( data == "no" ) {
+                    alert("이미 가입된 회원 정보입니다.");
+                    name.value = ""; // 작성된 이름을 초기화한다.
+                    birthday.value = ""; // 작성된 생년월일을 초기화한다.
+                    phoneNumber.value = ""; // 작성된 휴대폰 번호를 초기화한다.
+                    return;
+                // 43-2. 받아온 값이 yes일 경우 - 신규 가입자
+                } else {
+                    alert("가입 가능한 회원 정보입니다.");
+                    return;
+                }
+            }
+        }
+    </script>
+
+    <!--주소입력 API-->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        window.onload = function() {
+            document.getElementById("address").addEventListener("click", function() {
+                new daum.Postcode({
+                    oncomplete: function(data) {
+                        document.getElementById("address").value = data.address;
+                        document.getElementById("detailAddress").focus();
+                    }
+                }).open();
+            });
+            document.getElementById("btnAddress").addEventListener("click", function() {
+                new daum.Postcode({
+                    oncomplete: function(data) {
+                        document.getElementById("address").value = data.address;
+                        document.getElementById("detailAddress").focus();
+                    }
+                }).open();
+            });
+        }
+    </script>
+
+    <!--회원가입 진행 & 유효성 검사-->
+    <script>
+        function join(f) {
+            //입력한 정보들
+            //emailId
+            let emailId = f.emailId.value; //Email
+
+            //name
+            let name = f.name.value;
+
+            //nickname
+            let nickname = f.nickname.value;
+            let hNickname = document.getElementById("hNickname").value; //닉네임 중복체크
+
+            //birthday
+            let birthday = f.birthday.value; //birthday
+
+            //gender
+            let gender = f.gender.value; //gender
+
+            //phoneNumber
+            let phoneNumber = f.phoneNumber.value; //phoneNumber
+
+            //address
+            let address = f.address.value;
+            let detailAddress = f.detailAddress.value;
+
+            //studyType
+            let studyType = f.studyType.value;
+
+            //플랫폼
+            let platform = f.platform.value;
+
+            //유효성 검사
+
+            //ID
+            if ( emailId == '' ) {
+                alert("아이디를 불러오지 못했습니다. 구글 로그인 부터 다시 진행해 주세요");
+                location.href = "/loginform";
+                return;
+            }
+            //이름
+            if ( name == '' ) {
+                alert("이름을 입력하세요");
+                return;
+            }
+            //닉네임
+            if ( nickname == '' ) {
+                alert("닉네임을 입력하세요");
+                return;
+            }
+            //닉네임 형식
+            if ( nickname.length > 10 ) {
+                alert("닉네임의 길이는 10자 이내입니다.");
+                return;
+            }
+            //닉네임 중복확인 여부
+            if ( nickname != hNickname ) {
+                alert("닉네임 중복확인을 해주세요");
+                return;
+            }
+            //birthday
+            if ( birthday == '' ) {
+                alert("생일을 입력하세요");
+                return;
+            }
+            //gender
+            if ( gender == '' ) {
+                alert("성별을 선택하세요");
+                return;
+            }
+            //phoneNumber
+            if ( phoneNumber == '' ) {
+                alert("핸드폰 번호를 입력하세요");
+                return;
+            }
+            //address
+            if ( address == '' ) {
+                alert("주소를 입력하세요");
+                return;
+            }
+            //detailAddress
+            if ( detailAddress == '' ) {
+                alert("상세주소를 입력하세요");
+                return;
+            }
+            //studyType
+            if ( studyType == '' ) {
+                alert("관심분야를 선택하세요");
+                return;
+            }
+
+            let url = "/loginform/googlejoin";
+            let param = "emailId=" + emailId +
+                        "&name=" + name +
+                        "&nickname=" + nickname +
+                        "&birthday=" + birthday +
+                        "&gender=" + gender +
+                        "&phoneNumber=" + phoneNumber +
+                        "&address=" + address +
+                        "&detailAddress=" + detailAddress +
+                        "&studyType=" + studyType +
+                        "&platform=" + platform;
+            sendRequest(url, param, resultJoin, "POST");
+        }
+        function resultJoin() {
+            if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                let data = xhr.responseText;
+
+                if (data == "no") {
+                    alert("이미 가입된 회원정보가 있습니다.\n 입력한 정보확인 혹은 아이디/비밀번호 찾기를 이용해 주세요");
+                    location.href = "/loginform";
+                } else {
+                    alert("가입이 완료되었습니다.\n 로그인 페이지로 이동합니다.");
+                    location.href = "/loginform";
+                }
+            }
+        }
+    </script>
 </body>
 </html>

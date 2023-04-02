@@ -9,83 +9,81 @@
             overflow: hidden;
         }
     </style>
+    <link rel="stylesheet" type="text/css" href="/css/StudyRoom.css">
 </head>
 <!-- unload - beforeunload 이벤트에서 반환한 값을 처리한다. -->
 <body onkeydown="keyDown()" onkeyup="keyUp()" onunload="exit()">
     <!-- 방 제목 구역 -->
-    <div id="titleArea" style="border: 2px solid black; height: 1.5%; margin-bottom: 0.1%;">
+    <div class="titleAreaCss" id="titleArea">
         <b id="title" th:text="'방 번호 : ' + ${metaRoom.idx} + '    |    ' + '(스터디)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
     </div>
 
     <!-- 상단 구역 -->
-    <div style="display: flex; justify-content: space-between; height: 10%; margin-bottom: 0.5%;">
+    <div class="topAreaCss">
         <!-- 상단 왼쪽 참가자 구역 -->
-        <div id="profileArea" style="display: flex; border: 2px solid black; box-sizing: border-box; width: 80%;">
+        <div class="participantAreaCss" id="profileArea">
             <!-- 참가자 코드 -->
-            <div class="participant" th:each="participant : ${participantList}" th:id="${participant.metaNickname}" style="display: flex; justify-content: space-between; border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%;">
-                <img th:src="@{/imagePath/} + ${participant.metaProfileImage}" style="width: 50%; height:100%;">
-                <div style="display: flex; flex-direction: column; width: 50%; height: 100%;">
-                    <b th:text="${participant.metaNickname}" style="display: flex; flex-direction: column; width: 100%; height: 50%; justify-content: flex-start;"></b>
-                    <b th:if="${participant.metaNickname == metaRoom.metaMaster}" style="display: flex; flex-direction: column; width: 100%; height: 50%; justify-content: flex-end; color: red;">방장</b>
+            <div class="participant participantCss" th:each="participant : ${participantList}" th:id="${participant.metaNickname}">
+                <img class="participantImageCss" th:src="@{/imagePath/} + ${participant.metaProfileImage}">
+                <div class="participantNicknameAreaCss">
+                    <b class="participantNicknameCss" th:text="${participant.metaNickname}"></b>
+                    <b class="participantMasterCss" th:if="${participant.metaNickname == metaRoom.metaMaster}">방장</b>
                 </div>
             </div>
         </div>
 
         <!-- 상단 오른쪽 메뉴바 구역 -->
-        <div style="border: 2px solid black; box-sizing: border-box; width: 19.5%;">
-            <input type="button" value="나가기" th:onclick="|location.href='@{/meta/btnexit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|" style="width: 25%; height: 100%;">
+        <div class="menuBarAreaCss">
+            <input class="menuBarExitBtnCss" type="button" value="나가기" th:onclick="|location.href='@{/meta/btnexit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|">
         </div>
     </div>
 
     <!-- 중단 구역 -->
-    <div style="display: flex; justify-content: space-between; height: 80%">
+    <div class="middleAreaCss">
         <!-- 메타버스 -->
-        <canvas id="canvas" style="border: 2px solid black; box-sizing: border-box; width: 80%;"></canvas>
+        <canvas class="metaCanvasCss" id="canvas"></canvas>
 
-        <!-- 프로필과 채팅 -->
-        <div style="width: 19.5%; margin-left: 0.5%">
+        <!-- 상세 프로필과 채팅 -->
+        <div class="detailProfileAndChatAreaCss">
             <!-- 프로필과 채팅 수직 정렬 -->
-            <div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
-                <!-- 프로필 구역 -->
-                <div id="detailProfileArea" style="display: none; border: 2px solid black; box-sizing: border-box; width: 100%; height: 25%; margin-bottom: 2.5%; background: white;">
-                    <b id="detailProfileCloseBtn" style="border: 1px solid black; box-sizing: border-box; cursor: pointer; float: right;">X</b>
-                    <!-- 프로필 사진 구역 -->
+            <div class="detailProfileAndChatCss">
+                <!-- 상세 프로필 구역 -->
+                <div class="detailProfileAreaCss" id="detailProfileArea">
+                    <b class="detailProfileCloseBtnCss" id="btnDetailProfileClose">X</b>
+                    <!-- 상세 프로필 사진 구역 -->
                     <!-- 공통 구역 -->
-                    <div style="display: flex; justify-content: center; align-items: center; height: 50%; width: 100%;">
-                        <img id="detailProfileImage" style="max-height: 100%; max-width: 100%;">
+                    <div class="detailProfileImageAreaCss">
+                        <img class="detailProfileImageCss" id="detailProfileImage">
                     </div>
                     <!-- 프로필 닉네임 구역 -->
-                    <div id="detailProfileNicknameArea" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 30%; width: 100%;">
+                    <div class="detailProfileNicknameAreaCss" id="detailProfileNicknameArea">
                         <!-- 공통 구역 -->
                         <b id="detailProfileNickname"></b>
                     </div>
                 </div>
 
                 <!-- 채팅 구역 -->
-                <div id="chatArea" style="border: 2px solid black; box-sizing: border-box; width: 100%; height: 100%; overflow-y: scroll;">
-                    <div style="text-align: center;">채팅</div><br>
-                    <!-- 메시지 코드 -->
-                    <div style="text-align: left;">
-                    </div>
+                <div class="chatAreaCss" id="chatArea">
+                    <div class="chatTitleCss">채팅</div><br>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- 하단 구역 -->
-    <div style="display: flex; justify-content: space-between; height: 5%; margin-top: 0.5%;">
+    <div class="bottomAreaCss">
         <!-- 녹음 구역 -->
-        <div id="recordArea" style="border: 2px solid black; box-sizing: border-box; width: 80%;">
-            <audio id="record" controls style="width: 70%; height: 100%; float: left;"></audio>
-            <input id="btnRecordSend" type="button" value="녹음 전송" style="width: 10%; height: 100%; float: right;" disabled>
-            <input id="btnRecordStop" type="button" value="녹음 정지" style="width: 10%; height: 100%; float: right;" disabled>
-            <input id="btnRecordStart" type="button" value="녹음 시작" style="width: 10%; height: 100%; float: right;">
+        <div class="recordAreaCss" id="recordArea">
+            <audio class="recordCss" id="record" controls></audio>
+            <input class="recordSendBtnCss" id="btnRecordSend" type="button" value="녹음 전송" disabled>
+            <input class="recordStopBtnCss" id="btnRecordStop" type="button" value="녹음 정지" disabled>
+            <input class="recordStartBtnCss" id="btnRecordStart" type="button" value="녹음 시작">
         </div>
 
         <!-- 메시지 입력란 -->
-        <div style="border: 2px solid black; box-sizing: border-box; width: 19.5%; display:flex; justify-content: space-between;">
-            <input id="message" type="text" style="border: none; width: 70%; height: 96.5%; " placeholder = "채팅 입력란">
-            <input id="btnSend" type="button" value="보내기" onclick="send()" style="width: 25%; height: 100%; ">
+        <div class="messageAreaCss">
+            <input class="messageCss" id="message" type="text" placeholder = "채팅 입력란">
+            <input class="messageSendBtnCss" id="btnSend" type="button" value="보내기" onclick="send()">
         </div>
     </div>
 <!-------------------------------------------------------js 구역-------------------------------------------------------->
@@ -676,8 +674,8 @@
                             // 상세 프로필 구역의 style에 "display"를 "block"으로 설정한다.
                             detailProfileArea.style.display = "block"; // 상세 프로필 창 열기
 
-                            // id를 통해 상세 프로필 구역에 올라가 있는 창 닫기 버튼을 가져와 detailProfileCloseBtn 변수에 저장한다.
-                            var detailProfileCloseBtn = document.getElementById("detailProfileCloseBtn"); // 상세 프로필 창 닫기 버튼
+                            // id를 통해 상세 프로필 구역에 올라가 있는 창 닫기 버튼을 가져와 btnDetailProfileClose 변수에 저장한다.
+                            var btnDetailProfileClose = document.getElementById("btnDetailProfileClose"); // 상세 프로필 창 닫기 버튼
 
                             ////////////////////////////////////////////////////////////////////////////////////////////
                             // 참가자를 클릭하여 상세 프로필을 열람할 때는 항상 가장 먼저 이전 상세 프로필에서 생성된 "방장" 글과 버튼 구역이 계속 존재하는지부터 체크해, 계속 존재한다면 모두 제거한다.
@@ -853,7 +851,7 @@
 
                             // 상세 프로필 창 닫기 버튼에서 "click" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
                             // click - 마우스나 터치 디바이스의 클릭이나 탭을 할 때 발생하는 이벤트이다.
-                            detailProfileCloseBtn.addEventListener("click", () => {
+                            btnDetailProfileClose.addEventListener("click", () => {
                                 // 상세 프로필 구역의 style에 "display"를 "none"으로 설정한다.
                                 detailProfileArea.style.display = "none"; // 상세 프로필 창 닫기
                             }); // addEventListener

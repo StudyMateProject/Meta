@@ -52,13 +52,13 @@
                     hGender.value = gender; // 성별
                     hEmailId.value = emailId; // 이메일
                     hBirthday.value = birthyear + "-" +birthday; // 생일
-                    hPhoneNumber.value = phoneNumber; //핸드폰 번호
+                    hPhoneNumber.value = phoneNumber.replace(/[^0-9]/g, ''); // 핸드폰 번호 + 하이픈 제거
 
                     // 인증페이지 이동
                     let url = "/loginform/naverauthentication";
                     let param = "emailId=" + emailId +
                                 "&name=" + name +
-                                "&phoneNumber=" + phoneNumber;
+                                "&phoneNumber=" + hPhoneNumber.value;
                     sendRequest(url, param, resultNaverLogin, "POST")
                 } else {
                     console.log("callback 처리에 실패하였습니다.");
