@@ -300,11 +300,11 @@
 ##### 이에 따라 Meta 테이블에서 metaMaster(방장 닉네임) 컬럼을 갱신하면 자동으로 MetaRoom 테이블의 metaMaster(방장 닉네임) 컬럼도 함께 갱신된다.
 ##### Member 테이블에 studyType 컬럼의 길이를 1 증가시켜 11로 만들었다.
 
-##### 사용된 데이터베이스 : MySQL - soju
+##### ~~사용된 데이터베이스 : MySQL - soju~~ (아래 수정된 테이블 사용)
 	CREATE DATABASE soju;
 	USE soju;
 
-##### 사용된 테이블 : Member, MetaRoom
+##### ~~사용된 테이블 : Member, MetaRoom~~ (아래 수정된 테이블 사용)
 	멤버 테이블
 	CREATE TABLE Member (
 		idx BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -322,6 +322,64 @@
 		roleName VARCHAR(100) NOT NULL, #Spring Security 권한	
 		##################회원가입 후 입력##################
 		profileImage VARCHAR(100) #프로필 사진
+	);
+	
+	#메타버스 방
+	CREATE TABLE Meta(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #방 번호 - 기본키, 시퀀스
+		metaTitle VARCHAR(50) NOT NULL, #방 제목
+		metaType VARCHAR(10) NOT NULL, #방 분야
+		metaPersonnel INT NOT NULL, #방 모집 인원
+		metaRecruitingPersonnel INT NOT NULL, #방 참여중인 인원
+		metaMaster VARCHAR(20) UNIQUE #방장 닉네임
+	);
+
+	#메타버스 방 내부
+	CREATE TABLE MetaRoom(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #방 입장 번호(순서) - 기본키, 시퀀스
+		metaIdx BIGINT NOT NULL, #방 번호
+		CONSTRAINT fk_metaRoomIdx FOREIGN KEY(metaIdx) REFERENCES Meta(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		metaNickname VARCHAR(20) UNIQUE NOT NULL, #닉네임
+		CONSTRAINT fk_metaRoomNickname FOREIGN KEY(metaNickname) REFERENCES Member(nickname) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		metaProfileImage VARCHAR(100), #프로필 사진
+		metaMaster VARCHAR(20), #방장 닉네임
+		CONSTRAINT fk_metaRoomMaster FOREIGN KEY(metaMaster) REFERENCES Meta(metaMaster) ON DELETE CASCADE ON UPDATE CASCADE #포린키 연결
+	);
+
+#
+
+### 📌 04/01
+#### ✔ ID 찾기 및 PWD 찾기 추가
+#### ✔ 회원가입 부가 기능들 추가
+#### ✔ 각종 Css 추가
+#### ✔ 테이블 변경
+##### Member 테이블에 detailAddress 컬럼을 추가하여 address 컬럼에서 한번에 받고 있던 주소값 중 상세 주소를 따로 받게 만들었다.
+##### Member 테이블에 자기소개를 받을 selfIntro 컬럼을 추가하였다.
+
+##### 사용된 데이터베이스 : MySQL - soju
+	CREATE DATABASE soju;
+	USE soju;
+
+##### 사용된 테이블 : Member, MetaRoom
+	#멤버 테이블
+	CREATE TABLE Member (
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT,
+		##################회원가입 전 입력##################
+		emailId VARCHAR(50) PRIMARY KEY, #이메일 형식 아이디
+		pwd VARCHAR(255), #비밀번호
+		name VARCHAR(10) NOT NULL, #이름
+		nickname VARCHAR(10) UNIQUE NOT NULL, #닉네임
+		birthday DATE NOT NULL, #생년월일
+		gender VARCHAR(1) NOT NULL, #성별
+		phoneNumber VARCHAR(15) UNIQUE NOT NULL, #핸드폰 번호
+		address VARCHAR(100) NOT NULL, #주소
+		detailAddress VARCHAR(100) NOT NULL, #상세주소
+		studyType VARCHAR(11) NOT NULL, #관심있는 분야
+		platform VARCHAR(10) NOT NULL, #플랫폼
+		roleName VARCHAR(100) NOT NULL, #Spring Security 권한   
+		##################회원가입 후 입력##################
+		profileImage VARCHAR(100), #프로필 사진
+		selfIntro VARCHAR(255) #자기소개
 	);
 	
 	#메타버스 방
