@@ -155,7 +155,13 @@ public class SignUpController {
         // 40-1. 40에서 가져온 생년월일이 년, 월, 일로 따로따로 분리되서 나오기에 먼저 각각 변수로 받은뒤 그 다음 하나로 합쳐서 생일 변수에 전달한다.
         String year = people.get("birthdays").get(0).get("date").get("year").asText();
         String month = people.get("birthdays").get(0).get("date").get("month").asText();
+        if ( month.length() < 2 ) {
+            month = "0" + month;
+        }
         String day = people.get("birthdays").get(0).get("date").get("day").asText();
+        if ( day.length() < 2 ) {
+            day = "0" + day;
+        }
         String birthday = year + "-" + month + "-" + day;
         // 40-2. 40에서 가져온 성별이 male, female로 나오기에 if문을 통해서 DB 규칙에 맞게 각각 M과 F로 만들어서 다시 성별 변수에 전달한다.
         String gender = people.get("genders").get(0).get("value").asText();

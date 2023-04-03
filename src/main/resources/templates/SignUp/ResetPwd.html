@@ -4,27 +4,36 @@
     <meta charset="UTF-8">
     <title>비밀번호 재설정</title>
     <link rel="stylesheet" type="text/css" href="/css/join_find.css">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
+    <div class="container smallContainer">
+        <div class="mainLogo">
+            <a href="/" alt="SOJU">
+                <img src="/img/logo_mate.png" class="mainLogoImg">
+            </a>
+        </div>
         <h2>비밀번호 재설정</h2>
         <form action="/loginform/findpwdform/resetpwdform" method="post">
             <input type="hidden" name="emailId" th:value="${emailId}">
-            <ul class="ulJoinForm">
-                <li class="liJoinInput"><label class="labelText">새 비밀번호 </label><br><input id="pwd" name="pwd" class="inputText" placeholder="영문, 숫자, 특수기호를 포함하여 5자리 이상" type="password" oninput="pwdCheck(this.form)"><br></li>
-                <li class="liJoinInput"><label id="pwdText1" class="errorMsg"></label></li>
-                <li class="liJoinInput"><label class="labelText">새 비밀번호 확인 </label><br><input id="pwd2" class="inputText" placeholder="영문, 숫자, 특수기호를 포함하여 5자리 이상" type="password" oninput="pwdCheck2(this.form)"><br></li>
-                <li class="liJoinInput"><label id="pwdText2" class="errorMsg"></label></li>
-            </ul>
+            <div class="joinFormContainer">
+                <ul class="findIdForm">
+                    <li class="liJoinInput"><label class="labelText">새 비밀번호 </label><br><input id="pwd" name="pwd" class="inputText" placeholder="영문, 숫자, 특수기호를 포함하여 5자리 이상" type="password" oninput="pwdCheck(this.form)"><br></li>
+                    <li class="liJoinInput"><label id="pwdText1" class="errorMsg"></label></li>
+                    <li class="liJoinInput"><label class="labelText">새 비밀번호 확인 </label><br><input id="pwd2" class="inputText" placeholder="영문, 숫자, 특수기호를 포함하여 5자리 이상" type="password" oninput="pwdCheck2(this.form)"><br></li>
+                    <li class="liJoinInput"><label id="pwdText2" class="errorMsg"></label></li>
+                </ul>
+            </div>
             <div class="divBtnJoin">
                 <input value="비밀번호 변경" class="btnJoin" type="button" onclick="resetPwd(this.form)">
                 <input value="취소" class="btnJoin" type="button" onclick="location.href='/loginform'">
             </div>
         </form>
     </div>
-
 <!--JS----------------------------------------------------------------------------------------------------------------->
+    <!-- Ajax사용을 위한 js를 추가 -->
     <script src="/js/httpRequest.js"></script>
+
     <script>
         //비밀번호 형식 제한
         function pwdCheck(f) {
@@ -54,6 +63,7 @@
             }
         }
     </script>
+
     <script>
         function resetPwd(f) {
             let emailId = f.emailId.value;
@@ -85,13 +95,11 @@
                 return;
             }
 
-
             let url = "/loginform/findpwdform/resetpwdform/resetpwd";
             let param = "emailId=" + emailId +
                         "&pwd=" + pwd;
             sendRequest(url, param, ResultResetPwd, "POST");
         }
-
         function ResultResetPwd () {
             if ( xhr.readyState == 4 && xhr.status == 200 ) {
                 let data = xhr.responseText;

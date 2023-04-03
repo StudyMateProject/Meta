@@ -4,54 +4,58 @@
     <meta charset="UTF-8">
     <title>Google 회원가입</title>
     <link rel="stylesheet" type="text/css" href="/css/join_find.css">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <form th:object="${memberDTO}">
             <!-- 어느 소셜 플랫폼 가입자인지 구별 -->
-            <input name="platform" type="hidden" value="Google">
+            <input name="platform" type="hidden" value="google">
             <input id="hNickname" type="hidden">
 
-            <a class="mainLogo" href="/" alt="SOJU">
-                <img src="/img/betalogo.jpg" class="mainLogoImg">
-            </a>
+            <div class="mainLogo">
+                <a href="/" alt="SOJU">
+                    <img src="/img/logo_mate.png" class="mainLogoImg">
+                </a>
+            </div>
             <h2>Google 회원가입</h2>
+            <div class="joinFormContainer">
+                <ul>
+                    <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
+                    <li class="liJoinInput"><label class="labelText">아이디(이메일) </label><br><input name="emailId" class="inputText" type="text" th:value="${emailId}" readonly></li>
 
-            <ul>
-                <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
-                <li class="liJoinInput"><label class="labelText">아이디(이메일) </label><br><input name="emailId" class="inputText" type="text" th:value="${emailId}" readonly></li>
+                    <li class="liJoinInput"><label class="labelText">닉네임(별명) </label><br><input th:field="*{nickname}" placeholder="10자 이내 닉네임" class="inputText" type="text">
+                                                                                           <input type="button" value="중복확인" class="btnJoinForm" onclick="checkNickname(this.form)"><br></li>
+                    <li class="liJoinInput"><label id="nicknameCheck" class="errorMsg"></label></li>
 
-                <li class="liJoinInput"><label class="labelText">닉네임(별명) </label><br><input th:field="*{nickname}" placeholder="10자 이내 닉네임" class="inputText" type="text">
-                                                                                       <input type="button" value="중복확인" class="btnJoinForm" onclick="checkNickname(this.form)"><br></li>
-                <li class="liJoinInput"><label id="nicknameCheck" class="errorMsg"></label></li>
+                    <li class="liJoinInput"><label class="labelText">성별 </label><br><label th:if="${gender == 'M'}" class="genderLabel">남 <input name="gender" type="radio" th:value="${gender}" checked></label>
+                                                                                     <label th:if="${gender == 'F'}" class="genderLabel">여 <input name="gender" type="radio" th:value="${gender}" checked></label></li>
 
-                <li class="liJoinInput"><label class="labelText">성별 </label><br><label th:if="${gender == 'M'}" class="genderLabel">남 <input name="gender" type="radio" th:value="${gender}" checked></label>
-                                                                                 <label th:if="${gender == 'F'}" class="genderLabel">여 <input name="gender" type="radio" th:value="${gender}" checked></label></li>
+                    <li class="liJoinInput"><label class="labelText">이름 </label><br><input name="name" id="name" type="text" class="inputText" th:value="${name}" readonly></li>
 
-                <li class="liJoinInput"><label class="labelText">이름 </label><br><input name="name" id="name" type="text" class="inputText" th:value="${name}" readonly></li>
+                    <li class="liJoinInput"><label class="labelText">생일 </label><br><input name="birthday" id="birthday" type="date" class="inputText" th:value="${birthday}" readonly></li>
 
-                <li class="liJoinInput"><label class="labelText">생일 </label><br><input name="birthday" id="birthday" type="date" class="inputText" th:value="${birthday}" readonly></li>
+                    <li class="liJoinInput"><label class="labelText">휴대전화 </label><br><input th:field="*{phoneNumber}" type="tel" class="inputText" readonly>
+                                                                                        <input id="btnPhone" value="인증하기" type="button" class="btnJoinForm"></li>
 
-                <li class="liJoinInput"><label class="labelText">휴대전화 </label><br><input th:field="*{phoneNumber}" type="tel" class="inputText" readonly>
-                                                                                    <input id="btnPhone" value="인증하기" type="button" class="btnJoinForm"></li>
+                    <li class="liJoinInput"><label class="labelText">주소 </label><br><input th:field="*{address}" class="inputText" type="text">
+                                                                                     <input id="btnAddress" type="button" value="주소찾기" class="btnJoinForm"></li>
+                    <li class="liJoinInput"><label class="labelText">상세주소 </label><br><input th:field="*{detailAddress}" class="inputText" type="text"></li>
 
-                <li class="liJoinInput"><label class="labelText">주소 </label><br><input th:field="*{address}" class="inputText" type="text">
-                                                                                 <input id="btnAddress" type="button" value="주소찾기" class="btnJoinForm"></li>
-                <li class="liJoinInput"><label class="labelText">상세주소 </label><br><input th:field="*{detailAddress}" class="inputText" type="text"></li>
-
-                <li class="liJoinInput"><label class="labelText">관심분야 </label><br><select th:field="*{studyType}" class="inputText studyType"><option value="">관심분야</option>
-                                                                                                                                                <option value="computer">컴퓨터 / IT</option>
-                                                                                                                                                <option value="math">수학</option>
-                                                                                                                                                <option value="management">경영 / 마케팅</option>
-                                                                                                                                                <option value="design">디자인</option>
-                                                                                                                                                <option value="education">교육</option>
-                                                                                                                                                <option value="literature">문학</option>
-                                                                                                                                                <option value="engineering">공학</option>
-                                                                                                                                                <option value="language">언어</option>
-                                                                                                                                                <option value="employment">취업</option>
-                                                                                                                                                <option value="entrance">입시</option>
-                                                                                                                                                <option value="etc">기타</option></select></li>
-            </ul>
+                    <li class="liJoinInput"><label class="labelText">관심분야 </label><br><select th:field="*{studyType}" class="inputText studyType"><option value="">관심분야</option>
+                                                                                                                                                    <option value="computer">컴퓨터 / IT</option>
+                                                                                                                                                    <option value="math">수학</option>
+                                                                                                                                                    <option value="management">경영 / 마케팅</option>
+                                                                                                                                                    <option value="design">디자인</option>
+                                                                                                                                                    <option value="education">교육</option>
+                                                                                                                                                    <option value="literature">문학</option>
+                                                                                                                                                    <option value="engineering">공학</option>
+                                                                                                                                                    <option value="language">언어</option>
+                                                                                                                                                    <option value="employment">취업</option>
+                                                                                                                                                    <option value="entrance">입시</option>
+                                                                                                                                                    <option value="etc">기타</option></select></li>
+                </ul>
+            </div>
 
             <div class="divBtnJoin">
                 <input type="button" value="가입하기" class="btnJoin" onclick="join(this.form)">
@@ -62,13 +66,15 @@
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
     <!-- Ajax사용을 위한 js를 추가 -->
     <script src="/js/httpRequest.js"></script>
+
     <!--닉네임 중복체크 및 글자 수 제한-->
     <script>
         function checkNickname(f) {
             let nickname = f.nickname.value; //입력한 닉네임 가져오기
             let nicknameCheck = document.getElementById("nicknameCheck");
 
-            if ( nickname.length > 20 ) {
+            if ( nickname.length > 10 ) {
+                alert("닉네임의 길이는 10자 이내입니다.");
                 nicknameCheck.innerHTML = "닉네임은 10자내로 작성해주세요.";
             } else {
                 nicknameCheck.innerHTML = "";
@@ -101,7 +107,7 @@
     <script>
         // textbox & 버튼(2개이상)을 누르면 함수가 실행되도록 하는 방법
         // querySelectorAll로 id값(#id)을 불러와서 배열로 생성, 이후 forEach문을 활용해 각각의 것을 눌렀을 때 실행되게 하도록 한다.
-        let openPort = document.querySelectorAll("#birthday, #phoneNumber, #btnPhone");
+        let openPort = document.querySelectorAll("#phoneNumber, #btnPhone");
         openPort.forEach(function(element){
             element.addEventListener("click", function() {
                 var IMP = window.IMP; // init로 객체초기화 (가맹점식별코드)
@@ -135,13 +141,23 @@
                 let birthday = document.getElementById("birthday"); // 생년월일
                 let phoneNumber = document.getElementById("phoneNumber"); // 휴대폰 번호
 
-                // 34. 33에서 변환된 Map에 들어있는 값들을 꺼내서 각 작성란에 맞게 전달한다.
-                name.value = jsData.name; // 변환된 Map 값 중 이름을 가져와 이름 작성란에 전달한다.
-                name.readOnly = true; // 전달된 이름을 변경하지 못하도록 막는다.
-                birthday.value = jsData.birthday; // 변환된 Map 값 중 생년월일을 가져와 생년월일 작성란에 전달한다.
-                birthday.readOnly = true; // 전달된 생년월일을 변경하지 못하도록 막는다.
-                phoneNumber.value = jsData.phoneNumber; // 변환된 Map 값 중 휴대폰 번호를 가져와 휴대폰 번호 작성란에 전달한다.
-                phoneNumber.readOnly = true; // 전달된 휴대폰 번호를 변경하지 못하도록 막는다.
+                // 34. 33에서 변환된 Map 값 중 이름과 생년월일을 미리 작성되어 있는 이름과 생년원일과 비교해 휴대폰 인증정보와 가입자 명의가 맞는지 체크한다.
+                // 34-1. 휴대폰 인증정보와 가입자 명의가 맞을 경우
+                if ( jsData.name == name.value && jsData.birthday == birthday.value ) {
+                    // 34-1-1. 33에서 변환된 Map에 들어있는 값들을 꺼내서 각 작성란에 맞게 전달하고 변경하지 못하도록 막는다.
+                    name.value = jsData.name; // 변환된 Map 값 중 이름을 가져와 이름 작성란에 전달한다.
+                    name.readOnly = true; // 전달된 이름을 변경하지 못하도록 막는다.
+                    birthday.value = jsData.birthday; // 변환된 Map 값 중 생년월일을 가져와 생년월일 작성란에 전달한다.
+                    birthday.readOnly = true; // 전달된 생년월일을 변경하지 못하도록 막는다.
+                    phoneNumber.value = jsData.phoneNumber; // 변환된 Map 값 중 휴대폰 번호를 가져와 휴대폰 번호 작성란에 전달한다.
+                    phoneNumber.readOnly = true; // 전달된 휴대폰 번호를 변경하지 못하도록 막는다.
+                // 34-2. 휴대폰 인증정보와 가입자 명의가 틀릴 경우
+                } else {
+                    // 34-2-1. 가입자 명의로 다시 인증하도록 경고창을 띄운다.
+                    alert("가입자 명의로 된 휴대폰으로 인증하시기 바랍니다.");
+                    // 34-2-2. 아무 작업 없이 돌아간다.
+                    return;
+                }
 
                 // 35. Ajax를 사용하여 33에서 변환된 Map 값 중 휴대폰 번호를 컨트롤러로 보낸다. - 중복 가입자인지 체크
                 let url = "/joinform/checkphone";
@@ -161,9 +177,7 @@
                 // 43. 42에서 받아온 값을 체크한다.
                 // 43-1. 받아온 값이 no일 경우 - 중복 가입자
                 if( data == "no" ) {
-                    alert("이미 가입된 회원 정보입니다.");
-                    name.value = ""; // 작성된 이름을 초기화한다.
-                    birthday.value = ""; // 작성된 생년월일을 초기화한다.
+                    alert("이미 가입된 회원정보가 있습니다.\n로그인 혹은 아이디/비밀번호 찾기를 이용해 주세요");
                     phoneNumber.value = ""; // 작성된 휴대폰 번호를 초기화한다.
                     return;
                 // 43-2. 받아온 값이 yes일 경우 - 신규 가입자
@@ -308,7 +322,7 @@
                 let data = xhr.responseText;
 
                 if (data == "no") {
-                    alert("이미 가입된 회원정보가 있습니다.\n 입력한 정보확인 혹은 아이디/비밀번호 찾기를 이용해 주세요");
+                    alert("이미 가입된 회원정보가 있습니다.\n로그인 혹은 아이디/비밀번호 찾기를 이용해 주세요");
                     location.href = "/loginform";
                 } else {
                     alert("가입이 완료되었습니다.\n 로그인 페이지로 이동합니다.");

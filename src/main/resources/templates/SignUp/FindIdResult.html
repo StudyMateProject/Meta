@@ -3,44 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>ID 찾기 결과</title>
-    <style>
-        .container{
-            width: 650px;
-            margin: auto;
-        }
-        .divBtnJoin{
-            text-align: center;
-        }
-        .btnJoin{
-            width: 200px;
-            height: 40px;
-            text-align: center;
-            font-size: 18px;
-            border: solid 1px #87AF6E;
-            border-radius: 5px;
-            background-color: #BDE7A4;
-            margin: 5px 5px 5px 5px;
-            padding: 0px 0px 0px 5px;
-            color: #4A8D51;
-        }
-        h2{
-            text-align: center;
-            color: #4A8D51;
-            margin: 20px 10px 10px 10px;
-        }
-        .resultFindId{
-            width: 500px;
-            border: solid 1px #87AF6E;
-            border-radius: 10px;
-            padding: 5px 5px 5px 5px;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/join_find.css">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+
 </head>
 <body>
-    <div class="container">
+    <div class="container smallContainer">
         <div class="resultFindId">
-            <h2 th:text="'ID는 ' + ${emailId} + '입니다.'"></h2>
-            <h2 th:text="'가입하신 경로는 ' + ${platform} + '입니다.'"></h2>
+            <div class="mainLogo">
+                <a href="/" alt="SOJU">
+                    <img src="/img/logo_mate.png" class="mainLogoImg">
+                </a>
+            </div>
+            <div class="joinFormContainer">
+                <h2 th:text="'ID는 ' + ${emailId} + '입니다.'"></h2>
+                <h2 th:text="'가입하신 경로는 ' + ${platform} + '입니다.'"></h2>
+            </div>
 
             <div class="divBtnJoin">
                 <input value="메인 페이지로 이동" class="btnJoin" type="button" onclick="location.href='/'">

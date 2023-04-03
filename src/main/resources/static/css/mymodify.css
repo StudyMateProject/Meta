@@ -41,6 +41,7 @@
     color: #4A8D51;
     font-size: 14px;
     font-weight: bold;
+    cursor: pointer;
 }
 .editImgBtn{
     display: inline-flex;

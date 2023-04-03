@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>로그인</title>
     <link rel="stylesheet" type="text/css" href="/css/login.css">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
     <!-- 아이디 및 비밀번호가 틀릴 경우 에러 알림창이 등장 -->
     <script th:inline="javascript">
         // 컨트롤러에서 모델로 바인딩한 에러 체크값
@@ -26,9 +27,12 @@
 </head>
 <body>
     <div class="container">
-        <a class="mainLogo" href="/" alt="SOJU">
-            <img src="/img/logo_mate.png" class="mainLogoImg">
-        </a>
+        <div class="mainLogo">
+            <a href="/" alt="SOJU">
+                <img src="/img/logo_mate.png" class="mainLogoImg">
+            </a>
+        </div>
+
         <div class="loginForm">
             <!-- Spring Security를 사용하기 위해선 반드시 method는 POST를 사용해야 한다. -->
             <form action="/loginform/login" method="post">
@@ -43,7 +47,7 @@
                             <input name="emailId" class="loginInput" type="text" placeholder="이메일 주소">
                             <input name="pwd" class="loginInput" type="password" placeholder="비밀번호">
                         </div>
-                        <input type="submit" value="로그인">
+                        <input class="btnLogin" type="submit" value="로그인">
                     </div>
 
                     <div class="statusLogin">

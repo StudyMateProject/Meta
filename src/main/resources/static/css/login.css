@@ -4,6 +4,9 @@
         body{
             background-color: #E6E6E6;
         }
+        *{
+            font-family: 'NanumSquareNeo';
+        }
         .container{
             width: 500px;
             height: 560px;
@@ -13,28 +16,26 @@
             border-radius: 30px;
             background-color: #ffffff;
         }
-        ///////////////////////////////////////////메인로고///////////////////////////////////////////
+
         .mainLogo{
-            margin-top: 5%;
-            margin-bottom: 10px;
-            height: 30%;
+            height: 100px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
         .mainLogoImg{
-            height: 80px;
-            width: 250px;
-            text-align: center;
-            margin: auto;
-            display: flex;
+            height: 100%;
+            width: 100%;
         }
 
-        ///////////////////////////////////////////로그인///////////////////////////////////////////
         form{
-            padding: 5px 5px 5px 5px;
-            margin: 10px 0px 10px 0px;
+            padding: 5px;
+            margin: 10px 0px;
         }
         .toEmail{
             padding-top: 15px;
             padding-left: 5px;
+            font-weight: bold;
         }
         .inputLoginBox{
             display: flex;
@@ -76,7 +77,8 @@
         .error{
             font-size:15px;
             color: #FF6C6C;
-            margin: 5px 5px 5px 5px;
+            margin: 5px;
+            font-weight: bold;
         }
         .findAndJoin{
             text-align: center;
@@ -103,6 +105,7 @@
         .toSocial{
             margin-left: 15px;
             height: 30px;
+            font-weight: bold;
         }
         .btnSocial{
             justify-content : center;

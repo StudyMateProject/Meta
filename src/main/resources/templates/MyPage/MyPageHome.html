@@ -13,51 +13,105 @@
 <body>
     <header>
         <nav class="headerContainer">
-            <div class="headerImg">
-                <a href="/" alt="SOJU">
-                    <img src="/img/logo_mate.png" class="mainLogo">
-                </a>
-            </div>
-
             <div class="headerMenu">
                 <div class="headerMenuLeft">
 
-                    <div class="categoryMenu">
-                        <span>스터디원</span>
-                        <div class="dropTable">
-                            <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
-                            <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
-                            <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘토 프로필</a>
-                        </div>
+                    <div class="headerImg">
+                        <a href="/" alt="SOJU">
+                            <img src="/img/logo_mate.png" class="mainLogo">
+                        </a>
                     </div>
 
-                    <div class="categoryMenu">
-                        <a href="/meta" class="metaMenu">
-                            <span class="categoryMenu">스터디룸</span>
-                        </a>
-                    </div>
-                    <div class="categoryMenu">
-                        <a href="/noticeroom" class="noticeRoomMenu">
-                            <span class="categoryMenu">게시판</span>
-                        </a>
-                    </div>
-                    <div class="categoryMenu">
-                        <a href="/store" class="storeMenu">
-                            <span class="categoryMenu">스토어</span>
-                        </a>
-                    </div>
-                    <div class="categoryMenu">
-                        <a href="/mypage" class="myPageMenu">
-                            <span class="categoryMenu">마이페이지</span>
-                        </a>
+                    <div class="menuContainer">
+                        <div class="categoryMenu">
+                            <span>스터디원</span>
+                            <div class="dropTable">
+                                <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
+                                <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
+                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘토 프로필</a>
+                            </div>
+                        </div>
+
+                        <div class="categoryMenu">
+                            <a href="/meta">
+                                <span>스터디룸</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/noticeroom">
+                                <span>게시판</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/store">
+                                <span>스토어</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/mypage">
+                                <span>마이페이지</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
                 <div class="headerMenuRight">
-                    <div class="whenLogin">
-                        <div class="welcome"> [[${member.nickname}]]님 반갑습니다! </div>
+                    <div class="whenLogin" sec:authorize="isAuthenticated()">
+                        <div class="welcome" th:text="${member.nickname} + '님 반갑습니다!'"></div>
                         <div class="notificationsMenu">
-                            <div class="icon" data-number="5">
+                            <div class="icon" th:data-number="${alarmCount}">
+                                <i class="ri-notification-4-fill"></i>
+                            </div>
+                            <div class="notiDrop">
+                                <p>최근 알림</p>
+                                <div class="notiList">
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 </span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림4 알림4 알림4 알림4 알림4 알림4 알림4 알림4</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림6 알림6</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림8 알림8 알림8 알림8 알림8</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림9</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="whenLogin" sec:authorize="isAnonymous()">
+                        <div class="welcome"></div>
+                        <div class="notificationsMenu" onclick="location.href='/mypage/alarm'" style="visibility: hidden;">
+                            <div class="icon" th:data-number="${alarmCount}">
                                 <i class="ri-notification-4-fill"></i>
                             </div>
                         </div>
@@ -99,18 +153,35 @@
                         <img class="profileImg" th:src="'/imagePath/' + ${member.profileImage}">
                     </div>
                     <div class="profileTopRight">
-                        <div class="profileNick">
-                            <div th:text="${nickname}" class="profileText"></div>
-                            <div th:text="${studyType}" class="profileText"></div>
+
+                        <div class="profileBox">
+                            <p class="profileTitle">닉네임</p>
+                            <div th:text="${member.nickname}" class="profileText"></div>
                         </div>
+
+                        <div class="profileBox">
+                            <p class="profileTitle">관심분야</p>
+                            <div th:if="${member.studyType == 'computer'}" class="profileText">컴퓨터 / IT</div>
+                            <div th:if="${member.studyType == 'math'}" class="profileText">수학</div>
+                            <div th:if="${member.studyType == 'management'}" class="profileText">경영 / 마케팅</div>
+                            <div th:if="${member.studyType == 'design'}" class="profileText">디자인</div>
+                            <div th:if="${member.studyType == 'education'}" class="profileText">교육</div>
+                            <div th:if="${member.studyType == 'literature'}" class="profileText">문학</div>
+                            <div th:if="${member.studyType == 'engineering'}" class="profileText">공학</div>
+                            <div th:if="${member.studyType == 'language'}" class="profileText">언어</div>
+                            <div th:if="${member.studyType == 'employment'}" class="profileText">취업</div>
+                            <div th:if="${member.studyType == 'entrance'}" class="profileText">입시</div>
+                            <div th:if="${member.studyType == 'etc'}" class="profileText">기타</div>
+                        </div>
+
                     </div>
                 </div>
                 <div class="profileBottom">
-                    <div th:text="${selfIntro}" class="profileText"></div>
+                    <p class="profileTitle">자기소개</p>
+                    <div th:text="${member.selfIntro}" class="profileSelfIntro"></div>
                 </div>
             </div>
         </div>
-
     </div>
 
 
@@ -141,12 +212,12 @@
                 <p>Contact Us</p>
                 <ul>
                     <li class="mail">
-                        <a href="mailto:8993jin@naver.com" target="_blank">
+                        <a href="mailto:8993jin@naver.com" target="_blank" rel="noopener noreferrer">
                             <img src="/img/email.png" class="contact_icon">
                         </a>
                     </li>
                     <li class="github">
-                        <a href="https://github.com/AlcoholParty" target="_blank">
+                        <a href="https://github.com/AlcoholParty" target="_blank" rel="noopener noreferrer">
                             <img src="/img/github.png" class="contact_icon">
                         </a>
                     </li>
@@ -154,21 +225,45 @@
             </div>
         </div>
     </footer>
-<script>
-    var acc = document.getElementsByClassName("accordion");
-    var i;
+<!--JS----------------------------------------------------------------------------------------------------------------->
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
 
-    for (i = 0; i < acc.length; i++) {
-        acc[i].addEventListener("click", function () {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.maxHeight) {
-                panel.style.maxHeight = null;
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
+
+    <script>
+        const icon = document.querySelector('.icon');
+        const notiDrop = document.querySelector('.notiDrop');
+        let status = 0; //0이면 클릭 안된 상태, 1이면 클릭 된 상태
+
+        function open(e){
+            if ( e == 1 ){
+                notiDrop.style.display = "block";
             } else {
-                panel.style.maxHeight = panel.scrollHeight + "px";
+                notiDrop.style.display = "none";
+            }
+        }
+        icon.addEventListener('click', function () {
+            if( status == 0 ){
+                status = 1;
+                open(status);
+            } else{
+                status = 0;
+                open(status);
             }
         });
-    }
-</script>
+    </script>
 </body>
 </html>

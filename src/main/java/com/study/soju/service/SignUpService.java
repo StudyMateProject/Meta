@@ -174,22 +174,17 @@ public class SignUpService implements UserDetailsService {
 
             try {
                 HtmlEmail email = new HtmlEmail(); // Email 생성
-                email.setDebug(true);
+                email.setDebug(true); // 디버그 사용
                 email.setCharset(charSet); // 언어셋 사용
-                email.setSSL(true);
                 email.setHostName(hostSMTP); // SMTP 사용
                 email.setSmtpPort(587);	// SMTP 포트 번호 입력
-
-                email.setAuthentication(hostSMTPid, hostSMTPpwd); // 메일 ID, PWD
-                email.setTLS(true);
-                email.addTo(mail); // 받는 사람
-                email.setFrom(fromEmail, fromName, charSet); // 보내는 사람
-                email.setSubject(subject); // 제목
-                email.setHtmlMsg(
-                                "<p>" + "[메일 인증 안내입니다.]" + "</p>" +
-                                "<p>" + "Mate를 사용해 주셔서 감사드립니다." + "</p>" +
-                                "<p>" + "아래 인증 코드를 '인증번호'란에 입력해 주세요." + "</p>" +
-                                "<p>" + mailKey + "</p>"); // 본문 내용
+                email.setAuthentication(hostSMTPid, hostSMTPpwd); // SMTP 이메일 및 비밀번호
+                email.addTo(mail); // 메일 수신자 이메일
+                email.setFrom(fromEmail, fromName, charSet); // 메일 발신자 정보
+                email.setHtmlMsg("<p>" + "[메일 인증 안내입니다.]" + "</p>" +
+                                 "<p>" + "Mate를 사용해 주셔서 감사드립니다." + "</p>" +
+                                 "<p>" + "아래 인증 코드를 '인증번호'란에 입력해 주세요." + "</p>" +
+                                 "<p>" + mailKey + "</p>"); // 본문 내용
                 email.send(); // 메일 보내기
                 // 메일 보내기가 성공하면 메일로 보낸 랜덤키를 콜백 메소드에도 전달
                 return mailKey;

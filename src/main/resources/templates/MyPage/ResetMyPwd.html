@@ -14,51 +14,103 @@
 <body>
     <header>
         <nav class="headerContainer">
-            <div class="headerImg">
-                <a href="/" alt="SOJU">
-                    <img src="/img/logo_mate.png" class="mainLogo">
-                </a>
-            </div>
-
             <div class="headerMenu">
                 <div class="headerMenuLeft">
 
-                    <div class="categoryMenu">
-                        <span>스터디원</span>
-                        <div class="dropTable">
-                            <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
-                            <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
-                            <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘토 프로필</a>
-                        </div>
+                    <div class="headerImg">
+                        <a href="/" alt="SOJU">
+                            <img src="/img/logo_mate.png" class="mainLogo">
+                        </a>
                     </div>
 
-                    <div class="categoryMenu">
-                        <a href="/meta" class="metaMenu">
-                            <span class="categoryMenu">스터디룸</span>
-                        </a>
-                    </div>
-                    <div class="categoryMenu">
-                        <a href="/noticeroom" class="noticeRoomMenu">
-                            <span class="categoryMenu">게시판</span>
-                        </a>
-                    </div>
-                    <div class="categoryMenu">
-                        <a href="/store" class="storeMenu">
-                            <span class="categoryMenu">스토어</span>
-                        </a>
-                    </div>
-                    <div class="categoryMenu">
-                        <a href="/mypage" class="myPageMenu">
-                            <span class="categoryMenu">마이페이지</span>
-                        </a>
+                    <div class="menuContainer">
+                        <div class="categoryMenu">
+                            <span>스터디원</span>
+                            <div class="dropTable">
+                                <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
+                                <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
+                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘토 프로필</a>
+                            </div>
+                        </div>
+
+                        <div class="categoryMenu">
+                            <a href="/meta">
+                                <span>스터디룸</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/noticeroom">
+                                <span>게시판</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/store">
+                                <span>스토어</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/mypage">
+                                <span>마이페이지</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
                 <div class="headerMenuRight">
-                    <div class="whenLogin">
-                        <div class="welcome"> [[${nickname}]]님 반갑습니다! </div>
+                    <div class="whenLogin" sec:authorize="isAuthenticated()">
+                        <div class="welcome" th:text="${nickname} + '님 반갑습니다!'"></div>
                         <div class="notificationsMenu">
-                            <div class="icon" data-number="5">
+                            <div class="icon" th:data-number="${alarmCount}">
+                                <i class="ri-notification-4-fill"></i>
+                            </div>
+                            <div class="notiDrop">
+                                <p>최근 알림</p>
+                                <div class="notiList">
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 </span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림4 알림4 알림4 알림4 알림4 알림4 알림4 알림4</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림6 알림6</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림8 알림8 알림8 알림8 알림8</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림9</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="whenLogin" sec:authorize="isAnonymous()">
+                        <div class="welcome"></div>
+                        <div class="notificationsMenu" onclick="location.href='/mypage/alarm'" style="visibility: hidden;">
+                            <div class="icon" th:data-number="${alarmCount}">
                                 <i class="ri-notification-4-fill"></i>
                             </div>
                         </div>
@@ -113,6 +165,7 @@
                     <input value="비밀번호 변경" class="saveBtn" type="button" onclick="resetPwd(this.form)">
                     <input value="취소" class="saveBtn" type="button" onclick="location.href='/'">
                 </div>
+
             </form>
         </div>
     </div>
@@ -158,8 +211,8 @@
             </div>
         </div>
     </footer>
-
 <!--JS----------------------------------------------------------------------------------------------------------------->
+    <!-- Ajax사용을 위한 js를 추가 -->
     <script src="/js/httpRequest.js"></script>
 
     <script>
@@ -252,6 +305,29 @@
                 location.href = "/";
             }
         }
+    </script>
+
+    <script>
+        const icon = document.querySelector('.icon');
+        const notiDrop = document.querySelector('.notiDrop');
+        let status = 0; //0이면 클릭 안된 상태, 1이면 클릭 된 상태
+
+        function open(e){
+            if ( e == 1 ){
+                notiDrop.style.display = "block";
+            } else {
+                notiDrop.style.display = "none";
+            }
+        }
+        icon.addEventListener('click', function () {
+            if( status == 0 ){
+                status = 1;
+                open(status);
+            } else{
+                status = 0;
+                open(status);
+            }
+        });
     </script>
 </body>
 </html>

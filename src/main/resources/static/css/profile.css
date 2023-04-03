@@ -7,14 +7,39 @@
     height: 200px;
     width: 200px;
     margin: 10px;
-    background-color: #ececec;
+    background-color: #57B862;
     border: solid 2px #87AF6E;
     border-radius: 50%;
 }
+.profileTopRight{
+    margin: 0px 30px;
+    height: 200px;
+    width: 400px;
+    display: grid;
+    justify-content: start;
+}
+.profileBottom{
+    height: auto;
+    width: 100%;
+    padding: 20px;
+}
 .profileText{
-    height: 50px;
-    width: 200px;
-    font-size: 15px;
-    font-color: black;
+    font-size: 17px;
+    color: black;
+}
+.profileTitle{
+    font-size: 18px;
+    color: #57B862;
+    font-weight: bold;
+}
+.profileBox{
+    height: 70px;
+    width: 150px;
+    margin: auto;
+    float: left;
+}
+.profileSelfIntro{
+    font-size: 16px;
+    line-height: 1.5;
 }
 

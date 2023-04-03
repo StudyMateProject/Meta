@@ -7,22 +7,6 @@ body{
     margin: 0 auto;
     padding: 0px;
 }
-img{
-    width: 100%;
-    height: 100%;
-}
-body{
-    display: block;
-}
-header{
-    position:fixed;
-    padding-top: 10px;
-    width: 70%;
-    height: 80px;
-    background-color: white;
-    border-bottom: 5px solid #57B862;
-    z-index: 2;
-}
 *{
     font-family: 'NanumSquareNeo';
 }
@@ -30,69 +14,68 @@ a{
     text-decoration-line: none;
     color: black;
 }
-.scrolledDown {
-    box-shadow: 0 10px 10px 1px rgba(0, 0, 0, 0.54);
-}
 
+
+header{
+    position: fixed;
+    padding-top: 10px;
+    width: 70%;
+    height: 80px;
+    background-color: white;
+    border-bottom: 4px solid #507e2d;
+    z-index: 2;
+    box-shadow: 0 2px 4px 0 hsla(0,0%,80.8%,.5);
+}
 .headerContainer{
     padding-top: 20px;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
 }
+
 .headerImg{
-    height: 70px;
-    width: 110px;
-    margin-right: 15px;
+    height: 50px;
+    width: 100px;
+    margin : 5px 15px;
 }
 .mainLogo{
-    object-fit: contain;
+    height: 100%;
+    width: 100%;
 }
+
 .headerMenu{
     display: flex;
 }
 .headerMenuLeft{
     display: flex;
+    height: 60px;
+    padding-bottom: 10px;
+}
+.menuContainer{
+    display: flex;
+    width: auto;
 }
 .categoryMenu{
-    width: 100px;
+    width: auto;
     height: 40px;
-    margin: auto;
-    line-height: 40px;
+    padding: 20px 10px;
     text-align: center;
-    font-size: large;
+    font-size: 19px;
     cursor : pointer;
     position : relative;
     display : inline-block;
+    white-space: nowrap;
 }
 
 .categoryMenu:hover{
-    color: #57b862;
+    color: #507e2d;
 }
-
-.headerMenuRight{
-    display: flex;
-    float: right;
-    margin: auto;
-    padding-top: 1.5px;
+.categoryMenu a:hover{
+    color: #507e2d;
 }
-
-.whenLogin{
-    display: flex;
-    margin-left: 180px;
-}
-.welcome{
-    margin: auto;
-    text-align: right;
-    width: 250px;
-}
-.notificationsMenu{
-    margin-left: 10px;
-}
-.btnLogin{
-    margin-left: 15px;
-}
-
 .dropTable{
-    margin: 0px 5px 5px 5px;
+    margin: 14px 0px;
     cursor : pointer;
     position : absolute;
     z-index : 1;
@@ -104,23 +87,52 @@ a{
 }
 .dropTable a{
     display : block;
-    padding: 13px 10px;
+    padding: 15px 10px;
 }
 .categoryMenu:hover .dropTable{
     display: block;
 }
 .dropTable a:hover{
     background-color : #ececec;
+    font-weight: bold;
+}
+
+
+.headerMenuRight{
+    display: flex;
+    height: 60px;
+    align-items: center;
+    width: 600px;
+    justify-content: flex-end;
+}
+
+.whenLogin{
+    display: flex;
+}
+.welcome{
+    margin: auto;
+    text-align: right;
+}
+.notificationsMenu{
+    margin-left: 10px;
+}
+.btnLogin{
+    margin-left: 15px;
 }
 .inputButtonLogin{
     height: 30px;
     font-size: 15px;
-    background-color: #57B862;
+    background-color: #507e2d;
+    color: white;
     border: none;
     border-radius: 10px;
     cursor: pointer;
 }
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+.notificationsMenu{
+    cursor: pointer;
+}
 .icon {
     position: relative;
     font-size: 30px;
@@ -131,16 +143,15 @@ a{
 .icon::before {
     content: attr(data-number);
     position: absolute;
-    top: -5px;
-    right: -10px;
-    width: 20px;
-    height: 20px;
-    background-color: #7EFFB2;
+    top: -1px;
+    right: 1px;
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 166, 166);
     font-size: 14px;
     color: #090909;
     display: grid;
     place-items: center;
-    border: 2px solid #090909;
     border-radius: 50%;
 }
 @keyframes anim {
@@ -157,3 +168,55 @@ a{
         rotate: 0deg;
     }
 }
+.icon:active .notiDrop{
+    display: block;
+}
+.icon:visited .notiDrop{
+    display: block;
+}
+.notiDrop{
+    width: 300px;
+    height: 450px;
+    position : absolute;
+    z-index : 1;
+    font-size: 15px;
+    text-align: left;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    display: none;
+}
+.notiList{
+    height: 390px;
+    overflow-y: auto;
+    display: block;
+}
+.notiDrop p{
+    font-size: 20px;
+    font-weight: bold;
+    height: 40px;
+    margin: 10px 20px;
+    display: flex;
+    align-items: center;
+}
+.notiDropMenu{
+    width: 260px;
+    display: flex;
+    padding: 13px 10px;
+    margin: 0;
+}
+.notiDropMenu:hover{
+    font-weight: bold;
+    background-color : #ececec;
+}
+.notiCircle{
+    width: 10px;
+    height: 10px;
+    background-color : rgba(255, 166, 166);
+    border-radius: 50%;
+    margin: 2px 5px;
+    top: 10px;
+}
+.notiText{
+    width: 240px;
+}
+

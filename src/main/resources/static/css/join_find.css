@@ -1,39 +1,60 @@
         html {
             height: 100%;
         }
+        *{
+            font-family: 'NanumSquareNeo';
+        }
+        body{
+            background-color: #E6E6E6;
+        }
         .container{
             width: 650px;
             margin: auto;
+            background-color: white;
+            border-radius: 30px;
+            border: solid 1px #BBBBBB;
+            padding: 20px 0px;
+        }
+        .smallContainer{
+            margin: 7% 30%;
+        }
+        .mainLogo{
+            height: 100px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
         .mainLogoImg{
-            height: 80px;
-            width: 250px;
-            text-align: center;
-            margin: auto;
-            display: flex;
+            height: 100%;
+            width: 100%;
         }
         h2{
             text-align: center;
             color: #4A8D51;
-            margin: 20px 10px 10px 10px;
         }
-        .ulJoinInput{
-            width: 500px;
-            padding: 10px 10px 10px 10px;
+        .joinFormContainer h2{
+            font-size: 20px;
+        }
+
+        .joinFormContainer{
+            width: 100%;
+        }
+        .findIdForm{
+            padding: 0px 90px;
         }
         .liJoinInput{
             list-style-type: none;
             width: 100%;
-            margin: 30px 30px 30px 30px;
-            padding-left: 5px;
+            margin: 30px 0px;
         }
         .labelText{
             width: 20px;
             height: 20px;
-            margin: 5px 5px 10px 5px;
+            margin: 5px;
             text-align: center;
             font-size: 17px;
             color: #4A8D51;
+            font-weight: bold;
         }
         .inputText{
             width: 440px;
@@ -41,36 +62,38 @@
             font-size:15px;
             border: solid 1px #87AF6E;
             border-radius: 5px;
-            margin: 5px 5px 5px 5px;
+            margin: 5px;
+            padding: 5px;
         }
         placeholder{
-            left-margin: 5px;
             font-size:15px;
-
         }
         .btnJoinForm{
             width: 100px;
             height: 35px;
-            margin: 5px 5px 5px 5px;
+            margin: 5px;
             border: solid 1px #87AF6E;
             background-color: #BDE7A4;
             border-radius: 5px;
             color: #4A8D51;
+            font-weight: bold;
         }
         .errorMsg{
             font-size:15px;
+            font-weight: bold;
             color: #FF6C6C;
         }
         .genderLabel{
-            font-size: 20px;
-            margin: 5px 5px 5px 5px;
+            font-size: 17px;
+            margin: 0px 7px;
             color: #757575;
         }
         .studyType{
-            width: 440.33px;
-            height: 37.33px;
+            width: 452px;
+            height: 45px;
             color: #757575;
-            margin: 5px 5px 5px 5px;
+            margin: 5px;
+            padding: 5px;
             border: solid 1px #87AF6E;
             border-radius: 5px;
             font-size: 15px;
@@ -82,11 +105,11 @@
             width: 150px;
             height: 40px;
             text-align: center;
-            font-size: 18px;
+            font-size: 15px;
+            font-weight: bold;
             border: solid 1px #87AF6E;
             border-radius: 5px;
             background-color: #BDE7A4;
-            margin: 5px 5px 5px 5px;
-            padding: 0px 0px 0px 5px;
+            margin: 5px;
             color: #4A8D51;
         }

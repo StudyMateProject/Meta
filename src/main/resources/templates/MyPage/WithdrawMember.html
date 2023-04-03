@@ -1,10 +1,213 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>탈퇴하기</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" type="text/css" href="/css/mymenu.css">
+    <link rel="stylesheet" type="text/css" href="/css/footer.css">
 </head>
 <body>
+    <header>
+        <nav class="headerContainer">
+            <div class="headerMenu">
+                <div class="headerMenuLeft">
 
+                    <div class="headerImg">
+                        <a href="/" alt="SOJU">
+                            <img src="/img/logo_mate.png" class="mainLogo">
+                        </a>
+                    </div>
+
+                    <div class="menuContainer">
+                        <div class="categoryMenu">
+                            <span>스터디원</span>
+                            <div class="dropTable">
+                                <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
+                                <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
+                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘토 프로필</a>
+                            </div>
+                        </div>
+
+                        <div class="categoryMenu">
+                            <a href="/meta">
+                                <span>스터디룸</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/noticeroom">
+                                <span>게시판</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/store">
+                                <span>스토어</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/mypage">
+                                <span>마이페이지</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="headerMenuRight">
+                    <div class="whenLogin" sec:authorize="isAuthenticated()">
+                        <div class="welcome" th:text="${nickname} + '님 반갑습니다!'"></div>
+                        <div class="notificationsMenu">
+                            <div class="icon" th:data-number="${alarmCount}">
+                                <i class="ri-notification-4-fill"></i>
+                            </div>
+                            <div class="notiDrop">
+                                <p>최근 알림</p>
+                                <div class="notiList">
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 </span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림4 알림4 알림4 알림4 알림4 알림4 알림4 알림4</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림6 알림6</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림8 알림8 알림8 알림8 알림8</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림9</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="whenLogin" sec:authorize="isAnonymous()">
+                        <div class="welcome"></div>
+                        <div class="notificationsMenu" onclick="location.href='/mypage/alarm'" style="visibility: hidden;">
+                            <div class="icon" th:data-number="${alarmCount}">
+                                <i class="ri-notification-4-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btnLogin">
+                        <input class="inputButtonLogin" sec:authorize="isAnonymous()" type="button" value="로그인" onclick="location.href='/loginform'">
+                        <input class="inputButtonLogin" sec:authorize="isAuthenticated()" type="button" value="로그아웃" onclick="location.href='/logout'">
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+    <div class="container">
+        <div class="containerLeft">
+            <h2 class="my">My Page</h2>
+            <input type="button" class="memberInfo mypageBtn accordion" value="개인정보 관리">
+            <div class="memberInfoList panel">
+                <a class="profile content" href="/mypage">내 프로필</a>
+                <a class="modifyMemberInfo content" href="/mypage/modifyform">개인정보 수정</a>
+                <a class="modifyPwd content" href="/mypage/modifyform/editpwd">비밀번호 수정</a>
+                <a class="withdraw content" href="/mypage/modifyform/withdrawalcheck">탈퇴하기</a>
+            </div>
+            <div class="menu">
+                <input type="button" class="likeList mypageBtn" onclick="location.href='/mypage';" value="찜목록">
+                <input type="button" class="studying mypageBtn" onclick="location.href='/mypage';" value="현재 Mate">
+                <input type="button" class="chatList mypageBtn" onclick="location.href='/mypage';" value="채팅목록">
+                <input type="button" class="purchaseList mypageBtn" onclick="location.href='/mypage';" value="구매내역">
+            </div>
+        </div>
+
+        <div class="containerRight">
+        </div>
+    </div>
+
+    <footer>
+        <div class="wrapper">
+            <div class="footer_left">
+                <div class="logo_div">
+                    <a href="/">
+                        <img src="/img/logo_mate.png" class="logo">
+                    </a>
+                </div>
+
+                <ul class="left_ul">
+                    <li class="left_element">
+                        <a href="/" class="left_text">개인정보처리방침</a>
+                    </li>
+                    <li class="left_element">
+                        <a href="/" class="left_text">|  이용약관</a>
+                    </li>
+                </ul>
+
+                <div class="information">
+                    <span class="project_info left_text">프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 프로젝트 소개 입력 </span>
+                </div>
+
+            </div>
+            <div class="footer_right">
+                <p>Contact Us</p>
+                <ul>
+                    <li class="mail">
+                        <a href="mailto:8993jin@naver.com" target="_blank">
+                            <img src="/img/email.png" class="contact_icon">
+                        </a>
+                    </li>
+                    <li class="github">
+                        <a href="https://github.com/AlcoholParty" target="_blank">
+                            <img src="/img/github.png" class="contact_icon">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+<!--JS----------------------------------------------------------------------------------------------------------------->
+    <script>
+        const icon = document.querySelector('.icon');
+        const notiDrop = document.querySelector('.notiDrop');
+        let status = 0; //0이면 클릭 안된 상태, 1이면 클릭 된 상태
+
+        function open(e){
+            if ( e == 1 ){
+                notiDrop.style.display = "block";
+            } else {
+                notiDrop.style.display = "none";
+            }
+        }
+        icon.addEventListener('click', function () {
+            if( status == 0 ){
+                status = 1;
+                open(status);
+            } else{
+                status = 0;
+                open(status);
+            }
+        });
+    </script>
 </body>
 </html>

@@ -8,144 +8,110 @@
     <link rel="stylesheet" type="text/css" href="/css/main.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
-    <style>
-        .bestStudyImg{
-            width: 100%;
-            height: 213px;
-        }
-        .bestStudyTitle{
-            width: 100%;
-            height: 50px;
-            margin: 5px 0px;
-        }
-        .bestStudyText{
-            width: 100%;
-            height: 20px;
-            font-size: 12px;
-            margin: 5px 0px;
-        }
-
-        .toleft{
-            width: 50px;
-            height: 50px;
-            margin: 0px 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid #ccc;
-            border-radius: 50%;
-            background-color: #ffffff9e;
-            box-shadow: 0 2px 8px 0 rgb(0 0 0 / 10%);
-            cursor: pointer;
-        }
-        .toright{
-            width: 50px;
-            height: 50px;
-            margin: 0px 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid #ccc;
-            border-radius: 50%;
-            background-color: #ffffff9e;
-            box-shadow: 0 2px 8px 0 rgb(0 0 0 / 10%);
-            cursor: pointer;
-        }
-        .toleft1{
-            width: 50px;
-            height: 50px;
-            margin: 0px 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid #ccc;
-            border-radius: 50%;
-            background-color: #ffffff9e;
-            box-shadow: 0 2px 8px 0 rgb(0 0 0 / 10%);
-            cursor: pointer;
-        }
-        .toright1{
-            width: 50px;
-            height: 50px;
-            margin: 0px 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid #ccc;
-            border-radius: 50%;
-            background-color: #ffffff9e;
-            box-shadow: 0 2px 8px 0 rgb(0 0 0 / 10%);
-            cursor: pointer;
-        }
-        .slider:active{
-            box-shadow: 0 2px 8px 0 rgb(0 0 0 / 50%);
-        }
-
-        .bestMentorContainer{
-            width: 100%;
-            height: 450px;
-            overflow-x: hidden;
-        }
-        .bestMentorInner{
-            width: 200%;
-            height: 340px;
-            padding-top: 10px;
-            display: flex-inline;
-            justify-content: start;
-            align-items: center;
-        }
-    </style>
-    <script type="text/javascript" src="/js/moveDiv.js"></script>
 </head>
 <body>
     <header>
         <nav class="headerContainer">
-            <div class="headerImg">
-                <a href="/" alt="SOJU">
-                    <img src="/img/logo_mate.png" class="mainLogo">
-                </a>
-            </div>
-
             <div class="headerMenu">
                 <div class="headerMenuLeft">
 
-                    <div class="categoryMenu">
-                        <span>스터디원</span>
-                        <div class="dropTable">
-                            <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
-                            <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
-                            <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘토 프로필</a>
-                        </div>
+                    <div class="headerImg">
+                        <a href="/" alt="SOJU">
+                            <img src="/img/logo_mate.png" class="mainLogo">
+                        </a>
                     </div>
 
-                    <div class="categoryMenu">
-                        <a href="/meta" class="metaMenu">
-                            <span class="categoryMenu">스터디룸</span>
-                        </a>
-                    </div>
-                    <div class="categoryMenu">
-                        <a href="/noticeroom" class="noticeRoomMenu">
-                            <span class="categoryMenu">게시판</span>
-                        </a>
-                    </div>
-                    <div class="categoryMenu">
-                        <a href="/store" class="storeMenu">
-                            <span class="categoryMenu">스토어</span>
-                        </a>
-                    </div>
-                    <div class="categoryMenu">
-                        <a href="/mypage" class="myPageMenu">
-                            <span class="categoryMenu">마이페이지</span>
-                        </a>
+                    <div class="menuContainer">
+                        <div class="categoryMenu">
+                            <span>스터디원</span>
+                            <div class="dropTable">
+                                <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
+                                <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
+                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘토 프로필</a>
+                            </div>
+                        </div>
+
+                        <div class="categoryMenu">
+                            <a href="/meta">
+                                <span>스터디룸</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/noticeroom">
+                                <span>게시판</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/store">
+                                <span>스토어</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/mypage">
+                                <span>마이페이지</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
                 <div class="headerMenuRight">
-                    <div class="whenLogin">
-                        <div class="welcome" sec:authorize="isAnonymous()"> 로그인이 필요합니다! </div>
-                        <div class="welcome" sec:authorize="isAuthenticated()"> [[${nickname}]]님 반갑습니다! </div>
+                    <div class="welcome" sec:authorize="isAnonymous()">로그인이 필요합니다!!</div>
+                    <div class="whenLogin" sec:authorize="isAuthenticated()">
+                        <div class="welcome" th:text="${nickname} + '님 반갑습니다!'"></div>
                         <div class="notificationsMenu">
-                            <div class="icon" data-number="5">
+                            <div class="icon" th:data-number="${alarmCount}">
+                                <i class="ri-notification-4-fill"></i>
+                            </div>
+                            <div class="notiDrop">
+                                <p>최근 알림</p>
+                                <div class="notiList">
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 </span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림4 알림4 알림4 알림4 알림4 알림4 알림4 알림4</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림6 알림6</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림8 알림8 알림8 알림8 알림8</span>
+                                    </a>
+                                    <a class="notiDropMenu" href="/">
+                                        <span class="notiCircle"></span>
+                                        <span class="notiText">알림9</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="whenLogin" sec:authorize="isAnonymous()">
+                        <div class="welcome"></div>
+                        <div class="notificationsMenu" onclick="location.href='/mypage/alarm'" style="visibility: hidden;">
+                            <div class="icon" th:data-number="${alarmCount}">
                                 <i class="ri-notification-4-fill"></i>
                             </div>
                         </div>
@@ -160,8 +126,15 @@
         </nav>
     </header>
 
-    <div class="imgDiv">
-        <input type="hidden" value="광고">
+    <div class="advertisingDiv">
+        <ul class="slides">
+            <li><img src="/img/ad1.png" alt="/img/ad11.png"></li>
+            <li><img src="/img/ad2.png" alt="/img/ad22.png"></li>
+        </ul>
+        <p class="controller">
+            <span class="prev"><</span>
+            <span class="next">></span>
+        </p>
     </div>
 
     <div class="interestContainer">
@@ -248,236 +221,261 @@
                 </a>
             </div>
         </div>
-
     </div>
+
+
+
 
 
     <div class="bestStudyContainer">
         <div class="BestTitle">
-            <span>지금 가장 인기있는 스터디</span>
+            <a href="/">지금 가장 인기있는 스터디&nbsp;&nbsp></a>
         </div>
-        <ul class="bestStudyInner">
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/cookie.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">백엔드 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+        <div class="bestStudySlides">
+            <ul class="bestStudyInner">
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/cookie.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">프론트엔드 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/cookie.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">백엔드 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/cookie.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">OPIC 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/cookie.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">프론트엔드 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/cookie.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">토익 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/cookie.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">OPIC 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-           <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/cookie.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">수학 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
-            <li>
-                <input type="button" value=">" class="toright slider">
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/cookie.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">토익 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li>
-                <input type="button" value="<" class="toleft slider">
-            </li>
+               <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/cookie.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">수학 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/pink.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+               <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/pink.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+               </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/pink.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/pink.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/pink.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/pink.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/pink.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/pink.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/pink.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
-        </ul>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/pink.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <p class="studyController">
+            <span class="studyPrev prev"><</span>
+            <span class="studyNext next">></span>
+        </p>
     </div>
+
+
+
 
     <div class="bestMentorContainer">
         <div class="BestTitle">
-            <span>요즘 주목받는 멘토</span>
+            <a href="/">요즘 주목받는 멘토&nbsp;&nbsp;></a>
         </div>
-        <ul class="bestMentorInner">
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/cookie.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">백엔드 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+        <div class="bestMentorSlides">
+            <ul class="bestStudyInner">
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/cookie.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">백엔드 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/cookie.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">프론트엔드 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/cookie.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">프론트엔드 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/cookie.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">OPIC 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/cookie.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">OPIC 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/cookie.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">토익 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/cookie.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">토익 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/cookie.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">수학 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
-            <li>
-                <input type="button" value=">" class="toright1 sliderBtn">
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/cookie.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">수학 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li>
-                <input type="button" value="<" class="toleft1 sliderBtn">
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/pink.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/pink.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/pink.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/pink.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/pink.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/pink.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/pink.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/pink.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
+                <li class="bestStudyElement">
+                    <div class="bestStudyA">
+                        <a href="/">
+                            <img src="/img/pink.jpg" class="bestStudyImg">
+                            <div class="status"><span>모집중</span></div>
+                            <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
+                            <p class="bestStudyText">밤톨</p>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
 
-            <li class="bestStudyElement">
-                <div class="bestStudyA">
-                    <a href="/">
-                        <img src="/img/pink.jpg" class="bestStudyImg">
-                        <p class="bestStudyTitle">정처기 공부할 사람 구합니다 @@@@</p>
-                        <p class="bestStudyText">밤톨</p>
-                    </a>
-                </div>
-            </li>
-        </ul>
+        <p class="mentorController">
+            <span class="mentorPrev prev"><</span>
+            <span class="mentorNext next">></span>
+        </p>
     </div>
 
     <footer>
@@ -520,100 +518,126 @@
             </div>
         </div>
     </footer>
+<!--JS----------------------------------------------------------------------------------------------------------------->
     <script>
-        const nav = document.querySelector('#nav');
-        const onScroll = (event) => {
-            const scrollPosition = event.target.scrollingElement.scrollTop;
-            if (scrollPosition > 10 ){
-                if(!nav.classList.contains('scrolledDown')) {
-                    nav.classList.add('scrolledDown');
-                }
+        const slides = document.querySelector('.slides'); //전체 슬라이드 컨테이너
+        const slideImg = document.querySelectorAll('.slides li'); //모든 슬라이드들
+        let currentIdx = 0; //현재 슬라이드 index
+        const slideCount = slideImg.length; // 슬라이드 개수
+        const prev = document.querySelector('.prev'); //이전 버튼
+        const next = document.querySelector('.next'); //다음 버튼
+        const slideWidth = 1184; //한개의 슬라이드 넓이
+        const slideMargin = 100; //슬라이드간의 margin 값
+
+        //전체 슬라이드 컨테이너 넓이 설정
+        slides.style.width = (slideWidth + slideMargin) * slideCount + 'px';
+
+        function moveSlide(num) {
+          slides.style.left = -num * 1284 + 'px';
+          currentIdx = num;
+        }
+
+        prev.addEventListener('click', function () {
+          if (currentIdx !== 0) {
+            moveSlide(currentIdx - 1);
+          }
+          //첫번째 슬라이드가 아닐 때, 이전 버튼을 누르면 전 슬라이드로 이동
+        });
+
+        next.addEventListener('click', function () {
+          if (currentIdx !== slideCount - 1) {
+            moveSlide(currentIdx + 1);
+          }
+          //마지막 슬라이드가 아닐 때,  다음 버튼을 누르면 다음 슬라이드로 이동
+        });
+    </script>
+
+    <script>
+        const bestStudySlides = document.querySelector('.bestStudySlides'); //전체 슬라이드 컨테이너
+        const studySlideImg = document.querySelectorAll('.bestStudySlides li'); //모든 슬라이드들
+        let studyCurrentIdx = 0; //현재 슬라이드 index
+        const studySlideCount = 2; // 슬라이드 개수
+        const studyPrev = document.querySelector('.studyPrev'); //이전 버튼
+        const studyNext = document.querySelector('.studyNext'); //다음 버튼
+        const studySlideWidth = 1184; //한개의 슬라이드 넓이
+
+
+        //전체 슬라이드 컨테이너 넓이 설정
+        bestStudySlides.style.width = studySlideWidth * studySlideCount + 'px';
+
+        function studyMoveSlide(num) {
+          bestStudySlides.style.left = -num * 1184 + 'px';
+          studyCurrentIdx = num;
+        }
+
+        studyPrev.addEventListener('click', function () {
+          if (studyCurrentIdx !== 0) {
+            studyMoveSlide(studyCurrentIdx - 1);
+          }
+          //첫번째 슬라이드가 아닐 때, 이전 버튼을 누르면 전 슬라이드로 이동
+        });
+
+        studyNext.addEventListener('click', function () {
+          if (studyCurrentIdx !== studySlideCount - 1) {
+            studyMoveSlide(studyCurrentIdx + 1);
+          }
+          //마지막 슬라이드가 아닐 때,  다음 버튼을 누르면 다음 슬라이드로 이동
+        });
+    </script>
+
+    <script>
+        const bestMentorSlides = document.querySelector('.bestMentorSlides'); //전체 슬라이드 컨테이너
+        let mentorCurrentIdx = 0; //현재 슬라이드 index
+        const mentorSlideCount = 2; // 슬라이드 개수
+        const mentorPrev = document.querySelector('.mentorPrev'); //이전 버튼
+        const mentorNext = document.querySelector('.mentorNext'); //다음 버튼
+        const mentorSlideWidth = 1184; //한개의 슬라이드 넓이
+
+        //전체 슬라이드 컨테이너 넓이 설정
+        bestMentorSlides.style.width = mentorSlideWidth * mentorSlideCount + 'px';
+
+        function mentorMoveSlide(num) {
+          bestMentorSlides.style.left = -num * 1184 + 'px';
+          mentorCurrentIdx = num;
+        }
+
+        mentorPrev.addEventListener('click', function () {
+          if (mentorCurrentIdx !== 0) {
+            mentorMoveSlide(mentorCurrentIdx - 1);
+          }
+          //첫번째 슬라이드가 아닐 때, 이전 버튼을 누르면 전 슬라이드로 이동
+        });
+
+        mentorNext.addEventListener('click', function () {
+          if (mentorCurrentIdx !== mentorSlideCount - 1) {
+            mentorMoveSlide(mentorCurrentIdx + 1);
+          }
+          //마지막 슬라이드가 아닐 때,  다음 버튼을 누르면 다음 슬라이드로 이동
+        });
+    </script>
+
+    <script>
+        const icon = document.querySelector('.icon');
+        const notiDrop = document.querySelector('.notiDrop');
+        let status = 0; //0이면 클릭 안된 상태, 1이면 클릭 된 상태
+
+        function open(e){
+            if ( e == 1 ){
+                notiDrop.style.display = "block";
             } else {
-                if (nav.classList.contains('scrolledDown')) {
-                    !nav.classList.remove('scrolledDown');
-                }
-            }
-        };
-        document.addEventListener('scroll', onScroll);
-    </script>
-    <script>
-        let index = 0; //보고 있는 페이지 번호
-
-        const prevBtn = document.querySelector(".toleft");
-        const nextBtn = document.querySelector(".toright");
-        const pages = document.querySelector(".bestStudyInner");
-
-        function prev(){
-            if(index > 0){
-            nextBtn.removeAttribute("disabled");
-            pages.style.transform = 'translateX(0px)';
-            index -= 1;
-            }
-            if(index == 0){
-                prevBtn.setAttribute("disabled", 'true');
-            }
-         }
-
-        function next(){
-            if(index < 1){
-                prevBtn.removeAttribute("disabled");
-                pages.style.transform = 'translateX(-1186px)';
-                index += 1;
-            }
-            if(index == 1 ){
-                // 뒤로 못 가게 하기
-                nextBtn.setAttribute("disabled", 'true'); // 못 누르는 버튼이 됨
+                notiDrop.style.display = "none";
             }
         }
-        // 초기 랜더링 시 최초 호출 함수의 관습적 이름
-        function init(){
-            // 앞으로 가기는 처음부터 못누르게!
-            prevBtn.addEventListener("click", prev);
-            nextBtn.addEventListener("click", next);
-        }
-
-        init();
-
+        icon.addEventListener('click', function () {
+            if( status == 0 ){
+                status = 1;
+                open(status);
+            } else{
+                status = 0;
+                open(status);
+            }
+        });
     </script>
 
-    <script>
-        let index1 = 0; //보고 있는 페이지 번호
-
-        const prevBtn1 = document.querySelector(".toleft1");
-        const nextBtn1 = document.querySelector(".toright1");
-        const pages1 = document.querySelector(".bestMentorInner");
-
-        function prev1(){
-            if(index1 > 0){
-            nextBtn1.removeAttribute("disabled");
-            pages1.style.transform = 'translateX(0px)';
-            index1 -= 1;
-            }
-            if(index1 == 0){
-                prevBtn1.setAttribute("disabled", 'true');
-            }
-         }
-
-        function next1(){
-            if(index1 < 1){
-                prevBtn1.removeAttribute("disabled");
-                pages1.style.transform = 'translateX(-1186px)';
-                index1 += 1;
-            }
-            if(index1 == 1 ){
-                // 뒤로 못 가게 하기
-                nextBtn1.setAttribute("disabled", 'true'); // 못 누르는 버튼이 됨
-            }
-        }
-        // 초기 랜더링 시 최초 호출 함수의 관습적 이름
-        function init1(){
-            // 앞으로 가기는 처음부터 못누르게!
-            prevBtn1.addEventListener("click", prev1);
-            nextBtn1.addEventListener("click", next1);
-        }
-
-        init1();
-
-    </script>
 </body>
 </html>

@@ -123,7 +123,7 @@ public class Member {
                     .address(address)
                     .detailAddress(detailAddress)
                     .studyType(studyType)
-                    .platform("Soju") // 가입 플랫폼 설정
+                    .platform("mate") // 가입 플랫폼 설정
                     .roleName("USER") // Spring Security 권한에 USER로 설정
                     .profileImage("noImage.jpeg") // 가입할때는 아무 사진도 지정되어 있지 않다.
                     .build();
