@@ -51,13 +51,30 @@ public class SignUpController {
     }
 
     // 이메일 중복체크 & 이메일 전송 SMTP
-    @PostMapping("/joinform/emailcheck")
+    @PostMapping("/joinform/emailsend")
     @ResponseBody
-    public Member.rpCheckEmailId emailCheck(String emailId) { // 2. 파라미터로 Ajax를 통해 넘어온 아이디를 받아온다.
-        // 3. 2에서 파라미터로 받아온 아이디를 서비스에 전달한다.
-        Member.rpCheckEmailId rpCheckEmailId =  signUpService.checkEmailId(emailId);
+    public Member.rpCheckEmailId emailSend(String emailId) { // 2. 파라미터로 Ajax를 통해 넘어온 아이디를 받아온다.
+        // 3. 2에서 파라미터로 받아온 아이디와 비밀번호 암호화 메소드를 같이 서비스에 전달한다.
+        Member.rpCheckEmailId rpCheckEmailId =  signUpService.checkEmailId(emailId, passwordEncoder);
         // 13. 3에서 반환된 DTO를 콜백 메소드에 반환한다.
         return rpCheckEmailId;
+    }
+
+    // 이메일 인증 번호 체크
+    @PostMapping("/joinform/emailsend/emailcheck")
+    @ResponseBody
+    public boolean emailCheck(String emailKey, String hEmailKey) { // 1. 파라미터로 fetch를 통해 넘어온 작성한 이메일 인증 번호와 이메일 인증 번호 체크 값(암호화된 이메일 인증 번호)을 받아온다.
+        // 2. passwordEncoder.matches()를 사용하여 암호화된 이메일 인증 번호와 작성한 이메일 인증 번호가 일치하는지 체크한다.
+        //    passwordEncoder.matches() - Spring Security에서 제공하는 메소드 중 하나로,
+        //                                첫 번째 매개변수에는 사용자가 입력한 문자열을, 두 번째 매개변수에는 인코딩된 문자열을 전달하여,
+        //                                입력된 문자열과 인코딩된 문자열을 비교하여 일치하는지 확인하고,
+        //                                boolean(true/false) 타입으로 결과 값을 반환한다.
+        //                                passwordEncoder.encode() 메소드를 사용하여 입력된 문자열을 인코딩한 후,
+        //                                이 인코딩된 문자열과 사용자가 입력한 문자열을 비교하고자 할 때 passwordEncoder.matches()를 사용할 수 있다.
+        boolean isMatch = passwordEncoder.matches(emailKey, hEmailKey);
+        // 3. 2에서 반환된 결과 값(true/false)을 클라이언트로 반환한다.
+        //    true - 이메일 인증 번호 일치 / false - 이메일 인증 번호 불일치
+        return isMatch;
     }
 
     // 닉네임 중복체크

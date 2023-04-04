@@ -177,10 +177,7 @@
 
                         <div class="inputForm">
                             <div class="editTitle">프로필 사진</div>
-                            <div style="display: flex;">
-                                <img class="profileImgEdit" th:src="'/imagePath/' + ${member.profileImage}">
-                                <img class="profileImgEdit" id="previewProfileImage">
-                            </div>
+                            <img id="previewProfileImage" class="profileImgEdit" th:src="'/imagePath/' + ${member.profileImage}">
                             <input name="profileImage" type="hidden" th:value="${member.profileImage}">
                             <div class="editImg"><label for="img" class="checkBtn editImgBtn">수정하기</label></div>
                             <input type="file" id="img" name="imageFile" onchange="previewImage();" style="display: none;">
@@ -366,7 +363,7 @@
                 var IMP = window.IMP; // init로 객체초기화 (가맹점식별코드)
                 IMP.init("imp88140833"); // 가맹점 번호
                 IMP.certification({
-                    popup : true // 팝업 사용
+                    popup: true // 팝업 사용
                 } ,function (rsp) { // 1. 파라미터로 rsp를 받아온다.
                     if ( rsp.success ){ // 인증에 성공할 경우
                         // 2. 1에서 파라미터로 받아온 rsp에서 imp_uid를 가져온다.

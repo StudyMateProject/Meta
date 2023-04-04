@@ -77,13 +77,20 @@ public class Member {
         private String emailId;
         private String msg;
 
-        // Entity를 DTO로 변환 (생성자 방식)
+        // Entity를 DTO로 변환 (생성자 방식) - 이메일 전송 실패
         public rpCheckEmailId(String emailId, String msg) { // 파라미터로 서비스에서 넘어온 체크 값과 메시지를 받아온다.
             // 조회된 유저가 있을 경우 - emailId : 0 / msg : 중복 가입 에러 메세지
-            // 이메일 전송 성공할 경우 - emailId : 이메일 아이디 / 이메일 인증 번호
             // 이메일 전송 실패할 경우 - emailId : -1 / msg : 전송 실패 에러 메세지
             this.emailId = emailId; // emailId는 전송 및 에러 체크 값으로 사용한다.
             this.msg = msg; // msg는 알람 메세지로 사용한다.
+        }
+        // Entity를 DTO로 변환 (생성자 방식) - 이메일 전송 성공
+        public rpCheckEmailId(String emailId, String msg, PasswordEncoder passwordEncoder) { // 파라미터로 서비스에서 넘어온 체크 값과 메시지를 받아온다.
+            // 이메일 전송 성공할 경우 - emailId : 이메일 아이디 / 이메일 인증 번호
+            // 비밀번호 암호화를 사용하여 이메일 인증 번호를 암호화 한다.
+            String enPassword = passwordEncoder.encode(msg);
+            this.emailId = emailId; // emailId는 전송 및 에러 체크 값으로 사용한다.
+            this.msg = enPassword; // msg는 위에서 만든 암호화된 이메일 인증 번호로 사용한다.
         }
     }
 

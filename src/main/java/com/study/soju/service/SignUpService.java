@@ -23,7 +23,7 @@ public class SignUpService implements UserDetailsService {
     MemberRepository memberRepository;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 아이디 중복체크 및 메일로 인증 번호 발송
-    public Member.rpCheckEmailId checkEmailId(String emailId) { // 4. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
+    public Member.rpCheckEmailId checkEmailId(String emailId, PasswordEncoder passwordEncoder) { // 4. 파라미터로 컨트롤러에서 넘어온 아이디와 비밀번호 암호화 메소드를 받아온다.
         // 5. 4에서 파라미터로 받아온 이메일 아이디로 유저를 조회하고, 조회된 값을 받아온다.
         Member member = memberRepository.findByEmailId(emailId);
         // 6. 5에서 조회된 값이 있는지 체크한다.
@@ -64,7 +64,7 @@ public class SignUpService implements UserDetailsService {
                 email.setAuthentication(hostSMTPid, hostSMTPpwd); // SMTP 이메일 및 비밀번호
                 email.addTo(mail); // 메일 수신자 이메일
                 email.setFrom(fromEmail, fromName, charSet); // 메일 발신자 정보
-                email.setSubject("[Study with me] 이메일 인증번호 발송 안내입니다."); // 메일 제목
+                email.setSubject("[Mate] 이메일 인증번호 발송 안내입니다."); // 메일 제목
                 email.setHtmlMsg("<p>" + "[메일 인증 안내입니다.]" + "</p>" +
                                  "<p>" + "Mate를 사용해 주셔서 감사드립니다." + "</p>" +
                                  "<p>" + "아래 인증 코드를 '인증번호'란에 입력해 주세요." + "</p>" +
@@ -73,8 +73,8 @@ public class SignUpService implements UserDetailsService {
                 email.send();
                 // 12. 메일이 정상적으로 발송됬는지 체크한다.
                 // 12-1. 메일 발송이 성공한 경우
-                // 12-1-1. 4에서 파라미터로 받아온 이메일 아이디와 7에서 생성한 인증 번호를 DTO로 변환한다.
-                Member.rpCheckEmailId rpCheckEmailId = new Member.rpCheckEmailId(emailId, mailKey);
+                // 12-1-1. 4에서 파라미터로 받아온 이메일 아이디와 7에서 생성한 인증 번호를 비밀번호 암호화 메소드를 사용하여 DTO로 변환한다.
+                Member.rpCheckEmailId rpCheckEmailId = new Member.rpCheckEmailId(emailId, mailKey, passwordEncoder);
                 // 12-1-2. 12-1-1에서 변환된 DTO를 반환한다.
                 return rpCheckEmailId;
             // 12-2. 메일 발송이 실패한 경우
@@ -158,19 +158,15 @@ public class SignUpService implements UserDetailsService {
             String hostSMTP = "smtp.naver.com"; // 사용할 SMTP
             String hostSMTPid = ""; // 사용할 SMTP에 해당하는 ID - 이메일 형식
             String hostSMTPpwd = ""; // 사용할 ID에 해당하는 PWD
-
+            // 보내는 사람 E-Mail, 제목, 내용
+            String fromEmail = ""; // 보내는 사람 email - - hostSMTPid와 동일하게 작성
+            String fromName = "관리자"; // 보내는 사람 이름
+            // 받는 사람 E-Mail 주소
+            String mail = emailId; // 받는 사람 email
             // 가장 중요한 TLS설정 - 이것이 없으면 신뢰성 에러가 나온다
             Properties props = System.getProperties();
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.ssl.protocols", "TLSv1.2");
-
-            // 보내는 사람 E-Mail, 제목, 내용
-            String fromEmail = ""; // 보내는 사람 email - - hostSMTPid와 동일하게 작성
-            String fromName = "관리자"; // 보내는 사람 이름
-            String subject = "[Mate] 이메일 인증번호 발송 안내입니다."; // 제목
-
-            // 받는 사람 E-Mail 주소
-            String mail = emailId; // 받는 사람 email
 
             try {
                 HtmlEmail email = new HtmlEmail(); // Email 생성
@@ -181,6 +177,7 @@ public class SignUpService implements UserDetailsService {
                 email.setAuthentication(hostSMTPid, hostSMTPpwd); // SMTP 이메일 및 비밀번호
                 email.addTo(mail); // 메일 수신자 이메일
                 email.setFrom(fromEmail, fromName, charSet); // 메일 발신자 정보
+                email.setSubject("[Mate] 이메일 인증번호 발송 안내입니다."); // 메일 제목
                 email.setHtmlMsg("<p>" + "[메일 인증 안내입니다.]" + "</p>" +
                                  "<p>" + "Mate를 사용해 주셔서 감사드립니다." + "</p>" +
                                  "<p>" + "아래 인증 코드를 '인증번호'란에 입력해 주세요." + "</p>" +
