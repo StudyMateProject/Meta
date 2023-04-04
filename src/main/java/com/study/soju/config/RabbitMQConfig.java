@@ -6,6 +6,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,6 +38,7 @@ public class RabbitMQConfig {
         // 필수 속성(Mandatory)을 설정한다.
         // 필수 속성을 설정하면 메시지 라우팅이 실패한 경우, 해당 메시지를 반드시 반환하도록 강제한다.
         rabbitTemplate.setMandatory(true);
+        // 설정이 끝난 rabbitTemplate을 반환한다.
         return rabbitTemplate;
     }
 
@@ -52,27 +54,44 @@ public class RabbitMQConfig {
 
     // "MsgQueue"라는 이름을 가진 큐를 생성한다.
     @Bean
-    public Queue queue() {
+    public Queue studyRoomQueue() {
         // Queue를 생성한다.
         // 해당 Queue를 사용하여 RabbitMQ에 메시지를 보낼 수 있다.
-        return new Queue("MsgQueue");
+        return new Queue("StudyRoomQueue");
+    }
+    @Bean
+    public Queue cafeRoomQueue() {
+        // Queue를 생성한다.
+        // 해당 Queue를 사용하여 RabbitMQ에 메시지를 보낼 수 있다.
+        return new Queue("CafeRoomQueue");
     }
 
     // "MsgExchange"라는 이름을 가진 Direct Exchange를 생성한다.
     @Bean
-    public DirectExchange exchange() {
+    public DirectExchange studyRoomExchange() {
         // Direct Exchange를 생성한다.
         // Direct Exchange는 Exchange에 바인딩된 Queue들 중에 Routing Key와 일치하는 Queue로만 메시지를 전송한다.
-        return new DirectExchange("MsgExchange");
+        return new DirectExchange("StudyRoomExchange");
+    }
+    @Bean
+    public DirectExchange cafeRoomExchange() {
+        // Direct Exchange를 생성한다.
+        // Direct Exchange는 Exchange에 바인딩된 Queue들 중에 Routing Key와 일치하는 Queue로만 메시지를 전송한다.
+        return new DirectExchange("CafeRoomExchange");
     }
 
-    // Queue("MsgQueue")와 Exchange("MsgExchange")를 Routing Key("MsgRoutingKey")로 Binding해주는 역할을 한다.
-    // 이렇게 설정된 Binding은 Producer가 Exchange("MsgExchange")로 Routing Key("MsgRoutingKey")를 가진 메시지를 전송하면,
-    // 해당 메시지는 Queue("MsgQueue")로 전송된다.
+    // Queue("RoomQueue")와 Exchange("RoomExchange")를 Routing Key("RoomRoutingKey")로 Binding해주는 역할을 한다.
+    // 이렇게 설정된 Binding은 Producer가 Exchange("RoomExchange")로 Routing Key("RoomRoutingKey")를 가진 메시지를 전송하면,
+    // 해당 메시지는 Queue("RoomQueue")로 전송된다.
     @Bean
-    public Binding binding(Queue queue, DirectExchange exchange) { // Queue 객체와 DirectExchange 객체를 파라미터로 받는다.
-        // queue 객체를 exchange 객체와 "MsgRoutingKey"로 바인딩한다.
-        return BindingBuilder.bind(queue).to(exchange).with("MsgRoutingKey");
+    public Binding studyRoomBinding(Queue studyRoomQueue, DirectExchange studyRoomExchange) { // Queue 객체와 DirectExchange 객체를 파라미터로 받는다.
+        // queue 객체를 exchange 객체와 "StudyRoomRoutingKey"로 바인딩한다.
+        return BindingBuilder.bind(studyRoomQueue).to(studyRoomExchange).with("StudyRoomRoutingKey");
+    }
+    @Bean
+    public Binding cafeRoomBinding(Queue cafeRoomQueue, DirectExchange cafeRoomExchange) { // Queue 객체와 DirectExchange 객체를 파라미터로 받는다.
+        // queue 객체를 exchange 객체와 "CafeRoomRoutingKey"로 바인딩한다.
+        return BindingBuilder.bind(cafeRoomQueue).to(cafeRoomExchange).with("CafeRoomRoutingKey");
     }
 
     // RabbitMQ의 관리 기능을 활용하기 위한 RabbitAdmin 객체를 생성한다.

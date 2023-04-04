@@ -34,7 +34,7 @@
 
         <!-- 상단 오른쪽 메뉴바 구역 -->
         <div class="menuBarAreaCss">
-            <input class="menuBarExitBtnCss" type="button" value="나가기" th:onclick="|location.href='@{/meta/btnexit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|">
+            <input class="menuBarExitBtnCss" type="button" value="나가기" th:onclick="|location.href='@{/meta/selfexit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|">
         </div>
     </div>
 
@@ -126,7 +126,7 @@
 
             // 5. subscribe(path, callback)으로 메시지를 받을 수 있다.
             //    StompChatController에서 SimpMessagingTemplate를 통해 전달한 DTO를 여기서 콜백 메소드 파라미터로 전달 받는다.
-            stomp.subscribe("/sub/meta/studyRoom/" + metaIdx, function (chat) {
+            stomp.subscribe("/sub/meta/studyroom/" + metaIdx, function (chat) {
                 // 5-1. 채팅에 필요한 것들
                 var chatArea = document.getElementById("chatArea"); // 메시지가 작성될 채팅 구역
                 var str = ""; // 메시지 코드가 작성될 변수
@@ -173,7 +173,7 @@
 
                     // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                     chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
-                    ///////////////////////////////////////////전달 받은 녹음 재생///////////////////////////////////////////
+                    ////////////////////////////////////////// 전달 받은 녹음 재생 //////////////////////////////////////////
                     // 8. 채팅 구역에 올라가 있는 audio(오디오) 태그를 모두 선택하여 audioTags 변수에 NodeList 형태로 저장한다.
                     // querySelectorAll - HTML 문서 내에서 특정 CSS 선택자에 해당하는 요소들을 찾아 NodeList 형태로 반환하는 메소드이다.
                     // NodeList - DOM에서 사용되는 객체로, 여러 개의 노드(HTML 요소, 속성, 텍스트 등)가 포함될 수 있는 리스트 형태의 객체를 나타낸다.
@@ -332,7 +332,7 @@
                     } // participant
                     ////////////////////////////////////////////////////////////////////////////////////////////////////
                     // 10. 메시지 타입 값에 따라 나눈다.
-                    ////////////////////////////////////////////////첫 입장////////////////////////////////////////////////
+                    /////////////////////////////////////////////// 첫 입장 ///////////////////////////////////////////////
                     // 10-1. 메시지 타입이 "enter"일 경우
                     if ( metaType == "enter" ) {
                         // 메시지 코드를 작성한다.
@@ -350,7 +350,7 @@
                         // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                         chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
                     } // enter
-                    ////////////////////////////////////////////재입장(새로고침)////////////////////////////////////////////
+                    /////////////////////////////////////////// 재입장(새로고침) ///////////////////////////////////////////
                     // 10-2. 메시지 타입이 "reEnter"일 경우
                     if ( metaType == "reEnter" ) {
                         // 전달 받은 메시지가 존재하는지 체크한다.
@@ -376,7 +376,7 @@
                             chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
                         } // null
                     } // reEnter
-                    //////////////////////////////////////////재입장(새로고침) 에러//////////////////////////////////////////
+                    ///////////////////////////////////////// 재입장(새로고침) 에러 /////////////////////////////////////////
                     // 10-3. 메시지 타입이 "reErr"일 경우
                     if ( metaType == "reErr" ) {
                         // exitTimeoutId에 저장된 setTimeout ID를 사용하여 실행 중인 타이머를 취소한다.
@@ -384,10 +384,10 @@
                         // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
                         if ( writer === metaNickname ) {
                             // 재입장(새로고침) 에러로 입장 메시지를 재전송 한다.
-                            stomp.send('/pub/meta/studyRoom/enter', {}, JSON.stringify({type: "enter", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel, err: "reErr"}));
+                            stomp.send('/pub/meta/studyroom/enter', {}, JSON.stringify({type: "enter", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel, err: "reErr"}));
                         } // metaNickname
                     } // reErr
-                    /////////////////////////////////////////////////채팅/////////////////////////////////////////////////
+                    //////////////////////////////////////////////// 채팅 ////////////////////////////////////////////////
                     // 10-4. 메시지 타입이 "chat"일 경우
                     if ( metaType == "chat" ) {
                         // 메시지 코드를 작성한다.
@@ -405,7 +405,7 @@
                         // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                         chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
                     } // chat
-                    ///////////////////////////////////////////////방장 위임///////////////////////////////////////////////
+                    ////////////////////////////////////////////// 방장 위임 //////////////////////////////////////////////
                     // 10-5 메시지 타입이 "DelegateMaster"일 경우
                     if ( metaType == "DelegateMaster" ) {
                         // 메시지 코드를 작성한다.
@@ -473,7 +473,7 @@
                         // 4. afterend : 타겟 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
                         profileArea.insertAdjacentHTML("beforeend", afterMasterCode);
                     } // DelegateMaster
-                    ///////////////////////////////////////////////유저 강퇴///////////////////////////////////////////////
+                    ////////////////////////////////////////////// 유저 강퇴 //////////////////////////////////////////////
                     // 10-6. 메시지 타입이 "KickOut"일 경우
                     if ( metaType == "KickOut" ) {
                         // 메시지 코드를 작성한다.
@@ -505,10 +505,10 @@
                             // onunload 이벤트 핸들러를 비활성화한다.
                             document.body.removeAttribute("onunload");
                             // 방 퇴장 URL에 파라미터로 방 번호와 닉네임을 가져가 방에서 퇴장한다.
-                            location.href = "/meta/btnexit?idx=" + metaIdx + "&nickname=" + writer;
+                            location.href = "/meta/selfexit?idx=" + metaIdx + "&nickname=" + writer;
                         } // metaNickname
                     } // KickOut
-                    ///////////////////////////////////////////////방장 퇴장///////////////////////////////////////////////
+                    ////////////////////////////////////////////// 방장 퇴장 //////////////////////////////////////////////
                     // 10-7. 메시지 타입이 "delete"일 경우
                     if ( metaType == "delete" ) {
                         // fetch를 사용하여 방 퇴장 URL에 파라미터로 방 번호와 작성자 닉네임을 가져가 퇴장 처리한다.
@@ -569,7 +569,7 @@
                             location.href = "/meta/delete?idx=" + metaIdx + "&nickname=" + metaNickname;
                         }, 60000); // setTimeout
                     } // delete
-                    ///////////////////////////////////////방장 퇴장 후 1분 이내 재입장///////////////////////////////////////
+                    ////////////////////////////////////// 방장 퇴장 후 1분 이내 재입장 //////////////////////////////////////
                     // 10-8. 메시지 타입이 "cancel"일 경우
                     if ( metaType == "cancel" ) {
                         // boomTimeoutId에 저장된 setTimeout ID를 사용하여 실행 중인 타이머를 취소한다.
@@ -590,7 +590,7 @@
                         // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                         chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
                     } // cancel
-                    ///////////////////////////////////////////////유저 퇴장///////////////////////////////////////////////
+                    ////////////////////////////////////////////// 유저 퇴장 //////////////////////////////////////////////
                     // 10-9. 메시지 타입이 "exit"일 경우
                     if ( metaType == "exit" ) {
                         // setTimeout 메소드를 사용하여 작성자가 퇴장한지 0.1초가 경과하면 작성자가 퇴장되도록 한다.
@@ -639,22 +639,13 @@
                             // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                             chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
 
-                            // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
-                            if ( writer === metaNickname ) {
-                                // 로컬 스토리지를 제거한다.
-                                localStorage.clear();
-                                // 퇴장 URL에 파라미터로 방 번호와 닉네임을 가져가 퇴장한다.
-                                location.href = "/meta/exit?idx=" + metaIdx + "&nickname=" + metaNickname;
-                            // 작성자 닉네임과 로그인 유저 닉네임이 다른 경우 (타 유저)
-                            } else {
-                                // 작성자(퇴장자) 닉네임의 id를 통해 참가자 구역에 작성되어 있는 작성자(퇴장자)를 가져와 mtr 변수에 저장한다.
-                                var mtr = document.getElementById(writer);
-                                // mtr에 저장된 작성자(퇴장자) id를 사용하여 해당 참가자를 제거한다.
-                                mtr.remove();
-                            } // metaNickname
+                            // 작성자(퇴장자) 닉네임의 id를 통해 참가자 구역에 작성되어 있는 작성자(퇴장자)를 가져와 mtr 변수에 저장한다.
+                            var mtr = document.getElementById(writer);
+                            // mtr에 저장된 작성자(퇴장자) id를 사용하여 해당 참가자를 제거한다.
+                            mtr.remove();
                         }, 100); // setTimeout
                     } // exit
-                    //////////////////////////////////참가자를 클릭할 경우 상세 프로필 구역 등장//////////////////////////////////
+                    ///////////////////////////////// 참가자를 클릭할 경우 상세 프로필 구역 등장 /////////////////////////////////
                     // 11. 상세 프로필 기능
                     // 참가자 구역에 올라가 있는 "participant" class에 해당하는 태그를 모두 선택하여 participants 변수에 NodeList 형태로 저장한다.
                     // querySelectorAll - HTML 문서 내에서 특정 CSS 선택자에 해당하는 요소들을 찾아 NodeList 형태로 반환하는 메소드이다.
@@ -825,7 +816,7 @@
                                                     // send(path, header, message)로 방장 위임 메시지를 전송한다. (방장 위임은 여기서 메시지를 전송한다.)
                                                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                                                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 파라미터를 통해 받는다.
-                                                    stomp.send('/pub/meta/studyRoom/delegatemaster', {}, JSON.stringify({type: "DelegateMaster", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaMaster, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel, master: participantNickname, masterProfileImage: participantImage}));
+                                                    stomp.send('/pub/meta/studyroom/delegatemaster', {}, JSON.stringify({type: "DelegateMaster", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaMaster, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel, master: participantNickname, masterProfileImage: participantImage}));
                                                     // 상세 프로필 구역의 style에 "display"를 "none"으로 설정한다.
                                                     detailProfileArea.style.display = "none"; // 상세 프로필 창 닫기
                                                 }
@@ -841,7 +832,7 @@
                                         // send(path, header, message)로 강퇴 메시지를 전송한다. (모든 강퇴는 여기서 메시지를 전송한다.)
                                         // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                                         // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 파라미터를 통해 받는다.
-                                        stomp.send('/pub/meta/studyRoom/kickout', {}, JSON.stringify({type: "KickOut", metaIdx: metaIdx, metaTitle: metaTitle, writer: participantNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
+                                        stomp.send('/pub/meta/studyroom/kickout', {}, JSON.stringify({type: "KickOut", metaIdx: metaIdx, metaTitle: metaTitle, writer: participantNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
                                         // 상세 프로필 구역의 style에 "display"를 "none"으로 설정한다.
                                         detailProfileArea.style.display = "none"; // 상세 프로필 창 닫기
                                     }); // addEventListener
@@ -877,14 +868,14 @@
                 // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장할때 딱 한번만 여기서 입장 메시지를 전송한다.)
                 //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                stomp.send('/pub/meta/studyRoom/enter', {}, JSON.stringify({type: "enter", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel}));
+                stomp.send('/pub/meta/studyroom/enter', {}, JSON.stringify({type: "enter", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel}));
             // 재입장(새로고침)일 경우 - 입장 체크값이 존재한다.
             } else {
                 // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
                 // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장 이후 모든 재입장(새로고침)은 여기서 입장 메시지를 전송한다.)
                 //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                stomp.send('/pub/meta/studyRoom/reenter', {}, JSON.stringify({type: "reEnter", metaIdx: metaIdx, writer: metaNickname, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel}));
+                stomp.send('/pub/meta/studyroom/reenter', {}, JSON.stringify({type: "reEnter", metaIdx: metaIdx, writer: metaNickname, profileImage: metaProfileImage, metaRecruitingPersonnel: metaRecruitingPersonnel}));
             }
         });
         //////////////////////////////////////////////////// 채팅 구역 ////////////////////////////////////////////////////
@@ -966,7 +957,7 @@
                         // send(path, header, message)로 채팅 메시지를 전송한다. (입장 이후 작성되는 모든 메시지는 여기서 전송한다.)
                         // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                         // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                        stomp.send('/pub/meta/studyRoom/message', {}, JSON.stringify({type: "chat", metaIdx: metaIdx, message: message.value, writer: metaNickname}));
+                        stomp.send('/pub/meta/studyroom/message', {}, JSON.stringify({type: "chat", metaIdx: metaIdx, message: message.value, writer: metaNickname}));
                         message.value = ""; // 메시지를 전송한 뒤 공백 상태로 만든다.
                         // 먼저 전송된 메시지 수를 1 증가시킨다.
                         count++;
@@ -1098,7 +1089,7 @@
             // send(path, header, message)를 사용하여 녹음된 오디오 데이터를 메시지로 전송한다. (모든 녹음된 오디오 데이터는 여기서 메시지를 전송한다.)
             // {metaIdx: metaIdx, writer: metaNickname} - 전송할 메시지의 Header로, Header를 통해 metaIdx와 nickname을 전송한다.
             // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 파라미터를 통해 받는다.
-            stomp.send('/pub/meta/studyRoom/record', {metaIdx: metaIdx, writer: metaNickname}, base64Data);
+            stomp.send('/pub/meta/studyroom/record', {metaIdx: metaIdx, writer: metaNickname}, base64Data);
             // recordedChunks 배열을 초기화한다.
             recordedChunks = [];
             // 오디오 태그에 작성되있는 소스를 초기화한다.
@@ -1233,13 +1224,15 @@
                 // send(path, header, message)로 퇴장 메시지를 전송한다. (방장이 퇴장할때 딱 한번만 전송한다.)
                 // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({type: "delete", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, metaRecruitingPersonnel: metaRecruitingPersonnel, master: metaMaster}));
+                stomp.send('/pub/meta/studyroom/exit', {}, JSON.stringify({type: "delete", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, metaRecruitingPersonnel: metaRecruitingPersonnel, master: metaMaster}));
             // 닉네임이 다른 경우 - 유저 퇴장
             } else {
+                // 로컬 스토리지를 제거한다.
+                localStorage.clear();
                 // send(path, header, message)로 퇴장 메시지를 전송한다. (퇴장할때 딱 한번만 전송한다.)
                 // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                stomp.send('/pub/meta/studyRoom/exit', {}, JSON.stringify({type: "exit", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
+                stomp.send('/pub/meta/studyroom/exit', {}, JSON.stringify({type: "exit", metaIdx: metaIdx, metaTitle: metaTitle, writer: metaNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
             }
         }
     </script>
@@ -1297,7 +1290,7 @@
 
             // 5. subscribe(path, callback)으로 메시지를 받을 수 있다.
             //    StompChatController에서 SimpMessagingTemplate를 통해 전달한 DTO를 여기서 콜백 메소드 파라미터로 전달 받는다.
-            canvasStomp.subscribe("/sub/meta/studyRoom/canvas/" + canvasMetaIdx, function (message) {
+            canvasStomp.subscribe("/sub/meta/studyroom/canvas/" + canvasMetaIdx, function (message) {
                 // 6. JSON.parse(변환 대상) - JSON 문자열을 JavaScript 값이나 객체로 변환한다.
                 //    JSON형식으로 넘어온 DTO를 JavaScript형식으로 변환한다.
                 var canvasContent = JSON.parse(message.body);
@@ -1333,7 +1326,7 @@
                     // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
                     if ( canvasWriter == canvasNickname ) {
                         // 재입장 에러로 입장 메시지 재전송
-                        canvasStomp.send('/pub/meta/studyRoom/canvas/enter', {}, JSON.stringify({type: "enter", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));
+                        canvasStomp.send('/pub/meta/studyroom/canvas/enter', {}, JSON.stringify({type: "enter", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));
                     }
                 }
 
@@ -1379,14 +1372,14 @@
                 // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장할때 딱 한번만 여기서 입장 메시지를 전송한다.)
                 //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                canvasStomp.send('/pub/meta/studyRoom/canvas/enter', {}, JSON.stringify({type: "enter", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));
+                canvasStomp.send('/pub/meta/studyroom/canvas/enter', {}, JSON.stringify({type: "enter", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));
             // 재입장(새로고침)일 경우 - 입장 체크값이 존재한다.
             } else {
                 // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
                 // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장 이후 모든 재입장(새로고침)은 여기서 입장 메시지를 전송한다.)
                 //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                 //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                canvasStomp.send('/pub/meta/studyRoom/canvas/reenter', {}, JSON.stringify({type: "reEnter", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));
+                canvasStomp.send('/pub/meta/studyroom/canvas/reenter', {}, JSON.stringify({type: "reEnter", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));
             }
         });
         /////////////////////////////////////////////////// 캔버스 구역 ///////////////////////////////////////////////////
@@ -1475,28 +1468,28 @@
                     // send(path, header, message)로 채팅 메시지를 전송한다. (왼쪽 키가 눌릴 경우 여기서 이동 메시지를 전송한다.)
                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    canvasStomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type: "left", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, canvasLeft: canvasLeft, canvasTop: canvasTop, canvasRight: canvasRight, canvasBottom: canvasBottom}));
+                    canvasStomp.send('/pub/meta/studyroom/canvas/move', {}, JSON.stringify({type: "left", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, canvasLeft: canvasLeft, canvasTop: canvasTop, canvasRight: canvasRight, canvasBottom: canvasBottom}));
                     break;
                 // 위로 이동
                 case 38:
                     // send(path, header, message)로 채팅 메시지를 전송한다. (위쪽 키가 눌릴 경우 여기서 이동 메시지를 전송한다.)
                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    canvasStomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type: "top", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, canvasLeft: canvasLeft, canvasTop: canvasTop, canvasRight: canvasRight, canvasBottom: canvasBottom}));
+                    canvasStomp.send('/pub/meta/studyroom/canvas/move', {}, JSON.stringify({type: "top", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, canvasLeft: canvasLeft, canvasTop: canvasTop, canvasRight: canvasRight, canvasBottom: canvasBottom}));
                     break;
                 // 오른쪽으로 이동
                 case 39:
                     // send(path, header, message)로 채팅 메시지를 전송한다. (오른쪽 키가 눌릴 경우 여기서 이동 메시지를 전송한다.)
                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    canvasStomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type: "right", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, canvasLeft: canvasLeft, canvasTop: canvasTop, canvasRight: canvasRight, canvasBottom: canvasBottom}));
+                    canvasStomp.send('/pub/meta/studyroom/canvas/move', {}, JSON.stringify({type: "right", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, canvasLeft: canvasLeft, canvasTop: canvasTop, canvasRight: canvasRight, canvasBottom: canvasBottom}));
                     break;
                 // 아래로 이동
                 case 40:
                     // send(path, header, message)로 채팅 메시지를 전송한다. (아래쪽 키가 눌릴 경우 여기서 이동 메시지를 전송한다.)
                     // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
                     // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                    canvasStomp.send('/pub/meta/studyRoom/canvas/move', {}, JSON.stringify({type: "bottom", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, canvasLeft: canvasLeft, canvasTop: canvasTop, canvasRight: canvasRight, canvasBottom: canvasBottom}));
+                    canvasStomp.send('/pub/meta/studyroom/canvas/move', {}, JSON.stringify({type: "bottom", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, canvasLeft: canvasLeft, canvasTop: canvasTop, canvasRight: canvasRight, canvasBottom: canvasBottom}));
                     break;
             }
         }

@@ -512,7 +512,11 @@
             <div class="bodyDivLeftSpanBottom">
                 <div class="bodyDivLeftSpanBottomTop">
                     <input class="bodyDivLeftSpanBottomTopLeft" type="button" value="방 만들기" onclick="location.href='/meta/createmetaform'">
-                    <input class="bodyDivLeftSpanBottomTopRight" type="button" value="혼자 공부방">
+                    <form action="/meta/createmetaform/createmeta" method="GET">
+                        <input name="metaType" type="hidden" value="oneRoom">
+                        <input name="metaMaster" type="hidden" th:value="${metaProfile.nickname}"></li>
+                        <input class="bodyDivLeftSpanBottomTopRight" type="submit" value="혼자 공부방">
+                    </form>
                 </div>
                 <div class="bodyDivLeftSpanBottomBottom">
                     <div class="bodyDivLeftSpanBottomBottomTop">

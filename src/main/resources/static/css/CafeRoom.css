@@ -1,0 +1,199 @@
+.titleAreaCss {
+    border: 2px solid black;
+    height: 1.5%;
+    margin-bottom: 0.1%;
+}
+
+.topAreaCss {
+    display: flex;
+    justify-content: space-between;
+    height: 10%;
+    margin-bottom: 0.5%;
+}
+
+.participantAreaCss {
+    display: flex;
+    border: 2px solid black;
+    box-sizing: border-box;
+    width: 80%;
+}
+
+.participantCss {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid black;
+    box-sizing: border-box;
+    width: 10%;
+    height: 100%;
+}
+
+.participantImageCss {
+    width: 50%;
+    height:100%;
+}
+
+.participantNicknameAreaCss {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: 100%;
+}
+
+.participantNicknameCss {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 50%;
+    justify-content: flex-start;
+}
+
+.participantMasterCss {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 50%;
+    justify-content: flex-end;
+    color: red;
+}
+
+.menuBarAreaCss {
+    border: 2px solid black;
+    box-sizing: border-box;
+    width: 19.5%;
+}
+
+.menuBarExitBtnCss {
+    width: 25%;
+    height: 100%;
+}
+
+.middleAreaCss {
+    display: flex;
+    justify-content: space-between;
+    height: 80%;
+}
+
+.metaCanvasCss {
+    border: 2px solid black;
+    box-sizing: border-box;
+    width: 80%;
+}
+
+.detailProfileAndChatAreaCss {
+    width: 19.5%;
+    margin-left: 0.5%
+}
+
+.detailProfileAndChatCss {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.detailProfileAreaCss {
+    display: none;
+    border: 2px solid black;
+    box-sizing: border-box;
+    width: 100%;
+    height: 25%;
+    margin-bottom: 2.5%;
+    background: white;
+}
+
+.detailProfileCloseBtnCss {
+    border: 1px solid black;
+    box-sizing: border-box;
+    cursor: pointer;
+    float: right;
+}
+
+.detailProfileImageAreaCss {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50%;
+    width: 100%;
+}
+
+.detailProfileImageCss {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.detailProfileNicknameAreaCss {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 30%;
+    width: 100%;
+}
+
+.chatAreaCss {
+    border: 2px solid black;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.chatTitleCss {
+    text-align: center;
+}
+
+.bottomAreaCss {
+    display: flex;
+    justify-content: space-between;
+    height: 5%;
+    margin-top: 0.5%;
+}
+
+.recordAreaCss {
+    border: 2px solid black;
+    box-sizing: border-box;
+    width: 80%;
+}
+
+.recordCss {
+    width: 70%;
+    height: 100%;
+    float: left;
+}
+
+.recordSendBtnCss {
+    width: 10%;
+    height: 100%;
+    float: right;
+}
+
+.recordStopBtnCss {
+    width: 10%;
+    height: 100%;
+    float: right;
+}
+
+.recordStartBtnCss {
+    width: 10%;
+    height: 100%;
+    float: right;
+}
+
+.messageAreaCss {
+    border: 2px solid black;
+    box-sizing: border-box;
+    width: 19.5%;
+    display:flex;
+    justify-content: space-between;
+}
+
+.messageCss {
+    border: none;
+    width: 70%;
+    height: 96.5%;
+}
+
+.messageSendBtnCss {
+    width: 25%;
+    height: 100%;
+}

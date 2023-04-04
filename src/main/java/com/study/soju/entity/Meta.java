@@ -73,14 +73,25 @@ public class Meta {
         private int metaPersonnel;
         private String metaMaster;
 
-        // DTO를 Entity로 변환 (빌더 방식)
+        // DTO를 Entity로 변환 (빌더 방식) - 스터디룸, 카페룸
         public Meta toEntity() {
             return Meta.builder()
                     .idx(null) // MySQL에서 AUTO_INCREMENT를 사용하면 null값이 들어가야 자동으로 숫자가 올라간다.
                     .metaTitle(metaTitle)
                     .metaType(metaType)
                     .metaPersonnel(metaPersonnel)
-                    .metaRecruitingPersonnel(0) // 방을 생성할때 참여중인 인원은 항상 0이다.
+                    .metaRecruitingPersonnel(1) // 방을 생성할때 참여중인 인원은 항상 1이다.
+                    .metaMaster(metaMaster)
+                    .build();
+        }
+        // DTO를 Entity로 변환 (빌더 방식) - 자습실
+        public Meta toOneRoom() {
+            return Meta.builder()
+                    .idx(null) // MySQL에서 AUTO_INCREMENT를 사용하면 null값이 들어가야 자동으로 숫자가 올라간다.
+                    .metaTitle("자습실")
+                    .metaType("oneRoom")
+                    .metaPersonnel(1)
+                    .metaRecruitingPersonnel(1) // 방을 생성할때 참여중인 인원은 항상 0이다.
                     .metaMaster(metaMaster)
                     .build();
         }
