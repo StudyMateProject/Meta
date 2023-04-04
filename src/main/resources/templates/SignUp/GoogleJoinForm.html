@@ -108,13 +108,13 @@
         // textbox & 버튼(2개이상)을 누르면 함수가 실행되도록 하는 방법
         // querySelectorAll로 id값(#id)을 불러와서 배열로 생성, 이후 forEach문을 활용해 각각의 것을 눌렀을 때 실행되게 하도록 한다.
         let openPort = document.querySelectorAll("#phoneNumber, #btnPhone");
-        openPort.forEach(function(element){
+        openPort.forEach(function(element) {
             element.addEventListener("click", function() {
                 var IMP = window.IMP; // init로 객체초기화 (가맹점식별코드)
                 IMP.init("imp88140833"); // 가맹점 번호
                 IMP.certification({
                     popup: true // 팝업 사용
-                } ,function (rsp) { // 1. 파라미터로 rsp를 받아온다.
+                }, function (rsp) { // 1. 파라미터로 rsp를 받아온다.
                     if ( rsp.success ){ // 인증에 성공할 경우
                         // 2. 1에서 파라미터로 받아온 rsp에서 imp_uid를 가져온다.
                         let impUid = rsp.imp_uid;

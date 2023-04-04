@@ -6,6 +6,8 @@ import com.study.soju.repository.MemberRepository;
 import lombok.Builder;
 import org.apache.commons.mail.HtmlEmail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,7 +25,7 @@ public class SignUpService implements UserDetailsService {
     MemberRepository memberRepository;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 아이디 중복체크 및 메일로 인증 번호 발송
-    public Member.rpCheckEmailId checkEmailId(String emailId, PasswordEncoder passwordEncoder) { // 4. 파라미터로 컨트롤러에서 넘어온 아이디와 비밀번호 암호화 메소드를 받아온다.
+    public Member.rpCheckEmailId checkEmailId(String emailId, PasswordEncoder passwordEncoder, String naverId, String naverPwd) { // 4. 파라미터로 컨트롤러에서 넘어온 아이디와 비밀번호 암호화 메소드를 받아온다.
         // 5. 4에서 파라미터로 받아온 이메일 아이디로 유저를 조회하고, 조회된 값을 받아온다.
         Member member = memberRepository.findByEmailId(emailId);
         // 6. 5에서 조회된 값이 있는지 체크한다.
@@ -42,10 +44,10 @@ public class SignUpService implements UserDetailsService {
             // 8-1. Mail Server
             String charSet = "UTF-8"; // 사용할 언어셋
             String hostSMTP = "smtp.naver.com"; // 사용할 SMTP
-            String hostSMTPid = ""; // 사용할 SMTP에 해당하는 이메일
-            String hostSMTPpwd = ""; // 사용할 hostSMTPid에 해당하는 PWD
+            String hostSMTPid = naverId; // 사용할 SMTP에 해당하는 이메일
+            String hostSMTPpwd = naverPwd; // 사용할 hostSMTPid에 해당하는 PWD
             // 8-2. 메일 발신자 및 수신자
-            String fromEmail = ""; // 메일 발신자 이메일 - hostSMTPid와 동일하게 작성한다.
+            String fromEmail = naverId; // 메일 발신자 이메일 - hostSMTPid와 동일하게 작성한다.
             String fromName = "관리자"; // 메일 발신자 이름
             String mail = emailId; // 메일 수신자 이메일 - 3에서 파라미터로 받아온 아이디를 작성한다.
             // 8-3. 가장 중요한 TLS - 이것이 없으면 신뢰성 에러가 나온다
@@ -144,55 +146,6 @@ public class SignUpService implements UserDetailsService {
         }
     }
     ////////////////////////////////////////////////PWD찾기(재설정)////////////////////////////////////////////////
-    // 비밀번호 재설정 전, 본인인증 메일 전송
-    public String pwdEmailCheck(String emailId){
-        Member member = memberRepository.findByEmailId(emailId);
-        if( member == null ) {
-            return "no";
-        } else {
-            //MailKeyDTO불러와서 사용
-            String mailKey = new MailKeyDTO().getKey(7, false);
-
-            //Mail Server 설정
-            String charSet = "UTF-8"; // 사용할 언어셋
-            String hostSMTP = "smtp.naver.com"; // 사용할 SMTP
-            String hostSMTPid = ""; // 사용할 SMTP에 해당하는 ID - 이메일 형식
-            String hostSMTPpwd = ""; // 사용할 ID에 해당하는 PWD
-            // 보내는 사람 E-Mail, 제목, 내용
-            String fromEmail = ""; // 보내는 사람 email - - hostSMTPid와 동일하게 작성
-            String fromName = "관리자"; // 보내는 사람 이름
-            // 받는 사람 E-Mail 주소
-            String mail = emailId; // 받는 사람 email
-            // 가장 중요한 TLS설정 - 이것이 없으면 신뢰성 에러가 나온다
-            Properties props = System.getProperties();
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.ssl.protocols", "TLSv1.2");
-
-            try {
-                HtmlEmail email = new HtmlEmail(); // Email 생성
-                email.setDebug(true); // 디버그 사용
-                email.setCharset(charSet); // 언어셋 사용
-                email.setHostName(hostSMTP); // SMTP 사용
-                email.setSmtpPort(587);	// SMTP 포트 번호 입력
-                email.setAuthentication(hostSMTPid, hostSMTPpwd); // SMTP 이메일 및 비밀번호
-                email.addTo(mail); // 메일 수신자 이메일
-                email.setFrom(fromEmail, fromName, charSet); // 메일 발신자 정보
-                email.setSubject("[Mate] 이메일 인증번호 발송 안내입니다."); // 메일 제목
-                email.setHtmlMsg("<p>" + "[메일 인증 안내입니다.]" + "</p>" +
-                                 "<p>" + "Mate를 사용해 주셔서 감사드립니다." + "</p>" +
-                                 "<p>" + "아래 인증 코드를 '인증번호'란에 입력해 주세요." + "</p>" +
-                                 "<p>" + mailKey + "</p>"); // 본문 내용
-                email.send(); // 메일 보내기
-                // 메일 보내기가 성공하면 메일로 보낸 랜덤키를 콜백 메소드에도 전달
-                return mailKey;
-            } catch (Exception e) {
-                System.out.println(e);
-                // 메일 보내기가 실패하면 "no"를 콜백 메소드에 전달
-                return "no";
-            }
-        }
-    }
-
     // PWD 재설정을 위한 정보확인
     public String findPwdSearch(Member.rqFindPwd rqFindPwd){
         Member member = rqFindPwd.toEntity();

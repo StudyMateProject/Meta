@@ -45,6 +45,8 @@ dependencies {
 	// Jackson
 	//implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.4'
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	// @Value 어노테이션
+	implementation'org.springframework.boot:spring-boot-configuration-processor'
 }
 
 tasks.named('test') {

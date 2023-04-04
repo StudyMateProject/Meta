@@ -7,6 +7,8 @@ import com.study.soju.httpclient.IamPortPass;
 import com.study.soju.service.SignUpOAuthService;
 import com.study.soju.service.SignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
+@PropertySource("classpath:application-information.properties")
 @Controller
 public class SignUpController {
     // 회원가입 및 로그인 인증 서비스
@@ -30,6 +33,12 @@ public class SignUpController {
     // 비밀번호 암호화 메소드
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    // properties - SMTP ID/PWD
+    @Value("${naverId:naverId}")
+    private String naverId;
+    @Value("${naverPwd:naverPwd}")
+    private String naverPwd;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 로그인 진행 URL
     @PostMapping("/loginform/login")
@@ -54,8 +63,9 @@ public class SignUpController {
     @PostMapping("/joinform/emailsend")
     @ResponseBody
     public Member.rpCheckEmailId emailSend(String emailId) { // 2. 파라미터로 Ajax를 통해 넘어온 아이디를 받아온다.
-        // 3. 2에서 파라미터로 받아온 아이디와 비밀번호 암호화 메소드를 같이 서비스에 전달한다.
-        Member.rpCheckEmailId rpCheckEmailId =  signUpService.checkEmailId(emailId, passwordEncoder);
+        // 3. 2에서 파라미터로 받아온 아이디와 비밀번호 암호화 메소드를 서비스에 전달한다.
+        //    이때 SMTP에 사용할 이메일 정보들도 같이 서비스에 전달한다.
+        Member.rpCheckEmailId rpCheckEmailId =  signUpService.checkEmailId(emailId, passwordEncoder, naverId, naverPwd);
         // 13. 3에서 반환된 DTO를 콜백 메소드에 반환한다.
         return rpCheckEmailId;
     }
@@ -135,7 +145,7 @@ public class SignUpController {
     @PostMapping("/joinform/join")
     @ResponseBody
     public String join(Member.rqJoinMember rqJoinMember, Model model) { // 1. 파라미터로 form을 통해 넘어온 DTO를 받아온다.
-        // 2. 1에서 파라미터로 넘어온 DTO와 비밀번호 암호화 메소드를 같이 서비스에 전달한다.
+        // 2. 1에서 파라미터로 넘어온 DTO와 비밀번호 암호화 메소드를 서비스에 전달한다.
         String res = signUpService.joinMember(rqJoinMember, passwordEncoder);
         // 7. 2에서 반환받은 회원가입 결과 값을 클라이언트로 반환한다.
         return res;
@@ -333,14 +343,6 @@ public class SignUpController {
         //바인딩
         model.addAttribute("memberDTO", new Member.rqFindPwd());
         return "/SignUp/FindPwd";
-    }
-
-    //비밀번호 재설정 이메일 인증
-    @PostMapping("/loginform/findpwdform/emailcheck")
-    @ResponseBody
-    public String findPwdEmailCheck(String emailId) {
-        String checkEmailId = signUpService.pwdEmailCheck(emailId);
-        return checkEmailId;
     }
 
     //PW 재설정을 위한 정보확인

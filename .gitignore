@@ -38,3 +38,5 @@ out/
 
 ### OAuth ###
 application-oauth.properties
+### Information ###
+application-information.properties
