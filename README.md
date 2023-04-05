@@ -242,7 +242,7 @@
 	CREATE TABLE Member (
 		idx BIGINT PRIMARY KEY AUTO_INCREMENT,
 		##################회원가입 전 입력##################
-		emailId VARCHAR(50) PRIMARY KEY, #이메일 형식 아이디
+		emailId VARCHAR(50) UNIQUE NOT NULL, #이메일 형식 아이디
 		pwd VARCHAR(255) NOT NULL, #비밀번호
 		name VARCHAR(10) NOT NULL, #이름
 		nickname VARCHAR(20) UNIQUE NOT NULL, #닉네임
@@ -309,7 +309,7 @@
 	CREATE TABLE Member (
 		idx BIGINT PRIMARY KEY AUTO_INCREMENT,
 		##################회원가입 전 입력##################
-		emailId VARCHAR(50) PRIMARY KEY, #이메일 형식 아이디
+		emailId VARCHAR(50) UNIQUE NOT NULL, #이메일 형식 아이디
 		pwd VARCHAR(255) NOT NULL, #비밀번호
 		name VARCHAR(10) NOT NULL, #이름
 		nickname VARCHAR(20) UNIQUE NOT NULL, #닉네임
@@ -365,7 +365,7 @@
 	CREATE TABLE Member (
 		idx BIGINT PRIMARY KEY AUTO_INCREMENT,
 		##################회원가입 전 입력##################
-		emailId VARCHAR(50) PRIMARY KEY, #이메일 형식 아이디
+		emailId VARCHAR(50) UNIQUE NOT NULL, #이메일 형식 아이디
 		pwd VARCHAR(255), #비밀번호
 		name VARCHAR(10) NOT NULL, #이름
 		nickname VARCHAR(10) UNIQUE NOT NULL, #닉네임
@@ -417,5 +417,11 @@
 #### ✔ 스터디룸 완성 후 카페룸도 동일하게 구현 완료
 #### ✔ 스터디룸과 카페룸 메시지 큐 분리 완료
 #### ✔ 자습실은 페이지 구현은 완료되었고, 퇴장과 새로고침 구분 구현 중
+
+#
+
+### 📌 04/05
+#### ✔ 자습실 STOMP 소켓을 사용하여 퇴장과 새로고침 구분 구현 완료
+#### ✔ 스터디룸과 카페룸도 STOMP 소켓을 사용하여 방장 혼자일때 퇴장하는 경우 방 삭제되도록 구현 완료
 
 #
