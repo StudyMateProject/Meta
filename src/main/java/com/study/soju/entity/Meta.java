@@ -3,6 +3,7 @@ package com.study.soju.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter // getter 어노테이션
 @Setter // setter 어노테이션

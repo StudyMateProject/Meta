@@ -192,7 +192,7 @@
         const notiDrop = document.querySelector('.notiDrop');
         let status = 0; //0이면 클릭 안된 상태, 1이면 클릭 된 상태
 
-        function open(e){
+        function menuOpen(e){
             if ( e == 1 ){
                 notiDrop.style.display = "block";
             } else {
@@ -202,10 +202,10 @@
         icon.addEventListener('click', function () {
             if( status == 0 ){
                 status = 1;
-                open(status);
+                menuOpen(status);
             } else{
                 status = 0;
-                open(status);
+                menuOpen(status);
             }
         });
     </script>

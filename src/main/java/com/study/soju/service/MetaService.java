@@ -231,32 +231,9 @@ public class MetaService {
         return res;
     }
 
-    // 자습실 참여중인 인원 감소 - 퇴장
-    public void exitOneRoom(long idx) {
-        metaRepository.updateExitOneRoom(idx);
-    }
-
-    // 자습실 참여중인 인원 증가 - 재입장(새로고침)
-    public void entranceOneRoom(long idx) {
-        metaRepository.updateEntranceOneRoom(idx);
-    }
-
-    // 자습실 참가 상태 체크 - 퇴장인지 재입장인지 체크
-    public int entranceCheckOneRoom(long idx) {
-        Meta meta = metaRepository.findByIdx(idx);
-        return meta.getMetaRecruitingPersonnel();
-    }
-
-    // 자습실 삭제
-    public void deleteOneRoom(long idx) {
-        metaRepository.deleteByIdx(idx);
-    }
-
     // 방 삭제
     public void delete(long idx) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호에 해당하는 방을 삭제한다. (@Query 어노테이션 사용)
         metaRepository.deleteByIdx(idx);
-        // 3. 1에서 파라미터로 받아온 방 번호에 해당하는 방 내부 참여자 명단에 존재하는 참가자들을 모두 삭제한다. (@Query 어노테이션 사용)
-        metaRoomRepository.deleteByMetaIdx(idx);
     }
 }
