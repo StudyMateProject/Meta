@@ -124,7 +124,7 @@ public class StompChatController {
             //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
             //        "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
             template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
-        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.1초가 넘는 장시간의 새로고침 에러로 인한 퇴장 처리 후 재입장된 것으로,
+        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.3초가 넘는 장시간의 새로고침 에러로 인한 퇴장 처리 후 재입장된 것으로,
         //                                 이는 아직 퇴장한 것이 아닌데 퇴장 처리가 되었으므로 다시 입장 처리를 해준다.
         } else {
             // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 setter를 통해 "reErr"로 변경한다. - 재입장 에러 값
@@ -246,11 +246,11 @@ public class StompChatController {
         //            run() 메소드는 매개변수를 받지 않으며, 리턴값도 없다.
         return CompletableFuture.runAsync(() -> {
             try {
-                // 5. 퇴장 메시지를 전송하기 전에 0.1초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
-                Thread.sleep(100);
+                // 5. 퇴장 메시지를 전송하기 전에 0.3초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
+                Thread.sleep(300);
                 // 6. 4에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
                 ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
-                // 7. 5에서 0.1초 대기한 후에도 6에서 가져온 DTO가 여전히 존재하는지 체크한다.
+                // 7. 5에서 0.3초 대기한 후에도 6에서 가져온 DTO가 여전히 존재하는지 체크한다.
                 // 7-1. 퇴장 메시지가 존재하는 경우 - 퇴장
                 if ( exitMessage == null ) {
                     // 7-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
@@ -655,7 +655,7 @@ public class StompChatController {
             //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
             //        "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
             template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
-        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.1초가 넘는 장시간의 새로고침 에러로 인한 퇴장 처리 후 재입장된 것으로,
+        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.3초가 넘는 장시간의 새로고침 에러로 인한 퇴장 처리 후 재입장된 것으로,
         //                                 이는 아직 퇴장한 것이 아닌데 퇴장 처리가 되었으므로 다시 입장 처리를 해준다.
         } else {
             // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 setter를 통해 "reErr"로 변경한다. - 재입장 에러 값
@@ -777,11 +777,11 @@ public class StompChatController {
         //            run() 메소드는 매개변수를 받지 않으며, 리턴값도 없다.
         return CompletableFuture.runAsync(() -> {
             try {
-                // 5. 퇴장 메시지를 전송하기 전에 0.1초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
-                Thread.sleep(100);
+                // 5. 퇴장 메시지를 전송하기 전에 0.3초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
+                Thread.sleep(300);
                 // 6. 4에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
                 ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
-                // 7. 5에서 0.1초 대기한 후에도 6에서 가져온 DTO가 여전히 존재하는지 체크한다.
+                // 7. 5에서 0.3초 대기한 후에도 6에서 가져온 DTO가 여전히 존재하는지 체크한다.
                 // 7-1. 퇴장 메시지가 존재하는 경우 - 퇴장
                 if ( exitMessage == null ) {
                     // 7-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
@@ -1155,21 +1155,21 @@ public class StompChatController {
         if ( exitMessage != null ) {
             // 3-1-1. 퇴장 메소드에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
             metaMessageMap.remove(message.getMetaIdx() + "_exit");
-        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.1초가 넘는 장시간의 새로고침 에러로 인한 방 퇴장 및 삭제 처리 후 재입장된 것으로,
+        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.3초가 넘는 장시간의 새로고침 에러로 인한 방 퇴장 및 삭제 처리 후 재입장된 것으로,
         //                                 이는 아직 퇴장한 것이 아닌데 에러로 인해 방 퇴장 및 삭제 처리가 되었으므로 다시 새로운 방을 생성해 입장 처리를 해준다.
         } else {
             // 3-2-1. 방 생성에 필요한 방 생성 DTO를 생성한다.
-            Meta.rqCreateMeta rqCreateMeta = new Meta.rqCreateMeta();
+//            Meta.rqCreateMeta rqCreateMeta = new Meta.rqCreateMeta();
             // 3-2-2. 3에서 저장하고 받아온 Entity 값 중 방 번호를 setter를 통하여 방 생성 DTO 값 중 방 타입에 전달한다.
-            rqCreateMeta.setMetaType("oneRoom");
+//            rqCreateMeta.setMetaType("oneRoom");
             // 3-2-3. 1에서 파라미터로 받아온 DTO 값 중 작성자를 setter를 통하여 방 생성 DTO 값 중 방장에 전달한다.
-            rqCreateMeta.setMetaMaster(message.getWriter());
+//            rqCreateMeta.setMetaMaster(message.getWriter());
             // 3-2-4. 위에서 값들이 전달된 방 생성 DTO를 가지고 metaController에 방 생성 메소드를 호출하여 새로운 방을 생성하고 입장한다.
-            metaController.reCreateMetaRoom(rqCreateMeta);
+//            metaController.reCreateMetaRoom(rqCreateMeta);
         }
     }
 
-    // 카페룸 퇴장
+    // 자습실 퇴장
     @MessageMapping(value = "/meta/oneroom/exit")
     // Future - Future 인터페이스는 Java5부터 java.util.concurrency 패키지에서 비동기의 결과값을 받는 용도로 사용했지만 비동기의 결과값을 조합하거나, error를 핸들링할 수가 없었다.
     // CompletionStage - Java 8에서 추가된 인터페이스 중 하나로, 비동기식 계산 결과를 다루기 위한 일종의 통합 API이다.
@@ -1191,11 +1191,11 @@ public class StompChatController {
         //            run() 메소드는 매개변수를 받지 않으며, 리턴값도 없다.
         return CompletableFuture.runAsync(() -> {
             try {
-                // 4. 퇴장 메시지를 전송하기 전에 0.1초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
-                Thread.sleep(100);
+                // 4. 퇴장 메시지를 전송하기 전에 0.3초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
+                Thread.sleep(300);
                 // 5. 3에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
                 ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
-                // 6. 4에서 0.1초 대기한 후에도 5에서 가져온 DTO가 여전히 존재하는지 체크한다.
+                // 6. 4에서 0.3초 대기한 후에도 5에서 가져온 DTO가 여전히 존재하는지 체크한다.
                 // 6-1. 퇴장 메시지가 존재하는 경우 - 퇴장
                 if ( exitMessage == null ) {
                     // 6-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.

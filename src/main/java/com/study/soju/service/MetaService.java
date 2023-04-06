@@ -192,10 +192,18 @@ public class MetaService {
     public Meta.rpEntrance reEntrance(long idx) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
         Meta meta = metaRepository.findByIdx(idx);
-        // 3. 2에서 조회된 Entity를 DTO로 변환한다.
-        Meta.rpEntrance rpEntrance = new Meta.rpEntrance(meta);
-        // 4. 3에서 변환된 DTO를 반환한다.
-        return rpEntrance;
+        // 3. 2에서 조회된 값이 존재하는지 체크한다.
+        // 3-1. 조회된 값이 존재하지 않는 경우 - 새로고침 에러로 방이 삭제된 경우
+        if ( meta == null ) {
+            // 3-1-1. 눌값을 반환한다.
+            return null;
+        // 3-1. 조회된 값이 존재하는 경우 - 새로고침 성공으로 방이 존재하는 경우
+        } else {
+            // 3-2-1. 2에서 조회된 Entity를 DTO로 변환한다.
+            Meta.rpEntrance rpEntrance = new Meta.rpEntrance(meta);
+            // 3-2-2. 3-2-1에서 변환된 DTO를 반환한다.
+            return rpEntrance;
+        }
     }
 
     // 방 번호에 해당하는 방에 참여중인 참가자 전체 조회

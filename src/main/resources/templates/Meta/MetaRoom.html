@@ -4,13 +4,26 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script th:inline="javascript">
-        let err = [[${err}]]; // 에러 메세지
-        // 에러 메세지가 있는 경우
+        let errRoom = [[${errRoom}]]; // 방 에러 메시지
+        let idx = [[${idx}]]; // 방 번호
+        let nickname = [[${nickname}]]; // 닉네임
+        // 방 에러 메시지가 있는 경우
+        if ( errRoom != null ) {
+            alert(errRoom);
+            console.log(errRoom);
+            location.href = "/meta/selfexit?idx=" + idx + "&nickname=" + nickname;
+        }
+    </script>
+
+    <script th:inline="javascript">
+        let err = [[${err}]]; // 에러 메시지
+        // 에러 메시지가 있는 경우
         if (err != null) {
             alert(err);
             location.href = "/meta";
         }
     </script>
+
     <style>
         html {
             height: 100%;
@@ -561,8 +574,7 @@
                                                                                                               <option value="title">방 이름</option></select>
                             <select class="bodyDivRightSpanBottomTopRightLeftSelect" th:field="*{metaType}"><option value="">방 분야</option>
                                                                                                             <option value="studyRoom">스터디</option>
-                                                                                                            <option value="cafeRoom">카페</option>
-                                                                                                            <option value="oneRoom">자습실</option></select>
+                                                                                                            <option value="cafeRoom">카페</option></select>
                         </div>
                         <div class="bodyDivRightSpanBottomTopRightCenter">
                             <input class="bodyDivRightSpanBottomTopRightCenterText" th:field="*{search}" type="text">
@@ -620,8 +632,7 @@
                                                                                                               <option value="title">방 이름</option></select>
                             <select class="bodyDivRightSpanBottomTopRightLeftSelect" th:field="*{metaType}"><option value="">방 분야</option>
                                                                                                             <option value="studyRoom">스터디</option>
-                                                                                                            <option value="cafeRoom">카페</option>
-                                                                                                            <option value="oneRoom">자습실</option></select>
+                                                                                                            <option value="cafeRoom">카페</option></select>
                         </div>
                         <div class="bodyDivRightSpanBottomTopRightCenter">
                             <input class="bodyDivRightSpanBottomTopRightCenterText" th:field="*{search}" type="text">
@@ -659,23 +670,6 @@
                                     (카페)
                                     [[${cafe.metaTitle}]]
                                     ([[${cafe.metaRecruitingPersonnel}]] / [[${cafe.metaPersonnel}]])
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bodyDivRightSpanBottomBottomMid">
-
-                    </div>
-                    <div class="bodyDivRightSpanBottomBottomBottom">
-                        <div class="bodyDivRightSpanBottomBottomBottomTop">
-                            <span>자습실</span>
-                        </div>
-                        <div class="bodyDivRightSpanBottomBottomBottomBottom">
-                            <div class="bodyDivRightSpanBottomBottomBottomBottomValue" th:each="one : ${oneList}">
-                                <a th:href="@{/meta/oneroom(idx=${one.idx})}">
-                                    (자습)
-                                    [[${one.metaTitle}]]
-                                    ([[${one.metaRecruitingPersonnel}]] / [[${one.metaPersonnel}]])
                                 </a>
                             </div>
                         </div>

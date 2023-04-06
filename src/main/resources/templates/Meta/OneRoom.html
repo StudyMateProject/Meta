@@ -4,209 +4,11 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" type="text/css" href="/css/OneRoom.css">
-</head>
-<body onkeydown="keyDown()" onkeyup="keyUp()" onunload="exit()">
-    <div id="titleArea" class="title">
-        <b id="title" th:text="'방 번호 : ' + ${metaRoom.idx} + '   |   ' + '(자습실)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
-    </div>
-    <div class="body">
-            <span class="bodyLeft">
-                <div class="bodyLeftTop">
-                    <div class="bodyLeftTopTop">
-                        <div class="bodyLeftTopTopTop">
-                            <span id="dateSpan"></span>
-                        </div>
-                        <div class="bodyLeftTopTopBottom">
-                            <div class="bodyLeftTopTopBottomLeft">
-                                <span id="meridiemSpan"></span>
-                            </div>
-                            <div class="bodyLeftTopTopBottomRight">
-                                <span id="timeSpan"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bodyLeftTopMid">
-                        <div class="bodyLeftTopMid1">
-                            <div class="bodyLeftTopMid1Top" id="bodyLeftTopMid1Top">
-                                <input class="bodyLeftTopMid1Top1" id="bodyLeftTopMid1Top1" type="button" value="+" onclick="counting('hour', '+')">
-                                <input class="bodyLeftTopMid1Top2" id="bodyLeftTopMid1Top2" type="button" value="-" onclick="counting('hour', '-')">
-                            </div>
-                            <div class="bodyLeftTopMid1Mid">
-                                <span class="bodyLeftTopMid1Mid1" id="bodyLeftTopMid1Mid1">00</span>
-                            </div>
-                            <div class="bodyLeftTopMid1Bottom" id="bodyLeftTopMid1Bottom">
-                                <input class="bodyLeftTopMid1BottomInput" id="bodyLeftTopMid1BottomInput" type="number" onchange="hourChange(this)">
-                            </div>
-                        </div>
-                        <div class="bodyLeftTopMid2">
-                            <span>:</span>
-                        </div>
-                        <div class="bodyLeftTopMid3">
-                            <div class="bodyLeftTopMid3Top" id="bodyLeftTopMid3Top">
-                                <input class="bodyLeftTopMid3Top1" id="bodyLeftTopMid3Top1" type="button" value="+" onclick="counting('minute','+')">
-                                <input class="bodyLeftTopMid3Top2" id="bodyLeftTopMid3Top2" type="button" value="-" onclick="counting('minute','-')">
-                            </div>
-                            <div class="bodyLeftTopMid3Mid">
-                                <span class="bodyLeftTopMid3Mid1" id="bodyLeftTopMid3Mid1">00</span>
-                            </div>
-                            <div class="bodyLeftTopMid3Bottom" id="bodyLeftTopMid3Bottom">
-                                <input class="bodyLeftTopMid3BottomInput" id="bodyLeftTopMid3BottomInput" type="number" onchange="minuteChange(this)">
-                            </div>
-                        </div>
-                        <div class="bodyLeftTopMid4">
-                            <span>:</span>
-                        </div>
-                        <div class="bodyLeftTopMid5">
-                            <div class="bodyLeftTopMid5Top" id="bodyLeftTopMid5Top">
-                                <input class="bodyLeftTopMid5Top1" id="bodyLeftTopMid5Top1" type="button" value="+" onclick="counting('second', '+')">
-                                <input class="bodyLeftTopMid5Top2" id="bodyLeftTopMid5Top2" type="button" value="-" onclick="counting('second', '-')">
-                            </div>
-                            <div class="bodyLeftTopMid5Mid">
-                                <span class="bodyLeftTopMid5Mid1" id="bodyLeftTopMid5Mid1">00</span>
-                            </div>
-                            <div class="bodyLeftTopMid5Bottom" id="bodyLeftTopMid5Bottom">
-                                <input class="bodyLeftTopMid5BottomInput" id="bodyLeftTopMid5BottomInput" type="number" onchange="secondChange(this)">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bodyLeftTopBottom">
-                        <div class="bodyLeftTopBottomTop" id="startButton" onclick="startTimer();">
-                            <span class="bodyLeftTopBottomTopSpan" id="startButtonText">START</span>
-                        </div>
-                        <div class="bodyLeftTopBottomMid" id="stopButton" onclick="stopTimer();">
-                            <span class="bodyLeftTopBottomMidSpan" id="stopButtonText">STOP</span>
-                        </div>
-                        <div class="bodyLeftTopBottomBottom">
-                            <span class="bodyLeftTopBottomBottomLeft" id="timerButton" onclick="timerClick('0');">타이머</span>
-                            <span class="bodyLeftTopBottomBottomRight" id="stopWatchButton" onclick="timerClick('1');">스톱워치</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bodyLeftMid">
-                    <input type="hidden" value="캔버스">
-                    <canvas class="bodyLeftMidCanvas" id="canvas"></canvas>
-                </div>
-                <div class="bodyLeftBottom">
-                    <input type="hidden" value="접속자">
-                </div>
-            </span>
-        <span class="bodyRight">
-            <div class="bodyRightTop">
-                <div class="bodyRightTopTop">
-                    <span>CheckList</span>
-                </div>
-                <div class="bodyRightTopBottom">
-                    <!-- 여기서부터 리스트로 돌리면 됨 -->
-                    <div class="bodyRightTopBottomDiv">
-                        <div class="bodyRightTopBottomDivLeft">
-                            <div class="bodyRightTopBottomDivLeftLeft">
-                                <input class="bodyRightTopBottomDivLeftLeftClick" style="height: 100%; width: 100%;" type="checkbox">
-                            </div>
-                            <div class="bodyRightTopBottomDivLeftRight">
-                                <span>체크리스트1</span>
-                            </div>
-                        </div>
-                        <div class="bodyRightTopBottomDivRight">
-                            <div class="bodyRightTopBottomDivRightDiv">
-                                <input  class="bodyRightTopBottomDivRightDiv1" type="button" value="삭제">
-                                <input  class="bodyRightTopBottomDivRightDiv2" type="button" value="수정">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bodyRightBottom">
-                <input type="hidden" value="디데이">
-                <div class="bodyRightBottomDiv">
-                    <div class="bodyRightBottomDivTop">
-                        <span>D-DAY</span>
-                    </div>
-                    <div class="bodyRightBottomDivBottom">
-                        <span>"수능"</span>
-                    </div>
-                </div>
-            </div>
-        </span>
-    </div>
-<!-------------------------------------------------------js 구역-------------------------------------------------------->
-    <!-- SockJS 사용을 위한 js를 추가 -->
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <!-- Stomp 사용을 위한 js를 추가 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-    <!-- Ajax 사용을 위한 js를 추가 -->
-    <script src="/js/httpRequest.js"></script>
-
     <script th:inline="javascript">
-        //////////////////////////////////////////////////// 변수 구역 ////////////////////////////////////////////////////
-        var metaIdx = [[${metaRoom.idx}]]; // 방 번호
-        var metaRecruitingPersonnel = [[${metaRoom.metaRecruitingPersonnel}]]; // 참여중인 인원
-        var metaNickname = [[${nickImage.nickname}]]; // 로그인 유저 닉네임
-        let entryCheck = [[${entryCheck}]]; // 입장 체크값
-        //////////////////////////////////////////////////// 소켓 구역 ////////////////////////////////////////////////////
-        // 1. SockJS를 생성한다. (StompWebSocketConfig에서 설정한 Endpoint와 동일하게 맞춰준다.)
-        var sockJs = new SockJS("/ws/meta/chat");
-        // 2. 생성된 SockJS를 Stomp에 전달한다.
-        var stomp = Stomp.over(sockJs);
-
-        // 3. connect가 이뤄지면 실행한다.
-        stomp.connect({}, function () {
-            // connect가 이뤄지면 콘솔에 로그를 찍는다.
-            console.log("STOMP Connection");
-
-            // 5. subscribe(path, callback)으로 메시지를 받을 수 있다.
-            //    StompChatController에서 SimpMessagingTemplate를 통해 전달한 DTO를 여기서 콜백 메소드 파라미터로 전달 받는다.
-            stomp.subscribe("/sub/meta/oneroom/" + metaIdx, function (chat) {
-
-            }); // stomp
-            ////////////////////////////////////////////////// 입장 구역 //////////////////////////////////////////////////
-            // 입장 시작!! - 먼저 입장 체크값을 이용하여 해당 유저가 첫 입장인지 재입장(새로고침)인지 체크한다.
-            // 첫 입장일 경우 - 입장 체크값이 존재하지 않는다.
-            if ( entryCheck == null ) {
-                // 시작 시간과 메시지 전송 시간과 전송된 메시지 수와 메시지 전송 상태의 각 변수명을 키로 사용하고, 각 초기값을 지정해 값으로 사용하여 로컬 스토리지에 추가한다.
-                localStorage.setItem("start", Date.now()); // Date.now()로 초기화
-                localStorage.setItem("end", Date.now()); // Date.now()로 초기화
-                localStorage.setItem("count", 0); // 0으로 초기화
-                localStorage.setItem("sendMessage", "true"); // true로 초기화
-                // 로컬 스토리지에 추가한 값들을 가져와 각 알맞는 변수에 전달한다.
-                start = localStorage.getItem("start");
-                end = localStorage.getItem("end");
-                count = localStorage.getItem("count");
-                sendMessage = localStorage.getItem("sendMessage");
-                // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
-                // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장할때 딱 한번만 여기서 입장 메시지를 전송한다.)
-                //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
-                //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                stomp.send('/pub/meta/oneroom/enter', {}, JSON.stringify({type: "enter", metaIdx: metaIdx, writer: metaNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
-            // 재입장(새로고침)일 경우 - 입장 체크값이 존재한다.
-            } else {
-                // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
-                // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장 이후 모든 재입장(새로고침)은 여기서 입장 메시지를 전송한다.)
-                //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
-                //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-                stomp.send('/pub/meta/oneroom/reenter', {}, JSON.stringify({type: "reEnter", metaIdx: metaIdx, writer: metaNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
-            }
-        });
-        ///////////////////////////////////////////////// 페이지 이탈 구역 /////////////////////////////////////////////////
-        // 1. 페이지를 이탈하는 기능을 실행할 경우 발생하는 이벤트 핸들러 등록
-        // beforeunload - 탭 닫기, 윈도우 닫기, 페이지 닫기, 뒤로가기, 버튼, location.href, 새로고침 등 해당 페이지를 벗어나는 기능을 실행할 경우 항상 실행된다.
-        window.addEventListener("beforeunload", handleBeforeUnload);
-        // beforeunload 핸들러 메소드
-        function handleBeforeUnload(event) {
-            // beforeunload 이벤트를 명시적으로 처리하지 않은 경우, 해당 이벤트에 기본 동작을 실행하지 않도록 지정한다.
-            event.preventDefault();
-            // beforeunload 경고창을 띄워준다. - 따로 메시지 작성을 안한 이유는 각 브라우저마다 기본으로 잡혀있는 메시지가 표시되기 때문이다.
-            event.returnValue = "";
-        }
-
-        // 2. beforeunload 이벤트에서 반환한 경고창에 따라 <body>태그에 작성한 unload 이벤트에서 확인 및 취소를 체크하고, 확인을 누른 경우에만 지정한 메소드로 이동시킨다.
-        // unload - 어떤 방식으로든 페이지를 이탈하면 항상 실행된다.
-
-        // 3. 페이지 이탈 후 퇴장 메시지 전송 메소드 - unload에서 지정한 메소드
-        function exit() {
-            // send(path, header, message)로 퇴장 메시지를 전송한다. (방장이 퇴장할때 딱 한번만 전송한다.)
-            // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
-            // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
-            stomp.send('/pub/meta/oneroom/exit', {}, JSON.stringify({type: "exit", metaIdx: metaIdx, writer: metaNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
+        let err = [[${err}]];
+        if ( err != null ) {
+            alert("알수없는 이유로 방이 터졌습니다.\n방을 재생성 해주시기 바랍니다.");
+            location.href = "/meta";
         }
     </script>
 
@@ -922,6 +724,211 @@
                 //초를 입력하는 변수에 초 텍스트 변수를 저장시켜준다.
                 secondInputCount.value = secondCount;
             }
+        }
+    </script>
+</head>
+<body onkeydown="keyDown()" onkeyup="keyUp()" onunload="exit()">
+    <div id="titleArea" class="title">
+        <b id="title" th:text="'방 번호 : ' + ${metaRoom.idx} + '   |   ' + '(자습실)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
+    </div>
+    <div class="body">
+            <span class="bodyLeft">
+                <div class="bodyLeftTop">
+                    <div class="bodyLeftTopTop">
+                        <div class="bodyLeftTopTopTop">
+                            <span id="dateSpan"></span>
+                        </div>
+                        <div class="bodyLeftTopTopBottom">
+                            <div class="bodyLeftTopTopBottomLeft">
+                                <span id="meridiemSpan"></span>
+                            </div>
+                            <div class="bodyLeftTopTopBottomRight">
+                                <span id="timeSpan"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bodyLeftTopMid">
+                        <div class="bodyLeftTopMid1">
+                            <div class="bodyLeftTopMid1Top" id="bodyLeftTopMid1Top">
+                                <input class="bodyLeftTopMid1Top1" id="bodyLeftTopMid1Top1" type="button" value="+" onclick="counting('hour', '+')">
+                                <input class="bodyLeftTopMid1Top2" id="bodyLeftTopMid1Top2" type="button" value="-" onclick="counting('hour', '-')">
+                            </div>
+                            <div class="bodyLeftTopMid1Mid">
+                                <span class="bodyLeftTopMid1Mid1" id="bodyLeftTopMid1Mid1">00</span>
+                            </div>
+                            <div class="bodyLeftTopMid1Bottom" id="bodyLeftTopMid1Bottom">
+                                <input class="bodyLeftTopMid1BottomInput" id="bodyLeftTopMid1BottomInput" type="number" onchange="hourChange(this)">
+                            </div>
+                        </div>
+                        <div class="bodyLeftTopMid2">
+                            <span>:</span>
+                        </div>
+                        <div class="bodyLeftTopMid3">
+                            <div class="bodyLeftTopMid3Top" id="bodyLeftTopMid3Top">
+                                <input class="bodyLeftTopMid3Top1" id="bodyLeftTopMid3Top1" type="button" value="+" onclick="counting('minute','+')">
+                                <input class="bodyLeftTopMid3Top2" id="bodyLeftTopMid3Top2" type="button" value="-" onclick="counting('minute','-')">
+                            </div>
+                            <div class="bodyLeftTopMid3Mid">
+                                <span class="bodyLeftTopMid3Mid1" id="bodyLeftTopMid3Mid1">00</span>
+                            </div>
+                            <div class="bodyLeftTopMid3Bottom" id="bodyLeftTopMid3Bottom">
+                                <input class="bodyLeftTopMid3BottomInput" id="bodyLeftTopMid3BottomInput" type="number" onchange="minuteChange(this)">
+                            </div>
+                        </div>
+                        <div class="bodyLeftTopMid4">
+                            <span>:</span>
+                        </div>
+                        <div class="bodyLeftTopMid5">
+                            <div class="bodyLeftTopMid5Top" id="bodyLeftTopMid5Top">
+                                <input class="bodyLeftTopMid5Top1" id="bodyLeftTopMid5Top1" type="button" value="+" onclick="counting('second', '+')">
+                                <input class="bodyLeftTopMid5Top2" id="bodyLeftTopMid5Top2" type="button" value="-" onclick="counting('second', '-')">
+                            </div>
+                            <div class="bodyLeftTopMid5Mid">
+                                <span class="bodyLeftTopMid5Mid1" id="bodyLeftTopMid5Mid1">00</span>
+                            </div>
+                            <div class="bodyLeftTopMid5Bottom" id="bodyLeftTopMid5Bottom">
+                                <input class="bodyLeftTopMid5BottomInput" id="bodyLeftTopMid5BottomInput" type="number" onchange="secondChange(this)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bodyLeftTopBottom">
+                        <div class="bodyLeftTopBottomTop" id="startButton" onclick="startTimer();">
+                            <span class="bodyLeftTopBottomTopSpan" id="startButtonText">START</span>
+                        </div>
+                        <div class="bodyLeftTopBottomMid" id="stopButton" onclick="stopTimer();">
+                            <span class="bodyLeftTopBottomMidSpan" id="stopButtonText">STOP</span>
+                        </div>
+                        <div class="bodyLeftTopBottomBottom">
+                            <span class="bodyLeftTopBottomBottomLeft" id="timerButton" onclick="timerClick('0');">타이머</span>
+                            <span class="bodyLeftTopBottomBottomRight" id="stopWatchButton" onclick="timerClick('1');">스톱워치</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bodyLeftMid">
+                    <input type="hidden" value="캔버스">
+                    <canvas class="bodyLeftMidCanvas" id="canvas"></canvas>
+                </div>
+                <div class="bodyLeftBottom">
+                    <input type="hidden" value="접속자">
+                </div>
+            </span>
+        <span class="bodyRight">
+            <div class="bodyRightTop">
+                <div class="bodyRightTopTop">
+                    <span>CheckList</span>
+                </div>
+                <div class="bodyRightTopBottom">
+                    <!-- 여기서부터 리스트로 돌리면 됨 -->
+                    <div class="bodyRightTopBottomDiv">
+                        <div class="bodyRightTopBottomDivLeft">
+                            <div class="bodyRightTopBottomDivLeftLeft">
+                                <input class="bodyRightTopBottomDivLeftLeftClick" style="height: 100%; width: 100%;" type="checkbox">
+                            </div>
+                            <div class="bodyRightTopBottomDivLeftRight">
+                                <span>체크리스트1</span>
+                            </div>
+                        </div>
+                        <div class="bodyRightTopBottomDivRight">
+                            <div class="bodyRightTopBottomDivRightDiv">
+                                <input  class="bodyRightTopBottomDivRightDiv1" type="button" value="삭제">
+                                <input  class="bodyRightTopBottomDivRightDiv2" type="button" value="수정">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bodyRightBottom">
+                <input type="hidden" value="디데이">
+                <div class="bodyRightBottomDiv">
+                    <div class="bodyRightBottomDivTop">
+                        <span>D-DAY</span>
+                    </div>
+                    <div class="bodyRightBottomDivBottom">
+                        <span>"수능"</span>
+                    </div>
+                </div>
+            </div>
+        </span>
+    </div>
+<!-------------------------------------------------------js 구역-------------------------------------------------------->
+    <!-- SockJS 사용을 위한 js를 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <!-- Stomp 사용을 위한 js를 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <!-- Ajax 사용을 위한 js를 추가 -->
+    <script src="/js/httpRequest.js"></script>
+
+    <script th:inline="javascript">
+        //////////////////////////////////////////////////// 변수 구역 ////////////////////////////////////////////////////
+        var metaIdx = [[${metaRoom.idx}]]; // 방 번호
+        var metaRecruitingPersonnel = [[${metaRoom.metaRecruitingPersonnel}]]; // 참여중인 인원
+        var metaNickname = [[${nickImage.nickname}]]; // 로그인 유저 닉네임
+        let entryCheck = [[${entryCheck}]]; // 입장 체크값
+        //////////////////////////////////////////////////// 소켓 구역 ////////////////////////////////////////////////////
+        // 1. SockJS를 생성한다. (StompWebSocketConfig에서 설정한 Endpoint와 동일하게 맞춰준다.)
+        var sockJs = new SockJS("/ws/meta/chat");
+        // 2. 생성된 SockJS를 Stomp에 전달한다.
+        var stomp = Stomp.over(sockJs);
+
+        // 3. connect가 이뤄지면 실행한다.
+        stomp.connect({}, function () {
+            // connect가 이뤄지면 콘솔에 로그를 찍는다.
+            console.log("STOMP Connection");
+
+            // 5. subscribe(path, callback)으로 메시지를 받을 수 있다.
+            //    StompChatController에서 SimpMessagingTemplate를 통해 전달한 DTO를 여기서 콜백 메소드 파라미터로 전달 받는다.
+            stomp.subscribe("/sub/meta/oneroom/" + metaIdx, function (chat) {
+
+            }); // stomp
+            ////////////////////////////////////////////////// 입장 구역 //////////////////////////////////////////////////
+            // 입장 시작!! - 먼저 입장 체크값을 이용하여 해당 유저가 첫 입장인지 재입장(새로고침)인지 체크한다.
+            // 첫 입장일 경우 - 입장 체크값이 존재하지 않는다.
+            if ( entryCheck == null ) {
+                // 시작 시간과 메시지 전송 시간과 전송된 메시지 수와 메시지 전송 상태의 각 변수명을 키로 사용하고, 각 초기값을 지정해 값으로 사용하여 로컬 스토리지에 추가한다.
+                localStorage.setItem("start", Date.now()); // Date.now()로 초기화
+                localStorage.setItem("end", Date.now()); // Date.now()로 초기화
+                localStorage.setItem("count", 0); // 0으로 초기화
+                localStorage.setItem("sendMessage", "true"); // true로 초기화
+                // 로컬 스토리지에 추가한 값들을 가져와 각 알맞는 변수에 전달한다.
+                start = localStorage.getItem("start");
+                end = localStorage.getItem("end");
+                count = localStorage.getItem("count");
+                sendMessage = localStorage.getItem("sendMessage");
+                // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
+                // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장할때 딱 한번만 여기서 입장 메시지를 전송한다.)
+                //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+                //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+                stomp.send('/pub/meta/oneroom/enter', {}, JSON.stringify({type: "enter", metaIdx: metaIdx, writer: metaNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
+            // 재입장(새로고침)일 경우 - 입장 체크값이 존재한다.
+            } else {
+                // 4번이 5번보다 아래에 위치한 이유 - 위에 있을경우 간혹 4번에서 전송한 메시지를 제대로 전달받지 못하는 경우가 존재한다.
+                // 4. send(path, header, message)로 입장 메시지를 전송한다. (첫 입장 이후 모든 재입장(새로고침)은 여기서 입장 메시지를 전송한다.)
+                //    JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+                //    여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+                stomp.send('/pub/meta/oneroom/reenter', {}, JSON.stringify({type: "reEnter", metaIdx: metaIdx, writer: metaNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
+            }
+        });
+        ///////////////////////////////////////////////// 페이지 이탈 구역 /////////////////////////////////////////////////
+        // 1. 페이지를 이탈하는 기능을 실행할 경우 발생하는 이벤트 핸들러 등록
+        // beforeunload - 탭 닫기, 윈도우 닫기, 페이지 닫기, 뒤로가기, 버튼, location.href, 새로고침 등 해당 페이지를 벗어나는 기능을 실행할 경우 항상 실행된다.
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        // beforeunload 핸들러 메소드
+        function handleBeforeUnload(event) {
+            // beforeunload 이벤트를 명시적으로 처리하지 않은 경우, 해당 이벤트에 기본 동작을 실행하지 않도록 지정한다.
+            event.preventDefault();
+            // beforeunload 경고창을 띄워준다. - 따로 메시지 작성을 안한 이유는 각 브라우저마다 기본으로 잡혀있는 메시지가 표시되기 때문이다.
+            event.returnValue = "";
+        }
+
+        // 2. beforeunload 이벤트에서 반환한 경고창에 따라 <body>태그에 작성한 unload 이벤트에서 확인 및 취소를 체크하고, 확인을 누른 경우에만 지정한 메소드로 이동시킨다.
+        // unload - 어떤 방식으로든 페이지를 이탈하면 항상 실행된다.
+
+        // 3. 페이지 이탈 후 퇴장 메시지 전송 메소드 - unload에서 지정한 메소드
+        function exit() {
+            // send(path, header, message)로 퇴장 메시지를 전송한다. (방장이 퇴장할때 딱 한번만 전송한다.)
+            // JSON.stringify({json형식}) - JavaScript 값이나 객체를 JSON 문자열로 변환한다.
+            // 여기서 전송한 메시지를 StompChatController에 @MessageMapping이 DTO를 통해 받는다.
+            stomp.send('/pub/meta/oneroom/exit', {}, JSON.stringify({type: "exit", metaIdx: metaIdx, writer: metaNickname, metaRecruitingPersonnel: metaRecruitingPersonnel}));
         }
     </script>
 

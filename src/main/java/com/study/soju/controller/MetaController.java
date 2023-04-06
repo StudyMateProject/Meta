@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,52 +37,62 @@ public class MetaController {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 메타 메인 페이지
     @GetMapping("")
-    public String meta(Principal principal, Model model) throws UnsupportedEncodingException, InterruptedException {
-        // 1. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
+    public String meta(@RequestParam(value = "errRoom", required = false) String errRoom, // 1-1. URL 파라미터를 통해 넘어오는 방 에러 메세지가 있는 경우 받아온다.
+                       @RequestParam(value = "idx", required = false) Long idx, // 1-2. URL 파라미터를 통해 넘어오는 방 번호가 있는 경우 받아온다.
+                       @RequestParam(value = "nickname", required = false) String nickname, // 1-3. URL 파라미터를 통해 넘어오는 닉네임이 있는 경우 받아온다.
+                       @RequestParam(value = "err", required = false) String err, // 1-4. URL 파라미터를 통해 넘어오는 에러 메시지가 있는 경우 받아온다.
+                       Principal principal, Model model) { // 1. URL 파라미터를 통해 넘어오는 각종 값들을 받아온다.
+        // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
         Member.rpMetaProfile rpMetaProfile = signUpService.metaProfile(principal.getName());
-        // 2. 서비스를 통해 현재 생성된 메타 방을 모두 조회해서, List 형태의 DTO로 반환 받아온다.
+        // 3. 서비스를 통해 현재 생성된 메타 방을 모두 조회해서, List 형태의 DTO로 반환 받아온다.
         List<Meta.rpMetaList> rpMetaList = metaService.metaList();
-        // 3. 2에서 반환받은 List 형태의 DTO를 방의 타입별로 나누기 위해 각 방의 타입마다 List 형태의 DTO를 생성한다.
-        // 3-1. 방 타입이 스터디일 경우 - studyRoom List DTO
+        // 4. 3에서 반환받은 List 형태의 DTO를 방의 타입별로 나누기 위해 각 방의 타입마다 List 형태의 DTO를 생성한다.
+        // 4-1. 방 타입이 스터디일 경우 - studyRoom List DTO
         List<Meta.rpMetaList> studyList = new ArrayList<>();
-        // 3-2. 방 타입이 카페일 경우 - cafeRoom List DTO
+        // 4-2. 방 타입이 카페일 경우 - cafeRoom List DTO
         List<Meta.rpMetaList> cafeList = new ArrayList<>();
-        // 3-3. 방 타입이 자습일 경우 - oneRoom List DTO
-        List<Meta.rpMetaList> oneList = new ArrayList<>();
-        // 4. foreach문을 사용하여 2에서 반환받은 List 형태의 DTO에 들어있는 값들을 하나씩 가져온다.
+        // 5. foreach문을 사용하여 3에서 반환받은 List 형태의 DTO에 들어있는 값들을 하나씩 가져온다.
         for ( Meta.rpMetaList metaList : rpMetaList ) {
-            // 5. 4에서 가져온 값 중 방 타입을 가져와 체크한다.
-            // 5-1. 방 타입이 스터디일 경우
+            // 6. 5에서 가져온 값 중 방 타입을 가져와 체크한다.
+            // 6-1. 방 타입이 스터디일 경우
             if ( metaList.getMetaType().equals("studyRoom") ) {
-                // 5-1-1. 3-1에서 생성한 studyRoom List DTO에 추가한다.
+                // 6-1-1. 4-1에서 생성한 studyRoom List DTO에 추가한다.
                 studyList.add(metaList);
-            // 5-2. 방 타입이 카페일 경우
+            // 6-2. 방 타입이 카페일 경우
             } else if ( metaList.getMetaType().equals("cafeRoom") ) {
-                // 5-2-1. 3-2에서 생성한 cafeRoom List DTO에 추가한다.
+                // 6-2-1. 4-2에서 생성한 cafeRoom List DTO에 추가한다.
                 cafeList.add(metaList);
-            // 5-3. 방 타입이 자습일 경우
-            } else {
-                // 5-3-1. 3-3에서 생성한 oneRoom List DTO에 추가한다.
-                oneList.add(metaList);
             }
         }
 
-        // 6. 4에서 foreach문을 사용하여 방 타입별로 값을 새로 추가해 만든 List 형태의 DTO들을 바인딩한다.
-        // 6-1. 3-1에서 생성하고 5-1에서 값을 추가한 studyRoom List DTO를 바인딩한다.
+        // 7. 5에서 foreach문을 사용하여 방 타입별로 값을 새로 추가해 만든 List 형태의 DTO들을 바인딩한다.
+        // 7-1. 4-1에서 생성하고 6-1에서 값을 추가한 studyRoom List DTO를 바인딩한다.
         model.addAttribute("studyList", studyList);
-        // 6-2. 3-2에서 생성하고 5-2에서 값을 추가한 cafeRoom List DTO를 바인딩한다.
+        // 7-2. 4-2에서 생성하고 6-2에서 값을 추가한 cafeRoom List DTO를 바인딩한다.
         model.addAttribute("cafeList", cafeList);
-        // 6-3. 3-3에서 생성하고 5-3에서 값을 추가한 oneRoom List DTO를 바인딩한다.
-        model.addAttribute("oneList", oneList);
-        // 7. 1에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+        // 8. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
         model.addAttribute("metaProfile", rpMetaProfile);
-        // 8. 검색 체크값을 바인딩한다. - 0 : 검색 안했을 경우
+        // 9. 검색 체크값을 바인딩한다. - 0 : 검색 안했을 경우
         model.addAttribute("check", 0);
-        // 9. 검색에 사용할 DTO를 바인딩한다.
+        // 10. 검색에 사용할 DTO를 바인딩한다.
         model.addAttribute("metaDTO", new Meta.rqSearchMetaList());
-        // 10. 방(자습실) 만들기에 사용할 DTO를 바인딩한다.
-//        model.addAttribute("metaDTO", new Meta.rqCreateMeta());
-        // 12. 메타 메인 페이지로 이동한다.
+        // 11. 1에서 파라미터로 받아온 방 에러 메시지가 존재하는지 체크한다.
+        // 11-1. 방 에러 메시지가 존재하는 경우
+        if ( errRoom != null ) {
+            // 11-1-1. 1에서 파라미터로 받아온 방 에러 메시지를 바인딩한다.
+            model.addAttribute("errRoom", errRoom);
+            // 11-1-2. 1에서 파라미터로 받아온 방 번호를 바인딩한다.
+            model.addAttribute("idx", idx);
+            // 11-1-3. 1에서 파라미터로 받아온 닉네임을 바인딩한다.
+            model.addAttribute("nickname", nickname);
+        }
+        // 12. 1에서 파라미터로 받아온 에러 메시지가 존재하는지 체크한다.
+        // 12-1. 에러 메시지가 존재하는 경우
+        if ( err != null ) {
+            // 12-1-1. 1에서 파라미터로 받아온 에러 메시지를 바인딩한다.
+            model.addAttribute("err", err);
+        }
+        // 13. 메타 메인 페이지로 이동한다.
         return "Meta/MetaRoom";
     }
 
@@ -97,8 +108,6 @@ public class MetaController {
         List<Meta.rpSearchMetaList> studyList = new ArrayList<>();
         // 4-2. 방 타입이 카페일 경우 - cafeRoom List DTO
         List<Meta.rpSearchMetaList> cafeList = new ArrayList<>();
-        // 4-3. 방 타입이 자습일 경우 - oneRoom List DTO
-        List<Meta.rpSearchMetaList> oneList = new ArrayList<>();
         // 5. foreach문을 사용하여 3에서 반환받은 List 형태의 DTO에 들어있는 값들을 하나씩 가져온다.
         for ( Meta.rpSearchMetaList searchMetaList : rpSearchMetaList ) {
             // 6. 5에서 가져온 값 중 방 타입을 가져와 체크한다.
@@ -110,10 +119,6 @@ public class MetaController {
             } else if ( searchMetaList.getMetaType().equals("cafeRoom") ) {
                 // 6-2-1. 4-2에서 생성한 cafeRoom List DTO에 추가한다.
                 cafeList.add(searchMetaList);
-            // 6-3. 방 타입이 자습일 경우
-            } else {
-                // 6-3-1. 4-3에서 생성한 oneRoom List DTO에 추가한다.
-                oneList.add(searchMetaList);
             }
         }
 
@@ -122,8 +127,6 @@ public class MetaController {
         model.addAttribute("studyList", studyList);
         // 7-2. 4-2에서 생성하고 6-2에서 값을 추가한 cafeRoom List DTO를 바인딩한다.
         model.addAttribute("cafeList", cafeList);
-        // 7-3. 4-3에서 생성하고 6-3에서 값을 추가한 oneRoom List DTO를 바인딩한다.
-        model.addAttribute("oneList", oneList);
         // 8. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
         model.addAttribute("metaProfile", rpMetaProfile);
         // 9. 검색 체크값을 바인딩한다. - 1 : 검색 했을 경우
@@ -145,10 +148,6 @@ public class MetaController {
         model.addAttribute("metaDTO", new Meta.rqCreateMeta());
         // 4. 방만들기 페이지로 이동한다.
         return "Meta/CreateMetaForm";
-    }
-
-    public String reCreateMetaRoom(Meta.rqCreateMeta rqCreateMeta) {
-        return "redirect:/meta/createmetaform/createmeta?metaType=" + rqCreateMeta.getMetaType() + "&metaMaster=" + rqCreateMeta.getMetaMaster();
     }
 
     // 방 만들기
@@ -176,7 +175,7 @@ public class MetaController {
 
     // 스터디룸 입장
     @GetMapping("/studyroom") // Principal - 자바의 표준 시큐리티 기술로, 로그인 유저의 정보를 담고 있다.
-    public String studyRoom(@RequestParam long idx, Principal principal, Model model) { // 1. 파라미터로 입장한 방 번호를 받아온다.
+    public String studyRoom(@RequestParam long idx, Principal principal, Model model) throws UnsupportedEncodingException { // 1. 파라미터로 입장한 방 번호를 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
         Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 3. 세션을 사용하기 위하여 HttpServletRequest을 통해 세션 객체를 가져온다.
@@ -186,6 +185,7 @@ public class MetaController {
         if ( session.getAttribute(rpNickImage.getNickname()) != null ) {
             // 5. 세션에 존재하는 값이 1에서 파라미터로 받아온 방 번호와 같은지 체크한다.
             // 5-1. 세션에 값이 방 번호와 다른 경우 - 방장 혼자일때 방 퇴장 및 삭제 이후 새로운 방 생성 및 입장
+            //      방장 혼자일때 방을 퇴장하는 경우 방은 삭제되지만 세션은 제거되지 못하고 남아있기에 세션에 값은 이전 퇴장한 방 번호가 남아있다.
             if ( (long) session.getAttribute(rpNickImage.getNickname()) != idx ) {
                 // 5-1-1. 3에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
                 session.removeAttribute(rpNickImage.getNickname());
@@ -250,10 +250,8 @@ public class MetaController {
                 // 8. 7에서 반환받은 DTO가 존재하는지 체크한다.
                 // 8-1. 반환받은 DTO가 존재하지 않는 경우 - 입장하는 방 존재 X
                 if ( rpNewEntrance == null ) {
-                    // 8-1-1. 에러메시지를 바인딩한다.
-                    model.addAttribute("err", "해당 방의 정보가 없습니다.");
-                    // 8-1-2. 메타 메인 페이지로 리다이렉트한다.
-                    return "redirect:/meta";
+                    // 8-1-1. URL 파라미터에 에러 메시지를 가지고 메타 메인 페이지로 리다이렉트한다.
+                    return "redirect:/meta?err=" + URLEncoder.encode("해당 방의 정보가 없습니다.", "UTF-8");
                 // 8-2. 반환받은 DTO가 존재하는 경우 - 입장하는 방 존재 O
                 } else {
                     // 9. 7에서 반환받은 DTO 값 중 idx가 0인지 체크한다.
@@ -286,7 +284,7 @@ public class MetaController {
 
     // 카페룸 페이지
     @GetMapping("/caferoom") // Principal - 자바의 표준 시큐리티 기술로, 로그인 유저의 정보를 담고 있다.
-    public String cafeRoom(@RequestParam long idx, Principal principal, Model model) { // 1. 파라미터로 입장한 방 번호를 받아온다.
+    public String cafeRoom(@RequestParam long idx, Principal principal, Model model) throws UnsupportedEncodingException { // 1. 파라미터로 입장한 방 번호를 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
         Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 3. 세션을 사용하기 위하여 HttpServletRequest을 통해 세션 객체를 가져온다.
@@ -296,6 +294,7 @@ public class MetaController {
         if ( session.getAttribute(rpNickImage.getNickname()) != null ) {
             // 5. 세션에 존재하는 값이 1에서 파라미터로 받아온 방 번호와 같은지 체크한다.
             // 5-1. 세션에 값이 방 번호와 다른 경우 - 방장 혼자일때 방 퇴장 및 삭제 이후 새로운 방 생성 및 입장
+            //      방장 혼자일때 방을 퇴장하는 경우 방은 삭제되지만 세션은 제거되지 못하고 남아있기에 세션에 값은 이전 퇴장한 방 번호가 남아있다.
             if ( (long) session.getAttribute(rpNickImage.getNickname()) != idx ) {
                 // 5-1-1. 3에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
                 session.removeAttribute(rpNickImage.getNickname());
@@ -360,10 +359,8 @@ public class MetaController {
                 // 8. 7에서 반환받은 DTO가 존재하는지 체크한다.
                 // 8-1. 반환받은 DTO가 존재하지 않는 경우 - 입장하는 방 존재 X
                 if ( rpNewEntrance == null ) {
-                    // 8-1-1. 에러메시지를 바인딩한다.
-                    model.addAttribute("err", "해당 방의 정보가 없습니다.");
-                    // 8-1-2. 메타 메인 페이지로 리다이렉트한다.
-                    return "redirect:/meta";
+                    // 8-1-1. URL 파라미터에 에러 메시지를 가지고 메타 메인 페이지로 리다이렉트한다.
+                    return "redirect:/meta?err=" + URLEncoder.encode("해당 방의 정보가 없습니다.", "UTF-8");
                 // 8-2. 반환받은 DTO가 존재하는 경우 - 입장하는 방 존재 O
                 } else {
                     // 9. 7에서 반환받은 DTO 값 중 idx가 0인지 체크한다.
@@ -404,16 +401,30 @@ public class MetaController {
         // 4. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값이 존재하는지 체크한다.
         // 4-1. 세션에 값이 존재하는 경우 - 재입장(새로고침)
         if ( session.getAttribute(rpNickImage.getNickname()) != null ) {
-            // 4-1-1. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-            Meta.rpEntrance rpReEntrance = metaService.reEntrance(idx);
-            // 4-1-2. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
-            model.addAttribute("nickImage", rpNickImage);
-            // 4-1-3. 4-1-1에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
-            model.addAttribute("metaRoom", rpReEntrance);
-            // 4-1-4. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값을 바인딩한다.
-            model.addAttribute("entryCheck", session.getAttribute(rpNickImage.getNickname()));
-            // 4-1-5. 자습실 페이지로 이동한다.
-            return "Meta/OneRoom";
+            // 5. 세션에 존재하는 값이 1에서 파라미터로 받아온 방 번호와 같은지 체크한다.
+            // 5-1. 세션에 값이 방 번호와 다른 경우 - 방장 혼자일때 방 퇴장 및 삭제 이후 새로운 방 생성 및 입장
+            //      방장 혼자일때 방을 퇴장하는 경우 방은 삭제되지만 세션은 제거되지 못하고 남아있기에 세션에 값은 이전 퇴장한 방 번호가 남아있다.
+            if ( (long) session.getAttribute(rpNickImage.getNickname()) != idx ) {
+                // 5-1-1. 3에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
+                session.removeAttribute(rpNickImage.getNickname());
+                // 5-1-2. 1에서 파라미터로 받아온 방 번호를 가지고 자습실 페이지로 리다이렉트한다.
+                return "redirect:/meta/oneroom?idx=" + idx;
+            // 5-2. 세션에 값이 방 번호와 같은 경우 - 재입장(새로고침)
+            } else {
+                // 5-2-1. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+                Meta.rpEntrance rpReEntrance = metaService.reEntrance(idx);
+                if ( rpReEntrance == null ) {
+                    model.addAttribute("err", "1");
+                }
+                // 5-2-2. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+                model.addAttribute("nickImage", rpNickImage);
+                // 5-2-3. 4-1-1에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
+                model.addAttribute("metaRoom", rpReEntrance);
+                // 5-2-4. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값을 바인딩한다.
+                model.addAttribute("entryCheck", session.getAttribute(rpNickImage.getNickname()));
+                // 5-2-5. 자습실 페이지로 이동한다.
+                return "Meta/OneRoom";
+            }
         // 4-2. 세션에 값이 존재하는 경우 - 재입장(새로고침)
         } else {
             // 4-2-1. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용하고, 1에서 받아온 방 번호를 값으로 사용하여 세션에 추가한다.
@@ -477,6 +488,7 @@ public class MetaController {
 
     // 방장 혼자일때 퇴장하는 경우 방 삭제
     public void deleteRoomMaster(@RequestParam long idx) { // 1. 파라미터로 입장한 방 번호를 받아온다.
+        System.out.println("방 번호:" + idx);
         // 2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
         metaService.delete(idx);
     }
