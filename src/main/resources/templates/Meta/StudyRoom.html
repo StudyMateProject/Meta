@@ -3,89 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/StudyRoom.css">
     <style>
         html, body {
             height: 100%;
             overflow: hidden;
         }
     </style>
-    <link rel="stylesheet" type="text/css" href="/css/StudyRoom.css">
 </head>
 <!-- unload - beforeunload 이벤트에서 반환한 값을 처리한다. -->
 <body onkeydown="keyDown()" onkeyup="keyUp()" onunload="exit()">
     <!-- 방 제목 구역 -->
-    <div class="titleAreaCss" id="titleArea">
-        <b id="title" th:text="'방 번호 : ' + ${metaRoom.idx} + '    |    ' + '(스터디)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
-    </div>
+    <header class="roomInfo" id="titleArea">
+        <b id="title" th:text="'방 번호 : ' + ${metaRoom.idx} + '|' + '(스터디)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
+    </header>
 
-    <!-- 상단 구역 -->
-    <div class="topAreaCss">
-        <!-- 상단 왼쪽 참가자 구역 -->
-        <div class="participantAreaCss" id="profileArea">
-            <!-- 참가자 코드 -->
-            <div class="participant participantCss" th:each="participant : ${participantList}" th:id="${participant.metaNickname}">
-                <img class="participantImageCss" th:src="@{/imagePath/} + ${participant.metaProfileImage}">
-                <div class="participantNicknameAreaCss">
-                    <b class="participantNicknameCss" th:text="${participant.metaNickname}"></b>
-                    <b class="participantMasterCss" th:if="${participant.metaNickname == metaRoom.metaMaster}">방장</b>
+    <section class="container">
+        <!-- 상단 구역 -->
+        <nav class="topNav">
+            <!-- 상단 왼쪽 참가자 구역 -->
+            <div class="topLeftMember" id="profileArea">
+                <!-- 참가자 코드 -->
+                <div class="participant participantDiv" th:each="participant : ${participantList}" th:id="${participant.metaNickname}">
+                    <img class="participantImg" th:src="@{/imagePath/} + ${participant.metaProfileImage}">
+                    <div class="participantInfo">
+                        <b class="participantNickname" th:text="${participant.metaNickname}"></b>
+                        <b class="participantMaster" th:if="${participant.metaNickname == metaRoom.metaMaster}">방장</b>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 상단 오른쪽 메뉴바 구역 -->
-        <div class="menuBarAreaCss">
-            <input class="menuBarExitBtnCss" type="button" value="나가기" th:onclick="|location.href='@{/meta/selfexit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|">
-        </div>
-    </div>
+            <!-- 상단 오른쪽 메뉴바 구역 -->
+            <div class="topRightMenu">
+                <input class="menuBarExitBtn" type="button" value="나가기" th:onclick="|location.href='@{/meta/selfexit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|">
+            </div>
+        </nav>
 
-    <!-- 중단 구역 -->
-    <div class="middleAreaCss">
-        <!-- 메타버스 -->
-        <canvas class="metaCanvasCss" id="canvas"></canvas>
+        <!-- 중단 구역 -->
+        <main class="middleMeta">
+            <!-- 메타버스 -->
+            <canvas class="metaCanvas" id="canvas"></canvas>
 
-        <!-- 상세 프로필과 채팅 -->
-        <div class="detailProfileAndChatAreaCss">
-            <!-- 프로필과 채팅 수직 정렬 -->
-            <div class="detailProfileAndChatCss">
+            <!-- 상세 프로필과 채팅 -->
+            <div class="detailProfileAndChatArea">
                 <!-- 상세 프로필 구역 -->
-                <div class="detailProfileAreaCss" id="detailProfileArea">
-                    <b class="detailProfileCloseBtnCss" id="btnDetailProfileClose">X</b>
+                <div class="detailProfile" id="detailProfileArea">
+                    <b class="detailProfileCloseBtn" id="btnDetailProfileClose">X</b>
                     <!-- 상세 프로필 사진 구역 -->
                     <!-- 공통 구역 -->
-                    <div class="detailProfileImageAreaCss">
-                        <img class="detailProfileImageCss" id="detailProfileImage">
+                    <div class="detailProfileImageArea">
+                        <img class="detailProfileImage" id="detailProfileImage">
                     </div>
                     <!-- 프로필 닉네임 구역 -->
-                    <div class="detailProfileNicknameAreaCss" id="detailProfileNicknameArea">
+                    <div class="detailProfileNicknameArea" id="detailProfileNicknameArea">
                         <!-- 공통 구역 -->
                         <b id="detailProfileNickname"></b>
                     </div>
                 </div>
 
                 <!-- 채팅 구역 -->
-                <div class="chatAreaCss" id="chatArea">
-                    <div class="chatTitleCss">채팅</div><br>
+                <div class="chatArea" id="chatArea">
+                    <p class="chatTitle">채팅</p>
                 </div>
             </div>
-        </div>
-    </div>
+        </main>
 
-    <!-- 하단 구역 -->
-    <div class="bottomAreaCss">
-        <!-- 녹음 구역 -->
-        <div class="recordAreaCss" id="recordArea">
-            <audio class="recordCss" id="record" controls></audio>
-            <input class="recordSendBtnCss" id="btnRecordSend" type="button" value="녹음 전송" disabled>
-            <input class="recordStopBtnCss" id="btnRecordStop" type="button" value="녹음 정지" disabled>
-            <input class="recordStartBtnCss" id="btnRecordStart" type="button" value="녹음 시작">
-        </div>
+        <!-- 하단 구역 -->
+        <footer class="bottomArea">
+            <!-- 녹음 구역 -->
+            <div class="recordArea" id="recordArea">
+                <audio class="recordPlayer" id="record" controls></audio>
+                <input class="recordBtn" id="btnRecordSend" type="button" value="녹음 전송" disabled>
+                <input class="recordBtn" id="btnRecordStop" type="button" value="녹음 정지" disabled>
+                <input class="recordBtn" id="btnRecordStart" type="button" value="녹음 시작">
+            </div>
 
-        <!-- 메시지 입력란 -->
-        <div class="messageAreaCss">
-            <input class="messageCss" id="message" type="text" placeholder = "채팅 입력란">
-            <input class="messageSendBtnCss" id="btnSend" type="button" value="보내기" onclick="send()">
-        </div>
-    </div>
+            <!-- 메시지 입력란 -->
+            <div class="messageArea">
+                <input class="message" id="message" type="text" placeholder = "채팅 입력란">
+                <input class="messageSendBtn" id="btnSend" type="button" value="보내기" onclick="send()">
+            </div>
+        </footer>
+    </section>
 <!-------------------------------------------------------js 구역-------------------------------------------------------->
     <!-- SockJS 사용을 위한 js를 추가 -->
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
@@ -242,15 +242,15 @@
                         metaRecruitingPersonnel = recruitingPersonnel;
                     } // recruitingPersonnel
                     ////////////////////////////////////////////////////////////////////////////////////////////////////
-                    // 9. 새로 들어온 참가자가 있는 경우
+                    // 9. 방에 들어온 참가자가 있는 경우 - 첫 입장 및 재입장(새로고침)
                     if ( participant != null ) {
                         // 참가자가 새로 들어온게 아닌 새로고침한 경우 - 현재 작성되어 있는 참가자랑 중복되지 않게 먼저 이전 참가자를 제거하고 다시 올린다.
 
-                        // 작성자(참가자) 닉네임 id를 통해 참가자 구역에 작성되어 있는 작성자(참가자)를 가져와 ptr 변수에 저장한다.
-                        var ptr = document.getElementById(writer);
+                        // 참가자 닉네임 id를 통해 참가자 구역에 작성되어 있는 참가자를 가져와 ptr 변수에 저장한다.
+                        var ptr = document.getElementById(participant);
                         // 가져온 작성자(참가자)가 존재하는 경우
                         if ( ptr != null ) {
-                            // ptr에 저장된 작성자(참가자) id를 사용하여 해당 작성자(참가자)를 제거한다.
+                            // ptr에 저장된 참가자 id를 사용하여 해당 참가자를 제거한다.
                             ptr.remove();
                         }
 
@@ -266,21 +266,21 @@
                         // element.setAttribute("AttributeName", "AttributeValue") - 지정한 HTML 요소의 속성과 값을 설정하는 메소드이다.
                         //                                                           setAttribute 메소드는 두 개의 인자를 받는데, 첫 번째 인자는 설정할 속성의 이름이고, 두 번째 인자는 설정할 속성의 값이다.
                         //                                                           만약 설정하려는 속성이 이미 존재하다면 해당 속성의 값만 설정할 속성의 값으로 업데이트되고, 그렇지 않다면 설정할 속성의 이름과 값으로 새 속성이 추가된다.
-                        // 1-1. 이미지 태그에 style 속성을 추가한다.
-                        imgTag.setAttribute("style", "width: 50%; height: 100%;");
+                        // 1-1. 이미지 태그에 style 속성 class를 추가한다.
+                        imgTag.setAttribute("class", "participantImg");
                         // 1-2. 참가자 프로필 사진을 가져와 이미지 태그의 소스로 전달한다.
                         imgTag.src = "/imagePath/" + profileImage;
 
                         // 2. 닉네임 b 태그를 생성한다.
                         var nicknameBTag = document.createElement("b");
-                        // 2-1. 닉네임 b 태그에 style 속성을 추가한다.
-                        nicknameBTag.setAttribute("style", "display: flex; flex-direction: column; width: 100%; height: 50%; justify-content: flex-start;");
+                        // 2-1. 닉네임 b 태그에 style 속성 class를 추가한다.
+                        nicknameBTag.setAttribute("class", "participantNickname");
                         // document.createTextNode() - 지정한 텍스트를 포함하는 새로운 Text 노드를 생성하는 메소드이다.
                         //                             이 메소드를 사용하여 동적으로 HTML 요소의 텍스트를 업데이트할 수 있다.
                         //                             이 메소드는 document.createElement()와 함께 사용하여 동적으로 HTML 요소를 생성하는 데 사용된다.
-                        // 2-2. 닉네임 b 태그에 작성할 작성자(참가자) 닉네임을 TextNode로 생성한다.
-                        var nicknameBContent = document.createTextNode(writer);
-                        // 2-3. 닉네임 b 태그에 TextNode로 생성한 작성자(참가자) 닉네임을 전달한다.
+                        // 2-2. 닉네임 b 태그에 작성할 참가자 닉네임을 TextNode로 생성한다.
+                        var nicknameBContent = document.createTextNode(participant);
+                        // 2-3. 닉네임 b 태그에 TextNode로 생성한 참가자 닉네임을 전달한다.
                         nicknameBTag.appendChild(nicknameBContent);
 
                         // 3. 작성자가 방장인지 체크한다.
@@ -288,8 +288,8 @@
                         if ( writer == metaMaster ) {
                             // 3-1-1. 방장 b 태그를 생성한다.
                             var masterBTag = document.createElement("b");
-                            // 3-1-1-1. 방장 b 태그에 style 속성을 추가한다.
-                            masterBTag.setAttribute("style", "display: flex; flex-direction: column; width: 100%; height: 50%; justify-content: flex-end; color: red;");
+                            // 3-1-1-1. 방장 b 태그에 style 속성 class를 추가한다.
+                            masterBTag.setAttribute("class", "participantMaster");
                             // 3-1-1-2. 방장 b 태그에 작성할 내용을 TextNode로 생성한다. - 방장 표시
                             var masterBContent = document.createTextNode("방장");
                             // 3-1-1-3. 방장 b 태그에 TextNode로 생성한 내용을 전달한다.
@@ -297,8 +297,8 @@
 
                             // 3-1-2. 닉네임 구역 div 태그를 생성한다.
                             var innerDivTag = document.createElement("div");
-                            // 3-1-2-1. 닉네임 구역 div 태그에 style 속성을 추가한다.
-                            innerDivTag.setAttribute("style", "display: flex; flex-direction: column; width: 50%; height: 100%;");
+                            // 3-1-2-1. 닉네임 구역 div 태그에 style 속성 class를 추가한다.
+                            innerDivTag.setAttribute("class", "participantInfo");
                             // 3-1-2-2. 닉네임 구역 div 태그에 내부 닉네임 b 태그를 전달한다.
                             innerDivTag.appendChild(nicknameBTag);
                             // 3-1-2-3. 닉네임 구역 div 태그에 내부 방장 b 태그를 전달한다.
@@ -307,23 +307,21 @@
                         } else {
                             // 3-2-1. 닉네임 구역 div 태그를 생성한다.
                             var innerDivTag = document.createElement("div");
-                            // 3-2-1-1. 닉네임 구역 div 태그에 style 속성을 추가한다.
-                            innerDivTag.setAttribute("style", "display: flex; flex-direction: column; width: 50%; height: 100%;");
+                            // 3-2-1-1. 닉네임 구역 div 태그에 style 속성 class를 추가한다.
+                            innerDivTag.setAttribute("class", "participantInfo");
                             // 3-2-1-2. 닉네임 구역 div 태그에 내부 닉네임 b 태그를 전달한다.
                             innerDivTag.appendChild(nicknameBTag);
                         } // writer == metaMaster
 
                         // 4. 참가자 div 태그를 생성한다.
                         var divTag = document.createElement("div");
-                        // 4-1. 참가자 div 태그에 class 속성을 추가한다.
-                        divTag.setAttribute("class", "participant");
+                        // 4-1. 참가자 div 태그에 상세 프로필 클릭 이벤트 class와 style 속성 class를 추가한다.
+                        divTag.setAttribute("class", "participant participantDiv");
                         // 4-2. 참가자 div 태그에 id 속성을 작성자(참가자) 닉네임 값으로 설정해 추가한다.
                         divTag.setAttribute("id", writer);
-                        // 4-3. 참가자 div 태그에 style 속성을 추가한다.
-                        divTag.setAttribute("style", "display: flex; justify-content: space-between; border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%;");
-                        // 4-4. 참가자 div 태그에 이미지 태그를 전달한다.
+                        // 4-3. 참가자 div 태그에 이미지 태그를 전달한다.
                         divTag.appendChild(imgTag);
-                        // 4-5. 참가자 div 태그에 닉네임 구역 div 태그를 전달한다.
+                        // 4-4. 참가자 div 태그에 닉네임 구역 div 태그를 전달한다.
                         divTag.appendChild(innerDivTag);
 
                         // 5. 참가자 구역에 참가자 div 태그를 올린다.
@@ -350,31 +348,30 @@
                         chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
                     } // enter
                     /////////////////////////////////////////// 재입장(새로고침) ///////////////////////////////////////////
-                    // 10-2. 메시지 타입이 "reEnter"일 경우
-                    if ( metaType == "reEnter" ) {
-                        // 전달 받은 메시지가 존재하는지 체크한다.
-                        // 메시지가 존재하지 않는 경우
-                        if ( message == null ) {
-                            // 아무 작업 없이 돌아간다.
-                            return;
-                        // 메시지가 존재하는 경우
-                        } else {
-                            // 메시지 코드를 작성한다.
-                            str = '<div style="text-align: left;">';
-                            str += '<b>' + message + '</b>';
-                            str += '</div>'
-                            // 작성한 메시지 코드를 채팅 구역에 올린다.
-                            // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
-                            // position에는 총 4가지의 옵션이 있다.
-                            // 1. beforebegin : 타겟 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
-                            // 2. afterbegin : 타겟 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
-                            // 3. beforeend : 타겟 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
-                            // 4. afterend : 타겟 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
-                            chatArea.insertAdjacentHTML("beforeend", str);
-                            // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
-                            chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
-                        } // null
-                    } // reEnter
+<!--                    // 10-2. 메시지 타입이 "reEnter"일 경우-->
+<!--                    if ( metaType == "reEnter" ) {-->
+<!--                        // 전달 받은 메시지가 존재하는지 체크한다.-->
+<!--                        // 메시지가 존재하지 않는 경우-->
+<!--                        if ( message == null ) {-->
+<!--                            // 아무 작업 없이 돌아간다.-->
+<!--                        // 메시지가 존재하는 경우-->
+<!--                        } else {-->
+<!--                            // 메시지 코드를 작성한다.-->
+<!--                            str = '<div style="text-align: left;">';-->
+<!--                            str += '<b>' + message + '</b>';-->
+<!--                            str += '</div>'-->
+<!--                            // 작성한 메시지 코드를 채팅 구역에 올린다.-->
+<!--                            // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.-->
+<!--                            // position에는 총 4가지의 옵션이 있다.-->
+<!--                            // 1. beforebegin : 타겟 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)-->
+<!--                            // 2. afterbegin : 타겟 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)-->
+<!--                            // 3. beforeend : 타겟 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)-->
+<!--                            // 4. afterend : 타겟 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)-->
+<!--                            chatArea.insertAdjacentHTML("beforeend", str);-->
+<!--                            // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.-->
+<!--                            chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;-->
+<!--                        } // null-->
+<!--                    } // reEnter-->
                     ///////////////////////////////////////// 재입장(새로고침) 에러 /////////////////////////////////////////
                     // 10-3. 메시지 타입이 "reErr"일 경우
                     if ( metaType == "reErr" ) {

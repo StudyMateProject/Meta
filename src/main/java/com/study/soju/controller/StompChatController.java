@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.study.soju.dto.ChatMessageDTO;
 import com.study.soju.dto.MetaCanvasDTO;
-import com.study.soju.entity.Meta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.QueueInformation;
@@ -22,12 +21,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 @RequiredArgsConstructor
@@ -68,7 +67,7 @@ public class StompChatController {
     // 방에 참가한 유저의 캐릭터 정보들을 보낼때 방 번호로 구분하기 위한 Map
     Map<Long, Map<String, List<Object>>> metaRoomMap = new HashMap<>();
 
-    // 메시지를 보낼 때 퇴장 메시지와 재입장 메시지를 관리하기 위한 ConcurrentHashMap
+    // 메시지를 보낼 때 퇴장 메시지와 재입장 메시지를 구분 관리하기 위한 ConcurrentHashMap
     ConcurrentHashMap<String, ChatMessageDTO> metaMessageMap = new ConcurrentHashMap<>();
 
     // Client에서 전송한 SEND 요청을 처리
@@ -91,18 +90,20 @@ public class StompChatController {
                 boomMetaRoom.remove(message.getMetaIdx());
             }
         }
-        // 2-2. Map에서 가져온 값이 존재하지 않는 경우 - 방장 퇴장 전 입장
-        // 3. 1에서 파라미터로 받아온 DTO 값 중 에러 체크 값을 가져와 재입장 에러 값이 존재하는지 체크한다.
-        // 3-1. 재입장 에러 값이 존재하는 경우 - 재입장 메시지를 작성한다.
-        if ( message.getErr() != null && message.getErr().equals("reErr") ) {
-            // 3-1-1. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)와 방 제목을 가져와 재입장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
-            message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에 재입장하였습니다.");
-        // 3-2. 재입장 에러 값이 존재하지 않는 경우 - 첫 입장 메시지 작성한다.
-        } else {
-            // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 작성자(첫 입장자)와 방 제목을 가져와 입장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
-            message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에 입장하였습니다.");
-        }
-        // 4. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
+//        // 2-2. Map에서 가져온 값이 존재하지 않는 경우 - 방장 퇴장 전 입장
+//        // 3. 1에서 파라미터로 받아온 DTO 값 중 에러 체크 값을 가져와 재입장 에러 값이 존재하는지 체크한다.
+//        // 3-1. 재입장 에러 값이 존재하는 경우 - 재입장 메시지를 작성한다.
+//        if ( message.getErr() != null && message.getErr().equals("reErr") ) {
+//            // 3-1-1. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)와 방 제목을 가져와 재입장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
+//            message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에 재입장하였습니다.");
+//        // 3-2. 재입장 에러 값이 존재하지 않는 경우 - 첫 입장 메시지 작성한다.
+//        } else {
+//            // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 작성자(첫 입장자)와 방 제목을 가져와 입장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
+//            message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에 입장하였습니다.");
+//        }
+        // 3. 1에서 파라미터로 받아온 DTO 값 중 작성자(첫 입장자)와 방 제목을 가져와 입장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
+        message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에 입장하였습니다.");
+        // 4. 1에서 파라미터로 받아온 DTO 값 중 작성자(첫 입장자)를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
         message.setParticipant(message.getWriter());
         // 5. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
         //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
@@ -120,7 +121,9 @@ public class StompChatController {
         if ( exitMessage != null ) {
             // 3-1-1. 퇴장 메소드에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
             metaMessageMap.remove(message.getMetaIdx() + "_exit");
-            // 3-1-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+            // 3-1-2. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
+            message.setParticipant(message.getWriter());
+            // 3-1-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
             //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
             //        "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
             template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
@@ -268,8 +271,8 @@ public class StompChatController {
                     // 13-1. 방장 닉네임이 존재하지 않는 경우
                     if ( message.getMaster() == null ) {
                         // 13-1-1. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-                        //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-                        //        "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
+                        //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                        //         "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
                         template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
                         // 13-1-2. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
                         message.setExit(metaCanvasJson);
@@ -337,7 +340,7 @@ public class StompChatController {
             metaCoordinateList.add(canvas.getY());
             // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-1-2에서 생성한 List를 값으로 사용하여, 3-1-1에서 생성한 Map에 추가한다.
             metaCanvasMap.put(canvas.getWriter(), metaCoordinateList);
-            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 3-1-6에서 추가한 Map을 값으로 사용하여, 위에서 생성한 Map에 추가한다.
+            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 3-1-6에서 추가한 Map을 값으로 사용하여, 위에서 생성한 방 구분용 Map에 추가한다.
             metaRoomMap.put(canvas.getMetaIdx(), metaCanvasMap);
             // 3-1-7. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 3-1-1에서 생성한 Map을 JSON 문자열로 변환한다.
             String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
@@ -538,14 +541,14 @@ public class StompChatController {
         // 6. 5에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 캐릭터 정보에 setter를 통해 전달한다.
         canvas.setCharacters(metaCanvasJson);
 
-        // 7번과 8번은 RabbitMQConfig에서 미리 메시지 변환기를 만들어 설정해놨기에 사용할 필요가 없다.
-        // 7. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 1에서 파라미터로 받아온 DTO를 JSON 문자열로 변환한다.
+//        // 7번과 8번은 RabbitMQConfig에서 미리 메시지 변환기를 만들어 설정해놨기에 사용할 필요가 없다.
+//        // 7. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 1에서 파라미터로 받아온 DTO를 JSON 문자열로 변환한다.
 //        String json = objectMapper.writeValueAsString(canvas);
-        // 8. Spring AMQP의 MessageBuilder 클래스를 사용하여 AMQP 메시지를 생성한다.
-        //    MessageBuilder.withBody(json.getBytes()) - 7에서 변환한 JSON 문자열을 byte 배열로 변환하여 AMQP 메시지의 body에 전달한다.
-        //    .setContentType("application/json") - 생성된 AMQP 메시지의 contentType을 "application/json"으로 설정한다.
-        //                                        - 이는 메시지의 body가 어떤 형식인지를 나타내는 값이다.
-        //    .build() - 설정이 완료된 AMQP 메시지를 빌드하여 반환한다.
+//        // 8. Spring AMQP의 MessageBuilder 클래스를 사용하여 AMQP 메시지를 생성한다.
+//        //    MessageBuilder.withBody(json.getBytes()) - 7에서 변환한 JSON 문자열을 byte 배열로 변환하여 AMQP 메시지의 body에 전달한다.
+//        //    .setContentType("application/json") - 생성된 AMQP 메시지의 contentType을 "application/json"으로 설정한다.
+//        //                                        - 이는 메시지의 body가 어떤 형식인지를 나타내는 값이다.
+//        //    .build() - 설정이 완료된 AMQP 메시지를 빌드하여 반환한다.
 //        Message message = MessageBuilder.withBody(json.getBytes())
 //                                        .setContentType("application/json")
 //                                        .build();
@@ -569,11 +572,11 @@ public class StompChatController {
                                                                                                                         //    @Header(AmqpHeaders.DELIVERY_TAG) - 메시지를 수신할 때 해당 메시지의 "delivery tag" 값을 가져오는 역할을 한다.
                                                                                                                         //                                        "delivery tag"는 RabbitMQ가 메시지의 유일성을 보장하기 위해 각 메시지에 할당한 일련번호이다.
         try {
-            // 2번은 RabbitMQConfig에서 미리 메시지 변환기를 만들어 설정해놨기에 사용할 필요가 없다.
-            // 2. 1에서 파라미터로 받아온 메시지를 UTF-8로 인코딩하여 String 형태로 변환한다.
-            //    message.getBody() - RabbitMQ로부터 수신된 메시지의 body를 바이트 배열 형태로 반환한다.
-            //    new String(byte[] bytes, String charset) - 생성자를 사용하여 바이트 배열을 문자열로 변환하며,
-            //                                               이 때 charset 인자에는 인코딩 방식(UTF-8)을 지정해주어야 한다.
+//            // 2번은 RabbitMQConfig에서 미리 메시지 변환기를 만들어 설정해놨기에 사용할 필요가 없다.
+//            // 2. 1에서 파라미터로 받아온 메시지를 UTF-8로 인코딩하여 String 형태로 변환한다.
+//            //    message.getBody() - RabbitMQ로부터 수신된 메시지의 body를 바이트 배열 형태로 반환한다.
+//            //    new String(byte[] bytes, String charset) - 생성자를 사용하여 바이트 배열을 문자열로 변환하며,
+//            //                                               이 때 charset 인자에는 인코딩 방식(UTF-8)을 지정해주어야 한다.
 //            String json = new String(message.getBody(), "UTF-8");
 
             // 3. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 1에서 파라미터로 받아온 JSON 형식의 메시지를 DTO로 변환한다.
@@ -591,7 +594,7 @@ public class StompChatController {
             //    "/sub" + "/meta/studyroom/canvas/" + metaIdx = "/sub/meta/studyroom/canvas/1"
             template.convertAndSend("/sub/meta/studyroom/canvas/" + canvas.getMetaIdx(), canvas);
 
-            // 메시지 헤더 설정 - 헤더에 추가할 것이 있을 경우 사용한다.
+//            // 메시지 헤더 설정 - 헤더에 추가할 것이 있을 경우 사용한다.
 //            SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.create();
 //            headers.setLeaveMutable(true);
 //            headers.setNativeHeader("clear-cache", "true");
@@ -622,17 +625,19 @@ public class StompChatController {
                 boomMetaRoom.remove(message.getMetaIdx());
             }
         }
-        // 2-2. Map에서 가져온 값이 존재하지 않는 경우 - 방장 퇴장 전 입장
-        // 3. 1에서 파라미터로 받아온 DTO 값 중 에러 체크 값을 가져와 재입장 에러 값이 존재하는지 체크한다.
-        // 3-1. 재입장 에러 값이 존재하는 경우 - 재입장 메시지를 작성한다.
-        if ( message.getErr() != null && message.getErr().equals("reErr") ) {
-            // 3-1-1. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)와 방 제목을 가져와 재입장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
-            message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에 재입장하였습니다.");
-        // 3-2. 재입장 에러 값이 존재하지 않는 경우 - 첫 입장 메시지 작성한다.
-        } else {
-            // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 작성자(첫 입장자)와 방 제목을 가져와 입장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
-            message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에 입장하였습니다.");
-        }
+//        // 2-2. Map에서 가져온 값이 존재하지 않는 경우 - 방장 퇴장 전 입장
+//        // 3. 1에서 파라미터로 받아온 DTO 값 중 에러 체크 값을 가져와 재입장 에러 값이 존재하는지 체크한다.
+//        // 3-1. 재입장 에러 값이 존재하는 경우 - 재입장 메시지를 작성한다.
+//        if ( message.getErr() != null && message.getErr().equals("reErr") ) {
+//            // 3-1-1. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)와 방 제목을 가져와 재입장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
+//            message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에 재입장하였습니다.");
+//        // 3-2. 재입장 에러 값이 존재하지 않는 경우 - 첫 입장 메시지 작성한다.
+//        } else {
+//            // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 작성자(첫 입장자)와 방 제목을 가져와 입장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
+//            message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에 입장하였습니다.");
+//        }
+        // 3. 1에서 파라미터로 받아온 DTO 값 중 작성자(첫 입장자)와 방 제목을 가져와 입장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
+        message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에 입장하였습니다.");
         // 4. 1에서 파라미터로 받아온 DTO 값 중 작성자를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
         message.setParticipant(message.getWriter());
         // 5. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
@@ -651,7 +656,9 @@ public class StompChatController {
         if ( exitMessage != null ) {
             // 3-1-1. 퇴장 메소드에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
             metaMessageMap.remove(message.getMetaIdx() + "_exit");
-            // 3-1-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+            // 3-1-2. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
+            message.setParticipant(message.getWriter());
+            // 3-1-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
             //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
             //        "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
             template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
@@ -799,8 +806,8 @@ public class StompChatController {
                     // 13-1. 방장 닉네임이 존재하지 않는 경우
                     if ( message.getMaster() == null ) {
                         // 13-1-1. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-                        //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-                        //        "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
+                        //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                        //         "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
                         template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
                         // 13-1-2. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
                         message.setExit(metaCanvasJson);
@@ -868,7 +875,7 @@ public class StompChatController {
             metaCoordinateList.add(canvas.getY());
             // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-1-2에서 생성한 List를 값으로 사용하여, 3-1-1에서 생성한 Map에 추가한다.
             metaCanvasMap.put(canvas.getWriter(), metaCoordinateList);
-            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 3-1-6에서 추가한 Map을 값으로 사용하여, 위에서 생성한 Map에 추가한다.
+            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 3-1-6에서 추가한 Map을 값으로 사용하여, 위에서 생성한 방 구분용 Map에 추가한다.
             metaRoomMap.put(canvas.getMetaIdx(), metaCanvasMap);
             // 3-1-7. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 3-1-1에서 생성한 Map을 JSON 문자열로 변환한다.
             String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
@@ -1069,14 +1076,14 @@ public class StompChatController {
         // 6. 5에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 캐릭터 정보에 setter를 통해 전달한다.
         canvas.setCharacters(metaCanvasJson);
 
-        // 7번과 8번은 RabbitMQConfig에서 미리 메시지 변환기를 만들어 설정해놨기에 사용할 필요가 없다.
-        // 7. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 1에서 파라미터로 받아온 DTO를 JSON 문자열로 변환한다.
+//        // 7번과 8번은 RabbitMQConfig에서 미리 메시지 변환기를 만들어 설정해놨기에 사용할 필요가 없다.
+//        // 7. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 1에서 파라미터로 받아온 DTO를 JSON 문자열로 변환한다.
 //        String json = objectMapper.writeValueAsString(canvas);
-        // 8. Spring AMQP의 MessageBuilder 클래스를 사용하여 AMQP 메시지를 생성한다.
-        //    MessageBuilder.withBody(json.getBytes()) - 7에서 변환한 JSON 문자열을 byte 배열로 변환하여 AMQP 메시지의 body에 전달한다.
-        //    .setContentType("application/json") - 생성된 AMQP 메시지의 contentType을 "application/json"으로 설정한다.
-        //                                        - 이는 메시지의 body가 어떤 형식인지를 나타내는 값이다.
-        //    .build() - 설정이 완료된 AMQP 메시지를 빌드하여 반환한다.
+//        // 8. Spring AMQP의 MessageBuilder 클래스를 사용하여 AMQP 메시지를 생성한다.
+//        //    MessageBuilder.withBody(json.getBytes()) - 7에서 변환한 JSON 문자열을 byte 배열로 변환하여 AMQP 메시지의 body에 전달한다.
+//        //    .setContentType("application/json") - 생성된 AMQP 메시지의 contentType을 "application/json"으로 설정한다.
+//        //                                        - 이는 메시지의 body가 어떤 형식인지를 나타내는 값이다.
+//        //    .build() - 설정이 완료된 AMQP 메시지를 빌드하여 반환한다.
 //        Message message = MessageBuilder.withBody(json.getBytes())
 //                                        .setContentType("application/json")
 //                                        .build();
@@ -1100,11 +1107,11 @@ public class StompChatController {
                                                                                                                        //    @Header(AmqpHeaders.DELIVERY_TAG) - 메시지를 수신할 때 해당 메시지의 "delivery tag" 값을 가져오는 역할을 한다.
                                                                                                                        //                                        "delivery tag"는 RabbitMQ가 메시지의 유일성을 보장하기 위해 각 메시지에 할당한 일련번호이다.
         try {
-            // 2번은 RabbitMQConfig에서 미리 메시지 변환기를 만들어 설정해놨기에 사용할 필요가 없다.
-            // 2. 1에서 파라미터로 받아온 메시지를 UTF-8로 인코딩하여 String 형태로 변환한다.
-            //    message.getBody() - RabbitMQ로부터 수신된 메시지의 body를 바이트 배열 형태로 반환한다.
-            //    new String(byte[] bytes, String charset) - 생성자를 사용하여 바이트 배열을 문자열로 변환하며,
-            //                                               이 때 charset 인자에는 인코딩 방식(UTF-8)을 지정해주어야 한다.
+//            // 2번은 RabbitMQConfig에서 미리 메시지 변환기를 만들어 설정해놨기에 사용할 필요가 없다.
+//            // 2. 1에서 파라미터로 받아온 메시지를 UTF-8로 인코딩하여 String 형태로 변환한다.
+//            //    message.getBody() - RabbitMQ로부터 수신된 메시지의 body를 바이트 배열 형태로 반환한다.
+//            //    new String(byte[] bytes, String charset) - 생성자를 사용하여 바이트 배열을 문자열로 변환하며,
+//            //                                               이 때 charset 인자에는 인코딩 방식(UTF-8)을 지정해주어야 한다.
 //            String json = new String(message.getBody(), "UTF-8");
 
             // 3. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 1에서 파라미터로 받아온 JSON 형식의 메시지를 DTO로 변환한다.
@@ -1122,7 +1129,7 @@ public class StompChatController {
             //    "/sub" + "/meta/caferoom/canvas/" + metaIdx = "/sub/meta/caferoom/canvas/1"
             template.convertAndSend("/sub/meta/caferoom/canvas/" + canvas.getMetaIdx(), canvas);
 
-            // 메시지 헤더 설정 - 헤더에 추가할 것이 있을 경우 사용한다.
+//            // 메시지 헤더 설정 - 헤더에 추가할 것이 있을 경우 사용한다.
 //            SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.create();
 //            headers.setLeaveMutable(true);
 //            headers.setNativeHeader("clear-cache", "true");
@@ -1158,13 +1165,13 @@ public class StompChatController {
         // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.3초가 넘는 장시간의 새로고침 에러로 인한 방 퇴장 및 삭제 처리 후 재입장된 것으로,
         //                                 이는 아직 퇴장한 것이 아닌데 에러로 인해 방 퇴장 및 삭제 처리가 되었으므로 다시 새로운 방을 생성해 입장 처리를 해준다.
         } else {
-            // 3-2-1. 방 생성에 필요한 방 생성 DTO를 생성한다.
+//            // 3-2-1. 방 생성에 필요한 방 생성 DTO를 생성한다.
 //            Meta.rqCreateMeta rqCreateMeta = new Meta.rqCreateMeta();
-            // 3-2-2. 3에서 저장하고 받아온 Entity 값 중 방 번호를 setter를 통하여 방 생성 DTO 값 중 방 타입에 전달한다.
+//            // 3-2-2. 3에서 저장하고 받아온 Entity 값 중 방 번호를 setter를 통하여 방 생성 DTO 값 중 방 타입에 전달한다.
 //            rqCreateMeta.setMetaType("oneRoom");
-            // 3-2-3. 1에서 파라미터로 받아온 DTO 값 중 작성자를 setter를 통하여 방 생성 DTO 값 중 방장에 전달한다.
+//            // 3-2-3. 1에서 파라미터로 받아온 DTO 값 중 작성자를 setter를 통하여 방 생성 DTO 값 중 방장에 전달한다.
 //            rqCreateMeta.setMetaMaster(message.getWriter());
-            // 3-2-4. 위에서 값들이 전달된 방 생성 DTO를 가지고 metaController에 방 생성 메소드를 호출하여 새로운 방을 생성하고 입장한다.
+//            // 3-2-4. 위에서 값들이 전달된 방 생성 DTO를 가지고 metaController에 방 생성 메소드를 호출하여 새로운 방을 생성하고 입장한다.
 //            metaController.reCreateMetaRoom(rqCreateMeta);
         }
     }
