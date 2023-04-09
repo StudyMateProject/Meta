@@ -3,13 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="/css/CafeRoom.css">
     <style>
         html, body {
             height: 100%;
             overflow: hidden;
         }
     </style>
-    <link rel="stylesheet" type="text/css" href="/css/CafeRoom.css">
+
+    <script th:inline="javascript">
+        let err = [[${err}]];
+        if ( err != null ) {
+            alert("알수없는 이유로 방이 터졌습니다.\n방을 재생성 해주시기 바랍니다.");
+            location.href = "/meta";
+        }
+    </script>
 </head>
 <!-- unload - beforeunload 이벤트에서 반환한 값을 처리한다. -->
 <body onkeydown="keyDown()" onkeyup="keyUp()" onunload="exit()">

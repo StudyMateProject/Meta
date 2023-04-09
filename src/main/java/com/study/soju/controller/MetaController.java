@@ -157,18 +157,24 @@ public class MetaController {
         Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 3. 1에서 파라미터로 받아온 방 생성 DTO와 2에서 반환받은 로그인 유저 정보 DTO를 서비스에 전달한다.
         Meta.rpCreateMeta rpCreateMeta = metaService.createRoom(rqCreateMeta, rpNickImage);
-        // 4. 3에서 반환받은 DTO 값 중 방 타입을 체크한다.
-        // 4-1. 방 타입이 스터디일 경우
+        // 4. 세션을 사용하기 위하여 HttpServletRequest을 통해 세션 객체를 가져온다.
+        HttpSession session = request.getSession();
+        // 5. 3에서 반환받은 DTO 값 중 방 타입을 체크한다.
+        // 5-1. 방 타입이 스터디일 경우
         if ( rpCreateMeta.getMetaType().equals("studyRoom") ) {
-            // 4-1-1. 3에서 반환받은 DTO 값 중 방 번호를 가지고 스터디 페이지로 리다이렉트한다.
+            // 5-1-1. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용함과 동시에 값으로 사용하여 세션에 추가한다. - 방장 체크 값
+            session.setAttribute(rpNickImage.getNickname(), rpNickImage.getNickname());
+            // 5-1-2. 3에서 반환받은 DTO 값 중 방 번호를 가지고 스터디 페이지로 리다이렉트한다.
             return "redirect:/meta/studyroom?idx=" + rpCreateMeta.getIdx();
-        // 4-2. 방 타입이 카페일 경우
+        // 5-2. 방 타입이 카페일 경우
         } else if ( rpCreateMeta.getMetaType().equals("cafeRoom") ) {
-            // 4-2-1. 3에서 반환받은 DTO 값 중 방 번호를 가지고 카페 페이지로 리다이렉트한다.
+            // 5-2-1. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용함과 동시에 값으로 사용하여 세션에 추가한다. - 방장 체크 값
+            session.setAttribute(rpNickImage.getNickname(), rpNickImage.getNickname());
+            // 5-2-2. 3에서 반환받은 DTO 값 중 방 번호를 가지고 카페 페이지로 리다이렉트한다.
             return "redirect:/meta/caferoom?idx=" + rpCreateMeta.getIdx();
-        // 4-3. 방 타입이 자습일 경우
+        // 5-3. 방 타입이 자습일 경우
         } else {
-            // 4-3-1. 3에서 반환받은 DTO 값 중 방 번호를 가지고 자습실 페이지로 리다이렉트한다.
+            // 5-3-1. 3에서 반환받은 DTO 값 중 방 번호를 가지고 자습실 페이지로 리다이렉트한다.
             return "redirect:/meta/oneroom?idx=" + rpCreateMeta.getIdx();
         }
     }
@@ -183,100 +189,106 @@ public class MetaController {
         // 4. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값이 존재하는지 체크한다.
         // 4-1. 세션에 값이 존재하는 경우 - 재입장(새로고침)
         if ( session.getAttribute(rpNickImage.getNickname()) != null ) {
-            // 5. 세션에 존재하는 값이 1에서 파라미터로 받아온 방 번호와 같은지 체크한다.
-            // 5-1. 세션에 값이 방 번호와 다른 경우 - 방장 혼자일때 방 퇴장 및 삭제 이후 새로운 방 생성 및 입장
-            //      방장 혼자일때 방을 퇴장하는 경우 방은 삭제되지만 세션은 제거되지 못하고 남아있기에 세션에 값은 이전 퇴장한 방 번호가 남아있다.
-            if ( (long) session.getAttribute(rpNickImage.getNickname()) != idx ) {
-                // 5-1-1. 3에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
-                session.removeAttribute(rpNickImage.getNickname());
-                // 5-1-2. 1에서 파라미터로 받아온 방 번호를 가지고 스터리룸 페이지로 리다이렉트한다.
-                return "redirect:/meta/studyroom?idx=" + idx;
-            // 5-2. 세션에 값이 방 번호와 같은 경우 - 재입장(새로고침)
+            // 5. 세션에 존재하는 값이 닉네임인지 방 번호인지 체크한다.
+            // 5-1. 세션에 값이 닉네임인 경우 - 방 생성 후 방장 첫 입장
+            if ( session.getAttribute(rpNickImage.getNickname()).equals(rpNickImage.getNickname()) ) {
+                // 5-1-1. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용하고, 1에서 받아온 방 번호를 값으로 사용하여 세션을 변경한다.
+                session.setAttribute(rpNickImage.getNickname(), idx);
+                // 5-1-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+                Meta.rpEntrance rpMasterEntrance = metaService.reEntrance(idx);
+                // 5-1-3. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+                List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
+                // 5-1-4. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+                model.addAttribute("nickImage", rpNickImage);
+                // 5-1-5. 5-1-2에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
+                model.addAttribute("metaRoom", rpMasterEntrance);
+                // 5-1-6. 5-1-3에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
+                model.addAttribute("participantList", rpMetaRoomIdxList);
+                // 5-1-7. 스터디룸 페이지로 이동한다.
+                return "Meta/StudyRoom";
+            // 5-2. 세션에 값이 방 번호인 경우
             } else {
-                // 6. 2에서 반환받은 DTO 값 중 닉네임을 서비스에 전달한다.
-                int entranceCheck = metaService.entranceCheck(rpNickImage.getNickname());
-                // 7. 6에서 반환받은 값이 어떤것인지 체크한다.
-                // 7-1. 반환받은 값이 0인 경우 - 세션 존재 O / 방 내부 참여자 명단 존재 X - 퇴장 후 첫 입장
-                //      세션은 존재하고 방 내부 참여자 명단에는 존재하지 않다는 것은 퇴장 후 첫 입장을 의미한다.
-                if ( entranceCheck == 0 ) {
-                    // 7-1-1. 3에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
+                // 6. 세션에 존재하는 방 번호가 1에서 파라미터로 받아온 방 번호와 같은지 체크한다.
+                // 6-1. 세션에 값이 방 번호와 다른 경우 - 방장 혼자일때 방 퇴장 및 삭제 이후 새로운 방 생성 및 입장
+                //      방장 혼자일때 방을 퇴장하는 경우 방은 삭제되지만 세션은 제거되지 못하고 남아있기에 세션에 값은 이전 퇴장한 방 번호가 남아있다.
+                if ( (long) session.getAttribute(rpNickImage.getNickname()) != idx ) {
+                    // 6-1-1. 3에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
                     session.removeAttribute(rpNickImage.getNickname());
-                    // 7-1-2. 1에서 파라미터로 받아온 방 번호를 가지고 스터리룸 페이지로 리다이렉트한다.
+                    // 6-1-2. 1에서 파라미터로 받아온 방 번호를 가지고 스터리룸 페이지로 리다이렉트한다.
                     return "redirect:/meta/studyroom?idx=" + idx;
-                // 7-2. 반환받은 값이 1인 경우 - 세션 존재 O / 방 내부 참여자 명단 존재 O - 재입장(새로고침)
-                //      세션도 존재하고 방 내부 참여자 명단에도 존재한다는 것은 재입장(새로고침)을 의미한다.
+                // 6-2. 세션에 값이 방 번호와 같은 경우 - 재입장(새로고침)
                 } else {
-                    // 7-2-1. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-                    Meta.rpEntrance rpReEntrance = metaService.reEntrance(idx);
-                    // 7-2-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-                    List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
-                    // 7-2-3. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
-                    model.addAttribute("nickImage", rpNickImage);
-                    // 7-2-4. 7-2-1에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
-                    model.addAttribute("metaRoom", rpReEntrance);
-                    // 7-2-5. 7-2-2에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
-                    model.addAttribute("participantList", rpMetaRoomIdxList);
-                    // 7-2-6. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값을 바인딩한다.
-                    model.addAttribute("entryCheck", session.getAttribute(rpNickImage.getNickname()));
-                    // 7-2-7. 스터디룸 페이지로 이동한다.
-                    return "Meta/StudyRoom";
+                    // 7. 2에서 반환받은 DTO 값 중 닉네임을 서비스에 전달한다.
+                    int entranceCheck = metaService.entranceCheck(rpNickImage.getNickname());
+                    // 8. 7에서 반환받은 값이 어떤것인지 체크한다.
+                    // 8-1. 반환받은 값이 0인 경우 - 세션 존재 O / 방 내부 참여자 명단 존재 X - 퇴장 후 첫 입장
+                    //      세션은 존재하고 방 내부 참여자 명단에는 존재하지 않다는 것은 퇴장 후 첫 입장을 의미한다.
+                    if ( entranceCheck == 0 ) {
+                        // 8-1-1. 3에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
+                        session.removeAttribute(rpNickImage.getNickname());
+                        // 8-1-2. 1에서 파라미터로 받아온 방 번호를 가지고 스터리룸 페이지로 리다이렉트한다.
+                        return "redirect:/meta/studyroom?idx=" + idx;
+                    // 8-2. 반환받은 값이 1인 경우 - 세션 존재 O / 방 내부 참여자 명단 존재 O - 재입장(새로고침)
+                    //      세션도 존재하고 방 내부 참여자 명단에도 존재한다는 것은 재입장(새로고침)을 의미한다.
+                    } else {
+                        // 8-2-1. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+                        Meta.rpEntrance rpReEntrance = metaService.reEntrance(idx);
+                        // 8-2-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+                        List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
+                        // 8-2-3. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+                        model.addAttribute("nickImage", rpNickImage);
+                        // 8-2-4. 8-2-2에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
+                        model.addAttribute("participantList", rpMetaRoomIdxList);
+                        // 8-2-5. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값을 바인딩한다.
+                        model.addAttribute("entryCheck", session.getAttribute(rpNickImage.getNickname()));
+                        // 8-2-6. 8-2-1에서 반환받은 값이 존재하는지 체크한다.
+                        // 8-2-6-1. 반환받은 값이 존재하지 않는 경우
+                        if ( rpReEntrance == null ) {
+                            // 8-2-6-1-1. 에러값을 바인딩한다.
+                            model.addAttribute("err", "1");
+                        // 8-2-6-2. 반환받은 값은 존재하는 경우
+                        } else {
+                            // 8-2-6-2-1. 8-2-1에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
+                            model.addAttribute("metaRoom", rpReEntrance);
+                        }
+                        // 8-2-7. 스터디룸 페이지로 이동한다.
+                        return "Meta/StudyRoom";
+                    }
                 }
             }
         // 4-2. 세션에 값이 존재하지 않는 경우 - 첫 입장
         } else {
-            // 5. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 서비스에 전달한다.
-            int rpEntranceMetaRoom = metaService.entranceMetaRoom(idx, rpNickImage.getNickname());
-            // 6. 5에서 반환받은 값이 어떤것인지 체크한다.
-            // 6-1. 반환받은 값이 1인 경우 - 방 생성 후 방장 입장
-            if ( rpEntranceMetaRoom == 1 ) {
-                // 6-1-1. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용하고, 1에서 받아온 방 번호를 값으로 사용하여 세션에 추가한다.
-                session.setAttribute(rpNickImage.getNickname(), idx);
-                // 6-1-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-                Meta.rpEntrance rpMasterEntrance = metaService.reEntrance(idx);
-                // 6-1-3. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-                List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
-                // 6-1-4. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
-                model.addAttribute("nickImage", rpNickImage);
-                // 6-1-5. 6-1-2에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
-                model.addAttribute("metaRoom", rpMasterEntrance);
-                // 6-1-6. 6-1-3에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
-                model.addAttribute("participantList", rpMetaRoomIdxList);
-                // 6-1-7. 스터디룸 페이지로 이동한다.
-                return "Meta/StudyRoom";
-            // 6-2. 반환받은 값이 0인 경우 - 유저 첫 입장
+            // 5. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 로그인 유저 정보 DTO를 서비스에 전달한다.
+            Meta.rpEntrance rpNewEntrance = metaService.newEntrance(idx, rpNickImage);
+            // 6. 5에서 반환받은 DTO가 존재하는지 체크한다.
+            // 6-1. 반환받은 DTO가 존재하지 않는 경우 - 입장하는 방 존재 X
+            if ( rpNewEntrance == null ) {
+                // 6-1-1. URL 파라미터에 에러 메시지를 가지고 메타 메인 페이지로 리다이렉트한다.
+                return "redirect:/meta?err=" + URLEncoder.encode("해당 방의 정보가 없습니다.", "UTF-8");
+            // 6-2. 반환받은 DTO가 존재하는 경우 - 입장하는 방 존재 O
             } else {
-                // 7. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 로그인 유저 정보 DTO를 서비스에 전달한다.
-                Meta.rpEntrance rpNewEntrance = metaService.newEntrance(idx, rpNickImage);
-                // 8. 7에서 반환받은 DTO가 존재하는지 체크한다.
-                // 8-1. 반환받은 DTO가 존재하지 않는 경우 - 입장하는 방 존재 X
-                if ( rpNewEntrance == null ) {
-                    // 8-1-1. URL 파라미터에 에러 메시지를 가지고 메타 메인 페이지로 리다이렉트한다.
-                    return "redirect:/meta?err=" + URLEncoder.encode("해당 방의 정보가 없습니다.", "UTF-8");
-                // 8-2. 반환받은 DTO가 존재하는 경우 - 입장하는 방 존재 O
+                // 7. 5에서 반환받은 DTO 값 중 idx가 0인지 체크한다.
+                // 7-1. idx가 0인 경우 - 입장하는 방 정원초과
+                if ( rpNewEntrance.getIdx() == 0 ) {
+                    // 7-1-1. 5에서 반환받은 DTO 값 중 metaTitle에 저장되있는 에러메시지를 바인딩한다.
+                    model.addAttribute("err", rpNewEntrance.getMetaTitle());
+                    // 7-1-2. 메타 메인 페이지로 리다이렉트한다.
+                    return "redirect:/meta";
+                // 7-2. idx가 0이 아닌 경우 - 입장하는 방 첫 입장
                 } else {
-                    // 9. 7에서 반환받은 DTO 값 중 idx가 0인지 체크한다.
-                    // 9-1. idx가 0인 경우 - 입장하는 방 정원초과
-                    if ( rpNewEntrance.getIdx() == 0 ) {
-                        // 9-1-1. 7에서 반환받은 DTO 값 중 metaTitle에 저장되있는 에러메시지를 바인딩한다.
-                        model.addAttribute("err", rpNewEntrance.getMetaTitle());
-                        // 9-1-2. 메타 메인 페이지로 리다이렉트한다.
-                        return "redirect:/meta";
-                    // 9-2. idx가 0이 아닌 경우 - 입장하는 방 첫 입장
-                    } else {
-                        // 9-2-1. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용하고, 1에서 받아온 방 번호를 값으로 사용하여 세션에 추가한다.
-                        //        첫 입장은 세션 값을 바인딩하지 않고, 재입장부터 세션 값을 바인딩해서 첫 입장과 재입장을 구분 짓는다.
-                        session.setAttribute(rpNickImage.getNickname(), idx);
-                        // 9-2-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-                        List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
-                        // 9-2-3. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
-                        model.addAttribute("nickImage", rpNickImage);
-                        // 9-2-4. 7에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
-                        model.addAttribute("metaRoom", rpNewEntrance);
-                        // 9-2-5. 9-2-2에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
-                        model.addAttribute("participantList", rpMetaRoomIdxList);
-                        // 9-2-6. 스터디룸 페이지로 이동한다.
-                        return "Meta/StudyRoom";
-                    }
+                    // 7-2-1. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용하고, 1에서 받아온 방 번호를 값으로 사용하여 세션에 추가한다.
+                    //        첫 입장은 세션 값을 바인딩하지 않고, 재입장부터 세션 값을 바인딩해서 첫 입장과 재입장을 구분 짓는다.
+                    session.setAttribute(rpNickImage.getNickname(), idx);
+                    // 7-2-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+                    List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
+                    // 7-2-3. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+                    model.addAttribute("nickImage", rpNickImage);
+                    // 7-2-4. 5에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
+                    model.addAttribute("metaRoom", rpNewEntrance);
+                    // 7-2-5. 7-2-2에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
+                    model.addAttribute("participantList", rpMetaRoomIdxList);
+                    // 7-2-6. 스터디룸 페이지로 이동한다.
+                    return "Meta/StudyRoom";
                 }
             }
         }
@@ -292,100 +304,106 @@ public class MetaController {
         // 4. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값이 존재하는지 체크한다.
         // 4-1. 세션에 값이 존재하는 경우 - 재입장(새로고침)
         if ( session.getAttribute(rpNickImage.getNickname()) != null ) {
-            // 5. 세션에 존재하는 값이 1에서 파라미터로 받아온 방 번호와 같은지 체크한다.
-            // 5-1. 세션에 값이 방 번호와 다른 경우 - 방장 혼자일때 방 퇴장 및 삭제 이후 새로운 방 생성 및 입장
-            //      방장 혼자일때 방을 퇴장하는 경우 방은 삭제되지만 세션은 제거되지 못하고 남아있기에 세션에 값은 이전 퇴장한 방 번호가 남아있다.
-            if ( (long) session.getAttribute(rpNickImage.getNickname()) != idx ) {
-                // 5-1-1. 3에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
-                session.removeAttribute(rpNickImage.getNickname());
-                // 5-1-2. 1에서 파라미터로 받아온 방 번호를 가지고 카페룸 페이지로 리다이렉트한다.
-                return "redirect:/meta/caferoom?idx=" + idx;
-            // 5-2. 세션에 값이 방 번호와 같은 경우 - 재입장(새로고침)
+            // 5. 세션에 존재하는 값이 닉네임인지 방 번호인지 체크한다.
+            // 5-1. 세션에 값이 닉네임인 경우 - 방 생성 후 방장 첫 입장
+            if ( session.getAttribute(rpNickImage.getNickname()).equals(rpNickImage.getNickname()) ) {
+                // 5-1-1. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용하고, 1에서 받아온 방 번호를 값으로 사용하여 세션을 변경한다.
+                session.setAttribute(rpNickImage.getNickname(), idx);
+                // 5-1-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+                Meta.rpEntrance rpMasterEntrance = metaService.reEntrance(idx);
+                // 5-1-3. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+                List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
+                // 5-1-4. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+                model.addAttribute("nickImage", rpNickImage);
+                // 5-1-5. 5-1-2에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
+                model.addAttribute("metaRoom", rpMasterEntrance);
+                // 5-1-6. 5-1-3에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
+                model.addAttribute("participantList", rpMetaRoomIdxList);
+                // 5-1-7. 스터디룸 페이지로 이동한다.
+                return "Meta/CafeRoom";
+            // 5-2. 세션에 값이 방 번호인 경우 - 재입장(새로고침)
             } else {
-                // 6. 2에서 반환받은 DTO 값 중 닉네임을 서비스에 전달한다.
-                int entranceCheck = metaService.entranceCheck(rpNickImage.getNickname());
-                // 7. 6에서 반환받은 값이 어떤것인지 체크한다.
-                // 7-1. 반환받은 값이 0인 경우 - 세션 존재 O / 방 내부 참여자 명단 존재 X - 퇴장 후 첫 입장
-                //      세션은 존재하고 방 내부 참여자 명단에는 존재하지 않다는 것은 퇴장 후 첫 입장을 의미한다.
-                if ( entranceCheck == 0 ) {
-                    // 7-1-1. 3에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
+                // 6. 세션에 존재하는 방 번호가 1에서 파라미터로 받아온 방 번호와 같은지 체크한다.
+                // 6-1. 세션에 값이 방 번호와 다른 경우 - 방장 혼자일때 방 퇴장 및 삭제 이후 새로운 방 생성 및 입장
+                //      방장 혼자일때 방을 퇴장하는 경우 방은 삭제되지만 세션은 제거되지 못하고 남아있기에 세션에 값은 이전 퇴장한 방 번호가 남아있다.
+                if ( (long) session.getAttribute(rpNickImage.getNickname()) != idx ) {
+                    // 6-1-1. 3에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
                     session.removeAttribute(rpNickImage.getNickname());
-                    // 7-1-2. 1에서 파라미터로 받아온 방 번호를 가지고 카페룸 페이지로 리다이렉트한다.
+                    // 6-1-2. 1에서 파라미터로 받아온 방 번호를 가지고 카페룸 페이지로 리다이렉트한다.
                     return "redirect:/meta/caferoom?idx=" + idx;
-                // 7-2. 반환받은 값이 1인 경우 - 세션 존재 O / 방 내부 참여자 명단 존재 O - 재입장(새로고침)
-                //      세션도 존재하고 방 내부 참여자 명단에도 존재한다는 것은 재입장(새로고침)을 의미한다.
+                // 6-2. 세션에 값이 방 번호와 같은 경우 - 재입장(새로고침)
                 } else {
-                    // 7-2-1. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-                    Meta.rpEntrance rpReEntrance = metaService.reEntrance(idx);
-                    // 7-2-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-                    List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
-                    // 7-2-3. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
-                    model.addAttribute("nickImage", rpNickImage);
-                    // 7-2-4. 7-2-1에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
-                    model.addAttribute("metaRoom", rpReEntrance);
-                    // 7-2-5. 7-2-2에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
-                    model.addAttribute("participantList", rpMetaRoomIdxList);
-                    // 7-2-6. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값을 바인딩한다.
-                    model.addAttribute("entryCheck", session.getAttribute(rpNickImage.getNickname()));
-                    // 7-2-7. 카페룸 페이지로 이동한다.
-                    return "Meta/CafeRoom";
+                    // 7. 2에서 반환받은 DTO 값 중 닉네임을 서비스에 전달한다.
+                    int entranceCheck = metaService.entranceCheck(rpNickImage.getNickname());
+                    // 8. 7에서 반환받은 값이 어떤것인지 체크한다.
+                    // 8-1. 반환받은 값이 0인 경우 - 세션 존재 O / 방 내부 참여자 명단 존재 X - 퇴장 후 첫 입장
+                    //      세션은 존재하고 방 내부 참여자 명단에는 존재하지 않다는 것은 퇴장 후 첫 입장을 의미한다.
+                    if ( entranceCheck == 0 ) {
+                        // 8-1-1. 3에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
+                        session.removeAttribute(rpNickImage.getNickname());
+                        // 8-1-2. 1에서 파라미터로 받아온 방 번호를 가지고 카페룸 페이지로 리다이렉트한다.
+                        return "redirect:/meta/caferoom?idx=" + idx;
+                    // 8-2. 반환받은 값이 1인 경우 - 세션 존재 O / 방 내부 참여자 명단 존재 O - 재입장(새로고침)
+                    //      세션도 존재하고 방 내부 참여자 명단에도 존재한다는 것은 재입장(새로고침)을 의미한다.
+                    } else {
+                        // 8-2-1. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+                        Meta.rpEntrance rpReEntrance = metaService.reEntrance(idx);
+                        // 8-2-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+                        List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
+                        // 8-2-3. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+                        model.addAttribute("nickImage", rpNickImage);
+                        // 8-2-4. 8-2-2에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
+                        model.addAttribute("participantList", rpMetaRoomIdxList);
+                        // 8-2-5. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값을 바인딩한다.
+                        model.addAttribute("entryCheck", session.getAttribute(rpNickImage.getNickname()));
+                        // 8-2-6. 8-2-1에서 반환받은 값이 존재하는지 체크한다.
+                        // 8-2-6-1. 반환받은 값이 존재하지 않는 경우
+                        if ( rpReEntrance == null ) {
+                            // 8-2-6-1-1. 에러값을 바인딩한다.
+                            model.addAttribute("err", "1");
+                        // 8-2-6-2. 반환받은 값은 존재하는 경우
+                        } else {
+                            // 8-2-6-2-1. 8-2-1에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
+                            model.addAttribute("metaRoom", rpReEntrance);
+                        }
+                        // 8-2-7. 카페룸 페이지로 이동한다.
+                        return "Meta/CafeRoom";
+                    }
                 }
             }
         // 4-2. 세션에 값이 존재하지 않는 경우 - 첫 입장
         } else {
-            // 5. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 서비스에 전달한다.
-            int rpEntranceMetaRoom = metaService.entranceMetaRoom(idx, rpNickImage.getNickname());
-            // 6. 5에서 반환받은 값이 어떤것인지 체크한다.
-            // 6-1. 반환받은 값이 1인 경우 - 방 생성 후 방장 입장
-            if ( rpEntranceMetaRoom == 1 ) {
-                // 6-1-1. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용하고, 1에서 받아온 방 번호를 값으로 사용하여 세션에 추가한다.
-                session.setAttribute(rpNickImage.getNickname(), idx);
-                // 6-1-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-                Meta.rpEntrance rpMasterEntrance = metaService.reEntrance(idx);
-                // 6-1-3. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-                List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
-                // 6-1-4. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
-                model.addAttribute("nickImage", rpNickImage);
-                // 6-1-5. 6-1-2에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
-                model.addAttribute("metaRoom", rpMasterEntrance);
-                // 6-1-6. 6-1-3에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
-                model.addAttribute("participantList", rpMetaRoomIdxList);
-                // 6-1-7. 카페룸 페이지로 이동한다.
-                return "Meta/CafeRoom";
-            // 6-2. 반환받은 값이 0인 경우 - 유저 첫 입장
+            // 5. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 로그인 유저 정보 DTO를 서비스에 전달한다.
+            Meta.rpEntrance rpNewEntrance = metaService.newEntrance(idx, rpNickImage);
+            // 6. 5에서 반환받은 DTO가 존재하는지 체크한다.
+            // 6-1. 반환받은 DTO가 존재하지 않는 경우 - 입장하는 방 존재 X
+            if ( rpNewEntrance == null ) {
+                // 6-1-1. URL 파라미터에 에러 메시지를 가지고 메타 메인 페이지로 리다이렉트한다.
+                return "redirect:/meta?err=" + URLEncoder.encode("해당 방의 정보가 없습니다.", "UTF-8");
+            // 6-2. 반환받은 DTO가 존재하는 경우 - 입장하는 방 존재 O
             } else {
-                // 7. 1에서 파라미터로 받아온 방 번호와 2에서 반환받은 로그인 유저 정보 DTO를 서비스에 전달한다.
-                Meta.rpEntrance rpNewEntrance = metaService.newEntrance(idx, rpNickImage);
-                // 8. 7에서 반환받은 DTO가 존재하는지 체크한다.
-                // 8-1. 반환받은 DTO가 존재하지 않는 경우 - 입장하는 방 존재 X
-                if ( rpNewEntrance == null ) {
-                    // 8-1-1. URL 파라미터에 에러 메시지를 가지고 메타 메인 페이지로 리다이렉트한다.
-                    return "redirect:/meta?err=" + URLEncoder.encode("해당 방의 정보가 없습니다.", "UTF-8");
-                // 8-2. 반환받은 DTO가 존재하는 경우 - 입장하는 방 존재 O
+                // 7. 5에서 반환받은 DTO 값 중 idx가 0인지 체크한다.
+                // 7-1. idx가 0인 경우 - 입장하는 방 정원초과
+                if ( rpNewEntrance.getIdx() == 0 ) {
+                    // 7-1-1. 5에서 반환받은 DTO 값 중 metaTitle에 저장되있는 에러메시지를 바인딩한다.
+                    model.addAttribute("err", rpNewEntrance.getMetaTitle());
+                    // 7-1-2. 메타 메인 페이지로 리다이렉트한다.
+                    return "redirect:/meta";
+                // 7-2. idx가 0이 아닌 경우 - 입장하는 방 첫 입장
                 } else {
-                    // 9. 7에서 반환받은 DTO 값 중 idx가 0인지 체크한다.
-                    // 9-1. idx가 0인 경우 - 입장하는 방 정원초과
-                    if ( rpNewEntrance.getIdx() == 0 ) {
-                        // 9-1-1. 7에서 반환받은 DTO 값 중 metaTitle에 저장되있는 에러메시지를 바인딩한다.
-                        model.addAttribute("err", rpNewEntrance.getMetaTitle());
-                        // 9-1-2. 메타 메인 페이지로 리다이렉트한다.
-                        return "redirect:/meta";
-                    // 9-2. idx가 0이 아닌 경우 - 입장하는 방 첫 입장
-                    } else {
-                        // 9-2-1. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용하고, 1에서 받아온 방 번호를 값으로 사용하여 세션에 추가한다.
-                        //        첫 입장은 세션 값을 바인딩하지 않고, 재입장부터 세션 값을 바인딩해서 첫 입장과 재입장을 구분 짓는다.
-                        session.setAttribute(rpNickImage.getNickname(), idx);
-                        // 9-2-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-                        List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
-                        // 9-2-3. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
-                        model.addAttribute("nickImage", rpNickImage);
-                        // 9-2-4. 7에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
-                        model.addAttribute("metaRoom", rpNewEntrance);
-                        // 9-2-5. 9-2-2에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
-                        model.addAttribute("participantList", rpMetaRoomIdxList);
-                        // 9-2-6. 카페룸 페이지로 이동한다.
-                        return "Meta/CafeRoom";
-                    }
+                    // 7-2-1. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용하고, 1에서 받아온 방 번호를 값으로 사용하여 세션에 추가한다.
+                    //        첫 입장은 세션 값을 바인딩하지 않고, 재입장부터 세션 값을 바인딩해서 첫 입장과 재입장을 구분 짓는다.
+                    session.setAttribute(rpNickImage.getNickname(), idx);
+                    // 7-2-2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+                    List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaService.metaRoomParticipant(idx);
+                    // 7-2-3. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+                    model.addAttribute("nickImage", rpNickImage);
+                    // 7-2-4. 5에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
+                    model.addAttribute("metaRoom", rpNewEntrance);
+                    // 7-2-5. 7-2-2에서 반환받은 입장한 방 내부 참여자 명단 DTO를 바인딩한다.
+                    model.addAttribute("participantList", rpMetaRoomIdxList);
+                    // 7-2-6. 카페룸 페이지로 이동한다.
+                    return "Meta/CafeRoom";
                 }
             }
         }
@@ -413,15 +431,20 @@ public class MetaController {
             } else {
                 // 5-2-1. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
                 Meta.rpEntrance rpReEntrance = metaService.reEntrance(idx);
-                if ( rpReEntrance == null ) {
-                    model.addAttribute("err", "1");
-                }
                 // 5-2-2. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
                 model.addAttribute("nickImage", rpNickImage);
-                // 5-2-3. 4-1-1에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
-                model.addAttribute("metaRoom", rpReEntrance);
-                // 5-2-4. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값을 바인딩한다.
+                // 5-2-3. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값을 바인딩한다.
                 model.addAttribute("entryCheck", session.getAttribute(rpNickImage.getNickname()));
+                // 5-2-4. 5-2-1에서 반환받은 값이 존재하는지 체크한다.
+                // 5-2-4-1. 반환받은 값이 존재하지 않는 경우
+                if ( rpReEntrance == null ) {
+                    // 5-2-4-1-1. 에러값을 바인딩한다.
+                    model.addAttribute("err", "1");
+                // 5-2-4-2. 반환받은 값은 존재하는 경우
+                } else {
+                    // 5-2-4-2-1. 5-2-1에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
+                    model.addAttribute("metaRoom", rpReEntrance);
+                }
                 // 5-2-5. 자습실 페이지로 이동한다.
                 return "Meta/OneRoom";
             }
