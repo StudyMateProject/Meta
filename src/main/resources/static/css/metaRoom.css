@@ -1,0 +1,316 @@
+.container{
+    width: 100%;
+    height: 80%;
+    padding-top: 100px;
+    display: flex;
+}
+
+.leftContainer{
+    width: 30%;
+    height: 100%;
+    margin: 10px;
+}
+.profileContainer{
+    width: 100%;
+    height: 45%;
+    border-radius: 10px;
+    border: 2px solid #87AF6E;
+    margin: 10px 0px;
+}
+.profileTitle{
+    width: 100%;
+    height: 10%;
+    padding-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.profileTitle span{
+    font-size: 25px;
+    font-weight: bold;
+    color: #2e362f;
+}
+.profileWrapper{
+    width: 100%;
+    height: 80%;
+}
+.profileDiv{
+    width: 100%;
+    height: 75%;
+    display: flex;
+}
+.profileImgDiv{
+    width: 80%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.profileImg{
+    width: 65%;
+    height: 55%;
+    border-radius: 50%;
+    border: solid 2px #87AF6E;
+    background-color: #BDE7A4;
+}
+.profileElement{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+.profileTextDiv{
+    width: 85%;
+    height: 70%;
+    padding-left: 10px;
+    border-radius: 10px;
+    background: #ececec;
+}
+.profileTextWrapper{
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    margin: 30px 0px;
+}
+.profileTextWrapper span{
+    font-size: 18px;
+    font-weight: bold;
+    width: auto;
+}
+.profileTextWrapper span:after{
+    content: ": ";
+}
+.profileText{
+    width: auto;
+    padding-left: 5px;
+    font-size: 16px;
+}
+.profileCheckList{
+    width: 100%;
+    height: 15%;
+    margin-top: 5px;
+}
+.profileCheckListBtn{
+    width: 100%;
+    height: 50px;
+    background-color: #87AF6E;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    color: #2e362f;
+    cursor: pointer;
+}
+
+
+.roomContainer{
+    width: 100%;
+    height: 55%;
+    border-radius: 10px;
+    border: 2px solid #87AF6E;
+    margin: 10px 0px;
+}
+.createRoomDiv{
+    width: 100%;
+    height: 15%;
+    display: flex;
+    justify-content: space-around;
+}
+.createRoomBtn{
+    width: 45%;
+    height: 90%;
+    background-color: #87AF6E;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    color: #2e362f;
+    cursor: pointer;
+    margin: 5% 0%;
+    border-radius: 10px;
+}
+.recentlyRoomDiv{
+    width: 100%;
+    height: 85%;
+    margin-top: 4%;
+}
+.recentlyRoomTitle{
+    width: 100%;
+    height: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.recentlyRoomTitle span{
+    font-size: 20px;
+    font-weight: bold;
+    color: #2e362f;
+}
+.recentlyRoomListDiv{
+    width: 100%;
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.recentlyRoomListWrapper{
+    width: 85%;
+    height: 85%;
+    background: #ececec;
+    border-radius: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 5%;
+}
+.recentlyRoomListWrapper::webkit-scrollbar{
+
+}
+.recentlyRoomList{
+    width: 100%;
+    height: 20%;
+    font-size: 14px;
+    white-space: normal;
+}
+
+
+.rightContainer{
+    width: 70%;
+    height: 100%;
+    margin: 10px;
+}
+.metaRoomContainer{
+    width:100%;
+    height: 100%;
+    border-radius: 10px;
+    border: 2px solid #87AF6E;
+    margin-top: 10px;
+    padding: 7px;
+}
+.metaTitle{
+    width: 100%;
+    height: 5%;
+    padding-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.metaTitle span{
+    font-size: 25px;
+    font-weight: bold;
+    color: #2e362f;
+}
+.metaRoomWrapper{
+    width: 100%;
+    height: 90%;
+}
+
+
+.metaRoomSearchContainer{
+    width: 100%;
+    height: 10%;
+    display: flex;
+    align-items: center;
+}
+.search{
+    font-size: 17px;
+    width: 9%;
+    font-weight: bold;
+    text-align: center;
+}
+.metaRoomSearchSelect{
+    width: 15%;
+    height: 50%;
+    font-size: 15px;
+    border-radius: 8px;
+    margin: 0px 5px;
+    border: 1px solid #87AF6E;
+    text-align: center;
+    cursor: pointer;
+}
+.metaRoomSearchSelect:focus{
+    outline: 2px solid #87AF6E;
+}
+.metaRoomSearchDiv{
+    width: 55%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    margin: 0px 5px;
+}
+.metaRoomSearchInput{
+    width: 75%;
+    height: 45%;
+    font-size: 13px;
+    border-radius: 8px;
+    border: 1px solid #87AF6E;
+    cursor: text;
+}
+.metaRoomSearchInput:focus{
+    outline: 2px solid #87AF6E;
+}
+.metaRoomSearchBtn{
+    width: 18%;
+    height: 50%;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 8px;
+    margin: 0px 10px;
+    border: 1px solid #87AF6E;
+    background-color: #87AF6E;
+    cursor: pointer;
+}
+
+.metaRoomListContainer{
+    width: 100%;
+    height: 86%;
+}
+.metaRoomListDiv{
+    width: 95%;
+    height: 50%;
+    border-radius: 10px;
+    background: #ececec;
+    margin: 10px;
+}
+.metaRoomTitle{
+    width: 100%;
+    height: 5%;
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+}
+.metaRoomTitle span{
+    font-size: 18px;
+    font-weight: bold;
+    color: #2e362f;
+}
+.metaRoomListTitle{
+    width: 95%;
+    height: 13%;
+    display: flex;
+    align-items: center;
+    padding-left: 5px;
+    margin: 10px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.25);
+}
+.metaRoomListTitle span{
+    font-size: 15px;
+    font-weight: bold;
+    color: #2e362f;
+}
+
+.metaRoomList{
+    width: 100%;
+    height: 90%;
+    padding: 5px;
+}
+.metaRoomALink{
+    width: 90%;
+    height: 15%;
+    margin: 10px;
+}
+.metaRoomALink:before{
+    content: "ㆍ";
+}
+.metaRoomALink span{
+    margin: 0px 1px;
+}
+

@@ -1,0 +1,82 @@
+*{
+    font-family: 'NanumSquareNeo';
+}
+body{
+    width: 100%;
+    height: 100%;
+}
+a{
+     text-decoration-line: none;
+     color: black;
+ }
+
+.container{
+    width: 100%;
+    height: 100%;
+}
+.title{
+    width: 100%;
+    height: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 20px 0px;
+}
+.title span{
+    font-size: 25px;
+    font-weight: bold;
+    color: #87AF6E;
+}
+
+
+.createForm{
+    width: 590px;
+    height: 480px;
+    border-radius: 10px;
+    background: #ececec;
+}
+.RoomForm{
+    width: 400px;
+    height: 100px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.RoomForm p{
+    margin: 10px 0px;
+    font-size: 15px;
+    font-weight: bold;
+}
+.RoomForm input{
+    width: 550px;
+    height: 40px;
+    border: 1px solid #87AF6E;
+    box-sizing: border-box;
+    font-size: 15px;
+    border-radius: 10px;
+}
+.RoomForm select{
+    width: 550px;
+    height: 40px;
+    font-size: 15px;
+    border: 1px solid #87AF6E;
+    border-radius: 8px;
+}
+.submitBtn{
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 8px 0px;
+}
+.submitBtn input{
+    width: 100px;
+    height: 40px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 8px;
+    margin: 0px 10px;
+    background-color: #87AF6E;
+    cursor: pointer;
+    border: 1px solid #87AF6E;
+}
