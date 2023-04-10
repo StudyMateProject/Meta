@@ -207,17 +207,34 @@ public class MetaService {
     }
 
     // 방 번호에 해당하는 방에 참여중인 참가자 전체 조회
-    public List<MetaRoom.rpMetaRoomIdxList> metaRoomParticipant(long idx) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호를 받아온다.
-        // 2. 1에서 파라미터로 받아온 방 번호에 해당하는 방에 참여중인 참가자들을 모두 조회하고, 조회된 값을 받아온다.
-        List<MetaRoom> metaRoomIdxList = metaRoomRepository.findByMetaIdx(idx);
-        // 3. List형식의 Entity를 DTO로 변환하는 방법 (stream 방식)
+    public List<MetaRoom.rpMetaRoomIdxList> metaRoomParticipant(Meta.rpEntrance rpEntrance, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 입장한 방 정보 DTO와 로그인 유저 정보 DTO를 받아온다.
+        // 2. 1에서 파라미터로 받아온 로그인 유저 정보 DTO가 존재하는지 체크한다.
+        // 2-1. 로그인 유저 정보 DTO가 존재하는 경우
+        if ( rpNickImage != null ) {
+            // 2-1-1. 1에서 파라미터로 받아온 방 정보 DTO 값 중 방 번호와 로그인 유저 정보 DTO 값 중 닉네임으로 방 내부 참여자 명단에서 해당 유저를 삭제한다. (@Query 어노테이션 사용)
+            metaRoomRepository.exitMetaRoom(rpEntrance.getIdx(), rpNickImage.getNickname());
+            // 2-1-2. 1에서 파라미터로 받아온 입장한 방 정보 DTO와 로그인 유저 정보 DTO를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
+            MetaRoom metaRoom = new MetaRoom();
+            // 2-1-3. 1에서 파라미터로 받아온 입장한 방 정보 DTO를 setter를 통하여 MetaRoom에 전달한다.
+            metaRoom.setMetaIdx(rpEntrance.getIdx());
+            metaRoom.setMetaMaster(rpEntrance.getMetaMaster());
+            // 2-1-4. 1에서 파라미터로 받아온 로그인 유저 정보 DTO를 setter를 통하여 MetaRoom에 전달한다.
+            metaRoom.setMetaNickname(rpNickImage.getNickname());
+            metaRoom.setMetaProfileImage(rpNickImage.getProfileImage());
+            // 2-1-5. 2-1-3하고 2-1-2에서 값들이 전달된 Entity를 방 내부 참여자 명단에 저장한다.
+            metaRoomRepository.save(metaRoom);
+        }
+        // 2-2. 로그인 유저 정보 DTO가 존재하지 않는 경우
+        // 3. 1에서 파라미터로 받아온 방 번호에 해당하는 방에 참여중인 참가자들을 모두 조회하고, 조회된 값을 받아온다.
+        List<MetaRoom> metaRoomIdxList = metaRoomRepository.findByMetaIdx(rpEntrance.getIdx());
+        // 4. List형식의 Entity를 DTO로 변환하는 방법 (stream 방식)
         //    .stream() - List형식의 Entity --> Entity 스트림 - DB에서 가져온 List형식의 Entity를 스트림으로 변환
         //    .map(DTO::new) - Entity 스트림 --> DTO 스트림 - 변한된 Entity 스트림을 DTO클래스의 생성자메소드를 사용해 요소들을 전달하여 DTO로 바꾼뒤 새로운 스트림으로 변환
         //    .collect(Collectors.toList()); - DTO 스트림 --> List형식의 DTO - 변한된 DTO 스트림을 List로 변환
         List<MetaRoom.rpMetaRoomIdxList> rpMetaRoomIdxList = metaRoomIdxList.stream()
                                                                             .map(MetaRoom.rpMetaRoomIdxList::new)
                                                                             .collect(Collectors.toList());
-        // 4. 3에서 변환된 DTO를 반환한다.
+        // 5. 4에서 변환된 DTO를 반환한다.
         return rpMetaRoomIdxList;
     }
 

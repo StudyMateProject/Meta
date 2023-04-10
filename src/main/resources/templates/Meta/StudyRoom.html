@@ -220,6 +220,9 @@
                     ////////////////////////////////////////////////////////////////////////////////////////////////////
                     // 8. 참여중인 인원이 바뀌는 경우
                     if ( recruitingPersonnel != null ) {
+                        // 전역 변수에 선언되어 있는 참여중인 인원을 새로 받아온 참여중인 인원으로 변경한다.
+                        metaRecruitingPersonnel = recruitingPersonnel;
+
                         // 현재 작성되어 있는 방 정보를 바뀐 인원대로 변경해줘야 하기에 먼저 이전 방 정보를 제거하고 다시 올린다.
 
                         // id를 통해 방 제목 구역에 작성되어 있는 방 정보을 가져와 title 변수에 저장한다.
@@ -245,9 +248,6 @@
 
                         // 2. 방 제목 구역에 방 제목 b 태그를 올린다.
                         titleArea.appendChild(titleBTag);
-
-                        // 전역 변수에 선언되어 있는 참여중인 인원을 새로 받아온 참여중인 인원으로 변경한다.
-                        metaRecruitingPersonnel = recruitingPersonnel;
                     } // recruitingPersonnel
                     ////////////////////////////////////////////////////////////////////////////////////////////////////
                     // 9. 방에 들어온 참가자가 있는 경우 - 첫 입장 및 재입장(새로고침)
@@ -1257,7 +1257,6 @@
         var canvasNickname = [[${nickImage.nickname}]]; // 로그인 유저 닉네임
         var canvasProfileImage = [[${nickImage.profileImage}]]; // 로그인 유저의 프로필 사진
         let canvasEntryCheck = [[${entryCheck}]]; // 입장 체크값
-        let canvasExitTimeoutId; // 유저 퇴장 setTimeout
 
         let canvas; // 도화지
         let canvasLeft; // 왼쪽 벽
@@ -1330,17 +1329,17 @@
                     }
                 }
 
-                // 7-2. 메시지 타입이 "reErr"일 경우
-                // 재입장(새로고침) 에러
-                if ( canvasType == "reErr" ) {
-                    // canvasExitTimeoutId에 저장된 setTimeout ID를 사용하여 실행 중인 타이머를 취소한다.
-                    clearTimeout(canvasExitTimeoutId);
-                    // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
-                    if ( canvasWriter == canvasNickname ) {
-                        // 재입장 에러로 입장 메시지 재전송
-                        canvasStomp.send('/pub/meta/studyroom/canvas/enter', {}, JSON.stringify({type: "enter", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));
-                    }
-                }
+<!--                // 7-2. 메시지 타입이 "reErr"일 경우-->
+<!--                // 재입장(새로고침) 에러-->
+<!--                if ( canvasType == "reErr" ) {-->
+<!--                    // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)-->
+<!--                    if ( canvasWriter == canvasNickname ) {-->
+<!--                        // 재입장 에러로 입장 메시지 재전송-->
+<!--                        if ( writer === metaNickname ) {-->
+<!--                            canvasStomp.send('/pub/meta/studyroom/canvas/enter', {}, JSON.stringify({type: "enter", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));-->
+<!--                        }-->
+<!--                    }-->
+<!--                }-->
 
                 // 7-3. 메시지 타입이 "left"일 경우 / 메시지 타입이 "top"일 경우 / 메시지 타입이 "right"일 경우 / 메시지 타입이 "bottom"일 경우
                 // 왼쪽 이동 / 위쪽 이동 / 오른쪽 이동 / 아래쪽 이동
@@ -1355,17 +1354,11 @@
                 // 7-4. 메시지 타입이 "delete"일 경우 / 메시지 타입이 "exit"일 경우
                 // 방 퇴장
                 if ( canvasType == "delete" || canvasType == "exit" ) {
-                    // setTimeout 메소드를 사용하여 작성자가 퇴장한지 0.3초가 경과하면 캔버스에 작성자 캐릭터가 사라지도록 한다.
-                    // 그리고 canvasExitTimeoutId 변수에 setTimeout 메소드로 반환된 타이머 ID를 저장하여,
-                    // 0.3초가 경과되기 전에 재입장하면 canvasExitTimeoutId로 타이머를 취소해 캔버스에 작성자 캐릭터가 사라지지 않도록 한다.
-                    // 이는 재입장이 에러 날 경우를 대비해 0.3초 대기하는 것이다.
-                    canvasExitTimeoutId = setTimeout(function() {
-                        serverCharacters = canvasContent.exit; // 퇴장한 유저를 제외한 캐릭터 Map - 서버로 보내기용
-                        canvasCharacters = JSON.parse(serverCharacters); // 퇴장한 유저를 제외한 캐릭터 Map 파싱 - 캔버스에 그리기용
-                        // 캐릭터 그리기 메소드로 이동한다.
-                        // 퇴장한 유저를 제외한 캐릭터 Map으로 다시 그린다.
-                        drawChar();
-                    }, 300);
+                    serverCharacters = canvasContent.exit; // 퇴장한 유저를 제외한 캐릭터 Map - 서버로 보내기용
+                    canvasCharacters = JSON.parse(serverCharacters); // 퇴장한 유저를 제외한 캐릭터 Map 파싱 - 캔버스에 그리기용
+                    // 캐릭터 그리기 메소드로 이동한다.
+                    // 퇴장한 유저를 제외한 캐릭터 Map으로 다시 그린다.
+                    drawChar();
                 }
 
                 if ( canvasType == "KickOut" ) {
@@ -1376,7 +1369,7 @@
                     drawChar();
                 }
             });
-        //////////////////////////////////////////////////// 입장 구역 ////////////////////////////////////////////////////
+            ////////////////////////////////////////////////// 입장 구역 //////////////////////////////////////////////////
             // 입장 시작!! - 먼저 입장 체크값을 이용하여 해당 유저가 첫 입장인지 재입장(새로고침)인지 체크한다.
             // 첫 입장일 경우 - 입장 체크값이 존재하지 않는다.
             if ( canvasEntryCheck == null ) {

@@ -132,7 +132,9 @@ public class StompChatController {
         } else {
             // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 setter를 통해 "reErr"로 변경한다. - 재입장 에러 값
             message.setType("reErr");
-            // 3-2-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+            // 3-2-2. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다. - 재입장 에러로 퇴장
+            message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
+            // 3-2-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
             //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
             //        "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
             template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
@@ -667,7 +669,9 @@ public class StompChatController {
         } else {
             // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 setter를 통해 "reErr"로 변경한다. - 재입장 에러 값
             message.setType("reErr");
-            // 3-2-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+            // 3-2-2. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다. - 재입장 에러로 퇴장
+            message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
+            // 3-2-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
             //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
             //        "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
             template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
