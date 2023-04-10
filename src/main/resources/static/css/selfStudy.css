@@ -1,0 +1,297 @@
+body, html{
+    width: 100%;
+    height: 100%;
+}
+*{
+    font-family: 'NanumSquareNeo';
+}
+.container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+.leftContainer{
+    width: 69%;
+    height: 95%;
+    margin: 10px;
+}
+
+.timerDiv{
+    width: 100%;
+    height: 15%;
+    display: flex;
+    border: 2px solid #87AF6E;
+    border-radius: 10px;
+    font-weight: bold;
+}
+.todayDiv{
+    width: 20%;
+    height: 100%
+    display: flex;
+    font-weight: bold;
+}
+.todayDateDiv{
+    width: 100%;
+    height: 45%;
+    font-size: 20px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-evenly;
+}
+.todayTimeDiv{
+    width: 100%;
+    height: 50%;
+    display: flex;
+}
+.todayPMAM{
+    width: 45%;
+    height: 100%;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 0px 5px;
+}
+.todayTime{
+    width: 45%;
+    height: 100%;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    margin: 0px 5px;
+    font-size: 18px;
+}
+
+
+.stopWatch{
+    width: 60%;
+    height: 100%;
+    display: flex;
+}
+.hour{
+    width: 30%;
+    height: 100%;
+}
+.hour:after{
+    content: ":";
+}
+.minute{
+   width: 30%;
+   height: 100%;
+}
+.minute:after{
+    content: ":";
+}
+.second{
+  width: 30%;
+  height: 100%;
+}
+.controllerBtn{
+    width: 100%;
+    height: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.controllerBtn input{
+    width: 15%;
+    height: 70%;
+    border-radius: 50%;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    background-color: #87AF6E;
+
+}
+.plus{
+    float: right;
+}
+.minus{
+    float: left;
+}
+
+.number{
+    width: 100%;
+    height: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.number span{
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.controllerText{
+    width: 90%;
+    height: 30%;
+    margin: 0px 10px;
+}
+.controllerText input{
+    width: 100%;
+    height: 80%;
+    text-align: center;
+    border: none;
+    background-color: #ececec;
+    border-radius: 10px;
+}
+.watchController{
+    width: 20%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.chaneMode{
+    width: 100%;
+    height: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.time{
+    width: 100%;
+    height: 100%;
+}
+.changeBtn{
+    height: 80%;
+    width: 90px;
+    display: flex;
+    border-radius: 10px;
+    background-color: #87AF6E;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+}
+
+
+.metaCanvas{
+    width: 100%;
+    height: 84%;
+    margin: 10px 0px;
+}
+.metaCanvas canvas{
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.watchController{
+    width: 30%;
+    height: 100%;
+}
+
+
+
+
+.rightContainer{
+    width: 30%;
+    height: 95%;
+    margin: 10px;
+}
+.exitBtn{
+    width: 100%;
+    height: 15%;
+    border: 2px solid #87AF6E;
+    border-radius: 10px;
+}
+.checkListContainer{
+    width: 100%;
+    height: 69%;
+    margin: 10px 0px;
+    border: 2px solid #87AF6E;
+    border-radius: 10px;
+}
+.checkListTitle{
+    width: 100%;
+    height: 10%;
+    font-size: 25px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkListDiv{
+    width: 94%;
+    height: 85%;
+    border-radius: 10px;
+    background-color: #ececec;
+    padding: 10px;
+    margin: 5px;
+}
+.checkListOne{
+    width: 90%;
+    height: 10%;
+    margin: 10px;
+    display: flex;
+    border-radius: 10px;
+    background-color: #9f9d9d;
+}
+.checkList{
+    width: 70%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.checkListCheckbox{
+    width: 20%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.checkListCheckbox input{
+    width: 50%;
+    height: 50%;
+}
+.checkListText{
+    width: 80%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.checkListController{
+    width: 30%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.checkListControllerBtn{
+    width: 100%;
+    height: 50%;
+    border: none;
+    border-radius: 10px;
+    background-color: #87AF6E;
+    margin: 0px 5px;
+}
+
+
+.dDayDiv{
+    width: 100%;
+    height: 14%;
+    border: 2px solid #87AF6E;
+    border-radius: 10px;
+}
+.dDAyTitle{
+    width: 100%;
+    height: 40%;
+    font-size: 25px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.dDayText{
+    width: 100%;
+    height: 60%;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

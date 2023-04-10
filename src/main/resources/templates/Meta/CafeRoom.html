@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" type="text/css" href="/css/CafeRoom.css">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/StudyRoom.css">
     <style>
         html, body {
             height: 100%;
@@ -22,78 +23,77 @@
 <!-- unload - beforeunload 이벤트에서 반환한 값을 처리한다. -->
 <body onkeydown="keyDown()" onkeyup="keyUp()" onunload="exit()">
     <!-- 방 제목 구역 -->
-    <div class="titleAreaCss" id="titleArea">
+    <header class="roomInfo" id="titleArea">
         <b id="title" th:text="'방 번호 : ' + ${metaRoom.idx} + '    |    ' + '(카페)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
-    </div>
+    </header>
 
-    <!-- 상단 구역 -->
-    <div class="topAreaCss">
-        <!-- 상단 왼쪽 참가자 구역 -->
-        <div class="participantAreaCss" id="profileArea">
-            <!-- 참가자 코드 -->
-            <div class="participant participantCss" th:each="participant : ${participantList}" th:id="${participant.metaNickname}">
-                <img class="participantImageCss" th:src="@{/imagePath/} + ${participant.metaProfileImage}">
-                <div class="participantNicknameAreaCss">
-                    <b class="participantNicknameCss" th:text="${participant.metaNickname}"></b>
-                    <b class="participantMasterCss" th:if="${participant.metaNickname == metaRoom.metaMaster}">방장</b>
+    <section class="container">
+        <!-- 상단 구역 -->
+        <nav class="topNav">
+            <!-- 상단 왼쪽 참가자 구역 -->
+            <div class="topLeftMember" id="profileArea">
+                <!-- 참가자 코드 -->
+                <div class="participant participantDiv" th:each="participant : ${participantList}" th:id="${participant.metaNickname}">
+                    <img class="participantImg" th:src="@{/imagePath/} + ${participant.metaProfileImage}">
+                    <div class="participantInfo">
+                        <b class="participantNickname" th:text="${participant.metaNickname}"></b>
+                        <b class="participantMaster" th:if="${participant.metaNickname == metaRoom.metaMaster}">방장</b>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 상단 오른쪽 메뉴바 구역 -->
-        <div class="menuBarAreaCss">
-            <input class="menuBarExitBtnCss" type="button" value="나가기" th:onclick="|location.href='@{/meta/selfexit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|">
-        </div>
-    </div>
+            <!-- 상단 오른쪽 메뉴바 구역 -->
+            <div class="topRightMenu">
+                <input class="menuBarExitBtn" type="button" value="나가기" th:onclick="|location.href='@{/meta/selfexit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|">
+            </div>
+        </nav>
 
-    <!-- 중단 구역 -->
-    <div class="middleAreaCss">
-        <!-- 메타버스 -->
-        <canvas class="metaCanvasCss" id="canvas"></canvas>
+        <!-- 중단 구역 -->
+        <div class="middleMeta">
+            <!-- 메타버스 -->
+            <canvas class="metaCanvas" id="canvas"></canvas>
 
-        <!-- 상세 프로필과 채팅 -->
-        <div class="detailProfileAndChatAreaCss">
-            <!-- 프로필과 채팅 수직 정렬 -->
-            <div class="detailProfileAndChatCss">
+            <!-- 상세 프로필과 채팅 -->
+            <div class="detailProfileAndChatArea">
                 <!-- 상세 프로필 구역 -->
-                <div class="detailProfileAreaCss" id="detailProfileArea">
-                    <b class="detailProfileCloseBtnCss" id="btnDetailProfileClose">X</b>
+                <div class="detailProfile" id="detailProfileArea">
+                    <b class="detailProfileCloseBtn" id="btnDetailProfileClose">X</b>
                     <!-- 상세 프로필 사진 구역 -->
                     <!-- 공통 구역 -->
-                    <div class="detailProfileImageAreaCss">
-                        <img class="detailProfileImageCss" id="detailProfileImage">
+                    <div class="detailProfileImageArea">
+                        <img class="detailProfileImage" id="detailProfileImage">
                     </div>
                     <!-- 프로필 닉네임 구역 -->
-                    <div class="detailProfileNicknameAreaCss" id="detailProfileNicknameArea">
+                    <div class="detailProfileNicknameArea" id="detailProfileNicknameArea">
                         <!-- 공통 구역 -->
                         <b id="detailProfileNickname"></b>
                     </div>
                 </div>
 
                 <!-- 채팅 구역 -->
-                <div class="chatAreaCss" id="chatArea">
-                    <div class="chatTitleCss">채팅</div><br>
+                <div class="chatArea" id="chatArea">
+                    <div class="chatTitle">채팅</div><br>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 하단 구역 -->
-    <div class="bottomAreaCss">
-        <!-- 녹음 구역 -->
-        <div class="recordAreaCss" id="recordArea">
-            <audio class="recordCss" id="record" controls></audio>
-            <input class="recordSendBtnCss" id="btnRecordSend" type="button" value="녹음 전송" disabled>
-            <input class="recordStopBtnCss" id="btnRecordStop" type="button" value="녹음 정지" disabled>
-            <input class="recordStartBtnCss" id="btnRecordStart" type="button" value="녹음 시작">
-        </div>
+        <!-- 하단 구역 -->
+        <div class="bottomArea">
+            <!-- 녹음 구역 -->
+            <div class="recordArea" id="recordArea">
+                <audio class="recordPlayer" id="record" controls></audio>
+                <input class="recordBtn" id="btnRecordStart" type="button" value="녹음 시작">
+                <input class="recordBtn" id="btnRecordStop" type="button" value="녹음 정지" disabled>
+                <input class="recordBtn" id="btnRecordSend" type="button" value="녹음 전송" disabled>
+            </div>
 
-        <!-- 메시지 입력란 -->
-        <div class="messageAreaCss">
-            <input class="messageCss" id="message" type="text" placeholder = "채팅 입력란">
-            <input class="messageSendBtnCss" id="btnSend" type="button" value="보내기" onclick="send()">
+            <!-- 메시지 입력란 -->
+            <div class="messageArea">
+                <input class="message" id="message" type="text" placeholder = "채팅 입력란">
+                <input class="messageSendBtn" id="btnSend" type="button" value="보내기" onclick="send()">
+            </div>
         </div>
-    </div>
+    </section>
 <!-------------------------------------------------------js 구역-------------------------------------------------------->
     <!-- SockJS 사용을 위한 js를 추가 -->
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
@@ -274,15 +274,15 @@
                         // element.setAttribute("AttributeName", "AttributeValue") - 지정한 HTML 요소의 속성과 값을 설정하는 메소드이다.
                         //                                                           setAttribute 메소드는 두 개의 인자를 받는데, 첫 번째 인자는 설정할 속성의 이름이고, 두 번째 인자는 설정할 속성의 값이다.
                         //                                                           만약 설정하려는 속성이 이미 존재하다면 해당 속성의 값만 설정할 속성의 값으로 업데이트되고, 그렇지 않다면 설정할 속성의 이름과 값으로 새 속성이 추가된다.
-                        // 1-1. 이미지 태그에 style 속성을 추가한다.
-                        imgTag.setAttribute("style", "width: 50%; height: 100%;");
+                        // 1-1. 이미지 태그에 style 속성 class를 추가한다.
+                        imgTag.setAttribute("class", "participantImg");
                         // 1-2. 참가자 프로필 사진을 가져와 이미지 태그의 소스로 전달한다.
                         imgTag.src = "/imagePath/" + profileImage;
 
                         // 2. 닉네임 b 태그를 생성한다.
                         var nicknameBTag = document.createElement("b");
-                        // 2-1. 닉네임 b 태그에 style 속성을 추가한다.
-                        nicknameBTag.setAttribute("style", "display: flex; flex-direction: column; width: 100%; height: 50%; justify-content: flex-start;");
+                        // 2-1. 닉네임 b 태그에 style 속성 class를 추가한다.
+                        nicknameBTag.setAttribute("class", "participantNickname");
                         // document.createTextNode() - 지정한 텍스트를 포함하는 새로운 Text 노드를 생성하는 메소드이다.
                         //                             이 메소드를 사용하여 동적으로 HTML 요소의 텍스트를 업데이트할 수 있다.
                         //                             이 메소드는 document.createElement()와 함께 사용하여 동적으로 HTML 요소를 생성하는 데 사용된다.
@@ -296,8 +296,8 @@
                         if ( writer == metaMaster ) {
                             // 3-1-1. 방장 b 태그를 생성한다.
                             var masterBTag = document.createElement("b");
-                            // 3-1-1-1. 방장 b 태그에 style 속성을 추가한다.
-                            masterBTag.setAttribute("style", "display: flex; flex-direction: column; width: 100%; height: 50%; justify-content: flex-end; color: red;");
+                            // 3-1-1-1. 방장 b 태그에 style 속성 class를 추가한다.
+                            masterBTag.setAttribute("class", "participantMaster");
                             // 3-1-1-2. 방장 b 태그에 작성할 내용을 TextNode로 생성한다. - 방장 표시
                             var masterBContent = document.createTextNode("방장");
                             // 3-1-1-3. 방장 b 태그에 TextNode로 생성한 내용을 전달한다.
@@ -305,8 +305,8 @@
 
                             // 3-1-2. 닉네임 구역 div 태그를 생성한다.
                             var innerDivTag = document.createElement("div");
-                            // 3-1-2-1. 닉네임 구역 div 태그에 style 속성을 추가한다.
-                            innerDivTag.setAttribute("style", "display: flex; flex-direction: column; width: 50%; height: 100%;");
+                            // 3-1-2-1. 닉네임 구역 div 태그에 style 속성 class를 추가한다.
+                            innerDivTag.setAttribute("class", "participantInfo");
                             // 3-1-2-2. 닉네임 구역 div 태그에 내부 닉네임 b 태그를 전달한다.
                             innerDivTag.appendChild(nicknameBTag);
                             // 3-1-2-3. 닉네임 구역 div 태그에 내부 방장 b 태그를 전달한다.
@@ -315,23 +315,21 @@
                         } else {
                             // 3-2-1. 닉네임 구역 div 태그를 생성한다.
                             var innerDivTag = document.createElement("div");
-                            // 3-2-1-1. 닉네임 구역 div 태그에 style 속성을 추가한다.
-                            innerDivTag.setAttribute("style", "display: flex; flex-direction: column; width: 50%; height: 100%;");
+                            // 3-2-1-1. 닉네임 구역 div 태그에 style 속성 class를 추가한다.
+                            innerDivTag.setAttribute("class", "participantInfo");
                             // 3-2-1-2. 닉네임 구역 div 태그에 내부 닉네임 b 태그를 전달한다.
                             innerDivTag.appendChild(nicknameBTag);
                         } // writer == metaMaster
 
                         // 4. 참가자 div 태그를 생성한다.
                         var divTag = document.createElement("div");
-                        // 4-1. 참가자 div 태그에 class 속성을 추가한다.
-                        divTag.setAttribute("class", "participant");
+                        // 4-1. 참가자 div 태그에 상세 프로필 클릭 이벤트 class와 style 속성 class를 추가한다.
+                        divTag.setAttribute("class", "participant participantDiv");
                         // 4-2. 참가자 div 태그에 id 속성을 작성자(참가자) 닉네임 값으로 설정해 추가한다.
                         divTag.setAttribute("id", writer);
-                        // 4-3. 참가자 div 태그에 style 속성을 추가한다.
-                        divTag.setAttribute("style", "display: flex; justify-content: space-between; border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%;");
-                        // 4-4. 참가자 div 태그에 이미지 태그를 전달한다.
+                        // 4-3. 참가자 div 태그에 이미지 태그를 전달한다.
                         divTag.appendChild(imgTag);
-                        // 4-5. 참가자 div 태그에 닉네임 구역 div 태그를 전달한다.
+                        // 4-4. 참가자 div 태그에 닉네임 구역 div 태그를 전달한다.
                         divTag.appendChild(innerDivTag);
 
                         // 5. 참가자 구역에 참가자 div 태그를 올린다.
@@ -450,10 +448,10 @@
                         var profileArea = document.getElementById("profileArea");
 
                         // 작성자(위임 전 방장) 코드를 작성한다.
-                        var beforeMasterCode = '<div class="participant" id="' + writer + '" style="display: flex; justify-content: space-between; border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%;">';
-                        beforeMasterCode += '<img src="/imagePath/' + profileImage + '" style="width: 50%; height:100%;">';
-                        beforeMasterCode += '<div style="display: flex; flex-direction: column; width: 50%; height: 100%;">';
-                        beforeMasterCode += '<b style="display: flex; flex-direction: column; width: 100%; height: 50%; justify-content: flex-start;">' + writer + '</b>';
+                        var beforeMasterCode = '<div class="participant participantDiv" id="' + writer + '">';
+                        beforeMasterCode += '<img class="participantImg" src="/imagePath/' + profileImage + '">';
+                        beforeMasterCode += '<div class="participantInfo">';
+                        beforeMasterCode += '<b class="participantNickname">' + writer + '</b>';
                         beforeMasterCode += '</div>';
                         beforeMasterCode += '</div>';
                         // 작성한 작성자(위임 전 방장) 코드를 참가자 구역에 올린다.
@@ -466,11 +464,11 @@
                         profileArea.insertAdjacentHTML("beforeend", beforeMasterCode);
 
                         // 방장(위임 후 방장) 코드를 작성한다.
-                        var afterMasterCode = '<div class="participant" id="' + master + '" style="display: flex; justify-content: space-between; border: 1px solid black; box-sizing: border-box; width: 10%; height: 100%;">';
-                        afterMasterCode += '<img src="' + masterProfileImage + '" style="width: 50%; height:100%;">';
-                        afterMasterCode += '<div style="display: flex; flex-direction: column; width: 50%; height: 100%;">';
-                        afterMasterCode += '<b style="display: flex; flex-direction: column; width: 100%; height: 50%; justify-content: flex-start;">' + master + '</b>';
-                        afterMasterCode += '<b style="display: flex; flex-direction: column; width: 100%; height: 50%; justify-content: flex-end; color: red;">' + '방장' + '</b>';
+                        var afterMasterCode = '<div class="participant participantDiv" id="' + master + '">';
+                        afterMasterCode += '<img class="participantImg" src="' + masterProfileImage + '">';
+                        afterMasterCode += '<div class="participantInfo">';
+                        afterMasterCode += '<b class="participantNickname">' + master + '</b>';
+                        afterMasterCode += '<b class="participantMaster">' + '방장' + '</b>';
                         afterMasterCode += '</div>';
                         afterMasterCode += '</div>';
                         // 작성한 방장(위임 후 방장) 코드를 참가자 구역에 올린다.
@@ -1338,7 +1336,7 @@
 <!--                    if ( canvasWriter == canvasNickname ) {-->
 <!--                        // 재입장 에러로 입장 메시지 재전송-->
 <!--                        if ( writer === metaNickname ) {-->
-<!--                            canvasStomp.send('/pub/meta/studyroom/canvas/enter', {}, JSON.stringify({type: "enter", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));-->
+<!--                            canvasStomp.send('/pub/meta/caferoom/canvas/enter', {}, JSON.stringify({type: "enter", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));-->
 <!--                        }-->
 <!--                    }-->
 <!--                }-->

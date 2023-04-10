@@ -2,8 +2,9 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" type="text/css" href="/css/OneRoom.css">
+    <title>자습실</title>
+    <link rel="stylesheet" type="text/css" href="/css/selfStudy.css">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
     <script th:inline="javascript">
         let err = [[${err}]];
         if ( err != null ) {
@@ -13,128 +14,138 @@
     </script>
 </head>
 <body onkeydown="keyDown()" onkeyup="keyUp()" onunload="exit()">
-    <div id="titleArea" class="title">
-        <b id="title" th:text="'방 번호 : ' + ${metaRoom.idx} + '   |   ' + '(자습실)' + ' 방 제목 : ' + ${metaRoom.metaTitle} + ' ( ' + ${metaRoom.metaRecruitingPersonnel} + ' / ' + ${metaRoom.metaPersonnel} + ' )'"></b>
-    </div>
-    <div class="body">
-            <span class="bodyLeft">
-                <div class="bodyLeftTop">
-                    <div class="bodyLeftTopTop">
-                        <div class="bodyLeftTopTopTop">
-                            <span id="dateSpan"></span>
-                        </div>
-                        <div class="bodyLeftTopTopBottom">
-                            <div class="bodyLeftTopTopBottomLeft">
-                                <span id="meridiemSpan"></span>
-                            </div>
-                            <div class="bodyLeftTopTopBottomRight">
-                                <span id="timeSpan"></span>
-                            </div>
-                        </div>
+    <main class="container">
+
+        <section class="leftContainer">
+            <div class="timerDiv">
+                <div class="todayDiv">
+                    <div class="todayDateDiv">
+                        <span id="dateSpan"></span>
                     </div>
-                    <div class="bodyLeftTopMid">
-                        <div class="bodyLeftTopMid1">
-                            <div class="bodyLeftTopMid1Top" id="bodyLeftTopMid1Top">
-                                <input class="bodyLeftTopMid1Top1" id="bodyLeftTopMid1Top1" type="button" value="+" onclick="counting('hour', '+')">
-                                <input class="bodyLeftTopMid1Top2" id="bodyLeftTopMid1Top2" type="button" value="-" onclick="counting('hour', '-')">
-                            </div>
-                            <div class="bodyLeftTopMid1Mid">
-                                <span class="bodyLeftTopMid1Mid1" id="bodyLeftTopMid1Mid1">00</span>
-                            </div>
-                            <div class="bodyLeftTopMid1Bottom" id="bodyLeftTopMid1Bottom">
-                                <input class="bodyLeftTopMid1BottomInput" id="bodyLeftTopMid1BottomInput" type="number" onchange="hourChange(this)">
-                            </div>
+
+                    <div class="todayTimeDiv">
+                        <div class="todayPMAM">
+                            <span id="meridiemSpan"></span>
                         </div>
-                        <div class="bodyLeftTopMid2">
-                            <span>:</span>
-                        </div>
-                        <div class="bodyLeftTopMid3">
-                            <div class="bodyLeftTopMid3Top" id="bodyLeftTopMid3Top">
-                                <input class="bodyLeftTopMid3Top1" id="bodyLeftTopMid3Top1" type="button" value="+" onclick="counting('minute','+')">
-                                <input class="bodyLeftTopMid3Top2" id="bodyLeftTopMid3Top2" type="button" value="-" onclick="counting('minute','-')">
-                            </div>
-                            <div class="bodyLeftTopMid3Mid">
-                                <span class="bodyLeftTopMid3Mid1" id="bodyLeftTopMid3Mid1">00</span>
-                            </div>
-                            <div class="bodyLeftTopMid3Bottom" id="bodyLeftTopMid3Bottom">
-                                <input class="bodyLeftTopMid3BottomInput" id="bodyLeftTopMid3BottomInput" type="number" onchange="minuteChange(this)">
-                            </div>
-                        </div>
-                        <div class="bodyLeftTopMid4">
-                            <span>:</span>
-                        </div>
-                        <div class="bodyLeftTopMid5">
-                            <div class="bodyLeftTopMid5Top" id="bodyLeftTopMid5Top">
-                                <input class="bodyLeftTopMid5Top1" id="bodyLeftTopMid5Top1" type="button" value="+" onclick="counting('second', '+')">
-                                <input class="bodyLeftTopMid5Top2" id="bodyLeftTopMid5Top2" type="button" value="-" onclick="counting('second', '-')">
-                            </div>
-                            <div class="bodyLeftTopMid5Mid">
-                                <span class="bodyLeftTopMid5Mid1" id="bodyLeftTopMid5Mid1">00</span>
-                            </div>
-                            <div class="bodyLeftTopMid5Bottom" id="bodyLeftTopMid5Bottom">
-                                <input class="bodyLeftTopMid5BottomInput" id="bodyLeftTopMid5BottomInput" type="number" onchange="secondChange(this)">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bodyLeftTopBottom">
-                        <div class="bodyLeftTopBottomTop" id="startButton" onclick="startTimer();">
-                            <span class="bodyLeftTopBottomTopSpan" id="startButtonText">START</span>
-                        </div>
-                        <div class="bodyLeftTopBottomMid" id="stopButton" onclick="stopTimer();">
-                            <span class="bodyLeftTopBottomMidSpan" id="stopButtonText">STOP</span>
-                        </div>
-                        <div class="bodyLeftTopBottomBottom">
-                            <span class="bodyLeftTopBottomBottomLeft" id="timerButton" onclick="timerClick('0');">타이머</span>
-                            <span class="bodyLeftTopBottomBottomRight" id="stopWatchButton" onclick="timerClick('1');">스톱워치</span>
+
+                        <div class="todayTime">
+                            <span id="timeSpan"></span>
                         </div>
                     </div>
                 </div>
-                <div class="bodyLeftMid">
-                    <input type="hidden" value="캔버스">
-                    <canvas class="bodyLeftMidCanvas" id="canvas"></canvas>
+
+                <div class="stopWatch">
+                    <div class="hour stopWatchTime">
+                        <div class="controllerBtn" id="bodyLeftTopMid1Top">
+                            <input class="plus" id="bodyLeftTopMid1Top1" type="button" value="+" onclick="counting('hour', '+')">
+                            <input class="minus" id="bodyLeftTopMid1Top2" type="button" value="-" onclick="counting('hour', '-')">
+                        </div>
+
+                        <div class="number">
+                            <span id="bodyLeftTopMid1Mid1">00</span>
+                        </div>
+
+                        <div class="controllerText" id="bodyLeftTopMid1Bottom">
+                            <input id="bodyLeftTopMid1BottomInput" type="number" onchange="hourChange(this)">
+                        </div>
+                    </div>
+
+                    <div class="minute stopWatchTime">
+                        <div class="controllerBtn" id="bodyLeftTopMid3Top">
+                            <input class="controllerBtnPlus" id="bodyLeftTopMid3Top1" type="button" value="+" onclick="counting('minute','+')">
+                            <input class="controllerBtnMinus" id="bodyLeftTopMid3Top2" type="button" value="-" onclick="counting('minute','-')">
+                        </div>
+                        <div class="number stopWatchTime">
+                            <span id="bodyLeftTopMid3Mid1">00</span>
+                        </div>
+                        <div class="controllerText" id="bodyLeftTopMid3Bottom">
+                            <input id="bodyLeftTopMid3BottomInput" type="number" onchange="minuteChange(this)">
+                        </div>
+                    </div>
+
+                    <div class="second">
+                        <div class="controllerBtn" id="bodyLeftTopMid5Top">
+                            <input class="controllerBtnPlus" id="bodyLeftTopMid5Top1" type="button" value="+" onclick="counting('second', '+')">
+                            <input class="controllerBtnMinus" id="bodyLeftTopMid5Top2" type="button" value="-" onclick="counting('second', '-')">
+                        </div>
+                        <div class="number">
+                            <span id="bodyLeftTopMid5Mid1">00</span>
+                        </div>
+                        <div class="controllerText" id="bodyLeftTopMid5Bottom">
+                            <input id="bodyLeftTopMid5BottomInput" type="number" onchange="secondChange(this)">
+                        </div>
+                    </div>
                 </div>
-                <div class="bodyLeftBottom">
-                    <input type="hidden" value="접속자">
+
+                <div class="watchController">
+                    <div class="chaneMode">
+                        <div class="time" id="startButton" onclick="startTimer();">
+                            <span class="changeBtn" id="startButtonText">START</span>
+                        </div>
+                        <div class="time" id="stopButton" onclick="stopTimer();">
+                            <span class="changeBtn" id="stopButtonText">STOP</span>
+                        </div>
+                    </div>
+
+                    <div class="chaneMode">
+                        <div class="time">
+                            <span class="changeBtn" id="timerButton" onclick="timerClick('0');">타이머</span>
+                        </div>
+                        <div class="time">
+                            <span class="changeBtn" id="stopWatchButton" onclick="timerClick('1');">스톱워치</span>
+                        </div>
+                    </div>
                 </div>
-            </span>
-        <span class="bodyRight">
-            <div class="bodyRightTop">
-                <div class="bodyRightTopTop">
+            </div>
+
+            <div class="metaCanvas">
+                <input type="hidden" value="캔버스">
+                <canvas id="canvas"></canvas>
+            </div>
+
+        </section>
+
+        <section class="rightContainer">
+            <div class="exitBtn">
+            </div>
+            <div class="checkListContainer">
+                <div class="checkListTitle">
                     <span>CheckList</span>
                 </div>
-                <div class="bodyRightTopBottom">
+
+                <div class="checkListDiv">
                     <!-- 여기서부터 리스트로 돌리면 됨 -->
-                    <div class="bodyRightTopBottomDiv">
-                        <div class="bodyRightTopBottomDivLeft">
-                            <div class="bodyRightTopBottomDivLeftLeft">
-                                <input class="bodyRightTopBottomDivLeftLeftClick" style="height: 100%; width: 100%;" type="checkbox">
+                    <div class="checkListOne">
+                        <div class="checkList">
+                            <div class="checkListCheckbox">
+                                <input type="checkbox">
                             </div>
-                            <div class="bodyRightTopBottomDivLeftRight">
-                                <span>체크리스트1</span>
+
+                            <div class="checkListText">
+                                <span>오늘 이거 끝내기!</span>
                             </div>
                         </div>
-                        <div class="bodyRightTopBottomDivRight">
-                            <div class="bodyRightTopBottomDivRightDiv">
-                                <input  class="bodyRightTopBottomDivRightDiv1" type="button" value="삭제">
-                                <input  class="bodyRightTopBottomDivRightDiv2" type="button" value="수정">
-                            </div>
+
+                        <div class="checkListController">
+                            <input  class="checkListControllerBtn" type="button" value="삭제">
+                            <input  class="checkListControllerBtn" type="button" value="수정">
                         </div>
                     </div>
+
                 </div>
             </div>
-            <div class="bodyRightBottom">
+
+            <div class="dDayDiv">
                 <input type="hidden" value="디데이">
-                <div class="bodyRightBottomDiv">
-                    <div class="bodyRightBottomDivTop">
-                        <span>D-DAY</span>
-                    </div>
-                    <div class="bodyRightBottomDivBottom">
-                        <span>"수능"</span>
-                    </div>
+                <div class="dDAyTitle">
+                    <span>D-DAY</span>
+                </div>
+                <div class="dDayText">
+                    <span>"수능"</span>
                 </div>
             </div>
-        </span>
-    </div>
+        </section>
+    </main>
 <!-------------------------------------------------------js 구역-------------------------------------------------------->
     <!-- SockJS 사용을 위한 js를 추가 -->
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
