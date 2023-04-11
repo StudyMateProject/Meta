@@ -112,6 +112,7 @@
                     <audio class="recordPlayer" id="record" controls></audio>
                     <input class="recordBtn" id="btnRecordStart" type="button" value="녹음 시작">
                     <input class="recordBtn" id="btnRecordStop" type="button" value="녹음 정지" disabled>
+                    <input class="recordBtn" id="btnRecordDownload" type="button" value="녹음 다운로드" disabled>
                 </div>
                 <!-- 나가기 버튼 -->
                 <input class="menuBarExitBtn" type="button" value="나가기" th:onclick="|location.href='@{/meta/selfexit(idx = ${metaRoom.idx}, nickname = ${nickImage.nickname})}'|">
@@ -216,6 +217,7 @@
         let record = document.getElementById("record"); // 오디오 태그
         let btnRecordStart = document.getElementById("btnRecordStart"); // 녹음 시작 버튼
         let btnRecordStop = document.getElementById("btnRecordStop"); // 녹음 정지 버튼
+        let btnRecordDownload = document.getElementById("btnRecordDownload"); // 녹음 다운로드 버튼
         let mediaRecorder; // MediaRecorder 객체
         let recordedChunks = []; // blob 녹음 데이터
         let recordTimeoutId; // 녹음 setTimeout ID
@@ -293,6 +295,8 @@
                             btnRecordStart.disabled = false;
                             // 재시작 버튼을 비활성화한다.
                             btnRecordStop.disabled = true;
+                            // 다운로드 버튼을 활성화한다.
+                            btnRecordDownload.disabled = false;
                         }, 300000);
                     // catch 메소드는 Promise 객체가 reject된 후 호출된다.
                     } catch (error) {
@@ -327,6 +331,8 @@
                 btnRecordStart.disabled = true;
                 // 정지 버튼을 활성화한다.
                 btnRecordStop.disabled = false;
+                // 다운로드 버튼을 비활성화한다.
+                btnRecordDownload.disabled = true;
             // "녹음 초기화" 버튼을 클릭한 경우
             } else {
                 // 초기화 버튼을 시작 버튼으로 변경한다.
@@ -337,6 +343,8 @@
                 btnRecordStop.value = "녹음 정지";
                 // 정지 버튼을 비활성화한다.
                 btnRecordStop.disabled = true;
+                // 다운로드 버튼을 비활성화한다.
+                btnRecordDownload.disabled = true;
                 // recordedChunks 배열을 초기화한다.
                 recordedChunks = [];
                 // 현재 오디오 태그에 작성되있는 소스를 초기화한다.
@@ -362,6 +370,8 @@
                 btnRecordStop.value = "녹음 재시작";
                 // 재시작 버튼을 활성화한다.
                 btnRecordStop.disabled = false;
+                // 다운로드 버튼을 활성화한다.
+                btnRecordDownload.disabled = false;
             // "녹음 재시작" 버튼을 클릭한 경우
             } else {
                 // 오디오 태그에 작성되있는 소스를 초기화한다.
@@ -376,7 +386,22 @@
                 btnRecordStop.value = "녹음 정지";
                 // 정지 버튼을 활성화한다.
                 btnRecordStop.disabled = false;
+                // 다운로드 버튼을 비활성화한다.
+                btnRecordDownload.disabled = true;
             }
+        });
+
+        // 다운로드 버튼에서 "click" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
+        // click - 마우스나 터치 디바이스의 클릭이나 탭을 할 때 발생하는 이벤트이다.
+        btnRecordDownload.addEventListener("click", function() {
+            // a 태그를 생성한다. - 다운로드 태그 생성
+            let recordDownload = document.createElement("a");
+            // 오디오 태그의 소스에서 녹음된 오디오 데이터를 가져와 a 태그의 소스로 전달한다. - 다운로드 링크 생성
+            recordDownload.href = document.getElementById("record").src;
+            // a 태그의 download 속성을 사용하여 다운로드 파일의 이름을 설정한다. - 다운로드 링크의 파일 이름 설정
+            recordDownload.download = "recordAudio.mp3";
+            // 생성된 a 태그에 클릭 이벤트를 발생시킨다. - 다운로드 시작
+            recordDownload.click();
         });
         ///////////////////////////////////////////////// 페이지 이탈 구역 /////////////////////////////////////////////////
         // 1. 페이지를 이탈하는 기능을 실행할 경우 발생하는 이벤트 핸들러 등록
