@@ -114,32 +114,43 @@ public class StompChatController {
     // 스터디룸 첫 입장 이후 재입장 - 첫 입장 이후 모든 재입장은 이곳으로 들어온다.
     @MessageMapping(value = "/meta/studyroom/reenter")
     public void reEnterStudyRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 재입장(새로고침) 정보들을 DTO로 받아온다.
-        // 2. 이전 퇴장 메소드에서 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
-        ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
-        // 3. 2에서 가져온 DTO가 여전히 존재하는지 체크한다.
-        // 3-1. 퇴장 메시지가 존재하는 경우 - 재입장(새로고침)
-        if ( exitMessage != null ) {
-            // 3-1-1. 퇴장 메소드에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
-            metaMessageMap.remove(message.getMetaIdx() + "_exit");
-            // 3-1-2. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
-            message.setParticipant(message.getWriter());
-            // 3-1-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-            //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-            //        "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
-            template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
-        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.3초가 넘는 장시간의 새로고침 에러로 인한 퇴장 처리 후 재입장된 것으로,
-        //                                 이는 아직 퇴장한 것이 아닌데 퇴장 처리가 되었으므로 다시 입장 처리를 해준다.
-        } else {
-            // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 setter를 통해 "reErr"로 변경한다. - 재입장 에러 값
-            message.setType("reErr");
-            // 3-2-2. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다. - 재입장 에러로 퇴장
-            message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
-            // 3-2-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-            //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-            //        "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
-            template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
-        }
+        // 2. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
+        message.setParticipant(message.getWriter());
+        // 3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+        //    "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
+        template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
     }
+
+//    // 스터디룸 첫 입장 이후 재입장 - 첫 입장 이후 모든 재입장은 이곳으로 들어온다. - 폐기
+//    @MessageMapping(value = "/meta/studyroom/reenter")
+//    public void reEnterStudyRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 재입장(새로고침) 정보들을 DTO로 받아온다.
+//        // 2. 이전 퇴장 메소드에서 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
+//        ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
+//        // 3. 2에서 가져온 DTO가 여전히 존재하는지 체크한다.
+//        // 3-1. 퇴장 메시지가 존재하는 경우 - 재입장(새로고침)
+//        if ( exitMessage != null ) {
+//            // 3-1-1. 퇴장 메소드에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
+//            metaMessageMap.remove(message.getMetaIdx() + "_exit");
+//            // 3-1-2. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
+//            message.setParticipant(message.getWriter());
+//            // 3-1-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+//            //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+//            //        "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
+//            template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
+//        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.3초가 넘는 장시간의 새로고침 에러로 인한 퇴장 처리 후 재입장된 것으로,
+//        //                                 이는 아직 퇴장한 것이 아닌데 퇴장 처리가 되었으므로 다시 입장 처리를 해준다.
+//        } else {
+//            // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 setter를 통해 "reErr"로 변경한다. - 재입장 에러 값
+//            message.setType("reErr");
+//            // 3-2-2. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다. - 재입장 에러로 퇴장
+//            message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
+//            // 3-2-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+//            //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+//            //        "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
+//            template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
+//        }
+//    }
 
     // 스터디룸 채팅
     @MessageMapping(value = "/meta/studyroom/message")
@@ -229,98 +240,172 @@ public class StompChatController {
 
     // 스터디룸 퇴장
     @MessageMapping(value = "/meta/studyroom/exit")
-    // Future - Future 인터페이스는 Java5부터 java.util.concurrency 패키지에서 비동기의 결과값을 받는 용도로 사용했지만 비동기의 결과값을 조합하거나, error를 핸들링할 수가 없었다.
-    // CompletionStage - Java 8에서 추가된 인터페이스 중 하나로, 비동기식 계산 결과를 다루기 위한 일종의 통합 API이다.
-    //                   CompletableFuture 클래스와 함께 사용되어, 비동기 작업을 수행하고 작업 결과를 처리하는 기능을 제공한다.
-    // CompletableFuture - Java 8에서 추가된 클래스 중 하나로, 비동기 작업을 수행하고 해당 작업의 결과를 처리하는 기능을 제공한다.
-    // <Void> - runAsync는 반환 값이 없으므로 Void 타입이다.
-    public CompletableFuture<Void> exitStudyRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 퇴장 정보들을 DTO로 받아온다.
-        // 2. 1에서 파라미터로 받아온 DTO 값 중 작성자(퇴장자)와 방 제목을 가져와 퇴장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
-        message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에서 탈주하였습니다.");
-        // 3. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다.
-        message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
-
-        // 4. 1에서 파라미터로 받아온 DTO 값 중 방 번호와 퇴장을 의미하는 문자를 조합하여 키로 사용하고, 1에서 파라미터로 받아온 DTO를 값으로 사용하여, 위에서 생성한 새로고침 체크용 Map에 추가한다.
-        metaMessageMap.put(message.getMetaIdx() + "_exit", message);
-
-        // CompletableFuture.runAsync - 비동기적으로 실행되는 작업을 수행하는 CompletableFuture 객체를 반환한다.
-        // runAsync() - 파라미터로 Runnable 객체를 받으며, 이 객체의 run() 메소드 안에 비동기적으로 실행할 작업을 구현한다.
-        //              메소드는 즉시 리턴하며, 별도의 쓰레드에서 run() 메소드 안에 구현된 작업이 비동기적으로 실행된다.
-        // Runnable - 인자를 받지 않고, 리턴값도 없는 함수형 인터페이스이다.
-        //            run() 메소드를 하나만 가지고 있으며, 이 메소드에서 수행될 작업을 구현한다.
-        //            run() 메소드는 매개변수를 받지 않으며, 리턴값도 없다.
-        return CompletableFuture.runAsync(() -> {
-            try {
-                // 5. 퇴장 메시지를 전송하기 전에 0.3초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
-                Thread.sleep(300);
-                // 6. 4에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
-                ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
-                // 7. 5에서 0.3초 대기한 후에도 6에서 가져온 DTO가 여전히 존재하는지 체크한다.
-                // 7-1. 퇴장 메시지가 존재하는 경우 - 퇴장
-                if ( exitMessage == null ) {
-                    // 7-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
-                // 7-2. 퇴장 메시지가 존재하지 않는 경우 - 재입장(새로고침)
+    public void exitStudyRoom(ChatMessageDTO message) throws JsonProcessingException { // 1. 클라이언트로부터 전송된 퇴장 정보들을 DTO로 받아온다.
+        // 2. metaController에서 재입장(새로고침) 체크용 Map에 추가한 작성자(퇴장자) 키에 해당하는 재입장(새로고침) 체크 값을 가져온다.
+        Long reEnterCheck = metaController.reEnterCheck.get(message.getWriter());
+        // 3. 2에서 가져온 재입장(새로고침) 체크 값이 존재하는지 체크한다.
+        // 3-1. 재입장(새로고침) 체크 값이 존재하는 경우 - 재입장(새로고침)
+        if ( reEnterCheck != null ) {
+            // 3-1-1. metaController에서 재입장(새로고침) 체크용 Map에 추가한 작성자(퇴장자) 키에 해당하는 재입장(새로고침) 체크 값을 제거한다.
+            metaController.reEnterCheck.remove(message.getWriter());
+            // 3-1-2. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
+        // 3-2. 재입장(새로고침) 체크 값이 존재하지 않는 경우 - 퇴장
+        } else {
+            // 4. 1에서 파라미터로 받아온 DTO 값 중 작성자(퇴장자)와 방 제목을 가져와 퇴장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
+            message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에서 탈주하였습니다.");
+            // 5. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다.
+            message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
+            // 6. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+            Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
+            // 7. 6에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 작성자(퇴장자) 키에 해당하는 List를 제거한다.
+            metaCanvasMap.remove(message.getWriter());
+            // 8. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 9에서 가져온 Map을 JSON 문자열로 변환한다.
+            String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+            // 9. 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임이 존재하는지 체크한다.
+            // 9-1. 방장 닉네임이 존재하지 않는 경우
+            if ( message.getMaster() == null ) {
+                // 9-1-1. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+                //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                //        "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
+                template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
+                // 9-1-2. 8에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
+                message.setExit(metaCanvasJson);
+                // 9-1-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+                //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                //        "/sub" + "/meta/studyroom/canvas/" + metaIdx = "/sub/meta/studyroom/canvas/1"
+                template.convertAndSend("/sub/meta/studyroom/canvas/" + message.getMetaIdx(), message);
+            // 9-2. 방장 닉네임이 존재하는 경우
+            } else {
+                // 10. 참여중인 인원이 0명인지 체크한다.
+                // 10-1. 참여중인 인원이 0명인 경우 - 방 삭제
+                if ( message.getMetaRecruitingPersonnel() == 0 ) {
+                    // 10-1-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 가지고 metaController에 방 삭제 메소드를 호출하여 방을 퇴장하고 삭제한다.
+                    metaController.deleteRoomMaster(message.getMetaIdx());
+                // 10-2. 참여중인 인원이 0명이 아닌 경우 - 방 유지
                 } else {
-                    // 8. 4에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
-                    metaMessageMap.remove(message.getMetaIdx() + "_exit");
-                    // 9. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
-                    Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
-                    // 10. 9에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 작성자(퇴장자) 키에 해당하는 List를 제거한다.
-                    metaCanvasMap.remove(message.getWriter());
-                    // 11. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 9에서 가져온 Map을 JSON 문자열로 변환한다.
-                    String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
-                    // 13. 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임이 존재하는지 체크한다.
-                    // 13-1. 방장 닉네임이 존재하지 않는 경우
-                    if ( message.getMaster() == null ) {
-                        // 13-1-1. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-                        //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-                        //         "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
-                        template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
-                        // 13-1-2. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
-                        message.setExit(metaCanvasJson);
-                        // 13-1-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-                        //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-                        //         "/sub" + "/meta/studyroom/canvas/" + metaIdx = "/sub/meta/studyroom/canvas/1"
-                        template.convertAndSend("/sub/meta/studyroom/canvas/" + message.getMetaIdx(), message);
-                    // 13-2. 방장 닉네임이 존재하는 경우
-                    } else {
-                        // 14. 참여중인 인원이 0명인지 체크한다.
-                        // 14-1. 참여중인 인원이 0명인 경우 - 방 삭제
-                        if ( message.getMetaRecruitingPersonnel() == 0 ) {
-                            // 14-1-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 가지고 metaController에 방 삭제 메소드를 호출하여 방을 퇴장하고 삭제한다.
-                            metaController.deleteRoomMaster(message.getMetaIdx());
-                        // 14-2. 참여중인 인원이 0명이 아닌 경우 - 방 유지
-                        } else {
-                            // 14-2-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임을 값으로 사용하여, 위에서 생성한 방장 재입장 체크용 Map에 추가한다.
-                            boomMetaRoom.put(message.getMetaIdx(), message.getMaster());
-                            // 14-2-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-                            //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-                            //         "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
-                            template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
-                            // 14-2-3. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
-                            message.setExit(metaCanvasJson);
-                            // 14-2-4. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-                            //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-                            //         "/sub" + "/meta/studyroom/canvas/" + metaIdx = "/sub/meta/studyroom/canvas/1"
-                            template.convertAndSend("/sub/meta/studyroom/canvas/" + message.getMetaIdx(), message);
-                            // 14-2-5. 퇴장 메시지를 전송하고 난 후 1분 대기하여 방장이 완전한 퇴장인지 다시 재입장 하는지 체크한다.
-                            Thread.sleep(60000);
-                            // 14-2-6. 14-2-1에서 방장 재입장 체크용 Map에 추가한 키에 해당하는 값을 삭제한다.
-                            boomMetaRoom.remove(message.getMetaIdx());
-                        }
-                    }
-                }
-            } catch (InterruptedException e) { // 스레드를 중지하거나 중단시킬 때 발생할 수 있는 예외가 발생한 경우 catch문이 실행된다.
-                // InterruptedException - 스레드가 sleep() 상태에서 interrupt() 메소드 호출로 깨어나서 예외를 발생시킨 경우 발생한다.
-                //                        스레드가 인터럽트되면 스레드가 일시 중단되고, 인터럽트 상태 플래그가 true로 설정되는데,
-                //                        이 경우, Thread.currentThread().interrupt() 메소드를 호출하여 인터럽트 상태 플래그를 재설정해준다.
-                // Thread.currentThread().interrupt() - 스레드를 강제 종료시키는 것이 아니라, 인터럽트 플래그를 설정함으로써 스레드가 계속 실행되지 않도록 만드는 메소드이다.
-                Thread.currentThread().interrupt(); // 현재 스레드에 인터럽트 플래그를 설정하여, 스레드가 계속 실행되지 않도록 만든다.
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
+                    // 10-2-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임을 값으로 사용하여, 위에서 생성한 방장 재입장 체크용 Map에 추가한다.
+                    boomMetaRoom.put(message.getMetaIdx(), message.getMaster());
+                    // 10-2-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+                    //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                    //         "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
+                    template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
+                    // 10-2-3. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
+                    message.setExit(metaCanvasJson);
+                    // 10-2-4. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+                    //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                    //         "/sub" + "/meta/studyroom/canvas/" + metaIdx = "/sub/meta/studyroom/canvas/1"
+                    template.convertAndSend("/sub/meta/studyroom/canvas/" + message.getMetaIdx(), message);
+                    try {
+                        // 10-2-5. 퇴장 메시지를 전송하고 난 후 1분 대기하여 방장이 완전한 퇴장인지 다시 재입장 하는지 체크한다.
+                        Thread.sleep(60000);
+                        // 10-2-6. 10-2-1에서 방장 재입장 체크용 Map에 추가한 키에 해당하는 값을 삭제한다.
+                        boomMetaRoom.remove(message.getMetaIdx());
+                    } catch (InterruptedException ex) { // 스레드를 중지하거나 중단시킬 때 발생할 수 있는 예외가 발생한 경우 catch문이 실행된다.
+                        // InterruptedException - 스레드가 sleep() 상태에서 interrupt() 메소드 호출로 깨어나서 예외를 발생시킨 경우 발생한다.
+                        //                        스레드가 인터럽트되면 스레드가 일시 중단되고, 인터럽트 상태 플래그가 true로 설정되는데,
+                        //                        이 경우, Thread.currentThread().interrupt() 메소드를 호출하여 인터럽트 상태 플래그를 재설정해준다.
+                        // Thread.currentThread().interrupt() - 스레드를 강제 종료시키는 것이 아니라, 인터럽트 플래그를 설정함으로써 스레드가 계속 실행되지 않도록 만드는 메소드이다.
+                        Thread.currentThread().interrupt(); // 현재 스레드에 인터럽트 플래그를 설정하여, 스레드가 계속 실행되지 않도록 만든다.
+                    } // try - catch
+                } // message.getMetaRecruitingPersonnel() == 0
+            } // message.getMaster() == null
+        } // reEnterCheck == null
+    } // exitStudyRoom(ChatMessageDTO message)
+
+//    // 스터디룸 퇴장 - 폐기
+//    @MessageMapping(value = "/meta/studyroom/exit")
+//    // Future - Future 인터페이스는 Java5부터 java.util.concurrency 패키지에서 비동기의 결과값을 받는 용도로 사용했지만 비동기의 결과값을 조합하거나, error를 핸들링할 수가 없었다.
+//    // CompletionStage - Java 8에서 추가된 인터페이스 중 하나로, 비동기식 계산 결과를 다루기 위한 일종의 통합 API이다.
+//    //                   CompletableFuture 클래스와 함께 사용되어, 비동기 작업을 수행하고 작업 결과를 처리하는 기능을 제공한다.
+//    // CompletableFuture - Java 8에서 추가된 클래스 중 하나로, 비동기 작업을 수행하고 해당 작업의 결과를 처리하는 기능을 제공한다.
+//    // <Void> - runAsync는 반환 값이 없으므로 Void 타입이다.
+//    public CompletableFuture<Void> exitStudyRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 퇴장 정보들을 DTO로 받아온다.
+//        // 2. 1에서 파라미터로 받아온 DTO 값 중 작성자(퇴장자)와 방 제목을 가져와 퇴장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
+//        message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에서 탈주하였습니다.");
+//        // 3. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다.
+//        message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
+//
+//        // 4. 1에서 파라미터로 받아온 DTO 값 중 방 번호와 퇴장을 의미하는 문자를 조합하여 키로 사용하고, 1에서 파라미터로 받아온 DTO를 값으로 사용하여, 위에서 생성한 새로고침 체크용 Map에 추가한다.
+//        metaMessageMap.put(message.getMetaIdx() + "_exit", message);
+//
+//        // CompletableFuture.runAsync - 비동기적으로 실행되는 작업을 수행하는 CompletableFuture 객체를 반환한다.
+//        // runAsync() - 파라미터로 Runnable 객체를 받으며, 이 객체의 run() 메소드 안에 비동기적으로 실행할 작업을 구현한다.
+//        //              메소드는 즉시 리턴하며, 별도의 쓰레드에서 run() 메소드 안에 구현된 작업이 비동기적으로 실행된다.
+//        // Runnable - 인자를 받지 않고, 리턴값도 없는 함수형 인터페이스이다.
+//        //            run() 메소드를 하나만 가지고 있으며, 이 메소드에서 수행될 작업을 구현한다.
+//        //            run() 메소드는 매개변수를 받지 않으며, 리턴값도 없다.
+//        return CompletableFuture.runAsync(() -> {
+//            try {
+//                // 5. 퇴장 메시지를 전송하기 전에 0.3초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
+//                Thread.sleep(300);
+//                // 6. 4에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
+//                ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
+//                // 7. 5에서 0.3초 대기한 후에도 6에서 가져온 DTO가 여전히 존재하는지 체크한다.
+//                // 7-1. 퇴장 메시지가 존재하는 경우 - 퇴장
+//                if ( exitMessage == null ) {
+//                    // 7-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
+//                // 7-2. 퇴장 메시지가 존재하지 않는 경우 - 재입장(새로고침)
+//                } else {
+//                    // 8. 4에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
+//                    metaMessageMap.remove(message.getMetaIdx() + "_exit");
+//                    // 9. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+//                    Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
+//                    // 10. 9에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 작성자(퇴장자) 키에 해당하는 List를 제거한다.
+//                    metaCanvasMap.remove(message.getWriter());
+//                    // 11. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 9에서 가져온 Map을 JSON 문자열로 변환한다.
+//                    String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+//                    // 13. 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임이 존재하는지 체크한다.
+//                    // 13-1. 방장 닉네임이 존재하지 않는 경우
+//                    if ( message.getMaster() == null ) {
+//                        // 13-1-1. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+//                        //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+//                        //         "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
+//                        template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
+//                        // 13-1-2. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
+//                        message.setExit(metaCanvasJson);
+//                        // 13-1-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+//                        //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+//                        //         "/sub" + "/meta/studyroom/canvas/" + metaIdx = "/sub/meta/studyroom/canvas/1"
+//                        template.convertAndSend("/sub/meta/studyroom/canvas/" + message.getMetaIdx(), message);
+//                    // 13-2. 방장 닉네임이 존재하는 경우
+//                    } else {
+//                        // 14. 참여중인 인원이 0명인지 체크한다.
+//                        // 14-1. 참여중인 인원이 0명인 경우 - 방 삭제
+//                        if ( message.getMetaRecruitingPersonnel() == 0 ) {
+//                            // 14-1-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 가지고 metaController에 방 삭제 메소드를 호출하여 방을 퇴장하고 삭제한다.
+//                            metaController.deleteRoomMaster(message.getMetaIdx());
+//                        // 14-2. 참여중인 인원이 0명이 아닌 경우 - 방 유지
+//                        } else {
+//                            // 14-2-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임을 값으로 사용하여, 위에서 생성한 방장 재입장 체크용 Map에 추가한다.
+//                            boomMetaRoom.put(message.getMetaIdx(), message.getMaster());
+//                            // 14-2-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+//                            //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+//                            //         "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
+//                            template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
+//                            // 14-2-3. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
+//                            message.setExit(metaCanvasJson);
+//                            // 14-2-4. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+//                            //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+//                            //         "/sub" + "/meta/studyroom/canvas/" + metaIdx = "/sub/meta/studyroom/canvas/1"
+//                            template.convertAndSend("/sub/meta/studyroom/canvas/" + message.getMetaIdx(), message);
+//                            // 14-2-5. 퇴장 메시지를 전송하고 난 후 1분 대기하여 방장이 완전한 퇴장인지 다시 재입장 하는지 체크한다.
+//                            Thread.sleep(60000);
+//                            // 14-2-6. 14-2-1에서 방장 재입장 체크용 Map에 추가한 키에 해당하는 값을 삭제한다.
+//                            boomMetaRoom.remove(message.getMetaIdx());
+//                        }
+//                    }
+//                }
+//            } catch (InterruptedException e) { // 스레드를 중지하거나 중단시킬 때 발생할 수 있는 예외가 발생한 경우 catch문이 실행된다.
+//                // InterruptedException - 스레드가 sleep() 상태에서 interrupt() 메소드 호출로 깨어나서 예외를 발생시킨 경우 발생한다.
+//                //                        스레드가 인터럽트되면 스레드가 일시 중단되고, 인터럽트 상태 플래그가 true로 설정되는데,
+//                //                        이 경우, Thread.currentThread().interrupt() 메소드를 호출하여 인터럽트 상태 플래그를 재설정해준다.
+//                // Thread.currentThread().interrupt() - 스레드를 강제 종료시키는 것이 아니라, 인터럽트 플래그를 설정함으로써 스레드가 계속 실행되지 않도록 만드는 메소드이다.
+//                Thread.currentThread().interrupt(); // 현재 스레드에 인터럽트 플래그를 설정하여, 스레드가 계속 실행되지 않도록 만든다.
+//            } catch (JsonProcessingException e) {
+//                throw new RuntimeException(e);
+//            }
+//        });
+//    }
     ////////////////////////////////////////////////// 스터디룸 캔버스 구역 //////////////////////////////////////////////////
     // 스터디룸 캔버스 첫 입장
     @MessageMapping(value = "/meta/studyroom/canvas/enter")
@@ -651,32 +736,43 @@ public class StompChatController {
     // 카페룸 첫 입장 이후 재입장 - 첫 입장 이후 모든 재입장은 이곳으로 들어온다.
     @MessageMapping(value = "/meta/caferoom/reenter")
     public void reEnterCafeRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 재입장(새로고침) 정보들을 DTO로 받아온다.
-        // 2. 이전 퇴장 메소드에서 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
-        ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
-        // 3. 2에서 가져온 DTO가 여전히 존재하는지 체크한다.
-        // 3-1. 퇴장 메시지가 존재하는 경우 - 재입장(새로고침)
-        if ( exitMessage != null ) {
-            // 3-1-1. 퇴장 메소드에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
-            metaMessageMap.remove(message.getMetaIdx() + "_exit");
-            // 3-1-2. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
-            message.setParticipant(message.getWriter());
-            // 3-1-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-            //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-            //        "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
-            template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
-        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.3초가 넘는 장시간의 새로고침 에러로 인한 퇴장 처리 후 재입장된 것으로,
-        //                                 이는 아직 퇴장한 것이 아닌데 퇴장 처리가 되었으므로 다시 입장 처리를 해준다.
-        } else {
-            // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 setter를 통해 "reErr"로 변경한다. - 재입장 에러 값
-            message.setType("reErr");
-            // 3-2-2. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다. - 재입장 에러로 퇴장
-            message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
-            // 3-2-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-            //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-            //        "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
-            template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
-        }
+        // 2. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
+        message.setParticipant(message.getWriter());
+        // 3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+        //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+        //    "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
+        template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
     }
+
+//    // 카페룸 첫 입장 이후 재입장 - 첫 입장 이후 모든 재입장은 이곳으로 들어온다. - 폐기
+//    @MessageMapping(value = "/meta/caferoom/reenter")
+//    public void reEnterCafeRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 재입장(새로고침) 정보들을 DTO로 받아온다.
+//        // 2. 이전 퇴장 메소드에서 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
+//        ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
+//        // 3. 2에서 가져온 DTO가 여전히 존재하는지 체크한다.
+//        // 3-1. 퇴장 메시지가 존재하는 경우 - 재입장(새로고침)
+//        if ( exitMessage != null ) {
+//            // 3-1-1. 퇴장 메소드에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
+//            metaMessageMap.remove(message.getMetaIdx() + "_exit");
+//            // 3-1-2. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
+//            message.setParticipant(message.getWriter());
+//            // 3-1-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+//            //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+//            //        "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
+//            template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
+//        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.3초가 넘는 장시간의 새로고침 에러로 인한 퇴장 처리 후 재입장된 것으로,
+//        //                                 이는 아직 퇴장한 것이 아닌데 퇴장 처리가 되었으므로 다시 입장 처리를 해준다.
+//        } else {
+//            // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 setter를 통해 "reErr"로 변경한다. - 재입장 에러 값
+//            message.setType("reErr");
+//            // 3-2-2. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다. - 재입장 에러로 퇴장
+//            message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
+//            // 3-2-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+//            //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+//            //        "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
+//            template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
+//        }
+//    }
 
     // 카페룸 채팅
     @MessageMapping(value = "/meta/caferoom/message")
@@ -766,98 +862,172 @@ public class StompChatController {
 
     // 카페룸 퇴장
     @MessageMapping(value = "/meta/caferoom/exit")
-    // Future - Future 인터페이스는 Java5부터 java.util.concurrency 패키지에서 비동기의 결과값을 받는 용도로 사용했지만 비동기의 결과값을 조합하거나, error를 핸들링할 수가 없었다.
-    // CompletionStage - Java 8에서 추가된 인터페이스 중 하나로, 비동기식 계산 결과를 다루기 위한 일종의 통합 API이다.
-    //                   CompletableFuture 클래스와 함께 사용되어, 비동기 작업을 수행하고 작업 결과를 처리하는 기능을 제공한다.
-    // CompletableFuture - Java 8에서 추가된 클래스 중 하나로, 비동기 작업을 수행하고 해당 작업의 결과를 처리하는 기능을 제공한다.
-    // <Void> - runAsync는 반환 값이 없으므로 Void 타입이다.
-    public CompletableFuture<Void> exitCafeRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 퇴장 정보들을 DTO로 받아온다.
-        // 2. 1에서 파라미터로 받아온 DTO 값 중 작성자(퇴장자)와 방 제목을 가져와 퇴장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
-        message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에서 탈주하였습니다.");
-        // 3. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다.
-        message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
-
-        // 4. 1에서 파라미터로 받아온 DTO 값 중 방 번호와 퇴장을 의미하는 문자를 조합하여 키로 사용하고, 1에서 파라미터로 받아온 DTO를 값으로 사용하여, 위에서 생성한 새로고침 체크용 Map에 추가한다.
-        metaMessageMap.put(message.getMetaIdx() + "_exit", message);
-
-        // CompletableFuture.runAsync - 비동기적으로 실행되는 작업을 수행하는 CompletableFuture 객체를 반환한다.
-        // runAsync() - 파라미터로 Runnable 객체를 받으며, 이 객체의 run() 메소드 안에 비동기적으로 실행할 작업을 구현한다.
-        //              메소드는 즉시 리턴하며, 별도의 쓰레드에서 run() 메소드 안에 구현된 작업이 비동기적으로 실행된다.
-        // Runnable - 인자를 받지 않고, 리턴값도 없는 함수형 인터페이스이다.
-        //            run() 메소드를 하나만 가지고 있으며, 이 메소드에서 수행될 작업을 구현한다.
-        //            run() 메소드는 매개변수를 받지 않으며, 리턴값도 없다.
-        return CompletableFuture.runAsync(() -> {
-            try {
-                // 5. 퇴장 메시지를 전송하기 전에 0.3초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
-                Thread.sleep(300);
-                // 6. 4에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
-                ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
-                // 7. 5에서 0.3초 대기한 후에도 6에서 가져온 DTO가 여전히 존재하는지 체크한다.
-                // 7-1. 퇴장 메시지가 존재하는 경우 - 퇴장
-                if ( exitMessage == null ) {
-                    // 7-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
-                // 7-2. 퇴장 메시지가 존재하지 않는 경우 - 재입장(새로고침)
+    public void exitCafeRoom(ChatMessageDTO message) throws JsonProcessingException { // 1. 클라이언트로부터 전송된 퇴장 정보들을 DTO로 받아온다.
+        // 2. metaController에서 재입장(새로고침) 체크용 Map에 추가한 작성자(퇴장자) 키에 해당하는 재입장(새로고침) 체크 값을 가져온다.
+        Long reEnterCheck = metaController.reEnterCheck.get(message.getWriter());
+        // 3. 2에서 가져온 재입장(새로고침) 체크 값이 존재하는지 체크한다.
+        // 3-1. 재입장(새로고침) 체크 값이 존재하는 경우 - 재입장(새로고침)
+        if ( reEnterCheck != null ) {
+            // 3-1-1. metaController에서 재입장(새로고침) 체크용 Map에 추가한 작성자(퇴장자) 키에 해당하는 재입장(새로고침) 체크 값을 제거한다.
+            metaController.reEnterCheck.remove(message.getWriter());
+            // 3-1-2. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
+        // 3-2. 재입장(새로고침) 체크 값이 존재하지 않는 경우 - 퇴장
+        } else {
+            // 4. 1에서 파라미터로 받아온 DTO 값 중 작성자(퇴장자)와 방 제목을 가져와 퇴장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
+            message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에서 탈주하였습니다.");
+            // 5. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다.
+            message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
+            // 6. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+            Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
+            // 7. 6에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 작성자(퇴장자) 키에 해당하는 List를 제거한다.
+            metaCanvasMap.remove(message.getWriter());
+            // 8. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 9에서 가져온 Map을 JSON 문자열로 변환한다.
+            String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+            // 9. 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임이 존재하는지 체크한다.
+            // 9-1. 방장 닉네임이 존재하지 않는 경우
+            if ( message.getMaster() == null ) {
+                // 9-1-1. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+                //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                //        "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
+                template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
+                // 9-1-2. 8에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
+                message.setExit(metaCanvasJson);
+                // 9-1-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+                //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                //        "/sub" + "/meta/caferoom/canvas/" + metaIdx = "/sub/meta/caferoom/canvas/1"
+                template.convertAndSend("/sub/meta/caferoom/canvas/" + message.getMetaIdx(), message);
+            // 9-2. 방장 닉네임이 존재하는 경우
+            } else {
+                // 10. 참여중인 인원이 0명인지 체크한다.
+                // 10-1. 참여중인 인원이 0명인 경우 - 방 삭제
+                if ( message.getMetaRecruitingPersonnel() == 0 ) {
+                    // 10-1-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 가지고 metaController에 방 삭제 메소드를 호출하여 방을 퇴장하고 삭제한다.
+                    metaController.deleteRoomMaster(message.getMetaIdx());
+                // 10-2. 참여중인 인원이 0명이 아닌 경우 - 방 유지
                 } else {
-                    // 8. 4에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
-                    metaMessageMap.remove(message.getMetaIdx() + "_exit");
-                    // 9. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
-                    Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
-                    // 10. 9에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 작성자(퇴장자) 키에 해당하는 List를 제거한다.
-                    metaCanvasMap.remove(message.getWriter());
-                    // 11. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 9에서 가져온 Map을 JSON 문자열로 변환한다.
-                    String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
-                    // 13. 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임이 존재하는지 체크한다.
-                    // 13-1. 방장 닉네임이 존재하지 않는 경우
-                    if ( message.getMaster() == null ) {
-                        // 13-1-1. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-                        //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-                        //         "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
-                        template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
-                        // 13-1-2. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
-                        message.setExit(metaCanvasJson);
-                        // 13-1-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-                        //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-                        //         "/sub" + "/meta/caferoom/canvas/" + metaIdx = "/sub/meta/caferoom/canvas/1"
-                        template.convertAndSend("/sub/meta/caferoom/canvas/" + message.getMetaIdx(), message);
-                    // 13-2. 방장 닉네임이 존재하는 경우
-                    } else {
-                        // 14. 참여중인 인원이 0명인지 체크한다.
-                        // 14-1. 참여중인 인원이 0명인 경우 - 방 삭제
-                        if ( message.getMetaRecruitingPersonnel() == 0 ) {
-                            // 14-1-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 가지고 metaController에 방 삭제 메소드를 호출하여 방을 퇴장하고 삭제한다.
-                            metaController.deleteRoomMaster(message.getMetaIdx());
-                        // 14-2. 참여중인 인원이 0명이 아닌 경우 - 방 유지
-                        } else {
-                            // 14-2-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임을 값으로 사용하여, 위에서 생성한 방장 재입장 체크용 Map에 추가한다.
-                            boomMetaRoom.put(message.getMetaIdx(), message.getMaster());
-                            // 14-2-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-                            //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-                            //         "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
-                            template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
-                            // 13-2-3. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
-                            message.setExit(metaCanvasJson);
-                            // 14-2-4. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-                            //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-                            //         "/sub" + "/meta/caferoom/canvas/" + metaIdx = "/sub/meta/caferoom/canvas/1"
-                            template.convertAndSend("/sub/meta/caferoom/canvas/" + message.getMetaIdx(), message);
-                            // 14-2-5. 퇴장 메시지를 전송하고 난 후 1분 대기하여 방장이 완전한 퇴장인지 다시 재입장 하는지 체크한다.
-                            Thread.sleep(60000);
-                            // 14-2-6. 14-2-1에서 방장 재입장 체크용 Map에 추가한 키에 해당하는 값을 삭제한다.
-                            boomMetaRoom.remove(message.getMetaIdx());
-                        }
-                    }
-                }
-            } catch (InterruptedException e) { // 스레드를 중지하거나 중단시킬 때 발생할 수 있는 예외가 발생한 경우 catch문이 실행된다.
-                // InterruptedException - 스레드가 sleep() 상태에서 interrupt() 메소드 호출로 깨어나서 예외를 발생시킨 경우 발생한다.
-                //                        스레드가 인터럽트되면 스레드가 일시 중단되고, 인터럽트 상태 플래그가 true로 설정되는데,
-                //                        이 경우, Thread.currentThread().interrupt() 메소드를 호출하여 인터럽트 상태 플래그를 재설정해준다.
-                // Thread.currentThread().interrupt() - 스레드를 강제 종료시키는 것이 아니라, 인터럽트 플래그를 설정함으로써 스레드가 계속 실행되지 않도록 만드는 메소드이다.
-                Thread.currentThread().interrupt(); // 현재 스레드에 인터럽트 플래그를 설정하여, 스레드가 계속 실행되지 않도록 만든다.
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
+                    // 10-2-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임을 값으로 사용하여, 위에서 생성한 방장 재입장 체크용 Map에 추가한다.
+                    boomMetaRoom.put(message.getMetaIdx(), message.getMaster());
+                    // 10-2-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+                    //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                    //         "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
+                    template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
+                    // 10-2-3. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
+                    message.setExit(metaCanvasJson);
+                    // 10-2-4. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+                    //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+                    //         "/sub" + "/meta/caferoom/canvas/" + metaIdx = "/sub/meta/caferoom/canvas/1"
+                    template.convertAndSend("/sub/meta/caferoom/canvas/" + message.getMetaIdx(), message);
+                    try {
+                        // 10-2-5. 퇴장 메시지를 전송하고 난 후 1분 대기하여 방장이 완전한 퇴장인지 다시 재입장 하는지 체크한다.
+                        Thread.sleep(60000);
+                        // 10-2-6. 10-2-1에서 방장 재입장 체크용 Map에 추가한 키에 해당하는 값을 삭제한다.
+                        boomMetaRoom.remove(message.getMetaIdx());
+                    } catch (InterruptedException ex) { // 스레드를 중지하거나 중단시킬 때 발생할 수 있는 예외가 발생한 경우 catch문이 실행된다.
+                        // InterruptedException - 스레드가 sleep() 상태에서 interrupt() 메소드 호출로 깨어나서 예외를 발생시킨 경우 발생한다.
+                        //                        스레드가 인터럽트되면 스레드가 일시 중단되고, 인터럽트 상태 플래그가 true로 설정되는데,
+                        //                        이 경우, Thread.currentThread().interrupt() 메소드를 호출하여 인터럽트 상태 플래그를 재설정해준다.
+                        // Thread.currentThread().interrupt() - 스레드를 강제 종료시키는 것이 아니라, 인터럽트 플래그를 설정함으로써 스레드가 계속 실행되지 않도록 만드는 메소드이다.
+                        Thread.currentThread().interrupt(); // 현재 스레드에 인터럽트 플래그를 설정하여, 스레드가 계속 실행되지 않도록 만든다.
+                    } // try - catch
+                } // message.getMetaRecruitingPersonnel() == 0
+            } // message.getMaster() == null
+        } // reEnterCheck == null
+    } // exitCafeRoom(ChatMessageDTO message)
+
+//    // 카페룸 퇴장 - 폐기
+//    @MessageMapping(value = "/meta/caferoom/exit")
+//    // Future - Future 인터페이스는 Java5부터 java.util.concurrency 패키지에서 비동기의 결과값을 받는 용도로 사용했지만 비동기의 결과값을 조합하거나, error를 핸들링할 수가 없었다.
+//    // CompletionStage - Java 8에서 추가된 인터페이스 중 하나로, 비동기식 계산 결과를 다루기 위한 일종의 통합 API이다.
+//    //                   CompletableFuture 클래스와 함께 사용되어, 비동기 작업을 수행하고 작업 결과를 처리하는 기능을 제공한다.
+//    // CompletableFuture - Java 8에서 추가된 클래스 중 하나로, 비동기 작업을 수행하고 해당 작업의 결과를 처리하는 기능을 제공한다.
+//    // <Void> - runAsync는 반환 값이 없으므로 Void 타입이다.
+//    public CompletableFuture<Void> exitCafeRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 퇴장 정보들을 DTO로 받아온다.
+//        // 2. 1에서 파라미터로 받아온 DTO 값 중 작성자(퇴장자)와 방 제목을 가져와 퇴장 메시지를 작성하여 DTO 값 중 메시지에 setter를 통해 전달한다.
+//        message.setMessage(message.getWriter() + "님이 " + message.getMetaTitle() + "방에서 탈주하였습니다.");
+//        // 3. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다.
+//        message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
+//
+//        // 4. 1에서 파라미터로 받아온 DTO 값 중 방 번호와 퇴장을 의미하는 문자를 조합하여 키로 사용하고, 1에서 파라미터로 받아온 DTO를 값으로 사용하여, 위에서 생성한 새로고침 체크용 Map에 추가한다.
+//        metaMessageMap.put(message.getMetaIdx() + "_exit", message);
+//
+//        // CompletableFuture.runAsync - 비동기적으로 실행되는 작업을 수행하는 CompletableFuture 객체를 반환한다.
+//        // runAsync() - 파라미터로 Runnable 객체를 받으며, 이 객체의 run() 메소드 안에 비동기적으로 실행할 작업을 구현한다.
+//        //              메소드는 즉시 리턴하며, 별도의 쓰레드에서 run() 메소드 안에 구현된 작업이 비동기적으로 실행된다.
+//        // Runnable - 인자를 받지 않고, 리턴값도 없는 함수형 인터페이스이다.
+//        //            run() 메소드를 하나만 가지고 있으며, 이 메소드에서 수행될 작업을 구현한다.
+//        //            run() 메소드는 매개변수를 받지 않으며, 리턴값도 없다.
+//        return CompletableFuture.runAsync(() -> {
+//            try {
+//                // 5. 퇴장 메시지를 전송하기 전에 0.3초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
+//                Thread.sleep(300);
+//                // 6. 4에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
+//                ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
+//                // 7. 5에서 0.3초 대기한 후에도 6에서 가져온 DTO가 여전히 존재하는지 체크한다.
+//                // 7-1. 퇴장 메시지가 존재하는 경우 - 퇴장
+//                if ( exitMessage == null ) {
+//                    // 7-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
+//                // 7-2. 퇴장 메시지가 존재하지 않는 경우 - 재입장(새로고침)
+//                } else {
+//                    // 8. 4에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
+//                    metaMessageMap.remove(message.getMetaIdx() + "_exit");
+//                    // 9. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+//                    Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(message.getMetaIdx());
+//                    // 10. 9에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 작성자(퇴장자) 키에 해당하는 List를 제거한다.
+//                    metaCanvasMap.remove(message.getWriter());
+//                    // 11. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 9에서 가져온 Map을 JSON 문자열로 변환한다.
+//                    String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
+//                    // 13. 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임이 존재하는지 체크한다.
+//                    // 13-1. 방장 닉네임이 존재하지 않는 경우
+//                    if ( message.getMaster() == null ) {
+//                        // 13-1-1. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+//                        //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+//                        //         "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
+//                        template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
+//                        // 13-1-2. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
+//                        message.setExit(metaCanvasJson);
+//                        // 13-1-3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+//                        //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+//                        //         "/sub" + "/meta/caferoom/canvas/" + metaIdx = "/sub/meta/caferoom/canvas/1"
+//                        template.convertAndSend("/sub/meta/caferoom/canvas/" + message.getMetaIdx(), message);
+//                    // 13-2. 방장 닉네임이 존재하는 경우
+//                    } else {
+//                        // 14. 참여중인 인원이 0명인지 체크한다.
+//                        // 14-1. 참여중인 인원이 0명인 경우 - 방 삭제
+//                        if ( message.getMetaRecruitingPersonnel() == 0 ) {
+//                            // 14-1-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 가지고 metaController에 방 삭제 메소드를 호출하여 방을 퇴장하고 삭제한다.
+//                            metaController.deleteRoomMaster(message.getMetaIdx());
+//                        // 14-2. 참여중인 인원이 0명이 아닌 경우 - 방 유지
+//                        } else {
+//                            // 14-2-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 1에서 파라미터로 받아온 DTO 값 중 방장 닉네임을 값으로 사용하여, 위에서 생성한 방장 재입장 체크용 Map에 추가한다.
+//                            boomMetaRoom.put(message.getMetaIdx(), message.getMaster());
+//                            // 14-2-2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+//                            //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+//                            //         "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
+//                            template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
+//                            // 13-2-3. 11에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 퇴장 후 캐릭터 Map에 setter를 통해 전달한다.
+//                            message.setExit(metaCanvasJson);
+//                            // 14-2-4. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+//                            //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+//                            //         "/sub" + "/meta/caferoom/canvas/" + metaIdx = "/sub/meta/caferoom/canvas/1"
+//                            template.convertAndSend("/sub/meta/caferoom/canvas/" + message.getMetaIdx(), message);
+//                            // 14-2-5. 퇴장 메시지를 전송하고 난 후 1분 대기하여 방장이 완전한 퇴장인지 다시 재입장 하는지 체크한다.
+//                            Thread.sleep(60000);
+//                            // 14-2-6. 14-2-1에서 방장 재입장 체크용 Map에 추가한 키에 해당하는 값을 삭제한다.
+//                            boomMetaRoom.remove(message.getMetaIdx());
+//                        }
+//                    }
+//                }
+//            } catch (InterruptedException e) { // 스레드를 중지하거나 중단시킬 때 발생할 수 있는 예외가 발생한 경우 catch문이 실행된다.
+//                // InterruptedException - 스레드가 sleep() 상태에서 interrupt() 메소드 호출로 깨어나서 예외를 발생시킨 경우 발생한다.
+//                //                        스레드가 인터럽트되면 스레드가 일시 중단되고, 인터럽트 상태 플래그가 true로 설정되는데,
+//                //                        이 경우, Thread.currentThread().interrupt() 메소드를 호출하여 인터럽트 상태 플래그를 재설정해준다.
+//                // Thread.currentThread().interrupt() - 스레드를 강제 종료시키는 것이 아니라, 인터럽트 플래그를 설정함으로써 스레드가 계속 실행되지 않도록 만드는 메소드이다.
+//                Thread.currentThread().interrupt(); // 현재 스레드에 인터럽트 플래그를 설정하여, 스레드가 계속 실행되지 않도록 만든다.
+//            } catch (JsonProcessingException e) {
+//                throw new RuntimeException(e);
+//            }
+//        });
+//    }
     ////////////////////////////////////////////////// 카페룸 캔버스 구역 //////////////////////////////////////////////////
     // 카페룸 캔버스 첫 입장
     @MessageMapping(value = "/meta/caferoom/canvas/enter")
@@ -1150,80 +1320,98 @@ public class StompChatController {
         }
     }
 /////////////////////////////////////////////////////// 자습실 구역 ///////////////////////////////////////////////////////
-    // 자습실 첫 입장
-    @MessageMapping(value = "/meta/oneroom/enter")
-    public void enterOneRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 첫 입장 정보들을 DTO로 받아온다.
+//    // 자습실 첫 입장 - 폐기
+//    @MessageMapping(value = "/meta/oneroom/enter")
+//    public void enterOneRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 첫 입장 정보들을 DTO로 받아온다.
+//
+//    }
 
-    }
-
-    // 자습실 첫 입장 이후 재입장 - 첫 입장 이후 모든 재입장은 이곳으로 들어온다.
-    @MessageMapping(value = "/meta/oneroom/reenter")
-    public void reEnterOneRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 재입장(새로고침) 정보들을 DTO로 받아온다.
-        // 2. 이전 퇴장 메소드에서 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
-        ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
-        // 3. 2에서 가져온 DTO가 여전히 존재하는지 체크한다.
-        // 3-1. 퇴장 메시지가 존재하는 경우 - 재입장(새로고침)
-        if ( exitMessage != null ) {
-            // 3-1-1. 퇴장 메소드에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
-            metaMessageMap.remove(message.getMetaIdx() + "_exit");
-        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.3초가 넘는 장시간의 새로고침 에러로 인한 방 퇴장 및 삭제 처리 후 재입장된 것으로,
-        //                                 이는 아직 퇴장한 것이 아닌데 에러로 인해 방 퇴장 및 삭제 처리가 되었으므로 다시 새로운 방을 생성해 입장 처리를 해준다.
-        } else {
-//            // 3-2-1. 방 생성에 필요한 방 생성 DTO를 생성한다.
-//            Meta.rqCreateMeta rqCreateMeta = new Meta.rqCreateMeta();
-//            // 3-2-2. 3에서 저장하고 받아온 Entity 값 중 방 번호를 setter를 통하여 방 생성 DTO 값 중 방 타입에 전달한다.
-//            rqCreateMeta.setMetaType("oneRoom");
-//            // 3-2-3. 1에서 파라미터로 받아온 DTO 값 중 작성자를 setter를 통하여 방 생성 DTO 값 중 방장에 전달한다.
-//            rqCreateMeta.setMetaMaster(message.getWriter());
-//            // 3-2-4. 위에서 값들이 전달된 방 생성 DTO를 가지고 metaController에 방 생성 메소드를 호출하여 새로운 방을 생성하고 입장한다.
-//            metaController.reCreateMetaRoom(rqCreateMeta);
-        }
-    }
+//    // 자습실 첫 입장 이후 재입장 - 첫 입장 이후 모든 재입장은 이곳으로 들어온다. - 폐기
+//    @MessageMapping(value = "/meta/oneroom/reenter")
+//    public void reEnterOneRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 재입장(새로고침) 정보들을 DTO로 받아온다.
+//        // 2. 이전 퇴장 메소드에서 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
+//        ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
+//        // 3. 2에서 가져온 DTO가 여전히 존재하는지 체크한다.
+//        // 3-1. 퇴장 메시지가 존재하는 경우 - 재입장(새로고침)
+//        if ( exitMessage != null ) {
+//            // 3-1-1. 퇴장 메소드에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
+//            metaMessageMap.remove(message.getMetaIdx() + "_exit");
+//        // 3-2. 퇴장 메시지가 존재하지 않는 경우 - 0.3초가 넘는 장시간의 새로고침 에러로 인한 방 퇴장 및 삭제 처리 후 재입장된 것으로,
+//        //                                 이는 아직 퇴장한 것이 아닌데 에러로 인해 방 퇴장 및 삭제 처리가 되었으므로 다시 새로운 방을 생성해 입장 처리를 해준다.
+//        } else {
+////            // 3-2-1. 방 생성에 필요한 방 생성 DTO를 생성한다.
+////            Meta.rqCreateMeta rqCreateMeta = new Meta.rqCreateMeta();
+////            // 3-2-2. 3에서 저장하고 받아온 Entity 값 중 방 번호를 setter를 통하여 방 생성 DTO 값 중 방 타입에 전달한다.
+////            rqCreateMeta.setMetaType("oneRoom");
+////            // 3-2-3. 1에서 파라미터로 받아온 DTO 값 중 작성자를 setter를 통하여 방 생성 DTO 값 중 방장에 전달한다.
+////            rqCreateMeta.setMetaMaster(message.getWriter());
+////            // 3-2-4. 위에서 값들이 전달된 방 생성 DTO를 가지고 metaController에 방 생성 메소드를 호출하여 새로운 방을 생성하고 입장한다.
+////            metaController.reCreateMetaRoom(rqCreateMeta);
+//        }
+//    }
 
     // 자습실 퇴장
     @MessageMapping(value = "/meta/oneroom/exit")
-    // Future - Future 인터페이스는 Java5부터 java.util.concurrency 패키지에서 비동기의 결과값을 받는 용도로 사용했지만 비동기의 결과값을 조합하거나, error를 핸들링할 수가 없었다.
-    // CompletionStage - Java 8에서 추가된 인터페이스 중 하나로, 비동기식 계산 결과를 다루기 위한 일종의 통합 API이다.
-    //                   CompletableFuture 클래스와 함께 사용되어, 비동기 작업을 수행하고 작업 결과를 처리하는 기능을 제공한다.
-    // CompletableFuture - Java 8에서 추가된 클래스 중 하나로, 비동기 작업을 수행하고 해당 작업의 결과를 처리하는 기능을 제공한다.
-    // <Void> - runAsync는 반환 값이 없으므로 Void 타입이다.
-    public CompletableFuture<Void> exitOneRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 퇴장 정보들을 DTO로 받아온다.
-        // 2. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다.
-        message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
-
-        // 3. 1에서 파라미터로 받아온 DTO 값 중 방 번호와 퇴장을 의미하는 문자를 조합하여 키로 사용하고, 1에서 파라미터로 받아온 DTO를 값으로 사용하여, 위에서 생성한 새로고침 체크용 Map에 추가한다.
-        metaMessageMap.put(message.getMetaIdx() + "_exit", message);
-
-        // CompletableFuture.runAsync - 비동기적으로 실행되는 작업을 수행하는 CompletableFuture 객체를 반환한다.
-        // runAsync() - 파라미터로 Runnable 객체를 받으며, 이 객체의 run() 메소드 안에 비동기적으로 실행할 작업을 구현한다.
-        //              메소드는 즉시 리턴하며, 별도의 쓰레드에서 run() 메소드 안에 구현된 작업이 비동기적으로 실행된다.
-        // Runnable - 인자를 받지 않고, 리턴값도 없는 함수형 인터페이스이다.
-        //            run() 메소드를 하나만 가지고 있으며, 이 메소드에서 수행될 작업을 구현한다.
-        //            run() 메소드는 매개변수를 받지 않으며, 리턴값도 없다.
-        return CompletableFuture.runAsync(() -> {
-            try {
-                // 4. 퇴장 메시지를 전송하기 전에 0.3초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
-                Thread.sleep(300);
-                // 5. 3에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
-                ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
-                // 6. 4에서 0.3초 대기한 후에도 5에서 가져온 DTO가 여전히 존재하는지 체크한다.
-                // 6-1. 퇴장 메시지가 존재하는 경우 - 퇴장
-                if ( exitMessage == null ) {
-                    // 6-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
-                // 6-2. 퇴장 메시지가 존재하지 않는 경우 - 재입장(새로고침)
-                } else {
-                    // 6-2-1. 4에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
-                    metaMessageMap.remove(message.getMetaIdx() + "_exit");
-                    // 6-2-2. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 가지고 metaController에 방 삭제 메소드를 호출하여 방을 퇴장하고 삭제한다.
-                    metaController.deleteRoomMaster(message.getMetaIdx());
-                }
-            } catch (InterruptedException e) { // 스레드를 중지하거나 중단시킬 때 발생할 수 있는 예외가 발생한 경우 catch문이 실행된다.
-                // InterruptedException - 스레드가 sleep() 상태에서 interrupt() 메소드 호출로 깨어나서 예외를 발생시킨 경우 발생한다.
-                //                        스레드가 인터럽트되면 스레드가 일시 중단되고, 인터럽트 상태 플래그가 true로 설정되는데,
-                //                        이 경우, Thread.currentThread().interrupt() 메소드를 호출하여 인터럽트 상태 플래그를 재설정해준다.
-                // Thread.currentThread().interrupt() - 스레드를 강제 종료시키는 것이 아니라, 인터럽트 플래그를 설정함으로써 스레드가 계속 실행되지 않도록 만드는 메소드이다.
-                Thread.currentThread().interrupt(); // 현재 스레드에 인터럽트 플래그를 설정하여, 스레드가 계속 실행되지 않도록 만든다.
-            }
-        });
+    public void exitOneRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 퇴장 정보들을 DTO로 받아온다.
+        // 2. metaController에서 재입장(새로고침) 체크용 Map에 추가한 작성자(퇴장자) 키에 해당하는 재입장(새로고침) 체크 값을 가져온다.
+        Long reEnterCheck = metaController.reEnterCheck.get(message.getWriter());
+        // 3. 2에서 가져온 재입장(새로고침) 체크 값이 존재하는지 체크한다.
+        // 3-1. 재입장(새로고침) 체크 값이 존재하는 경우 - 재입장(새로고침)
+        if ( reEnterCheck != null ) {
+            // 3-1-1. metaController에서 재입장(새로고침) 체크용 Map에 추가한 작성자(퇴장자) 키에 해당하는 재입장(새로고침) 체크 값을 제거한다.
+            metaController.reEnterCheck.remove(message.getWriter());
+            // 3-1-2. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
+        // 3-2. 재입장(새로고침) 체크 값이 존재하지 않는 경우 - 퇴장
+        } else {
+            // 3-2-1. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 가지고 metaController에 방 삭제 메소드를 호출하여 방을 퇴장하고 삭제한다.
+            metaController.deleteRoomMaster(message.getMetaIdx());
+        }
     }
+
+//    // 자습실 퇴장 - 폐기
+//    @MessageMapping(value = "/meta/oneroom/exit")
+//    // Future - Future 인터페이스는 Java5부터 java.util.concurrency 패키지에서 비동기의 결과값을 받는 용도로 사용했지만 비동기의 결과값을 조합하거나, error를 핸들링할 수가 없었다.
+//    // CompletionStage - Java 8에서 추가된 인터페이스 중 하나로, 비동기식 계산 결과를 다루기 위한 일종의 통합 API이다.
+//    //                   CompletableFuture 클래스와 함께 사용되어, 비동기 작업을 수행하고 작업 결과를 처리하는 기능을 제공한다.
+//    // CompletableFuture - Java 8에서 추가된 클래스 중 하나로, 비동기 작업을 수행하고 해당 작업의 결과를 처리하는 기능을 제공한다.
+//    // <Void> - runAsync는 반환 값이 없으므로 Void 타입이다.
+//    public CompletableFuture<Void> exitOneRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 퇴장 정보들을 DTO로 받아온다.
+//        // 2. 1에서 파라미터로 받아온 DTO 값 중 참여중인 인원을 가져와 1 감소시킨 뒤 다시 참여중인 인원에 setter를 통해 전달한다.
+//        message.setMetaRecruitingPersonnel(message.getMetaRecruitingPersonnel() - 1);
+//
+//        // 3. 1에서 파라미터로 받아온 DTO 값 중 방 번호와 퇴장을 의미하는 문자를 조합하여 키로 사용하고, 1에서 파라미터로 받아온 DTO를 값으로 사용하여, 위에서 생성한 새로고침 체크용 Map에 추가한다.
+//        metaMessageMap.put(message.getMetaIdx() + "_exit", message);
+//
+//        // CompletableFuture.runAsync - 비동기적으로 실행되는 작업을 수행하는 CompletableFuture 객체를 반환한다.
+//        // runAsync() - 파라미터로 Runnable 객체를 받으며, 이 객체의 run() 메소드 안에 비동기적으로 실행할 작업을 구현한다.
+//        //              메소드는 즉시 리턴하며, 별도의 쓰레드에서 run() 메소드 안에 구현된 작업이 비동기적으로 실행된다.
+//        // Runnable - 인자를 받지 않고, 리턴값도 없는 함수형 인터페이스이다.
+//        //            run() 메소드를 하나만 가지고 있으며, 이 메소드에서 수행될 작업을 구현한다.
+//        //            run() 메소드는 매개변수를 받지 않으며, 리턴값도 없다.
+//        return CompletableFuture.runAsync(() -> {
+//            try {
+//                // 4. 퇴장 메시지를 전송하기 전에 0.3초 대기하여 퇴장인지 재입장(새로고침)인지 체크한다.
+//                Thread.sleep(300);
+//                // 5. 3에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 다시 가져온다.
+//                ChatMessageDTO exitMessage = metaMessageMap.get(message.getMetaIdx() + "_exit");
+//                // 6. 4에서 0.3초 대기한 후에도 5에서 가져온 DTO가 여전히 존재하는지 체크한다.
+//                // 6-1. 퇴장 메시지가 존재하는 경우 - 퇴장
+//                if ( exitMessage == null ) {
+//                    // 6-1-1. 퇴장한 것이 아니기에 더 이상 작업할 것이 없다.
+//                // 6-2. 퇴장 메시지가 존재하지 않는 경우 - 재입장(새로고침)
+//                } else {
+//                    // 6-2-1. 4에서 새로고침 체크용 Map에 추가한 키에 해당하는 DTO를 삭제한다.
+//                    metaMessageMap.remove(message.getMetaIdx() + "_exit");
+//                    // 6-2-2. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 가지고 metaController에 방 삭제 메소드를 호출하여 방을 퇴장하고 삭제한다.
+//                    metaController.deleteRoomMaster(message.getMetaIdx());
+//                }
+//            } catch (InterruptedException e) { // 스레드를 중지하거나 중단시킬 때 발생할 수 있는 예외가 발생한 경우 catch문이 실행된다.
+//                // InterruptedException - 스레드가 sleep() 상태에서 interrupt() 메소드 호출로 깨어나서 예외를 발생시킨 경우 발생한다.
+//                //                        스레드가 인터럽트되면 스레드가 일시 중단되고, 인터럽트 상태 플래그가 true로 설정되는데,
+//                //                        이 경우, Thread.currentThread().interrupt() 메소드를 호출하여 인터럽트 상태 플래그를 재설정해준다.
+//                // Thread.currentThread().interrupt() - 스레드를 강제 종료시키는 것이 아니라, 인터럽트 플래그를 설정함으로써 스레드가 계속 실행되지 않도록 만드는 메소드이다.
+//                Thread.currentThread().interrupt(); // 현재 스레드에 인터럽트 플래그를 설정하여, 스레드가 계속 실행되지 않도록 만든다.
+//            }
+//        });
+//    }
 }
