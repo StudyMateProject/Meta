@@ -676,6 +676,7 @@
                             var detailProfileArea = document.getElementById("detailProfileArea"); // 상세 프로필 창
                             // 상세 프로필 구역의 style에 "display"를 "block"으로 설정한다.
                             detailProfileArea.style.display = "block"; // 상세 프로필 창 열기
+                            chatArea.style.height = "72.58%"; // 채팅창 높이 감소
 
                             // id를 통해 상세 프로필 구역에 올라가 있는 창 닫기 버튼을 가져와 btnDetailProfileClose 변수에 저장한다.
                             var btnDetailProfileClose = document.getElementById("btnDetailProfileClose"); // 상세 프로필 창 닫기 버튼
@@ -857,6 +858,7 @@
                             btnDetailProfileClose.addEventListener("click", () => {
                                 // 상세 프로필 구역의 style에 "display"를 "none"으로 설정한다.
                                 detailProfileArea.style.display = "none"; // 상세 프로필 창 닫기
+                                chatArea.style.height = "98.7%"; // 채팅창 높이 복구
                             }); // addEventListener
                         }); // addEventListener
                     }); // forEach
