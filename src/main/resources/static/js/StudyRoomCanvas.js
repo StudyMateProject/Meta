@@ -39,17 +39,17 @@ canvasStomp.connect({}, function () {
             }
         }
 
-//        // 7-2. 메시지 타입이 "reErr"일 경우 - 폐기
-//        // 재입장(새로고침) 에러
-//        if ( canvasType == "reErr" ) {
-//            // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
-//            if ( canvasWriter == canvasNickname ) {
-//                // 재입장 에러로 입장 메시지 재전송
-//                if ( writer === metaNickname ) {
-//                    canvasStomp.send('/pub/meta/studyroom/canvas/enter', {}, JSON.stringify({type: "enter", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));
-//                }
-//            }
-//        }
+        // 7-2. 메시지 타입이 "reErr"일 경우
+        // 재입장(새로고침) 에러
+        if ( canvasType == "reErr" ) {
+            // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
+            if ( canvasWriter == canvasNickname ) {
+                // 재입장 에러로 입장 메시지 재전송
+                if ( writer === metaNickname ) {
+                    canvasStomp.send('/pub/meta/studyroom/canvas/enter', {}, JSON.stringify({type: "enter", metaIdx: canvasMetaIdx, writer: canvasNickname, character: canvasProfileImage, x : cw / 2, y : (ch / 6) * 5}));
+                }
+            }
+        }
 
         // 7-3. 메시지 타입이 "left"일 경우 / 메시지 타입이 "top"일 경우 / 메시지 타입이 "right"일 경우 / 메시지 타입이 "bottom"일 경우
         // 왼쪽 이동 / 위쪽 이동 / 오른쪽 이동 / 아래쪽 이동

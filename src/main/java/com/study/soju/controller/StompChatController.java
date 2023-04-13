@@ -410,46 +410,46 @@ public class StompChatController {
     // 스터디룸 캔버스 첫 입장
     @MessageMapping(value = "/meta/studyroom/canvas/enter")
     public void canvasEnterStudyRoom(MetaCanvasDTO canvas) throws JsonProcessingException { // 1. 클라이언트로부터 전송된 캐릭터 정보들을 DTO로 받아온다.
-        // 2. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+        // 2. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 캐릭터 Map을 가져온다.
         Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(canvas.getMetaIdx());
-        // 3. 2에서 가져온 Map이 존재하는지 체크한다.
+        // 3. 2에서 가져온 캐릭터 Map이 존재하는지 체크한다.
         // 3-1. Map이 존재하지 않는 경우
         if ( metaCanvasMap == null ) {
-            // 3-1-1. 2에서 가져오는 Map을 생성한다.
+            // 3-1-1. 2에서 가져오는 캐릭터 Map을 생성한다.
             metaCanvasMap = new HashMap<>();
-            // 3-1-2. 3-1-1에서 생성한 Map에 값으로 사용할 List를 생성한다.
+            // 3-1-2. 3-1-1에서 생성한 캐릭터 Map에 값으로 사용할 캐릭터 List를 생성한다.
             List<Object> metaCoordinateList = new ArrayList();
-            // 3-1-3. 3-1-2에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 캐릭터 이름을 전달한다.
+            // 3-1-3. 3-1-2에서 생성한 캐릭터 List에 1에서 파라미터로 받아온 DTO 값 중 캐릭터 이름을 전달한다.
             metaCoordinateList.add(canvas.getCharacter());
-            // 3-1-4. 3-1-2에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 x축 좌표를 전달한다.
+            // 3-1-4. 3-1-2에서 생성한 캐릭터 List에 1에서 파라미터로 받아온 DTO 값 중 x축 좌표를 전달한다.
             metaCoordinateList.add(canvas.getX());
-            // 3-1-5. 3-1-2에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 y축 좌표를 전달한다.
+            // 3-1-5. 3-1-2에서 생성한 캐릭터 List에 1에서 파라미터로 받아온 DTO 값 중 y축 좌표를 전달한다.
             metaCoordinateList.add(canvas.getY());
-            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-1-2에서 생성한 List를 값으로 사용하여, 3-1-1에서 생성한 Map에 추가한다.
+            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-1-2에서 생성한 캐릭터 List를 값으로 사용하여, 3-1-1에서 생성한 캐릭터 Map에 추가한다.
             metaCanvasMap.put(canvas.getWriter(), metaCoordinateList);
-            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 3-1-6에서 추가한 Map을 값으로 사용하여, 위에서 생성한 방 구분용 Map에 추가한다.
+            // 3-1-7. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 3-1-6에서 캐릭터 List가 추가된 캐릭터 Map을 값으로 사용하여, 위에서 생성한 방 구분용 Map에 추가한다.
             metaRoomMap.put(canvas.getMetaIdx(), metaCanvasMap);
-            // 3-1-7. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 3-1-1에서 생성한 Map을 JSON 문자열로 변환한다.
+            // 3-1-8. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 3-1-1에서 생성한 캐릭터 Map을 JSON 문자열로 변환한다.
             String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
-            // 3-1-8. 3-1-7에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 캐릭터 정보에 setter를 통해 전달한다.
+            // 3-1-9. 3-1-8에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 캐릭터 정보에 setter를 통해 전달한다.
             canvas.setCharacters(metaCanvasJson);
-            // 3-1-9. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-            //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-            //        "/sub" + "/meta/studyroom/canvas/" + metaIdx = "/sub/meta/studyroom/canvas/1"
+            // 3-1-10. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+            //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+            //         "/sub" + "/meta/studyroom/canvas/" + metaIdx = "/sub/meta/studyroom/canvas/1"
             template.convertAndSend("/sub/meta/studyroom/canvas/" + canvas.getMetaIdx(), canvas);
         // 3-2. Map이 존재하는 경우
         } else {
-            // 3-2-1. 2에서 가져온 Map에 값으로 사용할 List를 생성한다.
+            // 3-2-1. 2에서 가져온 캐릭터 Map에 값으로 사용할 List를 생성한다.
             List<Object> metaCoordinateList = new ArrayList();
-            // 3-2-2. 3-2-1에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 캐릭터 이름을 전달한다.
+            // 3-2-2. 3-2-1에서 생성한 캐릭터 List에 1에서 파라미터로 받아온 DTO 값 중 캐릭터 이름을 전달한다.
             metaCoordinateList.add(canvas.getCharacter());
-            // 3-2-3. 3-2-1에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 x축 좌표를 전달한다.
+            // 3-2-3. 3-2-1에서 생성한 캐릭터 List에 1에서 파라미터로 받아온 DTO 값 중 x축 좌표를 전달한다.
             metaCoordinateList.add(canvas.getX());
-            // 3-2-4. 3-2-1에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 y축 좌표를 전달한다.
+            // 3-2-4. 3-2-1에서 생성한 캐릭터 List에 1에서 파라미터로 받아온 DTO 값 중 y축 좌표를 전달한다.
             metaCoordinateList.add(canvas.getY());
-            // 3-2-5. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-2-1에서 생성한 List를 값으로 사용하여, 2에서 가져온 Map에 추가한다.
+            // 3-2-5. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-2-1에서 생성한 캐릭터 List를 값으로 사용하여, 2에서 가져온 Map에 추가한다.
             metaCanvasMap.put(canvas.getWriter(), metaCoordinateList);
-            // 3-2-6. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 Map을 JSON 문자열로 변환한다.
+            // 3-2-6. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 캐릭터 Map을 JSON 문자열로 변환한다.
             String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
             // 3-2-7. 3-2-6에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 캐릭터 정보에 setter를 통해 전달한다.
             canvas.setCharacters(metaCanvasJson);
@@ -463,9 +463,9 @@ public class StompChatController {
     // 스터디룸 캔버스 첫 입장 이후 재입장 - 첫 입장 이후 모든 재입장은 이곳으로 들어온다.
     @MessageMapping(value = "/meta/studyroom/canvas/reenter")
     public void canvasReEnterStudyRoom(MetaCanvasDTO canvas) throws JsonProcessingException { // 1. 클라이언트로부터 전송된 캐릭터 정보들을 DTO로 받아온다.
-        // 2. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+        // 2. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 캐릭터 Map을 가져온다.
         Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(canvas.getMetaIdx());
-        // 3. 2에서 가져온 Map이 존재하는지 체크한다.
+        // 3. 2에서 가져온 캐릭터 Map이 존재하는지 체크한다.
         // 3-1. Map이 존재하지 않는 경우 - 재입장 에러
         if ( metaCanvasMap == null ) {
             // 3-1-1. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 setter를 통해 "reErr"로 변경한다. - 재입장 에러 값
@@ -476,9 +476,9 @@ public class StompChatController {
             template.convertAndSend("/sub/meta/studyroom/canvas/" + canvas.getMetaIdx(), canvas);
         // 3-2. Map이 존재하는 경우 - 재입장(새로고침)
         } else {
-            // 4. 2에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 List를 가져온다.
+            // 4. 2에서 가져온 캐릭터 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 캐릭터 List를 가져온다.
             List<Object> metaCoordinateList = metaCanvasMap.get(canvas.getWriter());
-            // 5. 4에서 가져온 List가 존재하는지 체크한다.
+            // 5. 4에서 가져온 캐릭터 List가 존재하는지 체크한다.
             // 5-1. List가 존재하지 않는 경우 - 재입장 에러
             if (metaCoordinateList == null) {
                 // 5-1-1. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 setter를 통해 "reErr"로 변경한다. - 재입장 에러 값
@@ -489,11 +489,11 @@ public class StompChatController {
                 template.convertAndSend("/sub/meta/studyroom/canvas/" + canvas.getMetaIdx(), canvas);
             // 5-2. List가 존재하는 경우 - 재입장(새로고침)
             } else {
-                // 5-2-1. 4에서 가져온 List 값 중 x좌표 값을, 1에서 파라미터로 받아온 DTO 값 중 x좌표 값으로 갱신한다.
+                // 5-2-1. 4에서 가져온 캐릭터 List 값 중 x좌표 값을, 1에서 파라미터로 받아온 DTO 값 중 x좌표 값으로 갱신한다.
                 metaCoordinateList.set(1, canvas.getX());
-                // 5-2-2. 4에서 가져온 List 값 중 y좌표 값을, 1에서 파라미터로 받아온 DTO 값 중 y좌표 값으로 갱신한다.
+                // 5-2-2. 4에서 가져온 캐릭터 List 값 중 y좌표 값을, 1에서 파라미터로 받아온 DTO 값 중 y좌표 값으로 갱신한다.
                 metaCoordinateList.set(2, canvas.getY());
-                // 5-2-3. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 Map을 JSON 문자열로 변환한다.
+                // 5-2-3. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 캐릭터 Map을 JSON 문자열로 변환한다.
                 String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
                 // 5-2-4. 5-2-3에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 캐릭터 정보에 setter를 통해 전달한다.
                 canvas.setCharacters(metaCanvasJson);
@@ -508,9 +508,9 @@ public class StompChatController {
     // 스터디룸 캔버스 캐릭터 이동 좌표 변경 - RabbitMQ 사용
     @MessageMapping(value = "/meta/studyroom/canvas/move")
     public void canvasMoveStudyRoom(MetaCanvasDTO canvas) throws JsonProcessingException { // 1. 클라이언트로부터 전송된 캐릭터 정보들을 DTO로 받아온다.
-        // 2. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+        // 2. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 캐릭터 Map을 가져온다.
         Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(canvas.getMetaIdx());
-        // 3. 2에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 List를 가져온다.
+        // 3. 2에서 가져온 캐릭터 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 캐릭터 List를 가져온다.
         List<Object> metaCoordinateList = metaCanvasMap.get(canvas.getWriter());
         // 4. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 이동 분기를 결정한다.
         switch( canvas.getType() ) {
@@ -529,7 +529,7 @@ public class StompChatController {
                     break;
                 // 왼쪽 벽이 나오기 전까지 움직인다.
                 } else {
-                    // 4-1-1. 3에서 가져온 List 값 중 x좌표 값을, 5 뺀 값으로 갱신한다.
+                    // 4-1-1. 3에서 가져온 캐릭터 List 값 중 x좌표 값을, 5 뺀 값으로 갱신한다.
                     metaCoordinateList.set(1, (int) metaCoordinateList.get(1) - 5);
                     // 위쪽 벽이 나오면 멈춘다.
                     if ( (int) metaCoordinateList.get(2) < canvas.getCanvasTop() ) {
@@ -556,7 +556,7 @@ public class StompChatController {
                     break;
                 // 위쪽 벽이 나오기 전까지 움직인다.
                 } else {
-                    // 4-2-1. 3에서 가져온 List 값 중 y좌표 값을, 5 뺀 값으로 갱신한다.
+                    // 4-2-1. 3에서 가져온 캐릭터 List 값 중 y좌표 값을, 5 뺀 값으로 갱신한다.
                     metaCoordinateList.set(2, (int) metaCoordinateList.get(2) - 5);
                     // 왼쪽 벽이 나오면 멈춘다.
                     if ( (int) metaCoordinateList.get(1) < canvas.getCanvasLeft() ) {
@@ -583,7 +583,7 @@ public class StompChatController {
                     break;
                 // 오른쪽 벽이 나오기 전까지 움직인다.
                 } else {
-                    // 4-3-1. 3에서 가져온 List 값 중 x좌표 값을, 5 더한 값으로 갱신한다.
+                    // 4-3-1. 3에서 가져온 캐릭터 List 값 중 x좌표 값을, 5 더한 값으로 갱신한다.
                     metaCoordinateList.set(1, (int) metaCoordinateList.get(1) + 5);
                     // 위쪽 벽이 나오면 멈춘다.
                     if ( (int) metaCoordinateList.get(2) < canvas.getCanvasTop() ) {
@@ -610,7 +610,7 @@ public class StompChatController {
                     break;
                 // 아래쪽 벽이 나오기 전까지 움직인다.
                 } else {
-                    // 4-4-1. 3에서 가져온 List 값 중 y좌표 값을, 5 더한 값으로 갱신한다.
+                    // 4-4-1. 3에서 가져온 캐릭터 List 값 중 y좌표 값을, 5 더한 값으로 갱신한다.
                     metaCoordinateList.set(2, (int) metaCoordinateList.get(2) + 5);
                     // 왼쪽 벽이 나오면 멈춘다.
                     if ( (int) metaCoordinateList.get(1) < canvas.getCanvasLeft() ) {
@@ -623,7 +623,7 @@ public class StompChatController {
                     break;
                 }
         }
-        // 5. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 Map을 JSON 문자열로 변환한다.
+        // 5. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 캐릭터 Map을 JSON 문자열로 변환한다.
         String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
         // 6. 5에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 캐릭터 정보에 setter를 통해 전달한다.
         canvas.setCharacters(metaCanvasJson);
@@ -640,7 +640,7 @@ public class StompChatController {
 //                                        .setContentType("application/json")
 //                                        .build();
 
-        // 9. 위에서 @Autowired로 생성한 RabbitTemplate를 사용하여 8에서 생성한 메시지를 전송한다.
+        // 9. 위에서 @Autowired로 생성한 RabbitTemplate을 사용하여 8에서 생성한 메시지를 전송한다.
         //    첫 번째 인자는 메시지를 발송할 Exchange 이름으로, 메시지를 받아서 어느 큐로 보낼지 결정하는 역할을 한다.
         //    두 번째 인자는 메시지를 전송할 Routing Key 이름으로, Exchange에서 메시지를 받아서 어느 큐로 보낼지 결정하는 규칙을 나타내는 값이다.
         //    세 번째 인자는 전송할 메시지 객체이다.
@@ -1032,46 +1032,46 @@ public class StompChatController {
     // 카페룸 캔버스 첫 입장
     @MessageMapping(value = "/meta/caferoom/canvas/enter")
     public void canvasEnterCafeRoom(MetaCanvasDTO canvas) throws JsonProcessingException { // 1. 클라이언트로부터 전송된 캐릭터 정보들을 DTO로 받아온다.
-        // 2. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+        // 2. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 캐릭터 Map을 가져온다.
         Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(canvas.getMetaIdx());
-        // 3. 2에서 가져온 Map이 존재하는지 체크한다.
+        // 3. 2에서 가져온 캐릭터 Map이 존재하는지 체크한다.
         // 3-1. Map이 존재하지 않는 경우
         if ( metaCanvasMap == null ) {
-            // 3-1-1. 2에서 가져오는 Map을 생성한다.
+            // 3-1-1. 2에서 가져오는 캐릭터 Map을 생성한다.
             metaCanvasMap = new HashMap<>();
-            // 3-1-2. 3-1-1에서 생성한 Map에 값으로 사용할 List를 생성한다.
+            // 3-1-2. 3-1-1에서 생성한 캐릭터 Map에 값으로 사용할 캐릭터 List를 생성한다.
             List<Object> metaCoordinateList = new ArrayList();
-            // 3-1-3. 3-1-2에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 캐릭터 이름을 전달한다.
+            // 3-1-3. 3-1-2에서 생성한 캐릭터 List에 1에서 파라미터로 받아온 DTO 값 중 캐릭터 이름을 전달한다.
             metaCoordinateList.add(canvas.getCharacter());
-            // 3-1-4. 3-1-2에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 x축 좌표를 전달한다.
+            // 3-1-4. 3-1-2에서 생성한 캐릭터 List에 1에서 파라미터로 받아온 DTO 값 중 x축 좌표를 전달한다.
             metaCoordinateList.add(canvas.getX());
-            // 3-1-5. 3-1-2에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 y축 좌표를 전달한다.
+            // 3-1-5. 3-1-2에서 생성한 캐릭터 List에 1에서 파라미터로 받아온 DTO 값 중 y축 좌표를 전달한다.
             metaCoordinateList.add(canvas.getY());
-            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-1-2에서 생성한 List를 값으로 사용하여, 3-1-1에서 생성한 Map에 추가한다.
+            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-1-2에서 생성한 캐릭터 List를 값으로 사용하여, 3-1-1에서 생성한 캐릭터 Map에 추가한다.
             metaCanvasMap.put(canvas.getWriter(), metaCoordinateList);
-            // 3-1-6. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 3-1-6에서 추가한 Map을 값으로 사용하여, 위에서 생성한 방 구분용 Map에 추가한다.
+            // 3-1-7. 1에서 파라미터로 받아온 DTO 값 중 방 번호를 키로 사용하고, 3-1-6에서 캐릭터 List가 추가된 캐릭터 Map을 값으로 사용하여, 위에서 생성한 방 구분용 Map에 추가한다.
             metaRoomMap.put(canvas.getMetaIdx(), metaCanvasMap);
-            // 3-1-7. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 3-1-1에서 생성한 Map을 JSON 문자열로 변환한다.
+            // 3-1-8. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 3-1-1에서 생성한 캐릭터 Map을 JSON 문자열로 변환한다.
             String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
-            // 3-1-8. 3-1-7에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 캐릭터 정보에 setter를 통해 전달한다.
+            // 3-1-9. 3-1-8에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 캐릭터 정보에 setter를 통해 전달한다.
             canvas.setCharacters(metaCanvasJson);
-            // 3-1-9. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
-            //        path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
-            //        "/sub" + "/meta/caferoom/canvas/" + metaIdx = "/sub/meta/caferoom/canvas/1"
+            // 3-1-10. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+            //         path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
+            //         "/sub" + "/meta/caferoom/canvas/" + metaIdx = "/sub/meta/caferoom/canvas/1"
             template.convertAndSend("/sub/meta/caferoom/canvas/" + canvas.getMetaIdx(), canvas);
         // 3-2. Map이 존재하는 경우
         } else {
-            // 3-2-1. 2에서 가져온 Map에 값으로 사용할 List를 생성한다.
+            // 3-2-1. 2에서 가져온 캐릭터 Map에 값으로 사용할 캐릭터 List를 생성한다.
             List<Object> metaCoordinateList = new ArrayList();
-            // 3-2-2. 3-2-1에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 캐릭터 이름을 전달한다.
+            // 3-2-2. 3-2-1에서 생성한 캐릭터 List에 1에서 파라미터로 받아온 DTO 값 중 캐릭터 이름을 전달한다.
             metaCoordinateList.add(canvas.getCharacter());
-            // 3-2-3. 3-2-1에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 x축 좌표를 전달한다.
+            // 3-2-3. 3-2-1에서 생성한 캐릭터 List에 1에서 파라미터로 받아온 DTO 값 중 x축 좌표를 전달한다.
             metaCoordinateList.add(canvas.getX());
-            // 3-2-4. 3-2-1에서 생성한 List에 1에서 파라미터로 받아온 DTO 값 중 y축 좌표를 전달한다.
+            // 3-2-4. 3-2-1에서 생성한 캐릭터 List에 1에서 파라미터로 받아온 DTO 값 중 y축 좌표를 전달한다.
             metaCoordinateList.add(canvas.getY());
-            // 3-2-5. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-2-1에서 생성한 List를 값으로 사용하여, 2에서 가져온 Map에 추가한다.
+            // 3-2-5. 1에서 파라미터로 받아온 DTO 값 중 닉네임을 키로 사용하고, 3-2-1에서 생성한 캐릭터 List를 값으로 사용하여, 2에서 가져온 캐릭터 Map에 추가한다.
             metaCanvasMap.put(canvas.getWriter(), metaCoordinateList);
-            // 3-2-6. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 Map을 JSON 문자열로 변환한다.
+            // 3-2-6. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 캐릭터 Map을 JSON 문자열로 변환한다.
             String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
             // 3-2-7. 3-2-6에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 캐릭터 정보에 setter를 통해 전달한다.
             canvas.setCharacters(metaCanvasJson);
@@ -1085,9 +1085,9 @@ public class StompChatController {
     // 카페룸 캔버스 첫 입장 이후 재입장 - 첫 입장 이후 모든 재입장은 이곳으로 들어온다.
     @MessageMapping(value = "/meta/caferoom/canvas/reenter")
     public void canvasReEnterCafeRoom(MetaCanvasDTO canvas) throws JsonProcessingException { // 1. 클라이언트로부터 전송된 캐릭터 정보들을 DTO로 받아온다.
-        // 2. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+        // 2. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 캐릭터 Map을 가져온다.
         Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(canvas.getMetaIdx());
-        // 3. 2에서 가져온 Map이 존재하는지 체크한다.
+        // 3. 2에서 가져온 캐릭터 Map이 존재하는지 체크한다.
         // 3-1. Map이 존재하지 않는 경우 - 재입장 에러
         if ( metaCanvasMap == null ) {
             // 3-1-1. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 setter를 통해 "reErr"로 변경한다. - 재입장 에러 값
@@ -1098,9 +1098,9 @@ public class StompChatController {
             template.convertAndSend("/sub/meta/caferoom/canvas/" + canvas.getMetaIdx(), canvas);
         // 3-2. Map이 존재하는 경우 - 재입장(새로고침)
         } else {
-            // 4. 2에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 List를 가져온다.
+            // 4. 2에서 가져온 캐릭터 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 캐릭터 List를 가져온다.
             List<Object> metaCoordinateList = metaCanvasMap.get(canvas.getWriter());
-            // 5. 4에서 가져온 List가 존재하는지 체크한다.
+            // 5. 4에서 가져온 캐릭터 List가 존재하는지 체크한다.
             // 5-1. List가 존재하지 않는 경우 - 재입장 에러
             if (metaCoordinateList == null) {
                 // 5-1-1. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 setter를 통해 "reErr"로 변경한다. - 재입장 에러 값
@@ -1111,11 +1111,11 @@ public class StompChatController {
                 template.convertAndSend("/sub/meta/caferoom/canvas/" + canvas.getMetaIdx(), canvas);
             // 5-2. List가 존재하는 경우 - 재입장(새로고침)
             } else {
-                // 5-2-1. 4에서 가져온 List 값 중 x좌표 값을, 1에서 파라미터로 받아온 DTO 값 중 x좌표 값으로 갱신한다.
+                // 5-2-1. 4에서 가져온 캐릭터 List 값 중 x좌표 값을, 1에서 파라미터로 받아온 DTO 값 중 x좌표 값으로 갱신한다.
                 metaCoordinateList.set(1, canvas.getX());
-                // 5-2-2. 4에서 가져온 List 값 중 y좌표 값을, 1에서 파라미터로 받아온 DTO 값 중 y좌표 값으로 갱신한다.
+                // 5-2-2. 4에서 가져온 캐릭터 List 값 중 y좌표 값을, 1에서 파라미터로 받아온 DTO 값 중 y좌표 값으로 갱신한다.
                 metaCoordinateList.set(2, canvas.getY());
-                // 5-2-3. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 Map을 JSON 문자열로 변환한다.
+                // 5-2-3. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 캐릭터 Map을 JSON 문자열로 변환한다.
                 String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
                 // 5-2-4. 5-2-3에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 캐릭터 정보에 setter를 통해 전달한다.
                 canvas.setCharacters(metaCanvasJson);
@@ -1130,9 +1130,9 @@ public class StompChatController {
     // 카페룸 캔버스 캐릭터 이동 좌표 변경 - RabbitMQ 사용
     @MessageMapping(value = "/meta/caferoom/canvas/move")
     public void canvasMoveCafeRoom(MetaCanvasDTO canvas) throws JsonProcessingException { // 1. 클라이언트로부터 전송된 캐릭터 정보들을 DTO로 받아온다.
-        // 2. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 Map을 가져온다.
+        // 2. 위에서 생성한 방 구분용 Map에서, 1에서 파라미터로 받아온 DTO 값 중 방 번호 키에 해당하는 캐릭터 Map을 가져온다.
         Map<String, List<Object>> metaCanvasMap = metaRoomMap.get(canvas.getMetaIdx());
-        // 3. 2에서 가져온 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 List를 가져온다.
+        // 3. 2에서 가져온 캐릭터 Map에서, 1에서 파라미터로 받아온 DTO 값 중 닉네임 키에 해당하는 캐릭터 List를 가져온다.
         List<Object> metaCoordinateList = metaCanvasMap.get(canvas.getWriter());
         // 4. 1에서 파라미터로 받아온 DTO 값 중 메시지 타입을 가져와 이동 분기를 결정한다.
         switch( canvas.getType() ) {
@@ -1151,7 +1151,7 @@ public class StompChatController {
                     break;
                 // 왼쪽 벽이 나오기 전까지 움직인다.
                 } else {
-                    // 4-1-1. 3에서 가져온 List 값 중 x좌표 값을, 5 뺀 값으로 갱신한다.
+                    // 4-1-1. 3에서 가져온 캐릭터 List 값 중 x좌표 값을, 5 뺀 값으로 갱신한다.
                     metaCoordinateList.set(1, (int) metaCoordinateList.get(1) - 5);
                     // 위쪽 벽이 나오면 멈춘다.
                     if ( (int) metaCoordinateList.get(2) < canvas.getCanvasTop() ) {
@@ -1178,7 +1178,7 @@ public class StompChatController {
                     break;
                 // 위쪽 벽이 나오기 전까지 움직인다.
                 } else {
-                    // 4-2-1. 3에서 가져온 List 값 중 y좌표 값을, 5 뺀 값으로 갱신한다.
+                    // 4-2-1. 3에서 가져온 캐릭터 List 값 중 y좌표 값을, 5 뺀 값으로 갱신한다.
                     metaCoordinateList.set(2, (int) metaCoordinateList.get(2) - 5);
                     // 왼쪽 벽이 나오면 멈춘다.
                     if ( (int) metaCoordinateList.get(1) < canvas.getCanvasLeft() ) {
@@ -1205,7 +1205,7 @@ public class StompChatController {
                     break;
                 // 오른쪽 벽이 나오기 전까지 움직인다.
                 } else {
-                    // 4-3-1. 3에서 가져온 List 값 중 x좌표 값을, 5 더한 값으로 갱신한다.
+                    // 4-3-1. 3에서 가져온 캐릭터 List 값 중 x좌표 값을, 5 더한 값으로 갱신한다.
                     metaCoordinateList.set(1, (int) metaCoordinateList.get(1) + 5);
                     // 위쪽 벽이 나오면 멈춘다.
                     if ( (int) metaCoordinateList.get(2) < canvas.getCanvasTop() ) {
@@ -1232,7 +1232,7 @@ public class StompChatController {
                     break;
                 // 아래쪽 벽이 나오기 전까지 움직인다.
                 } else {
-                    // 4-4-1. 3에서 가져온 List 값 중 y좌표 값을, 5 더한 값으로 갱신한다.
+                    // 4-4-1. 3에서 가져온 캐릭터 List 값 중 y좌표 값을, 5 더한 값으로 갱신한다.
                     metaCoordinateList.set(2, (int) metaCoordinateList.get(2) + 5);
                     // 왼쪽 벽이 나오면 멈춘다.
                     if ( (int) metaCoordinateList.get(1) < canvas.getCanvasLeft() ) {
@@ -1245,7 +1245,7 @@ public class StompChatController {
                     break;
                 }
         }
-        // 5. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 Map을 JSON 문자열로 변환한다.
+        // 5. 위에서 @Autowired로 생성한 ObjectMapper를 사용하여 2에서 가져온 캐릭터 Map을 JSON 문자열로 변환한다.
         String metaCanvasJson = objectMapper.writeValueAsString(metaCanvasMap);
         // 6. 5에서 변환한 JSON 문자열을 1에서 파라미터로 받아온 DTO 값 중 캐릭터 정보에 setter를 통해 전달한다.
         canvas.setCharacters(metaCanvasJson);
@@ -1262,7 +1262,7 @@ public class StompChatController {
 //                                        .setContentType("application/json")
 //                                        .build();
 
-        // 9. 위에서 @Autowired로 생성한 RabbitTemplate를 사용하여 8에서 생성한 메시지를 전송한다.
+        // 9. 위에서 @Autowired로 생성한 RabbitTemplate을 사용하여 8에서 생성한 메시지를 전송한다.
         //    첫 번째 인자는 메시지를 발송할 Exchange 이름으로, 메시지를 받아서 어느 큐로 보낼지 결정하는 역할을 한다.
         //    두 번째 인자는 메시지를 전송할 Routing Key 이름으로, Exchange에서 메시지를 받아서 어느 큐로 보낼지 결정하는 규칙을 나타내는 값이다.
         //    세 번째 인자는 전송할 메시지 객체이다.
