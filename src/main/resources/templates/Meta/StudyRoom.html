@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>스터디</title>
     <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/css/StudyRoom.css">
+    <link rel="stylesheet" type="text/css" href="/css/MetaChatRoom.css">
     <style>
         html, body {
             height: 100%;
@@ -71,7 +71,7 @@
                 </div>
 
                 <!-- 채팅 구역 -->
-                <div class="chatArea" id="chatArea">
+                <div class="chatAreaDiv" id="chatArea">
                     <p class="chatTitle">채팅</p>
                 </div>
             </div>
@@ -122,7 +122,7 @@
         let localStorage = window.localStorage; // 로컬 스토리지 객체 생성
         let boomTimeoutId; // 방장 퇴장 setTimeout
     </script>
-    <script src="/js/StudyRoom.js"></script>
+    <script src="/js/MetaChatRoom.js"></script>
 
     <!--------------------------------------------------- 캔버스 구역 ---------------------------------------------------->
     <script th:inline="javascript">
@@ -163,6 +163,6 @@
         let w = 20; // 캐릭터 너비 (전체 사이즈의 절반만 작성)
         let h = 20; // 캐릭터 높이 (전체 사이즈의 절반만 작성)
     </script>
-    <script src="/js/StudyRoomCanvas.js"></script>
+    <script src="/js/MetaChatRoomCanvas.js"></script>
 </body>
 </html>
