@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="/css/header.css">
     <link rel="stylesheet" type="text/css" href="/css/footer.css">
     <link rel="stylesheet" type="text/css" href="/css/metaRoom.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
     <script th:inline="javascript">
         let errRoom = [[${errRoom}]]; // 방 에러 메시지
@@ -56,11 +57,6 @@
                             </a>
                         </div>
                         <div class="categoryMenu">
-                            <a href="/noticeroom">
-                                <span>게시판</span>
-                            </a>
-                        </div>
-                        <div class="categoryMenu">
                             <a href="/store">
                                 <span>스토어</span>
                             </a>
@@ -72,8 +68,8 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="headerMenuRight">
+                    <div class="welcome" sec:authorize="isAnonymous()">로그인이 필요합니다!!</div>
                     <div class="whenLogin" sec:authorize="isAuthenticated()">
                         <div class="welcome" th:text="${metaProfile.nickname} + '님 반갑습니다!'"></div>
                         <div class="notificationsMenu">
@@ -385,7 +381,7 @@
         </div>
     </footer>
 <!-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-<script>
+    <script>
         function searchMeta(f) {
             let searchType = f.searchType.value;
             let search = f.search.value;
@@ -413,5 +409,6 @@
             f.submit();
         }
     </script>
+    <script src="/js/noti.js" defer></script>
 </body>
 </html>

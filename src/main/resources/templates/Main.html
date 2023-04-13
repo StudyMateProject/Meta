@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>SOJU</title>
+    <title>MATE</title>
     <link rel="stylesheet" type="text/css" href="/css/header.css">
     <link rel="stylesheet" type="text/css" href="/css/footer.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
@@ -34,11 +34,6 @@
                         <div class="categoryMenu">
                             <a href="/meta">
                                 <span>스터디룸</span>
-                            </a>
-                        </div>
-                        <div class="categoryMenu">
-                            <a href="/noticeroom">
-                                <span>게시판</span>
                             </a>
                         </div>
                         <div class="categoryMenu">
@@ -615,29 +610,6 @@
           //마지막 슬라이드가 아닐 때,  다음 버튼을 누르면 다음 슬라이드로 이동
         });
     </script>
-
-    <script>
-        const icon = document.querySelector('.icon');
-        const notiDrop = document.querySelector('.notiDrop');
-        let status = 0; //0이면 클릭 안된 상태, 1이면 클릭 된 상태
-
-        function menuOpen(e){
-            if ( e == 1 ){
-                notiDrop.style.display = "block";
-            } else {
-                notiDrop.style.display = "none";
-            }
-        }
-        icon.addEventListener('click', function () {
-            if( status == 0 ){
-                status = 1;
-                menuOpen(status);
-            } else{
-                status = 0;
-                menuOpen(status);
-            }
-        });
-    </script>
-
+    <script src="/js/noti.js" defer></script>
 </body>
 </html>

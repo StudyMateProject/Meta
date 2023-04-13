@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>MyPage</title>
+    <title>My Profile</title>
     <link rel="stylesheet" type="text/css" href="/css/header.css">
     <link rel="stylesheet" type="text/css" href="/css/mymenu.css">
     <link rel="stylesheet" type="text/css" href="/css/footer.css">
@@ -35,11 +35,6 @@
                         <div class="categoryMenu">
                             <a href="/meta">
                                 <span>스터디룸</span>
-                            </a>
-                        </div>
-                        <div class="categoryMenu">
-                            <a href="/noticeroom">
-                                <span>게시판</span>
                             </a>
                         </div>
                         <div class="categoryMenu">
@@ -226,44 +221,7 @@
         </div>
     </footer>
 <!--JS----------------------------------------------------------------------------------------------------------------->
-    <script>
-        var acc = document.getElementsByClassName("accordion");
-        var i;
-
-        for (i = 0; i < acc.length; i++) {
-            acc[i].addEventListener("click", function () {
-                this.classList.toggle("active");
-                var panel = this.nextElementSibling;
-                if (panel.style.maxHeight) {
-                    panel.style.maxHeight = null;
-                } else {
-                    panel.style.maxHeight = panel.scrollHeight + "px";
-                }
-            });
-        }
-    </script>
-
-    <script>
-        const icon = document.querySelector('.icon');
-        const notiDrop = document.querySelector('.notiDrop');
-        let status = 0; //0이면 클릭 안된 상태, 1이면 클릭 된 상태
-
-        function menuOpen(e){
-            if ( e == 1 ){
-                notiDrop.style.display = "block";
-            } else {
-                notiDrop.style.display = "none";
-            }
-        }
-        icon.addEventListener('click', function () {
-            if( status == 0 ){
-                status = 1;
-                menuOpen(status);
-            } else{
-                status = 0;
-                menuOpen(status);
-            }
-        });
-    </script>
+    <script src="/js/noti.js" defer></script>
+    <script src="/js/menuAccordion.js" defer></script>
 </body>
 </html>

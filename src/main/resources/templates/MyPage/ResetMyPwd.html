@@ -39,11 +39,6 @@
                             </a>
                         </div>
                         <div class="categoryMenu">
-                            <a href="/noticeroom">
-                                <span>게시판</span>
-                            </a>
-                        </div>
-                        <div class="categoryMenu">
                             <a href="/store">
                                 <span>스토어</span>
                             </a>
@@ -216,23 +211,6 @@
     <script src="/js/httpRequest.js"></script>
 
     <script>
-        var acc = document.getElementsByClassName("accordion");
-        var i;
-
-        for (i = 0; i < acc.length; i++) {
-            acc[i].addEventListener("click", function () {
-                this.classList.toggle("active");
-                var panel = this.nextElementSibling;
-                if (panel.style.maxHeight) {
-                    panel.style.maxHeight = null;
-                } else {
-                    panel.style.maxHeight = panel.scrollHeight + "px";
-                }
-            });
-        }
-    </script>
-
-    <script>
         //비밀번호 형식 제한
         function pwdCheck(f) {
             let pwd = f.pwd.value;
@@ -307,27 +285,7 @@
         }
     </script>
 
-    <script>
-        const icon = document.querySelector('.icon');
-        const notiDrop = document.querySelector('.notiDrop');
-        let status = 0; //0이면 클릭 안된 상태, 1이면 클릭 된 상태
-
-        function menuOpen(e){
-            if ( e == 1 ){
-                notiDrop.style.display = "block";
-            } else {
-                notiDrop.style.display = "none";
-            }
-        }
-        icon.addEventListener('click', function () {
-            if( status == 0 ){
-                status = 1;
-                menuOpen(status);
-            } else{
-                status = 0;
-                menuOpen(status);
-            }
-        });
-    </script>
+    <script src="/js/noti.js" defer></script>
+    <script src="/js/menuAccordion.js" defer></script>
 </body>
 </html>
