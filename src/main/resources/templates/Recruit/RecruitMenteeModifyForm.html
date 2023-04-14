@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>스터디원 모집글 수정</h1>
+<form>
+    <input type="hidden" id="writeDate" name="writeDate">
+    <input type="hidden" name="idx" id="idx" th:value="${recruitMentee.idx}">
+    <ul>
+        <li>
+            <span>제목 : </span>
+            <input type="text" name="title" th:value="${recruitMentee.title}" >
+        </li>
+        <li>
+            <span>작성자 : </span>
+            <input type="text" name="writer" th:value="${recruitMentee.writer}" readonly>
+        </li>
+        <li>
+            <span>분야</span>
+            <select name="studyType" onchange="showImage();">
+                <option value="">선택하던가 말던가</option>
+                <option th:if="${recruitMentee.studyType} == 'computer'" value="computer" selected>컴퓨터</option>
+                <option th:if="${recruitMentee.studyType} != 'computer'" value="computer">컴퓨터</option>
+                <option th:if="${recruitMentee.studyType} == 'math'" value="math" selected>수학</option>
+                <option th:if="${recruitMentee.studyType} != 'math'" value="math">수학</option>
+                <option th:if="${recruitMentee.studyType} == 'management'" value="management" selected>경영/마케팅</option>
+                <option th:if="${recruitMentee.studyType} != 'management'" value="management">경영/마케팅</option>
+                <option th:if="${recruitMentee.studyType} == 'design'" value="design" selected>디자인</option>
+                <option th:if="${recruitMentee.studyType} != 'design'" value="design">디자인</option>
+                <option th:if="${recruitMentee.studyType} == 'education'" value="education" selected>교육</option>
+                <option th:if="${recruitMentee.studyType} != 'education'" value="education">교육</option>
+                <option th:if="${recruitMentee.studyType} == 'literature'" value="literature" selected>문학</option>
+                <option th:if="${recruitMentee.studyType} != 'literature'" value="literature">문학</option>
+                <option th:if="${recruitMentee.studyType} == 'entrance'" value="entrance" selected>입시</option>
+                <option th:if="${recruitMentee.studyType} != 'entrance'" value="entrance">입시</option>
+                <option th:if="${recruitMentee.studyType} == 'engineer'" value="engineer" selected>공학</option>
+                <option th:if="${recruitMentee.studyType} != 'engineer'" value="engineer">공학</option>
+                <option th:if="${recruitMentee.studyType} == 'language'" value="language" selected>언어</option>
+                <option th:if="${recruitMentee.studyType} != 'language'" value="language">언어</option>
+                <option th:if="${recruitMentee.studyType} == 'employment'" value="employment" selected>취업</option>
+                <option th:if="${recruitMentee.studyType} != 'employment'" value="employment">취업</option>
+                <option th:if="${recruitMentee.studyType} == 'etc'" value="etc" selected>기타</option>
+                <option th:if="${recruitMentee.studyType} != 'etc'" value="etc">기타</option>
+            </select>
+        </li>
+        <li><span>사진 : </span>
+            <div id="test1">
+                <img th:src="${recruitMentee.image}" style="width: 50px; height: 50px;">
+                <input type="hidden" name="image" th:value="${recruitMentee.image}">
+            </div>
+        </li>
+        <li>
+            <div>스터디소개</div>
+            <textarea name="studyIntro" th:text="${recruitMentee.studyIntro}"></textarea>
+        </li>
+        <li>
+            <input type="button" value="수정하기" onclick="menteeModify(this.form);">
+        </li>
+    </ul>
+</form>
+</body>
+<script src="/js/httpRequest.js"></script>
+<script>
+    //현재 시간을 설정하는 변수
+    const TIME_ZONE = 3240 * 10000;
+    //시간에서 날짜만 따로 잘라낼 변수
+    let today = new Date(+new Date() + TIME_ZONE).toISOString().split('T')[0];
+    //날짜를 저장할 변수
+    let writeDate = document.getElementById("writeDate");
+    //날짜 저장
+    writeDate.value = today;
+    //멘토프로필 내용 변경 메서드
+    function menteeModify(f) {
+        let idx = f.idx.value;
+        let title = f.title.value;
+        let image = f.image.value;
+        let studyType = f.studyType.value;
+        let writer = f.writer.value;
+        let studyIntro = f.studyIntro.value;
+        if (title == '') {
+            alert('제목을 작성하세요');
+            return;
+        }
+        if (studyType == '') {
+            alert('타입을 선택하세요');
+            return;
+        }
+        if (studyIntro == '') {
+            alert('설명을 작성하세요');
+            return;
+        }
+        let url = '/mentorprofilelist/post/modifyform/modify';
+        let param = "idx=" + idx +
+                    "&title=" + title +
+                    "&studyType=" + studyType +
+                    "&image=" + image +
+                    "&writer=" + writer +
+                    "&writeDate=" + today +
+                    "&studyIntro=" + studyIntro;
+        sendRequest(url, param, res, "GET");
+    }
+    function res() {
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == 'no') {
+                alert('내용변경 실패');
+                return;
+            } else {
+                alert('내용변경 성공');
+                location.href="/recruitmenteelist";
+            }
+        }
+    }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //타입을 변경할 때 이미지도 변경하기위한 메서드
+    function showImage(){
+        let test1 = document.getElementById("test1");
+        let selectElement = document.querySelector("select");
+        let selectedValue = selectElement.value;
+        if (selectedValue) {
+            test1.innerHTML = '<img src="/img/' + selectedValue + '.png" style="width: 50px; height: 50px;">' +
+                              '<input type="hidden" name="image" value="/img/' + selectedValue + '.png">';
+        } else {
+            test1.innerHTML = '';
+        }
+    }
+</script>
+</html>

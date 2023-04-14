@@ -1,9 +1,11 @@
 package com.study.mate.controller;
 
+import com.study.mate.entity.Alarm;
 import com.study.mate.entity.Member;
 import com.study.mate.entity.Meta;
 import com.study.mate.entity.MetaRoom;
 import com.study.mate.service.MetaService;
+import com.study.mate.service.MyPageService;
 import com.study.mate.service.SignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,6 +34,9 @@ public class MetaController {
     // 회원가입 및 로그인 인증 서비스
     @Autowired
     SignUpService signUpService;
+    // 마이 페이지 서비스
+    @Autowired
+    MyPageService myPageService;
 
     // HTTP 요청에 대한 정보를 담고 있는 클래스
     @Autowired
@@ -76,34 +81,39 @@ public class MetaController {
             }
         }
 
-        // 7. 5에서 foreach문을 사용하여 방 타입별로 값을 새로 추가해 만든 List 형태의 DTO들을 바인딩한다.
-        // 7-1. 4-1에서 생성하고 6-1에서 값을 추가한 studyRoom List DTO를 바인딩한다.
+        // 7. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
+        List<Alarm> alarmList = myPageService.findEmailId(principal.getName());
+
+        // 8. 5에서 foreach문을 사용하여 방 타입별로 값을 새로 추가해 만든 List 형태의 DTO들을 바인딩한다.
+        // 8-1. 4-1에서 생성하고 6-1에서 값을 추가한 studyRoom List DTO를 바인딩한다.
         model.addAttribute("studyList", studyList);
-        // 7-2. 4-2에서 생성하고 6-2에서 값을 추가한 cafeRoom List DTO를 바인딩한다.
+        // 8-2. 4-2에서 생성하고 6-2에서 값을 추가한 cafeRoom List DTO를 바인딩한다.
         model.addAttribute("cafeList", cafeList);
-        // 8. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+        // 9. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
         model.addAttribute("metaProfile", rpMetaProfile);
-        // 9. 검색 체크값을 바인딩한다. - 0 : 검색 안했을 경우
+        // 10. 7에서 반환받은 알람 List를 바인딩한다.
+        model.addAttribute("alarmList", alarmList);
+        // 11. 검색 체크값을 바인딩한다. - 0 : 검색 안했을 경우
         model.addAttribute("check", 0);
-        // 10. 검색에 사용할 DTO를 바인딩한다.
+        // 12. 검색에 사용할 DTO를 바인딩한다.
         model.addAttribute("metaDTO", new Meta.rqSearchMetaList());
-        // 11. 1에서 파라미터로 받아온 방 에러 메시지가 존재하는지 체크한다.
-        // 11-1. 방 에러 메시지가 존재하는 경우
+        // 13. 1에서 파라미터로 받아온 방 에러 메시지가 존재하는지 체크한다.
+        // 13-1. 방 에러 메시지가 존재하는 경우
         if ( errRoom != null ) {
-            // 11-1-1. 1에서 파라미터로 받아온 방 에러 메시지를 바인딩한다.
+            // 13-1-1. 1에서 파라미터로 받아온 방 에러 메시지를 바인딩한다.
             model.addAttribute("errRoom", errRoom);
-            // 11-1-2. 1에서 파라미터로 받아온 방 번호를 바인딩한다.
+            // 13-1-2. 1에서 파라미터로 받아온 방 번호를 바인딩한다.
             model.addAttribute("idx", idx);
-            // 11-1-3. 1에서 파라미터로 받아온 닉네임을 바인딩한다.
+            // 13-1-3. 1에서 파라미터로 받아온 닉네임을 바인딩한다.
             model.addAttribute("nickname", nickname);
         }
-        // 12. 1에서 파라미터로 받아온 에러 메시지가 존재하는지 체크한다.
-        // 12-1. 에러 메시지가 존재하는 경우
+        // 14. 1에서 파라미터로 받아온 에러 메시지가 존재하는지 체크한다.
+        // 14-1. 에러 메시지가 존재하는 경우
         if ( err != null ) {
-            // 12-1-1. 1에서 파라미터로 받아온 에러 메시지를 바인딩한다.
+            // 14-1-1. 1에서 파라미터로 받아온 에러 메시지를 바인딩한다.
             model.addAttribute("err", err);
         }
-        // 13. 메타 메인 페이지로 이동한다.
+        // 15. 메타 메인 페이지로 이동한다.
         return "Meta/MetaRoom";
     }
 
@@ -133,18 +143,23 @@ public class MetaController {
             }
         }
 
-        // 7. 5에서 foreach문을 사용하여 방 타입별로 값을 새로 추가해 만든 List 형태의 DTO들을 바인딩한다.
-        // 7-1. 4-1에서 생성하고 6-1에서 값을 추가한 studyRoom List DTO를 바인딩한다.
+        // 7. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
+        List<Alarm> alarmList = myPageService.findEmailId(principal.getName());
+
+        // 8. 5에서 foreach문을 사용하여 방 타입별로 값을 새로 추가해 만든 List 형태의 DTO들을 바인딩한다.
+        // 8-1. 4-1에서 생성하고 6-1에서 값을 추가한 studyRoom List DTO를 바인딩한다.
         model.addAttribute("studyList", studyList);
-        // 7-2. 4-2에서 생성하고 6-2에서 값을 추가한 cafeRoom List DTO를 바인딩한다.
+        // 8-2. 4-2에서 생성하고 6-2에서 값을 추가한 cafeRoom List DTO를 바인딩한다.
         model.addAttribute("cafeList", cafeList);
-        // 8. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
+        // 9. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
         model.addAttribute("metaProfile", rpMetaProfile);
-        // 9. 검색 체크값을 바인딩한다. - 1 : 검색 했을 경우
+        // 10. 7에서 반환받은 알람 List를 바인딩한다.
+        model.addAttribute("alarmList", alarmList);
+        // 11. 검색 체크값을 바인딩한다. - 1 : 검색 했을 경우
         model.addAttribute("check", 1);
-        // 10. 검색에 사용할 DTO를 바인딩한다.
+        // 12. 검색에 사용할 DTO를 바인딩한다.
         model.addAttribute("metaDTO", new Meta.rqSearchMetaList());
-        // 11. 메타 메인 페이지로 이동한다.
+        // 13. 메타 메인 페이지로 이동한다.
         return "Meta/MetaRoom";
     }
 

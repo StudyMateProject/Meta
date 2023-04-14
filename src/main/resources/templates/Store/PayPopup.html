@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="https://service.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+    <script type="text/javascript" src="/js/httpRequest.js"></script>
+    <script th:inline="javascript">
+        //현재시간으로 uid설정
+        //현재 날짜 가져오기
+        let day = new Date().toTimeString().split(' ')[0];
+        //타임존 설정
+        const TIME_ZONE = 3240 * 10000;
+        //오늘 날짜 시간 가져오기
+        let today = new Date(+new Date() + TIME_ZONE).toISOString().split('T')[0];
+        var IMP = window.IMP;
+        //init로 객체초기화(가맹점식별코드)
+        IMP.init("imp88140833");
+
+        function requestPay(pg) {
+            IMP.request_pay({
+            //pg사명, pg사명.CID
+            //https://docs.iamport.kr/sdk/javascript-sdk#request_pay 에서 pg사 코드 확인가능
+            pg: pg,
+            //지불 방법
+            //pay_method: 'card',
+            //가맹점 주문번호(DB에 저장할 겹치지않는 스트링타입) --> primaryKey로 잡아도 될꺼같다
+            //같은 주문번호로 주문은 불가능
+            merchant_uid: "uid" + today + '/' + day,
+            //결제창에 노출될 상품명
+            name: [[${item.itemName}]],
+            //가격(숫자타입으로 작성)
+            amount: ([[${item.price}]] * [[${itemCount}]]),
+            //구매자 이메일
+            buyer_email: [[${member.emailId}]],
+            //구매자 이름
+            buyer_name: [[${member.name}]],
+            //구매자 전화번호
+            buyer_tel: [[${member.phoneNumber}]],
+            //구매자 주소
+            buyer_addr : [[${member.address}]]
+            //구매자 우편번호
+            //buyer_postcode : '123-456'
+            }, function (rsp) { // callback
+                if (rsp.success) {
+                    //alert("완료 -> imp_uid : " + rsp.imp_uid + "/ merchant_uid : " + rsp.merchant_uid);
+                    //alert("가격 : " + rsp.paid_amount + "원");
+                    //alert("결제 상황 : " + rsp.status);
+                    //alert("결제 승인 시각 : " + rsp.paid_at);
+                    //alert("매출전표" + rsp.receipt_url);
+                    //ajax사용
+                    //alert(rsp.name);
+                    var url = "/store/complete";
+	                var param = "impUid=" + rsp.imp_uid +
+	                            "&merchantUid=" + rsp.merchant_uid +
+	                            "&PGName=" + rsp.pg_provider +
+	                            "&payMethod=" + rsp.pay_method +
+	                            "&itemName=" + rsp.name +
+	                            "&price= " + rsp.paid_amount +
+	                            "&buyerEmail=" + rsp.buyer_email +
+	                            "&buyerName=" + rsp.buyer_name +
+	                            "&buyerTel=" + rsp.buyer_tel +
+	                            "&buyerAddress=" + rsp.buyer_addr +
+	                            "&itemCount=" + [[${itemCount}]];
+	                sendRequest(url, param, res, "post");
+                } else {
+                    alert("실패 : 코드(" + rsp.error_code + ")/ 메세지(" + rsp.error_msg + ")");
+                }
+            });
+        }
+        function res() {
+        	if (xhr.readyState == 4 && xhr.status == 200) {
+		        var data = xhr.responseText;
+		        if (data == "no") {
+		            alert("결제실패는 아니고 값이 안들어감 ㅋ");
+		            //값이 잘 들어오니깐 비교해서 값 정리하고 들어왔으면 결제 완료로 넘어가게
+		            //그다음 restAPI써서 키값 밸류값 뭐시기 하고
+		            //그다음 결제완료됬는지 진짜 마지막 확인까지만 하면 끝
+		            //인데 그건 나중에 일단은 결제 완료되면 db에 저장
+			        return;
+		        } else {
+                    //가맹점 서버 결제 API 성공시 로직
+                    alert("결제완료");
+                    //여기서 받은 정보들을 가지고 다시 컨트롤러로 돌아가서 db에 저장
+                    //이후 다시 결제 목록으로 페이지를 옮겨준다
+                    popupClose();
+		        }
+	        }
+        }
+        function popupClose() {
+			return window.close();
+		}
+    </script>
+</head>
+<body>
+    <h1>결제팝업</h1>
+    <div class="footer">
+        <div>
+            <div>
+                <label>상품명 : </label>
+                <label th:text="${item.itemName}"></label>
+            </div>
+            <div>
+                <label>결제 가격 : </label>
+                <label th:text="(${item.price} * ${itemCount})"></label><label>원</label>
+            </div>
+            <div>
+                <label>결제 수량 : </label>
+                <label th:text="${itemCount} + '개'"></label>
+            </div>
+            <div>
+                <label>고객 성함 : </label>
+                <label th:text="${member.name} + ' 님'"></label>
+            </div>
+        </div>
+        <div>
+            <div>
+                <input type="button" value="카카오페이" onclick="requestPay('kakaopay.TC0ONETIME')">
+            </div>
+            <div>
+                <input type="button" value="토스페이" onclick="requestPay('tosspay.tosstest')">
+            </div>
+            <div>
+                <input type="button" value="카드결제" onclick="requestPay('html5_inicis.INIpayTest')">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

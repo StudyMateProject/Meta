@@ -59,7 +59,7 @@ public class SignUpController {
         return "SignUp/JoinForm";
     }
 
-    // 이메일 중복체크 & 이메일 전송 SMTP
+    // 이메일 중복체크 & 이메일 전송 SMTP - 신규 가입
     @PostMapping("/joinform/emailsend")
     @ResponseBody
     public Member.rpCheckEmailId emailSend(String emailId) { // 2. 파라미터로 Ajax를 통해 넘어온 아이디를 받아온다.
@@ -345,12 +345,22 @@ public class SignUpController {
         return "/SignUp/FindPwd";
     }
 
+    // 이메일 중복체크 & 이메일 전송 SMTP
+    @PostMapping("/loginform/findpwdform/emailsend")
+    @ResponseBody
+    public Member.rpCheckEmailId findPwdEmailSend(String emailId) { // 2. 파라미터로 Ajax를 통해 넘어온 아이디를 받아온다.
+        // 3. 2에서 파라미터로 받아온 아이디와 비밀번호 암호화 메소드를 서비스에 전달한다.
+        //    이때 SMTP에 사용할 이메일 정보들도 같이 서비스에 전달한다.
+        Member.rpCheckEmailId rpCheckEmailId =  signUpService.findPwdCheckEmailId(emailId, passwordEncoder, naverId, naverPwd);
+        // 13. 3에서 반환된 DTO를 콜백 메소드에 반환한다.
+        return rpCheckEmailId;
+    }
+
     //PW 재설정을 위한 정보확인
     @PostMapping("/loginform/findpwdform/findpwd")
     @ResponseBody
     public String resetPwd(Member.rqFindPwd rqFindPwd) {
         String findPwd = signUpService.findPwdSearch(rqFindPwd);
-        System.out.println(findPwd);
         return findPwd;
     }
 

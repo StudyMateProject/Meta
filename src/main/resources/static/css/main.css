@@ -14,11 +14,10 @@
     transition: left 0.3s ease-out;
 }
 .slides li:not(:last-child){
-  float: left;
-  margin-right: 100px;
+    float: left;
 }
 .slides li{
-  float: left;
+    float: left;
 }
 .controller span{
     position: absolute;
@@ -32,7 +31,7 @@
     color: rgba(128, 128, 128, 0.5);
 }
 .controller span:hover{
-  color: #87AF6E;
+    color: #87AF6E;
 }
 .prev{
   left: 10px;

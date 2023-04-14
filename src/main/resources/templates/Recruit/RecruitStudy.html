@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>스터디원 모집</h1>
+    <ul>
+        <li><a href="recruitmentorlist">멘토모집</a> </li>
+        <li><a href="mentorprofilelist">멘토프로필</a> </li>
+        <li><a href="/recruitstudy/writeform">글쓰기</a> </li>
+        <li><a href="/">메인으로</a> </li>
+    </ul>
+    <!-- 스터디원구하기 리스트 -->
+    <div style="border: 1px solid black" th:each="recruitStudy : ${list}">
+        <form>
+            <input type="text" name="idx" th:value="${recruitStudy.idx}" readonly>
+            <div th:if="${recruitStudy.recruiting} == '0'">
+                모집중
+            </div>
+            <div th:if="${recruitStudy.recruiting} != '0'">
+                모집완료
+            </div>
+            <div>
+                <img th:src="${recruitStudy.image}" style="width: 50px; height: 50px;">
+            </div>
+            <div name="title" th:text="${recruitStudy.title}">
+                제목
+            </div>
+            <div th:text="${recruitStudy.writer}">
+                닉네임
+            </div>
+            <input type="button" value="상세보기" onclick="change(this.form);">
+            <div th:text="${recruitStudy.studyIntro}">
+                내용
+            </div>
+        </form>
+    </div>
+    <!-- 페이징처리를 자바에서 처리해 넘어올 객체 -->
+    <div th:utext="${pageMenu}">
+
+    </div>
+</body>
+<script th:inline="javascript">
+    //스터디원구하기 상세페이지로 이동하는 메서드
+    function change(f){
+        f.action = '/recruitstudy/post';
+        f.method = "GET";
+        f.submit();
+    }
+
+    //더이상 이동할 페이지가 없을 때 경고창을 띄우는 메서드
+    function noPage() {
+        alert("더이상 이동할 페이지가 없습니다.");
+    }
+</script>
+</html>

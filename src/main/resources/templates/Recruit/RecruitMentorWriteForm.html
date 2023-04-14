@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>글쓰기</h1>
+    <form>
+        <input type="hidden" name="writeDate" id="writeDate">
+        <ul>
+            <li>
+                <span>작성자 : </span>
+                <input type="text" th:value="${nickname}" name="writer" readonly>
+            </li>
+            <li><span>제목 : </span><input type="text" name="title"></li>
+            <li><span>분야 : </span>
+                <select name="studyType">
+                    <option value="">선택하던가 말던가</option>
+                    <option value="computer">컴퓨터</option>
+                    <option value="math">수학</option>
+                    <option value="management">경영/마케팅</option>
+                    <option value="design">디자인</option>
+                    <option value="education">교육</option>
+                    <option value="literature">문학</option>
+                    <option value="entrance">입시</option>
+                    <option value="engineer">공학</option>
+                    <option value="language">언어</option>
+                    <option value="employment">취업</option>
+                    <option value="etc">기타</option>
+                </select>
+            </li>
+            <li>
+                <div>스터디 소개</div>
+                <textarea name="studyIntro"></textarea>
+            </li>
+            <li>
+                <input type="button" value="작성하기" onclick="mentorWrite(this.form);">
+            </li>
+        </ul>
+    </form>
+    <input type="button" value="뒤로가기" onclick="location.href='/recruitmentorlist'">
+</body>
+<script>
+    //현재 시간을 설정하는 변수
+    const TIME_ZONE = 3240 * 10000;
+    //시간에서 날짜만 따로 잘라낼 변수
+    let today = new Date(+new Date() + TIME_ZONE).toISOString().split('T')[0];
+    //날짜를 저장할 변수
+    let writeDate = document.getElementById("writeDate");
+    //날짜 저장
+    writeDate.value = today;
+    //멘토프로필 작성하는 메서드
+    function mentorWrite(f) {
+        let title = f.title.value;
+        let studyType = f.studyType.value;
+        let studyIntro = f.studyIntro.value;
+        if (title == '') {
+            alert('제목작성하셈');
+            return;
+        }
+        if (studyType == '') {
+            alert('타입 선택하셈');
+            return;
+        }
+        if (studyIntro == '') {
+            alert('설명 작성하셈');
+            return;
+        }
+        f.action = '/recruitmentorlist/writeform/write';
+        f.method = "GET";
+        f.submit();
+    }
+</script>
+</html>

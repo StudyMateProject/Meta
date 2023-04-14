@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>멘토모집</h1>
+    <ul>
+        <li><a href="recruitmentorlist/writeform">글쓰기</a></li>
+        <li><a href="/">메인으로</a> </li>
+    </ul>
+    <!-- 멘토구하기리스트 -->
+    <div style="border: 1px solid black" th:each="recruitMentor : ${list}">
+        <form>
+            <input type="hidden" th:value="${recruitMentor.idx}" name="idx">
+            <span th:text="${recruitMentor.studyType}"></span>
+            <span> | </span>
+            <span th:if="${recruitMentor.recruiting} == '0'">모집중</span>
+            <span th:if="${recruitMentor.recruiting} != '0'">모집완료</span>
+            <span> | </span>
+            <span th:text="${recruitMentor.title}"></span>
+            <span> | </span>
+            <span th:text="${recruitMentor.writer}"></span>
+            <span> | </span>
+            <span><input type="button" value="상세보기" onclick="change(this.form);"></span>
+        </form>
+    </div>
+    <!-- 페이징처리를 자바에서 처리해 넘어올 객체 -->
+    <div th:utext="${pageMenu}">
+
+    </div>
+</body>
+<script>
+    //멘토구하기 상세페이지로 이동할 메서드
+    function change(f){
+        f.action = '/recruitmentorlist/post';
+        f.method = "GET";
+        f.submit();
+    }
+
+    //더이상 이동할 페이지가 없을 때 경고창을 띄우는 메서드
+    function noPage() {
+        alert("더이상 이동할 페이지가 없습니다.");
+    }
+</script>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>스터디원 모집글 수정</h1>
+    <form>
+        <input type="hidden" id="writeDate" name="writeDate">
+        <input type="hidden" name="idx" id="idx" th:value="${recruitStudy.idx}">
+        <ul>
+            <li>
+                <span>제목 : </span>
+                <input type="text" name="title" th:value="${recruitStudy.title}" >
+            </li>
+            <li>
+                <span>작성자 : </span>
+                <input type="text" name="writer" th:value="${recruitStudy.writer}" readonly>
+            </li>
+            <li>
+                <span>분야</span>
+                <select name="studyType" onchange="showImage();">
+                    <option value="">선택하던가 말던가</option>
+                    <option th:if="${recruitStudy.studyType} == 'computer'" value="computer" selected>컴퓨터</option>
+                    <option th:if="${recruitStudy.studyType} != 'computer'" value="computer">컴퓨터</option>
+                    <option th:if="${recruitStudy.studyType} == 'math'" value="math" selected>수학</option>
+                    <option th:if="${recruitStudy.studyType} != 'math'" value="math">수학</option>
+                    <option th:if="${recruitStudy.studyType} == 'management'" value="management" selected>경영/마케팅</option>
+                    <option th:if="${recruitStudy.studyType} != 'management'" value="management">경영/마케팅</option>
+                    <option th:if="${recruitStudy.studyType} == 'design'" value="design" selected>디자인</option>
+                    <option th:if="${recruitStudy.studyType} != 'design'" value="design">디자인</option>
+                    <option th:if="${recruitStudy.studyType} == 'education'" value="education" selected>교육</option>
+                    <option th:if="${recruitStudy.studyType} != 'education'" value="education">교육</option>
+                    <option th:if="${recruitStudy.studyType} == 'literature'" value="literature" selected>문학</option>
+                    <option th:if="${recruitStudy.studyType} != 'literature'" value="literature">문학</option>
+                    <option th:if="${recruitStudy.studyType} == 'entrance'" value="entrance" selected>입시</option>
+                    <option th:if="${recruitStudy.studyType} != 'entrance'" value="entrance">입시</option>
+                    <option th:if="${recruitStudy.studyType} == 'engineer'" value="engineer" selected>공학</option>
+                    <option th:if="${recruitStudy.studyType} != 'engineer'" value="engineer">공학</option>
+                    <option th:if="${recruitStudy.studyType} == 'language'" value="language" selected>언어</option>
+                    <option th:if="${recruitStudy.studyType} != 'language'" value="language">언어</option>
+                    <option th:if="${recruitStudy.studyType} == 'employment'" value="employment" selected>취업</option>
+                    <option th:if="${recruitStudy.studyType} != 'employment'" value="employment">취업</option>
+                    <option th:if="${recruitStudy.studyType} == 'etc'" value="etc" selected>기타</option>
+                    <option th:if="${recruitStudy.studyType} != 'etc'" value="etc">기타</option>
+                </select>
+            </li>
+            <li><span>사진 : </span>
+                <div id="test1">
+                    <img th:src="${recruitStudy.image}" style="width: 50px; height: 50px;">
+                    <input type="hidden" name="image" th:value="${recruitStudy.image}">
+                </div>
+            </li>
+            <li>
+                <span>모집인원</span>
+                <select name="personnel">
+                    <option value="">선택하던지 말던지</option>
+                    <option th:if="${recruitStudy.personnel} == '1'" value="1" selected>1</option>
+                    <option th:if="${recruitStudy.personnel} != '1'" value="1" >1</option>
+                    <option th:if="${recruitStudy.personnel} == '2'" value="2" selected>2</option>
+                    <option th:if="${recruitStudy.personnel} != '2'" value="2" >2</option>
+                    <option th:if="${recruitStudy.personnel} == '3'" value="3" selected>3</option>
+                    <option th:if="${recruitStudy.personnel} != '3'" value="3" >3</option>
+                    <option th:if="${recruitStudy.personnel} == '4'" value="4" selected>4</option>
+                    <option th:if="${recruitStudy.personnel} != '4'" value="4" >4</option>
+                    <option th:if="${recruitStudy.personnel} == '5'" value="5" selected>5</option>
+                    <option th:if="${recruitStudy.personnel} != '5'" value="5" >5</option>
+                    <option th:if="${recruitStudy.personnel} == '6'" value="6" selected>6</option>
+                    <option th:if="${recruitStudy.personnel} != '6'" value="6" >6</option>
+                    <option th:if="${recruitStudy.personnel} == '7'" value="7" selected>7</option>
+                    <option th:if="${recruitStudy.personnel} != '7'" value="7" >7</option>
+                    <option th:if="${recruitStudy.personnel} == '8'" value="8" selected>8</option>
+                    <option th:if="${recruitStudy.personnel} != '8'" value="8" >8</option>
+                    <option th:if="${recruitStudy.personnel} == '9'" value="9" selected>9</option>
+                    <option th:if="${recruitStudy.personnel} != '9'" value="9" >9</option>
+                    <option th:if="${recruitStudy.personnel} == '10'" value="10" selected>10</option>
+                    <option th:if="${recruitStudy.personnel} != '10'" value="10" >10</option>
+                </select>
+            </li>
+            <li>
+                <div>스터디소개</div>
+                <textarea name="studyIntro" th:text="${recruitStudy.studyIntro}"></textarea>
+            </li>
+            <li>
+                <input type="button" value="수정하기" onclick="studyModify(this.form);">
+            </li>
+        </ul>
+    </form>
+</body>
+<script src="/js/httpRequest.js"></script>
+<script>
+    //현재 시간을 설정하는 변수
+    const TIME_ZONE = 3240 * 10000;
+    //시간에서 날짜만 따로 잘라낼 변수
+    let today = new Date(+new Date() + TIME_ZONE).toISOString().split('T')[0];
+    //날짜를 저장할 변수
+    let writeDate = document.getElementById("writeDate");
+    //날짜 저장
+    writeDate.value = today;
+    //멘토프로필 내용 변경 메서드
+    function studyModify(f) {
+        let idx = f.idx.value;
+        let title = f.title.value;
+        let image = f.image.value;
+        let studyType = f.studyType.value;
+        let personnel = f.personnel.value;
+        let studyIntro = f.studyIntro.value;
+        if (title == '') {
+            alert('제목작성하셈');
+            return;
+        }
+        if (studyType == '') {
+            alert('타입 선택하셈');
+            return;
+        }
+        if (personnel == '') {
+            alert('인원 선택하셈');
+            return;
+        }
+        if (studyIntro == '') {
+            alert('설명 작성하셈');
+            return;
+        }
+        let url = '/recruitstudy/post/modifyform/modify';
+        let param = "idx=" + idx +
+                    "&title=" + title +
+                    "&studyType=" + studyType +
+                    "&image=" + image +
+                    "&personnel=" + personnel +
+                    "&studyIntro=" + studyIntro;
+        sendRequest(url, param, res, "GET");
+    }
+    function res() {
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == 'no') {
+                alert('내용변경 실패 - 값이 안넘어감');
+                return;
+            } else if(data == 'fail') {
+                alert('내용변경 실패 - 모집 인원이 더 많아서 줄일수 없음');
+                return;
+            } else {
+                alert('내용변경 성공');
+                location.href="/recruitstudy";
+            }
+        }
+    }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //타입을 변경할 때 이미지도 변경하기위한 메서드
+    function showImage(){
+        let test1 = document.getElementById("test1");
+        let selectElement = document.querySelector("select");
+        let selectedValue = selectElement.value;
+        if (selectedValue) {
+            test1.innerHTML = '<img src="/img/' + selectedValue + '.png" style="width: 50px; height: 50px;">' +
+                              '<input type="hidden" name="image" value="/img/' + selectedValue + '.png">';
+        } else {
+            test1.innerHTML = '';
+        }
+    }
+</script>
+</html>

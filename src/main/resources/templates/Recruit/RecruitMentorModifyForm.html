@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>멘토모집 수정 폼</h1>
+    <form>
+        <input type="hidden" id="writeDate" name="writeDate">
+        <input type="hidden" name="idx" id="idx" th:value="${recruitMentor.idx}">
+        <ul>
+            <li>
+                <span>제목 : </span>
+                <input type="text" name="title" th:value="${recruitMentor.title}">
+            </li>
+            <li>
+                <span>작성자 : </span>
+                <input type="text" name="writer" th:value="${recruitMentor.writer}" readonly>
+            </li>
+            <li>
+                <span>분야</span>
+                <select name="studyType">
+                    <option value="">선택하던가 말던가</option>
+                    <option th:if="${recruitMentor.studyType} == 'computer'" value="computer" selected>컴퓨터</option>
+                    <option th:if="${recruitMentor.studyType} != 'computer'" value="computer">컴퓨터</option>
+                    <option th:if="${recruitMentor.studyType} == 'math'" value="math" selected>수학</option>
+                    <option th:if="${recruitMentor.studyType} != 'math'" value="math">수학</option>
+                    <option th:if="${recruitMentor.studyType} == 'management'" value="management" selected>경영/마케팅</option>
+                    <option th:if="${recruitMentor.studyType} != 'management'" value="management">경영/마케팅</option>
+                    <option th:if="${recruitMentor.studyType} == 'design'" value="design" selected>디자인</option>
+                    <option th:if="${recruitMentor.studyType} != 'design'" value="design">디자인</option>
+                    <option th:if="${recruitMentor.studyType} == 'education'" value="education" selected>교육</option>
+                    <option th:if="${recruitMentor.studyType} != 'education'" value="education">교육</option>
+                    <option th:if="${recruitMentor.studyType} == 'literature'" value="literature" selected>문학</option>
+                    <option th:if="${recruitMentor.studyType} != 'literature'" value="literature">문학</option>
+                    <option th:if="${recruitMentor.studyType} == 'entrance'" value="entrance" selected>입시</option>
+                    <option th:if="${recruitMentor.studyType} != 'entrance'" value="entrance">입시</option>
+                    <option th:if="${recruitMentor.studyType} == 'engineer'" value="engineer" selected>공학</option>
+                    <option th:if="${recruitMentor.studyType} != 'engineer'" value="engineer">공학</option>
+                    <option th:if="${recruitMentor.studyType} == 'language'" value="language" selected>언어</option>
+                    <option th:if="${recruitMentor.studyType} != 'language'" value="language">언어</option>
+                    <option th:if="${recruitMentor.studyType} == 'employment'" value="employment" selected>취업</option>
+                    <option th:if="${recruitMentor.studyType} != 'employment'" value="employment">취업</option>
+                    <option th:if="${recruitMentor.studyType} == 'etc'" value="etc" selected>기타</option>
+                    <option th:if="${recruitMentor.studyType} != 'etc'" value="etc">기타</option>
+                </select>
+            </li>
+            <li>
+                <div>멘토 소개</div>
+                <textarea name="studyIntro" th:text="${recruitMentor.studyIntro}"></textarea>
+            </li>
+            <li>
+                <input type="button" value="수정하기" onclick="mentorModify(this.form);">
+            </li>
+        </ul>
+    </form>
+</body>
+<script src="/js/httpRequest.js"></script>
+<script>
+    //현재 시간을 설정하는 변수
+    const TIME_ZONE = 3240 * 10000;
+    //시간에서 날짜만 따로 잘라낼 변수
+    let today = new Date(+new Date() + TIME_ZONE).toISOString().split('T')[0];
+    //날짜를 저장할 변수
+    let writeDate = document.getElementById("writeDate");
+    //날짜 저장
+    writeDate.value = today;
+    //멘토구하기 내용 변경 메서드
+    function mentorModify(f) {
+        let idx = f.idx.value;
+        let title = f.title.value;
+        let studyType = f.studyType.value;
+        let studyIntro = f.studyIntro.value;
+        let writer = f.writer.value;
+        let writeDate = f.writeDate.value;
+        if (title == '') {
+            alert('제목작성하셈');
+            return;
+        }
+        if (studyType == '') {
+            alert('타입 선택하셈');
+            return;
+        }
+        if (studyIntro == '') {
+            alert('설명 작성하셈');
+            return;
+        }
+        let url = '/recruitmentorlist/post/modifyform/modify';
+        let param = "idx=" + idx +
+                    "&title=" + title +
+                    "&writer=" + writer +
+                    "&writeDate=" + writeDate +
+                    "&studyType=" + studyType +
+                    "&studyIntro=" + studyIntro;
+        sendRequest(url, param, res, "GET");
+    }
+
+    function res() {
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == 'no') {
+                alert('내용변경 실패');
+                return;
+            } else {
+                alert('내용변경 성공');
+                location.href="/recruitmentorlist";
+            }
+        }
+    }
+</script>
+</html>

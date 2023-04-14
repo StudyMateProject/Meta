@@ -1,7 +1,12 @@
 package com.study.mate.controller;
 
+import com.study.mate.entity.Alarm;
 import com.study.mate.entity.Member;
+import com.study.mate.entity.RecruitMentee;
+import com.study.mate.entity.RecruitStudy;
 import com.study.mate.service.MyPageService;
+import com.study.mate.service.RecruitMenteeService;
+import com.study.mate.service.RecruitStudyService;
 import com.study.mate.service.SignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 public class MainController {
@@ -18,6 +24,10 @@ public class MainController {
     SignUpService signUpService;
     @Autowired
     MyPageService myPageService;
+    @Autowired
+    RecruitStudyService recruitStudyService;
+    @Autowired
+    RecruitMenteeService recruitMenteeService;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 로그인 후 메인 페이지
     @GetMapping("/")
@@ -31,8 +41,18 @@ public class MainController {
         } else {
             // 1-2-1. 1에서 파라미터로 받아온 로그인 유저 아이디를 서비스에 전달한다.
             Member.rpNickname rpNickname = signUpService.memberNickname(principal.getName());
+            // 본인에게 온 알람 리스트 검색
+            List<Alarm> alarmList = myPageService.findEmailId(principal.getName());
+            // 가장 인기있는 스터디 리스트 검색
+            List<RecruitStudy> recruitStudyList = recruitStudyService.recruitStudyListAll(1, 10);
+            // 요즘 주목받는 멘토 리스트 검색
+            List<RecruitMentee> recruitMenteeList = recruitMenteeService.recruitMenteeListAll(1, 10);
+
             // 1-2-2. 1-2-1에서 받아온 로그인 유저 닉네임을 바인딩한다.
             model.addAttribute("nickname", rpNickname.getNickname());
+            model.addAttribute("alarmList", alarmList);
+            model.addAttribute("list", recruitStudyList);
+            model.addAttribute("menteeList", recruitMenteeList);
             // 1-2-3. 메인 페이지로 이동한다.
             return "Main";
         }
@@ -40,7 +60,14 @@ public class MainController {
 
     // 로그인 전 메인 페이지
     @GetMapping("/n")
-    public String nmain() {
+    public String nmain(Model model) {
+        // 가장 인기있는 스터디 리스트 검색
+        List<RecruitStudy> recruitStudyList = recruitStudyService.recruitStudyListAll(1, 10);
+        // 요즘 주목받는 멘토 리스트 검색
+        List<RecruitMentee> recruitMenteeList = recruitMenteeService.recruitMenteeListAll(1, 10);
+
+        model.addAttribute("list", recruitStudyList);
+        model.addAttribute("menteeList", recruitMenteeList);
         // 1. 메인 페이지로 이동한다.
         return "Main";
     }
@@ -71,14 +98,6 @@ public class MainController {
         model.addAttribute("loginErrMsg", loginErrMsg);
         // 7. 로그인 페이지로 이동한다.
         return "SignUp/LoginForm";
-    }
-
-    // 마이 페이지
-    @GetMapping("/mypage")
-    public String mypageList(Principal principal, Model model) {
-        Member.rpProfile rpProfile = myPageService.selectProfile(principal);
-        model.addAttribute("member", rpProfile);
-        return "/MyPage/MyPageHome";
     }
 
     // 로그아웃 페이지

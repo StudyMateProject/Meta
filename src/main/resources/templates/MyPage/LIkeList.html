@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>좋아요 목록</h1>
+    <input type="button" value="뒤로가기" onclick="location.href='/mypage'">
+    <div style="border: 1px solid black; width: 100%; height: 400px; overflow: scroll;">
+        <h2>스터디원 구하기</h2>
+        <!-- 좋아요를 한 목록중 study 리스트 -->
+        <div style="border: 1px solid black" th:each="recruitStudy : ${studyList}">
+            <form>
+                <input type="text" name="idx" th:value="${recruitStudy.idx}" readonly>
+                <div th:if="${recruitStudy.recruiting} == '0'">
+                    모집중
+                </div>
+                <div th:if="${recruitStudy.recruiting} != '0'">
+                    모집완료
+                </div>
+                <div>
+                    <img th:src="${recruitStudy.image}" style="width: 50px; height: 50px;">
+                </div>
+                <div name="title" th:text="${recruitStudy.title}">
+                    제목
+                </div>
+                <div th:text="${recruitStudy.writer}">
+                    닉네임
+                </div>
+                <input type="button" value="상세보기" onclick="changeStudy(this.form);">
+                <div th:text="${recruitStudy.studyIntro}">
+                    내용
+                </div>
+            </form>
+        </div>
+    </div>
+    <div style="border: 1px solid black; width: 100%; height: 400px; overflow: scroll; margin-top: 10px;">
+        <h2>멘토 구하기</h2>
+        <!-- 좋아요를 한 목록중 mentor 리스트 -->
+        <div style="border: 1px solid black" th:each="recruitMentor : ${mentorList}">
+            <form>
+                <input type="hidden" th:value="${recruitMentor.idx}" name="idx">
+                <span th:text="${recruitMentor.studyType}"></span>
+                <span> | </span>
+                <span th:if="${recruitMentor.recruiting} == '0'">모집중</span>
+                <span th:if="${recruitMentor.recruiting} != '0'">모집완료</span>
+                <span> | </span>
+                <span th:text="${recruitMentor.title}"></span>
+                <span> | </span>
+                <span th:text="${recruitMentor.writer}"></span>
+                <span> | </span>
+                <span><input type="button" value="상세보기" onclick="changeMentor(this.form);"></span>
+            </form>
+        </div>
+    </div>
+    <div style="border: 1px solid black; width: 100%; height: 400px; overflow: scroll; margin-top: 10px;">
+        <h2>멘토 프로필</h2>
+        <!-- 좋아요를 한 목록중 mentee 리스트 -->
+        <div style="border: 1px solid black" th:each="recruitMentee : ${menteeList}">
+            <form>
+                <input type="hidden" th:value="${recruitMentee.idx}" name="idx">
+                <div th:if="${recruitMentee.recruiting} == '0'">
+                    모집중
+                </div>
+                <div th:if="${recruitMentee.recruiting} != '0'">
+                    모집완료
+                </div>
+                <div>
+                    사진
+                    <img th:src="${recruitMentee.image}" style="width: 50px; height: 50px;">
+                </div>
+                <div th:text="${recruitMentee.title}">
+                    제목
+                </div>
+                <div th:text="${recruitMentee.writer}">
+                    닉네임
+                </div>
+                <div>
+                    <input type="button" value="상세보기" onclick="changeMentee(this.form);">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script th:inline="javascript">
+    //상세보기버튼 클릭시 실행될 메서드
+    function changeStudy(f){
+        f.action = '/recruitstudy/post';
+        f.method = "GET";
+        f.submit();
+    }
+    //상세보기버튼 클릭시 실행될 메서드
+    function changeMentor(f){
+        f.action = '/recruitmentorlist/post';
+        f.method = "GET";
+        f.submit();
+    }
+    //상세보기버튼 클릭시 실행될 메서드
+    function changeMentee(f){
+        f.action = '/mentorprofilelist/post';
+        f.method = "GET";
+        f.submit();
+    }
+</script>
+</html>

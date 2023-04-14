@@ -56,7 +56,7 @@
             // 이메일 형식이 맞는 경우
             } else {
                 // 1. Ajax를 사용하여 작성한 아이디를 컨트롤러로 보낸다.
-                let url = "/joinform/emailsend";
+                let url = "/loginform/findpwdform/emailsend";
                 let param = "emailId=" + emailId;
                 sendRequest(url, param, resultSendEmail, "POST");
             }

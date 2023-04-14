@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="/js/httpRequest.js"></script>
+    <script>
+        //환불 메서드
+        function refund(merchantUid, email, impUid) {
+            //정말로 환불 할껀지 확인
+            let result = confirm("환불하시겠습니까??");
+            if(result == true){
+                //만약 확인을 눌렀다면 환불 진행
+                let url = "/mypage/perchaselist/refundcheck";
+                let param = "merchantUid=" + merchantUid +
+                            "&impUid=" + impUid +
+                            "&buyerEmail=" + email;
+                sendRequest(url, param, refundRes, "post");
+            }else{
+                alert("취소");
+            }
+        }
+        function refundRes() {
+        	if (xhr.readyState == 4 && xhr.status == 200) {
+		        var data = xhr.responseText;
+		        if (data == "no") {
+		            //실패 로직
+		            alert("환불요청 실패");
+		            return;
+		        } else {
+                    //환불신청 성공 로직
+                    alert("환불 요청 성공");
+                    //변경된 값을 보여주기 위해서 reload 를 한다.
+                    window.location.reload();
+		        }
+	        }
+        }
+    </script>
+</head>
+<body>
+    <h1>구매내역</h1>
+    <input type="button" value="뒤로가기" onclick="location.href='/'">
+    <!-- 결제내역 리스트 -->
+    <div th:each="pay:${payList}" style="border: 1px solid black;">
+        <div>
+            <div>
+                <span th:text="'상품명 : ' + ${pay.itemName}"></span>
+            </div>
+            <div>
+                <span th:text="'가격 : ' + ${pay.price}"></span>
+            </div>
+        </div>
+        <div th:if="${pay.isPaid == 0}">
+            <input type="button"
+                   th:merchantUid="${pay.merchantUid}"
+                   th:impUid="${pay.impUid}"
+                   th:email="${pay.buyerEmail}"
+                   value="환불하기"
+                   th:onclick="refund(this.getAttribute('merchantUid'),
+                                     this.getAttribute('email'),
+                                     this.getAttribute('impUid')
+                                     )">
+        </div>
+        <div th:if="${pay.isPaid == 1}">
+            <span>환불처리중인 상품입니다.</span>
+        </div>
+        <div th:if="${pay.isPaid == 2}">
+            <span>환불처리된 상품입니다.</span>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>멘토구하기</h1>
+    <input type="hidden" id="idx" th:value="${recruitMentor.idx}">
+    <ul>
+        <li th:if="${recruitMentor.recruiting} == '0'">모집중</li>
+        <li th:if="${recruitMentor.recruiting} == '1'">모집완료</li>
+        <li>
+            <span>제목 : </span>
+            <input type="text" th:value="${recruitMentor.title}" readonly>
+        </li>
+        <li>
+            <span>작성자 : </span>
+            <input type="text" th:value="${recruitMentor.writer}" readonly>
+        </li>
+        <li>
+            <span>분야 : </span>
+            <input type="text" th:value="${recruitMentor.studyType}" readonly>
+        </li>
+        <li>
+            <span>멘토소개 : </span>
+            <input type="text" th:value="${recruitMentor.studyIntro}" readonly>
+        </li>
+        <li>
+            <form>
+                <input type="button" value="찜하기" onclick="like(this.form);">
+                <input type="hidden" id="studyLikeCheck" name="studyLikeCheck" th:value="${recruitMentor.studyLikeCheck}">
+                <input type="hidden" id="studyLike" name="studyLike" th:value="${recruitMentor.studyLike}">
+                <span id="studyLikeView" th:text="${recruitMentor.studyLike}">숫자</span>
+            </form>
+        </li>
+        <li th:if="${nickname} == ${recruitMentor.writer}">
+            <input type="button" value="글 수정" th:onclick="|location.href='@{post/modifyform(idx=${recruitMentor.idx})}'|">
+            <input type="button" value="글 삭제" onclick="writeDelete();">
+        </li>
+        <li th:if="${nickname} != ${recruitMentor.writer}">
+            <input type="button" value="신청하기" onclick="mentorRequest();">
+        </li>
+        <li>
+            <a href="/recruitmentorlist">뒤로가기</a>
+        </li>
+        <li>
+            <input type="text" id="comment">
+            <input type="button" value="댓글작성" onclick="writeComment();">
+        </li>
+    </ul>
+    <h2>댓글 나오는데</h2>
+    <ul th:each="comment : ${list}" style="border:2px solid black;">
+        <div th:if="${comment.deleteCheck} == '0'">
+            <form>
+                <input type="hidden" name="idx" th:value="${comment.idx}">
+                <li>
+                    <span>작성일자 : </span>
+                    <input type="text" name="writeDate" th:value="${comment.writeDate}" readonly>
+                </li>
+                <li>
+                    <span>작성자 : </span>
+                    <input type="text" name="writer" th:value="${comment.writer}" readonly>
+                </li>
+                <li>
+                    <span>내용 : </span>
+                    <textarea name="comment" th:text="${comment.comment}" readonly></textarea>
+                </li>
+                <li th:if="${nickname} == ${comment.writer}">
+                    <input name="beforeModify" type="button" value="수정" onclick="commentModifyForm(this.form);">
+                    <input name="modify" style="display:none;" type="button" value="수정하기" onclick="commentModify(this.form);">
+                    <input type="button" value="삭제" onclick="commentDelete(this.form);">
+                </li>
+            </form>
+        </div>
+        <div th:if="${comment.deleteCheck} == '1'">
+            <li>
+                <span>삭제된 댓글입니다.</span>
+            </li>
+        </div>
+    </ul>
+</body>
+<script src="/js/httpRequest.js"></script>
+<script th:inline="javascript">
+//////////////////////////////////////////////////////스터디 신청//////////////////////////////////////////////////////////
+    function mentorRequest() {
+        let idx = [[${recruitMentor.idx}]];
+        let emailId = [[${emailId}]];
+        let nickname = [[${nickname}]];
+        let url = "/recruitmentorlist/post/apply";
+        let param = "writer=" + [[${recruitMentor.writer}]] +
+                    "&emailId=" + emailId +
+                    "&nickname=" + nickname +
+                    "&recruitMentorIdx=" + idx;
+        sendRequest(url, param, mentorRequestRes, "GET");
+    }
+    function mentorRequestRes() {
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == 'no'){
+                alert("멘토 구하기 신청 실패");
+                return;
+            } else if(data == 'exist'){
+                alert("멘토 구하기 신청 중복");
+            } else {
+                alert("멘토 구하기 신청 성공");
+            }
+        }
+    }
+//////////////////////////////////////////////////////스터디 신청//////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////댓글 수정///////////////////////////////////////////////////////////
+    function commentModify(f){
+        let idx = f.idx.value;
+        let comment = f.comment.value;
+        const TIME_ZONE = 3240 * 10000; // 현재 시간을 설정하는 변수
+        let today = new Date(+new Date() + TIME_ZONE).toISOString().split('T')[0];
+        if(comment == ''){
+            alert("내용을 작성하세요");
+            return;
+        }
+        let url = "/recruitmentorlist/post/comment/modify"
+        let param = "idx=" + idx +
+                    "&comment=" + comment +
+                    "&writeDate=" + today;
+        sendRequest(url, param, commentModifyRes, "GET");
+    }
+    function commentModifyRes(){
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == 'no'){
+                alert("댓글 수정 실패");
+                return;
+            } else {
+                alert("댓글 수정 완료");
+                location.reload();
+            }
+        }
+    }
+
+    function commentModifyForm(f) {
+        alert("내용을 변경해주세요");
+        f.comment.readOnly = false;
+        f.comment.value = "";
+        f.modify.style.display = "inline";
+        f.beforeModify.style.display = "none";
+    }
+//////////////////////////////////////////////////////댓글 수정///////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////댓글 삭제///////////////////////////////////////////////////////////
+    function commentDelete(f) {
+        let idx = f.idx.value;
+        let url = "/recruitmentorlist/post/comment/delete"
+        let param = "idx=" + idx;
+        sendRequest(url, param, deleteRes, "GET");
+    }
+    function deleteRes(){
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == 'no'){
+                alert("댓글 삭제 실패");
+                return;
+            } else {
+                alert("댓글 삭제 완료");
+                location.reload();
+            }
+        }
+    }
+//////////////////////////////////////////////////////댓글 삭제///////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////댓글 작성///////////////////////////////////////////////////////////
+    function writeComment() {
+        const TIME_ZONE = 3240 * 10000; // 현재 시간을 설정하는 변수
+        let today = new Date(+new Date() + TIME_ZONE).toISOString().split('T')[0];
+        let idx = document.getElementById("idx").value;
+        let comment = document.getElementById("comment").value;
+        let url = "/recruitmentorlist/post/comment"
+        let param = "commentIdx=" + idx +
+                    "&writeDate=" + today +
+                    "&writer=" + [[${nickname}]] +
+                    "&comment=" + comment;
+        sendRequest(url, param, commentRes, "GET");
+    }
+    function commentRes(){
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == 'no'){
+                alert("댓글 작성 실패");
+                return;
+            } else {
+                alert("댓글 작성 완료");
+                location.reload();
+            }
+        }
+    }
+//////////////////////////////////////////////////////댓글 작성///////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////게시글 삭제//////////////////////////////////////////////////////////
+    function writeDelete() {
+        let idx = document.getElementById("idx").value;
+        let url = "/recruitmentorlist/post/delete";
+        let param = "idx=" + idx;
+        sendRequest(url, param, deleteMentor, "GET");
+    }
+    function deleteMentor() {
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == 'no'){
+                alert("삭제실패");
+                return;
+            } else {
+                alert("삭제 성공");
+                location.href="/recruitmentorlist";
+            }
+        }
+    }
+//////////////////////////////////////////////////////게시글 삭제//////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////게시글 좋아요/////////////////////////////////////////////////////////
+    function like(f){
+        let studyLike = parseInt(f.studyLike.value);
+        let idx = document.getElementById("idx").value;
+        let url = "/recruitmentorlist/post/like";
+        param = "&studyLike=" + studyLike +
+                "&likeIdx=" + idx +
+                "&memberIdx=" + [[${memberIdx}]] +
+                "&emailId=" + [[${emailId}]] +
+                "&recruitMentorIdx=" + idx +
+                "&nickname=" + [[${nickname}]];
+        sendRequest(url, param, likeRes, "GET");
+    }
+    function likeRes(){
+        let studyLikeCheck = document.getElementById("studyLikeCheck");
+        let studyLike = document.getElementById("studyLike");
+        let studyLikeView = document.getElementById("studyLikeView");
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == "no") {
+
+            } else {
+                if(studyLikeCheck.value == '0') {
+                    alert('좋아요');
+                    studyLikeCheck.value += 1;
+                    studyLikeView.innerHTML = data;
+                } else {
+                    alert('좋아요 취소');
+                    studyLikeCheck.value -= 1;
+                    studyLikeView.innerHTML = data;
+                }
+            }
+        }
+    }
+//////////////////////////////////////////////////////게시글 좋아요/////////////////////////////////////////////////////////
+</script>
+</html>

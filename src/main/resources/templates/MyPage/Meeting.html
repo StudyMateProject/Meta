@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    미팅페이지
+    <div th:each="meeting: ${list}">
+        <!-- 현재 진행중인 만남 중 스터디원구하기 리스트 -->
+        <div style="border: 1px solid black;" th:if="${meeting.recruitStudyIdx} != null and ${meeting.recruitMenteeIdx} == null and ${meeting.recruitMenteeIdx} == null">
+            <img th:src="${meeting.recruitStudyImage}">
+            <div th:text="${meeting.recruitStudyTitle}"></div>
+        </div>
+        <!-- 현재 진행중인 만남 중 멘토프로필 리스트 -->
+        <div style="border: 1px solid black;" th:if="${meeting.recruitMenteeIdx} != null and ${meeting.recruitStudyIdx} == null and ${meeting.recruitMentorIdx} == null">
+            <img th:src="${meeting.recruitMenteeImage}">
+            <div th:text="${meeting.recruitMenteeTitle}"></div>
+            <div th:text="${meeting.recruitMenteeWriter}"></div>
+        </div>
+        <!-- 현재 진행중인 만남 중 멘토구하기 리스트 -->
+        <div style="border: 1px solid black;" th:if="${meeting.recruitMentorIdx} != null and ${meeting.recruitMenteeIdx} == null and ${meeting.recruitStudyIdx} == null">
+            <div th:text="${meeting.recruitMentorTitle}"></div>
+            <div th:text="${meeting.recruitMentorWriter}"></div>
+        </div>
+    </div>
+</body>
+</html>

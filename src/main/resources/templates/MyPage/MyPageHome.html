@@ -9,6 +9,8 @@
     <link rel="stylesheet" type="text/css" href="/css/profile.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+    <script src="/js/httpRequest.js"></script>
+    <script src="/js/mainAlarm.js"></script>
 </head>
 <body>
     <header>
@@ -54,47 +56,34 @@
                     <div class="whenLogin" sec:authorize="isAuthenticated()">
                         <div class="welcome" th:text="${member.nickname} + '님 반갑습니다!'"></div>
                         <div class="notificationsMenu">
-                            <div class="icon" th:data-number="${alarmCount}">
+                            <div class="icon">
                                 <i class="ri-notification-4-fill"></i>
                             </div>
                             <div class="notiDrop">
                                 <p>최근 알림</p>
                                 <div class="notiList">
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 </span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림4 알림4 알림4 알림4 알림4 알림4 알림4 알림4</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림6 알림6</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림8 알림8 알림8 알림8 알림8</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림9</span>
+                                    <a class="notiDropMenu" th:each="alarm : ${alarmList}">
+                                        <div th:if="${alarm.alarmType} == '2'">
+                                            <form>
+                                                <span class="notiCircle"></span>
+                                                <span class="notiText" th:text="${alarm.title}"></span><br>
+                                                <input type="hidden" name="idx" th:value="${alarm.idx}">
+                                                <input type="hidden" name="recruitStudyIdx" th:value="${alarm.recruitStudyIdx}">
+                                                <input type="hidden" name="recruitMentorIdx" th:value="${alarm.recruitMentorIdx}">
+                                                <input type="hidden" name="recruitMenteeIdx" th:value="${alarm.recruitMenteeIdx}">
+                                                <input type="hidden" name="nickname" th:value="${alarm.nickname}">
+                                                <input type="button" value="수락" onclick="recruitAccept(this.form);">
+                                                <input type="button" value="거절" onclick="recruitRefuse(this.form);">
+                                            </form>
+                                        </div>
+                                        <div th:if="${alarm.alarmType} != '2'">
+                                            <span class="notiCircle"></span>
+                                            <form>
+                                                <input type="hidden" name="idx" th:value="${alarm.idx}">
+                                                <input type="button" value="X" onclick="deleteAlarm(this.form);"><br>
+                                                <span class="notiText" th:text="${alarm.title}"></span>
+                                            </form>
+                                        </div>
                                     </a>
                                 </div>
                             </div>
@@ -133,10 +122,10 @@
                 <a class="withdraw content" href="/mypage/modifyform/withdrawalcheck">탈퇴하기</a>
             </div>
             <div class="menu">
-                <input type="button" class="likeList mypageBtn" onclick="location.href='/mypage';" value="찜목록">
-                <input type="button" class="studying mypageBtn" onclick="location.href='/mypage';" value="현재 Mate">
+                <input type="button" class="likeList mypageBtn" onclick="location.href='/mypage/likelist';" value="찜목록">
+                <input type="button" class="studying mypageBtn" onclick="location.href='/mypage/meeting';" value="현재 Mate">
                 <input type="button" class="chatList mypageBtn" onclick="location.href='/mypage';" value="채팅목록">
-                <input type="button" class="purchaseList mypageBtn" onclick="location.href='/mypage';" value="구매내역">
+                <input type="button" class="purchaseList mypageBtn" onclick="location.href='/mypage/perchaselist';" value="구매내역">
             </div>
         </div>
 

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="/js/storeCount.js"></script>
+    <script type="text/javascript" src="/js/storePayPopup.js"></script>
+</head>
+<body>
+    <h1>결제</h1>
+    <input type="button" value="뒤로가기" onclick="location.href='/store'">
+    <div class="payDiv">
+        <span>
+            <div>
+                <input type="hidden" th:value="${item.storeIdx}" id="storeIdx">
+                <div id="itemName" th:text="${item.itemName}"></div>
+                <input type="hidden" id="staticPrice" th:value="${item.price}">
+                <div id="price" th:text="${item.price} + '원'"></div>
+                <div>
+                    <button id="minus" onclick="count('-')">
+                        <img src="/img/minus.png">
+                    </button>
+                    <label type="text" id="num">1</label>
+                    <button id="plus" onclick="count('+')">
+                        <img src="/img/plus.png">
+                    </button>
+                </div>
+                <div>
+                    <input type="button" value="구매하기" onclick="payPopup();">
+                </div>
+                <div>
+                    <input type="hidden" th:value="${likeCheck}" id="storeLikeCheck">
+                    <div th:text="${item.goodsLike}" id="storeLikeView">
+
+                    </div>
+                    <input type="button" value="찜하기" onclick="storeLike();">
+                </div>
+            </div>
+        </span>
+    </div>
+    <div>
+        <div>
+            <div>상세정보</div>
+        </div>
+        <div>
+            <div>
+                <textarea readonly th:text="${item.introduce}"></textarea>
+                <input type="hidden" value="상세정보 내용">
+            </div>
+        </div>
+    </div>
+    <div th:each="pay:${payList}">
+    <!-- 댓글 -->
+        <div>
+            댓글 달기
+        </div>
+        <div th:if="${#strings.equals(emailId, pay.buyerEmail)}">
+            <div>
+               <input type="text" id="comment">
+            </div>
+            <div>
+                <input type="button" value="댓글달기" onclick="writeComment();">
+            </div>
+        </div>
+    </div>
+    <div>댓글 나오는곳</div>
+    <ul th:each="comment : ${commentList}" style="border:2px solid black;">
+        <div th:if="${comment.deleteCheck} == '0'">
+            <form>
+                <input type="hidden" name="idx" th:value="${comment.idx}">
+                <li>
+                    <span>작성자 : </span>
+                    <input type="text" name="writer" th:value="${comment.writer}" readonly>
+                </li>
+                <li>
+                    <span>내용 : </span>
+                    <textarea name="comment" th:text="${comment.comment}" readonly></textarea>
+                </li>
+                <li th:if="${nickname} == ${comment.writer}">
+                    <input name="beforeModify" type="button" value="수정" onclick="commentModifyForm(this.form);">
+                    <input name="modify" style="display:none;" type="button" value="수정하기" onclick="commentModify(this.form);">
+                    <input type="button" value="삭제" onclick="commentDelete(this.form);">
+                </li>
+            </form>
+        </div>
+        <div th:if="${comment.deleteCheck} == '1'">
+            <li>
+                <span>삭제된 댓글입니다.</span>
+            </li>
+        </div>
+    </ul>
+</body>
+<script src="/js/httpRequest.js"></script>
+<script th:inline="javascript">
+    //상품 좋아요
+    function storeLike() {
+        let idx = document.getElementById("storeIdx").value;
+        let memberIdx = [[${memberIdx}]];
+        let url = "/store/pay/like";
+        let param = "likeIdx=" + idx +
+                    "&memberIdx=" + memberIdx;
+        sendRequest(url, param, likeRes, "GET");
+    }
+    function likeRes() {
+        let storeLIkeCheck = document.getElementById("storeLikeCheck");
+        let storeLikeView = document.getElementById("storeLikeView");
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == "no") {
+
+            } else {
+                if(storeLikeCheck.value == '0') {
+                    alert('좋아요');
+                    storeLikeCheck.value += 1;
+                    storeLikeView.innerHTML = data;
+                } else {
+                    alert('좋아요 취소');
+                    storeLikeCheck.value -= 1;
+                    storeLikeView.innerHTML = data;
+                }
+            }
+        }
+    }
+</script>
+<script th:inline="javascript">
+    //구매자 댓글
+    function writeComment() {
+        let comment = document.getElementById("comment").value;
+        let idx = document.getElementById("storeIdx").value;
+        if(comment == ''){
+            alert("내용을 작성하세요");
+            return;
+        }
+        let url = "/store/pay/comment";
+        let param = "commentIdx=" + idx +
+                    "&writer=" + [[${nickname}]] +
+                    "&comment=" + comment;
+        sendRequest(url, param, commentRes, "GET");
+    }
+
+    function commentRes() {
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == 'no'){
+                alert("댓글 작성 실패");
+                return;
+            } else {
+                alert("댓글 작성 완료");
+                location.reload();
+            }
+        }
+    }
+//////////////////////////////////////////////////////댓글 수정////////////////////////////////////////////////////////////////
+    function commentModify(f){
+        let idx = f.idx.value;
+        let comment = f.comment.value;
+        if(comment == ''){
+            alert("내용을 작성하세요");
+            return;
+        }
+        let url = "/store/pay/comment/modify"
+        let param = "idx=" + idx +
+                    "&comment=" + comment;
+        sendRequest(url, param, commentModifyRes, "GET");
+    }
+    function commentModifyRes(){
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == 'no'){
+                alert("댓글 수정 실패");
+                return;
+            } else {
+                alert("댓글 수정 완료");
+                location.reload();
+            }
+        }
+    }
+
+    function commentModifyForm(f) {
+        alert("내용을 변경해주세요");
+        f.comment.readOnly = false;
+        f.comment.value = "";
+        f.modify.style.display = "inline";
+        f.beforeModify.style.display = "none";
+    }
+//////////////////////////////////////////////////////댓글 수정////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////댓글 삭제////////////////////////////////////////////////////////////////
+    function commentDelete(f) {
+        let idx = f.idx.value;
+        let url = "/store/pay/comment/delete"
+        let param = "idx=" + idx;
+        sendRequest(url, param, deleteRes, "GET");
+    }
+    function deleteRes(){
+        if ( xhr.readyState == 4 && xhr.status == 200 ) {
+            var data = xhr.responseText;
+            if(data == 'no'){
+                alert("댓글 삭제 실패");
+                return;
+            } else {
+                alert("댓글 삭제 완료");
+                location.reload();
+            }
+        }
+    }
+//////////////////////////////////////////////////////댓글 삭제////////////////////////////////////////////////////////////////
+</script>
+</html>

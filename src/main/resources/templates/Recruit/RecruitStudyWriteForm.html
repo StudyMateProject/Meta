@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+    </style>
+</head>
+<body>
+    <h1>스터디원 모집</h1>
+    <form>
+        <input type="hidden" id="writeDate" name="writeDate">
+        <input type="text" name="writer" th:value="${nickname}" readonly>
+        <ul>
+            <li><span>제목 : </span> <input name="title" type="text"></li>
+            <li><span>분야 : </span>
+                <select name="studyType" onchange="showImage();">
+                    <option value="">선택하던가 말던가</option>
+                    <option value="computer">컴퓨터</option>
+                    <option value="math">수학</option>
+                    <option value="management">경영/마케팅</option>
+                    <option value="design">디자인</option>
+                    <option value="education">교육</option>
+                    <option value="literature">문학</option>
+                    <option value="entrance">입시</option>
+                    <option value="engineer">공학</option>
+                    <option value="language">언어</option>
+                    <option value="employment">취업</option>
+                    <option value="etc">기타</option>
+                </select>
+            </li>
+            <li><span>인원 : </span>
+                <select name="personnel">
+                    <option value="">선택하던지 말던지</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select></li>
+            <li><span>사진 : </span><div id="test1"></div></li>
+            <li><span>스터디소개 : </span><textarea name="studyIntro"></textarea></li>
+            <li><input type="button" value="작성 완료" onclick="studyWrite(this.form)"></li>
+        </ul>
+    </form>
+    <input type="button" value="뒤로가기" onclick="location.href='/recruitstudy'">
+<script>
+    //현재 시간을 설정하는 변수
+    const TIME_ZONE = 3240 * 10000; // 현재 시간을 설정하는 변수
+    //시간에서 날짜만 따로 잘라낼 변수
+    let today = new Date(+new Date() + TIME_ZONE).toISOString().split('T')[0];
+    //날짜를 저장할 변수
+    let writeDate = document.getElementById("writeDate");
+    //날짜 저장
+    writeDate.value = today;
+    //멘토프로필 작성하는 메서드
+    function studyWrite(f) {
+        let title = f.title.value;
+        let studyType = f.studyType.value;
+        let personnel = f.personnel.value;
+        let studyIntro = f.studyIntro.value;
+        if (title == '') {
+            alert('제목작성하셈');
+            return;
+        }
+        if (studyType == '') {
+            alert('타입 선택하셈');
+            return;
+        }
+        if (personnel == '') {
+            alert('인원 선택하셈');
+            return;
+        }
+        if (studyIntro == '') {
+            alert('설명 작성하셈');
+            return;
+        }
+        f.action = '/recruitstudy/writeform/write';
+        f.method = "GET";
+        f.submit();
+    }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //타입을 변경할 때 이미지도 변경하기위한 메서드
+    function showImage(){
+        let test1 = document.getElementById("test1");
+        let selectElement = document.querySelector("select");
+        let selectedValue = selectElement.value;
+        if (selectedValue) {
+            test1.innerHTML = '<img src="/img/' + selectedValue + '.png"  style="width: 50px; height: 50px;">' +
+                              '<input type="hidden" name="image" value="/img/' + selectedValue + '.png">';
+        } else {
+            test1.innerHTML = '';
+        }
+    }
+</script>
+</body>
+</html>
