@@ -1,7 +1,7 @@
 package com.study.mate.controller;
 
 import com.study.mate.entity.Alarm;
-import com.study.mate.entity.Member;
+import com.study.mate.entity.Sign;
 import com.study.mate.entity.RecruitMentee;
 import com.study.mate.entity.RecruitStudy;
 import com.study.mate.service.MyPageService;
@@ -40,7 +40,7 @@ public class MainController {
         // 1-2. 로그인을 한 경우
         } else {
             // 1-2-1. 1에서 파라미터로 받아온 로그인 유저 아이디를 서비스에 전달한다.
-            Member.rpNickname rpNickname = signUpService.memberNickname(principal.getName());
+            Sign.rpNickname rpNickname = signUpService.memberNickname(principal.getName());
             // 본인에게 온 알람 리스트 검색
             List<Alarm> alarmList = myPageService.findEmailId(principal.getName());
             // 가장 인기있는 스터디 리스트 검색

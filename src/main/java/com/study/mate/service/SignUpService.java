@@ -1,8 +1,8 @@
 package com.study.mate.service;
 
 import com.study.mate.dto.MailKeyDTO;
-import com.study.mate.entity.Member;
-import com.study.mate.repository.MemberRepository;
+import com.study.mate.entity.Sign;
+import com.study.mate.repository.SignRepository;
 import lombok.Builder;
 import org.apache.commons.mail.HtmlEmail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +20,17 @@ import java.util.Properties;
 public class SignUpService implements UserDetailsService {
     // 멤버 DB
     @Autowired
-    MemberRepository memberRepository;
+    SignRepository signRepository;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 아이디 중복체크 및 메일로 인증 번호 발송 - 신규 가입
-    public Member.rpCheckEmailId checkEmailId(String emailId, PasswordEncoder passwordEncoder, String naverId, String naverPwd) { // 4. 파라미터로 컨트롤러에서 넘어온 아이디와 비밀번호 암호화 메소드를 받아온다.
+    public Sign.rpCheckEmailId checkEmailId(String emailId, PasswordEncoder passwordEncoder, String naverId, String naverPwd) { // 4. 파라미터로 컨트롤러에서 넘어온 아이디와 비밀번호 암호화 메소드를 받아온다.
         // 5. 4에서 파라미터로 받아온 이메일 아이디로 유저를 조회하고, 조회된 값을 받아온다.
-        Member member = memberRepository.findByEmailId(emailId);
+        Sign sign = signRepository.findByEmailId(emailId);
         // 6. 5에서 조회된 값이 있는지 체크한다.
         // 6-1. 조회된 값이 있는 경우 - 중복 가입자
-        if( member != null ) {
+        if( sign != null ) {
             // 6-1-1. 에러 체크 값과 에러 메세지를 DTO로 변환한다.
-            Member.rpCheckEmailId rpCheckEmailId = new Member.rpCheckEmailId("0", "이미 존재하는 아이디입니다.");
+            Sign.rpCheckEmailId rpCheckEmailId = new Sign.rpCheckEmailId("0", "이미 존재하는 아이디입니다.");
             // 6-1-2. 6-1-1에서 변환된 DTO로 변환한다.
             return rpCheckEmailId;
         // 6-2. 조회된 값이 없는 경우 - 신규 가입자
@@ -74,14 +74,14 @@ public class SignUpService implements UserDetailsService {
                 // 12. 메일이 정상적으로 발송됬는지 체크한다.
                 // 12-1. 메일 발송이 성공한 경우
                 // 12-1-1. 4에서 파라미터로 받아온 이메일 아이디와 7에서 생성한 인증 번호를 비밀번호 암호화 메소드를 사용하여 DTO로 변환한다.
-                Member.rpCheckEmailId rpCheckEmailId = new Member.rpCheckEmailId(emailId, mailKey, passwordEncoder);
+                Sign.rpCheckEmailId rpCheckEmailId = new Sign.rpCheckEmailId(emailId, mailKey, passwordEncoder);
                 // 12-1-2. 12-1-1에서 변환된 DTO를 반환한다.
                 return rpCheckEmailId;
             // 12-2. 메일 발송이 실패한 경우
             } catch (Exception e) {
                 //System.out.println(e);
                 // 12-2-1. 에러 체크 값과 에러 메세지를 DTO로 변환한다.
-                Member.rpCheckEmailId rpCheckEmailId = new Member.rpCheckEmailId("-1", "메일 발송에 실패하였습니다.\n다시 시도해주시기 바랍니다.");
+                Sign.rpCheckEmailId rpCheckEmailId = new Sign.rpCheckEmailId("-1", "메일 발송에 실패하였습니다.\n다시 시도해주시기 바랍니다.");
                 // 12-2-2. 12-2-1에서 변환된 DTO를 반환한다.
                 return rpCheckEmailId;
             }
@@ -90,8 +90,8 @@ public class SignUpService implements UserDetailsService {
 
     //닉네임 중복체크
     public String checkNickname (String nickname) {
-        Member member = memberRepository.findByNickname(nickname);
-        if ( member != null ) {
+        Sign sign = signRepository.findByNickname(nickname);
+        if ( sign != null ) {
             return "no";
         } else {
             return nickname;
@@ -101,10 +101,10 @@ public class SignUpService implements UserDetailsService {
     // 휴대폰 번호로 중복 가입자 체크
     public String checkPhone (String phoneNumber) { // 38. 파라미터로 컨트롤러에서 넘어온 휴대폰 번호를 받아온다.
         // 39. 38에서 파라미터로 받아온 휴대폰 번호로 유저를 조회하고, 조회된 값을 받아온다.
-        Member member = memberRepository.findByPhoneNumber(phoneNumber);
+        Sign sign = signRepository.findByPhoneNumber(phoneNumber);
         // 40. 39에서 조회된 값이 있는지 체크한다.
         // 40-1. 조회된 값이 있는 경우 - 중복 가입자
-        if ( member != null ) {
+        if ( sign != null ) {
             // 40-1-1. no를 반환한다.
             return "no";
         // 40-2. 조회된 값이 없는 경우 - 신규 가입자
@@ -115,14 +115,14 @@ public class SignUpService implements UserDetailsService {
     }
 
     // 자사 회원가입
-    public String joinMember(Member.rqJoinMember rqJoinMember, PasswordEncoder passwordEncoder) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO와 비밀번호 암호화 메소드를 받아온다.
+    public String joinMember(Sign.rqJoinMember rqJoinMember, PasswordEncoder passwordEncoder) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO와 비밀번호 암호화 메소드를 받아온다.
         // 4. 3에서 파라미터로 받아온 DTO를 Entity로 변환하면서 3에서 파라미터로 같이 받아온 비밀번호 암호화 메소드를 파라미터로 넘겨준다.
-        Member joinMember = rqJoinMember.toEntity(passwordEncoder);
+        Sign joinSign = rqJoinMember.toEntity(passwordEncoder);
         // 5. 4에서 변환된 Entity로 유저를 저장하고, 저장된 값을 받아온다.
-        Member member = memberRepository.save(joinMember);
+        Sign sign = signRepository.save(joinSign);
         // 6. 5에서 저장된 값이 있는지 체크한다.
         // 6-1. 저장된 값이 없는 경우 - 가입 실패
-        if ( member == null ) {
+        if ( sign == null ) {
             // 6-1-1. no를 반환한다.
             return "no";
         // 6-2. 저장된 값이 있는 경우 - 가입 성공
@@ -133,21 +133,21 @@ public class SignUpService implements UserDetailsService {
     }
     ////////////////////////////////////////////////ID찾기////////////////////////////////////////////////
     //ID찾기
-    public Member.rpFindId findIdSearch(Member.rqFindId rqFindId){
-        Member member = rqFindId.toEntity();
-        Member findEmailId = memberRepository.findEmailId(member.getName(), member.getPhoneNumber());
+    public Sign.rpFindId findIdSearch(Sign.rqFindId rqFindId){
+        Sign sign = rqFindId.toEntity();
+        Sign findEmailId = signRepository.findEmailId(sign.getName(), sign.getPhoneNumber());
         if ( findEmailId == null ) {
             return null;
         } else {
-            Member.rpFindId rpFindId = new Member.rpFindId(findEmailId.getEmailId(), findEmailId.getPlatform());
+            Sign.rpFindId rpFindId = new Sign.rpFindId(findEmailId.getEmailId(), findEmailId.getPlatform());
             return rpFindId;
         }
     }
     ////////////////////////////////////////////////PWD찾기(재설정)////////////////////////////////////////////////
     // PWD 재설정을 위한 정보확인
-    public String findPwdSearch(Member.rqFindPwd rqFindPwd){
-        Member member = rqFindPwd.toEntity();
-        Member findByFindPwd = memberRepository.findPwd(member.getEmailId(), member.getName(), member.getPhoneNumber());
+    public String findPwdSearch(Sign.rqFindPwd rqFindPwd){
+        Sign sign = rqFindPwd.toEntity();
+        Sign findByFindPwd = signRepository.findPwd(sign.getEmailId(), sign.getName(), sign.getPhoneNumber());
         if ( findByFindPwd == null ) {
             return "no";
         } else {
@@ -156,14 +156,14 @@ public class SignUpService implements UserDetailsService {
     }
 
     // 아이디 중복체크 및 메일로 인증 번호 발송 - 비밀번호 찾기
-    public Member.rpCheckEmailId findPwdCheckEmailId(String emailId, PasswordEncoder passwordEncoder, String naverId, String naverPwd) { // 4. 파라미터로 컨트롤러에서 넘어온 아이디와 비밀번호 암호화 메소드를 받아온다.
+    public Sign.rpCheckEmailId findPwdCheckEmailId(String emailId, PasswordEncoder passwordEncoder, String naverId, String naverPwd) { // 4. 파라미터로 컨트롤러에서 넘어온 아이디와 비밀번호 암호화 메소드를 받아온다.
         // 5. 4에서 파라미터로 받아온 이메일 아이디로 유저를 조회하고, 조회된 값을 받아온다.
-        Member member = memberRepository.findByEmailId(emailId);
+        Sign sign = signRepository.findByEmailId(emailId);
         // 6. 5에서 조회된 값이 있는지 체크한다.
         // 6-1. 조회된 값이 있는 경우 - 중복 가입자
-        if( member == null ) {
+        if( sign == null ) {
             // 6-1-1. 에러 체크 값과 에러 메세지를 DTO로 변환한다.
-            Member.rpCheckEmailId rpCheckEmailId = new Member.rpCheckEmailId("0", "해당 아이디로 가입된 이력이 없습니다.\n회원가입 혹은 아이디 찾기를 진행해 주시기 바랍니다.");
+            Sign.rpCheckEmailId rpCheckEmailId = new Sign.rpCheckEmailId("0", "해당 아이디로 가입된 이력이 없습니다.\n회원가입 혹은 아이디 찾기를 진행해 주시기 바랍니다.");
             // 6-1-2. 6-1-1에서 변환된 DTO로 변환한다.
             return rpCheckEmailId;
             // 6-2. 조회된 값이 없는 경우 - 신규 가입자
@@ -207,14 +207,14 @@ public class SignUpService implements UserDetailsService {
                 // 12. 메일이 정상적으로 발송됬는지 체크한다.
                 // 12-1. 메일 발송이 성공한 경우
                 // 12-1-1. 4에서 파라미터로 받아온 이메일 아이디와 7에서 생성한 인증 번호를 비밀번호 암호화 메소드를 사용하여 DTO로 변환한다.
-                Member.rpCheckEmailId rpCheckEmailId = new Member.rpCheckEmailId(emailId, mailKey, passwordEncoder);
+                Sign.rpCheckEmailId rpCheckEmailId = new Sign.rpCheckEmailId(emailId, mailKey, passwordEncoder);
                 // 12-1-2. 12-1-1에서 변환된 DTO를 반환한다.
                 return rpCheckEmailId;
                 // 12-2. 메일 발송이 실패한 경우
             } catch (Exception e) {
                 //System.out.println(e);
                 // 12-2-1. 에러 체크 값과 에러 메세지를 DTO로 변환한다.
-                Member.rpCheckEmailId rpCheckEmailId = new Member.rpCheckEmailId("-1", "메일 발송에 실패하였습니다.\n다시 시도해주시기 바랍니다.");
+                Sign.rpCheckEmailId rpCheckEmailId = new Sign.rpCheckEmailId("-1", "메일 발송에 실패하였습니다.\n다시 시도해주시기 바랍니다.");
                 // 12-2-2. 12-2-1에서 변환된 DTO를 반환한다.
                 return rpCheckEmailId;
             }
@@ -222,37 +222,37 @@ public class SignUpService implements UserDetailsService {
     }
 
     // PWD 재설정
-    public void resetPwd(Member.rqResetPwd rqResetPwd, PasswordEncoder passwordEncoder){
-        Member member = rqResetPwd.toEntity(passwordEncoder);
-        memberRepository.findChangePwd(member.getEmailId(), member.getPwd());
+    public void resetPwd(Sign.rqResetPwd rqResetPwd, PasswordEncoder passwordEncoder){
+        Sign sign = rqResetPwd.toEntity(passwordEncoder);
+        signRepository.findChangePwd(sign.getEmailId(), sign.getPwd());
     }
     ///////////////////////////////////////////////// 로그인 유저 정보 조회 /////////////////////////////////////////////////
     // 로그인 유저 닉네임 조회
-    public Member.rpNickname memberNickname(String emailId) { // 1. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
+    public Sign.rpNickname memberNickname(String emailId) { // 1. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
         // 2. 1에서 파라미터로 받아온 아이디로 로그인 유저를 조회하고, 조회된 값을 받아온다.
-        Member member = memberRepository.findByEmailId(emailId);
+        Sign sign = signRepository.findByEmailId(emailId);
         // 3. 2에서 조회된 Entity를 DTO로 변환한다.
-        Member.rpNickname rpNickname = new Member.rpNickname(member);
+        Sign.rpNickname rpNickname = new Sign.rpNickname(sign);
         // 4. 3에서 변환된 DTO를 반환한다.
         return rpNickname;
     }
 
     // 로그인 유저 닉네임 및 프로플 사진 조회
-    public Member.rpNickImage memberNickImage(String emailId) { // 1. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
+    public Sign.rpNickImage memberNickImage(String emailId) { // 1. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
         // 2. 1에서 파라미터로 받아온 아이디로 로그인 유저를 조회하고, 조회된 값을 받아온다.
-        Member member = memberRepository.findByEmailId(emailId);
+        Sign sign = signRepository.findByEmailId(emailId);
         // 3. 2에서 조회된 Entity를 DTO로 변환한다.
-        Member.rpNickImage rpNickImage = new Member.rpNickImage(member);
+        Sign.rpNickImage rpNickImage = new Sign.rpNickImage(sign);
         // 4. 3에서 변환된 DTO를 반환한다.
         return rpNickImage;
     }
 
     // 로그인 유저 메타 프로필 작성용 조회
-    public Member.rpMetaProfile metaProfile(String emailId) { // 1. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
+    public Sign.rpMetaProfile metaProfile(String emailId) { // 1. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
         // 2. 1에서 파라미터로 받아온 아이디로 로그인 유저를 조회하고, 조회된 값을 받아온다.
-        Member member = memberRepository.findByEmailId(emailId);
+        Sign sign = signRepository.findByEmailId(emailId);
         // 3. 2에서 조회된 Entity를 DTO로 변환한다.
-        Member.rpMetaProfile rpMetaProfile = new Member.rpMetaProfile(member);
+        Sign.rpMetaProfile rpMetaProfile = new Sign.rpMetaProfile(sign);
         // 4. 3에서 변환된 DTO를 반환한다.
         return rpMetaProfile;
     }
@@ -261,19 +261,19 @@ public class SignUpService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String emailId) throws UsernameNotFoundException { // 3. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
         // 4. 3에서 파라미터로 받아온 아이디로 유저를 조회하고, 조회된 값을 받아온다.
-        Member member = memberRepository.findByEmailId(emailId);
+        Sign sign = signRepository.findByEmailId(emailId);
         // 5. 4에서 조회된 값이 있는지 체크한다.
         // 5-1. 조회된 값이 없는 경우
-        if ( member == null ) {
+        if ( sign == null ) {
             // 예외처리
             throw new UsernameNotFoundException(emailId);
         }
         // 5-2. 조회된 값이 있는 경우
         // 6. 4에서 조회된 유저를 Spring Security에서 제공하는 User에 빌더를 통해 값을 넣어준뒤 SecurityConfig로 반환한다.
         return User.builder()
-                .username(member.getEmailId())
-                .password(member.getPwd())
-                .roles(member.getRoleName())
+                .username(sign.getEmailId())
+                .password(sign.getPwd())
+                .roles(sign.getRoleName())
                 .build();
     }
 }

@@ -1,7 +1,7 @@
 package com.study.mate.service;
 
-import com.study.mate.entity.Member;
-import com.study.mate.repository.MemberRepository;
+import com.study.mate.entity.Sign;
+import com.study.mate.repository.SignRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,32 +19,32 @@ import java.util.Collections;
 @Service
 public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     @Autowired
-    MemberRepository memberRepository;
+    SignRepository signRepository;
 
     // 구글 로그인 인증 - 미가입자, 가입자, 중복 가입자 비교
-    public Member.rpJoinSocialMember findByJoinGoogleMember(String emailId) { // 42. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
+    public Sign.rpJoinSocialMember findByJoinGoogleMember(String emailId) { // 42. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
         // 43. 42에서 파라미터로 받아온 아이디로 유저를 조회하고, 조회된 값을 받아온다.
-        Member member = memberRepository.findByEmailId(emailId);
+        Sign sign = signRepository.findByEmailId(emailId);
         // 44. 조회된 값이 있는지 체크한다.
         // 44-1. 조회된 값이 없는 경우 - 미가입자
-        if ( member == null ) {
+        if ( sign == null ) {
             // 44-1-1. 눌값을 반환한다.
             return null;
         // 44-2. 조회된 값이 있는 경우 - 구글 가입자 or 타 플랫폼 가입자
         } else {
             // 45. 42에서 파라미터로 받아온 아이디와 "google"로 지정한 플랫폼으로 유저를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
-            Member googleMember = memberRepository.findBySocialMember(emailId, "google");
+            Sign googleSign = signRepository.findBySocialMember(emailId, "google");
             // 46. 조회된 값이 있는지 체크한다.
             // 46-1. 조회된 값이 없는 경우 - 구글 이메일을 사용하여 다른 플랫폼으로 가입한 유저
-            if ( googleMember == null ) {
+            if ( googleSign == null ) {
                 // 46-1-1. 에러 메시지를 작성해 DTO로 변환한다.
-                Member.rpJoinSocialMember rpJoinSocialMember = new Member.rpJoinSocialMember("해당 유저는 다른 플랫폼으로 가입한 이력이 있습니다.\n로그인 페이지로 이동합니다.");
+                Sign.rpJoinSocialMember rpJoinSocialMember = new Sign.rpJoinSocialMember("해당 유저는 다른 플랫폼으로 가입한 이력이 있습니다.\n로그인 페이지로 이동합니다.");
                 // 46-1-2. 46-1-1에서 변환된 DTO를 반환한다.
                 return rpJoinSocialMember;
             // 46-2. 조회된 값이 있는 경우 - 구글로 가입한 유저
             } else {
                 // 46-2-1. 46에서 조회하고 받아온 Entity를 DTO로 변환한다.
-                Member.rpJoinSocialMember rpJoinSocialMember = new Member.rpJoinSocialMember(member);
+                Sign.rpJoinSocialMember rpJoinSocialMember = new Sign.rpJoinSocialMember(sign);
                 // 46-2-2. 46-2-1에서 변환된 DTO를 반환한다.
                 return rpJoinSocialMember;
             }
@@ -52,31 +52,31 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
     }
 
     // 네이버 로그인 인증 - 미가입자, 가입자, 중복 가입자 비교
-    public Member.rpJoinSocialMember findByJoinNaverMember(Member.rqJoinSocialMember rqJoinSocialMember) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO를 받아온다.
+    public Sign.rpJoinSocialMember findByJoinNaverMember(Sign.rqJoinSocialMember rqJoinSocialMember) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO를 받아온다.
         // 4. 3에서 파라미터로 받아온 DTO를 Entity로 변환한다.
-        Member rqMember = rqJoinSocialMember.toEntity();
+        Sign rqSign = rqJoinSocialMember.toEntity();
         // 5. 3에서 변환한 Entity 값 중 이름과, 휴대폰 번호로 유저를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
-        Member member = memberRepository.findByJoinMember(rqMember.getName(), rqMember.getPhoneNumber());
+        Sign sign = signRepository.findByJoinMember(rqSign.getName(), rqSign.getPhoneNumber());
         // 6. 조회된 값이 있는지 체크한다.
         // 6-1. 조회된 값이 없는 경우 - 미가입자
-        if ( member == null ) {
+        if ( sign == null ) {
             // 6-1-1. 눌값을 반환한다.
             return null;
         // 6-2. 조회된 값이 있는 경우 - 네이버 가입자 or 타 플랫폼 가입자
         } else {
             // 7. 3에서 파라미터로 받아온 아이디와 "naver"로 지정한 플랫폼으로 유저를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
-            Member naverMember = memberRepository.findBySocialMember(rqMember.getEmailId(), "naver");
+            Sign naverSign = signRepository.findBySocialMember(rqSign.getEmailId(), "naver");
             // 8. 조회된 값이 있는지 체크한다.
             // 8-1. 조회된 값이 없는 경우 - 네이버 이메일을 사용하여 다른 플랫폼으로 가입한 유저
-            if (naverMember == null) {
+            if (naverSign == null) {
                 // 8-1-1. 에러 메시지를 작성해 DTO로 변환한다.
-                Member.rpJoinSocialMember rpJoinSocialMember = new Member.rpJoinSocialMember("해당 유저는 다른 플랫폼으로 가입한 이력이 있습니다.\n로그인 페이지로 이동합니다.");
+                Sign.rpJoinSocialMember rpJoinSocialMember = new Sign.rpJoinSocialMember("해당 유저는 다른 플랫폼으로 가입한 이력이 있습니다.\n로그인 페이지로 이동합니다.");
                 // 8-1-2. 8-1-1에서 변환된 DTO를 반환한다.
                 return rpJoinSocialMember;
             // 8-2. 조회된 값이 있는 경우 - 네이버로 가입한 유저
             } else {
                 // 8-2-1. 7에서 조회하고 받아온 Entity를 DTO로 변환한다.
-                Member.rpJoinSocialMember rpJoinSocialMember = new Member.rpJoinSocialMember(naverMember);
+                Sign.rpJoinSocialMember rpJoinSocialMember = new Sign.rpJoinSocialMember(naverSign);
                 // 8-2-2. 8-2-1에서 변환된 DTO를 반환한다.
                 return rpJoinSocialMember;
             }
@@ -84,14 +84,14 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
     }
 
     // 소셜 회원가입
-    public String socialJoin(Member.rqJoinSocialMember rqJoinSocial) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO를 받아온다.
+    public String socialJoin(Sign.rqJoinSocialMember rqJoinSocial) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO를 받아온다.
         // 4. 3에서 파라미터로 받아온 DTO를 Entity로 변환한다.
-        Member socialJoin = rqJoinSocial.toEntity();
+        Sign socialJoin = rqJoinSocial.toEntity();
         // 5. 4에서 변환된 Entity로 방을 저장한다.
-        Member member = memberRepository.save(socialJoin);
+        Sign sign = signRepository.save(socialJoin);
         // 6. 5에서 저장된 값이 있는지 체크한다.
         // 6-1. 저장된 값이 없는 경우 - 가입 실패
-        if ( member == null ) {
+        if ( sign == null ) {
             // 6-1-1. no를 반환한다.
             return "no";
         // 6-2. 저장된 값이 있는 경우 - 가입 성공
@@ -128,12 +128,12 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
         String userNameAttributeName = "email";
 
         // 6. 4에서 가져온 플랫폼과 5에서 지정한 필드값과 3에서 가져온 OAuth2User의 attribute를 DTO에 전달하고 생성한다.
-        Member.oauthAttributes oauthGoogle = Member.oauthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
+        Sign.oauthAttributes oauthGoogle = Sign.oauthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         // 13. 6에서 생성한 DTO를 Entity로 변환한다.
-        Member member = oauthGoogle.toEntity();
+        Sign sign = oauthGoogle.toEntity();
         // 14. 13에서 변환된 Entity 값 중 아이디로 유저를 조회하고, 조회된 값을 받아온다.
-        Member socialLoginMember = memberRepository.findByEmailId(member.getEmailId());
+        Sign socialLoginSign = signRepository.findByEmailId(sign.getEmailId());
 
         // 15. 14에서 조회된 값 중 Spring Security 권한 값을 가진 SimpleGrantedAuthority 객체와 6에서 생성한 DTO를 사용해 DefaultOAuth2User 객체를 생성하고 반환한다.
         // 15. 반환하는 객체는 DefaultOAuth2User 타입으로, 생성자에 3개의 파라미터를 전달하여 객체를 생성한다.
@@ -141,7 +141,7 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
         //     두번째 파라미터는 소셜 로그인 과정에서 받아오는 유저 정보로, 여기서는 6에서 생성한 DTO 값 중 유저 정보(attributes)를 가져온다.
         //     세번째 파라미터는 사용자 정보에서 이메일 정보를 가져오는 키가 되는 필드값으로, 여기서는 6에서 생성한 DTO 값 중 필드값(nameAttributeKey)을 가져온다.
         //     이제 생성된 DefaultOAuth2User 객체를 반환하여, 로그인 과정에서 유저 정보를 제공한다.
-        return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority(socialLoginMember.getRoleName())), // Spring Security 권한
+        return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority(socialLoginSign.getRoleName())), // Spring Security 권한
                                                                                       oauthGoogle.getAttributes(), // 유저 정보 Map
                                                                                       oauthGoogle.getNameAttributeKey()); // 필드값
     }

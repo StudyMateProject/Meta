@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class PayService {
     @Autowired
-    MemberRepository memberRepository;
+    SignRepository signRepository;
     @Autowired
     StoreRepository storeRepository;
     @Autowired
@@ -26,17 +26,17 @@ public class PayService {
     StoreCommentRepository storeCommentRepository;
 
     //이메일로 멤버 검색 메서드
-    public Member findAll(String emailId){
-        Member member = memberRepository.findByEmailId(emailId);
-        return member;
+    public Sign findAll(String emailId){
+        Sign sign = signRepository.findByEmailId(emailId);
+        return sign;
     }
 
     //이메일로 닉네임을 검색하는 메서드
     public String returnNickname(String emailId) {
         //이메일로 멤버 객체 검색
-        Member member = memberRepository.findByEmailId(emailId);
+        Sign sign = signRepository.findByEmailId(emailId);
         //닉네임에 검색한 멤버 객체 닉네임 저장
-        String nickname = member.getNickname();
+        String nickname = sign.getNickname();
         //닉네임 리턴
         return nickname;
     }
@@ -106,9 +106,9 @@ public class PayService {
     //이메일을 이용해서 멤버 idx 를 검색하는 메서드
     public long returnIdx(String emailId) {
         //이메일을 이용해서 멤버 객체 검색
-        Member member = memberRepository.findByEmailId(emailId);
+        Sign sign = signRepository.findByEmailId(emailId);
         //검색된 멤버를 이용해서 idx 리턴
-        return member.getIdx();
+        return sign.getIdx();
     }
 
     //스토어 idx 와 멤버 idx 를 이용해서 좋아요를 했는지 검색하는 메서드

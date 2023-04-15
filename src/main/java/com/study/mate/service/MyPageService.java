@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class MyPageService {
     @Autowired
-    MemberRepository memberRepository;
+    SignRepository signRepository;
     @Autowired
     AlarmRepository alarmRepository;
     @Autowired
@@ -27,23 +27,23 @@ public class MyPageService {
     MeetingRepository meetingRepository;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 회원 프로필 조회
-    public Member.rpProfile selectProfile(Principal principal){
+    public Sign.rpProfile selectProfile(Principal principal){
         String emailId = principal.getName();
-        Member member = memberRepository.findByEmailId(emailId);
-        Member.rpProfile rpProfile = new Member.rpProfile(member);
+        Sign sign = signRepository.findByEmailId(emailId);
+        Sign.rpProfile rpProfile = new Sign.rpProfile(sign);
         return rpProfile;
     }
 
     // 회원정보 조회
-    public Member.rpModifyMember selectMember(Principal principal){
+    public Sign.rpModifyMember selectMember(Principal principal){
         String emailId = principal.getName();
-        Member member = memberRepository.findByEmailId(emailId);
-        Member.rpModifyMember rpModifyMember = new Member.rpModifyMember(member);
+        Sign sign = signRepository.findByEmailId(emailId);
+        Sign.rpModifyMember rpModifyMember = new Sign.rpModifyMember(sign);
         return rpModifyMember;
     }
 
     // 회원정보 수정
-    public void modify(Member.rqModifyMember rqModifyMember){
+    public void modify(Sign.rqModifyMember rqModifyMember){
         MultipartFile imageFile = rqModifyMember.getImageFile();
         String profileImage = rqModifyMember.getProfileImage();
         if( !imageFile.isEmpty() ) {
@@ -68,11 +68,11 @@ public class MyPageService {
         }
 
         rqModifyMember.setProfileImage(profileImage);
-        Member member = rqModifyMember.toEntity();
-        memberRepository.updateMemberInfo(member.getEmailId(), member.getName(), member.getPhoneNumber(),
-                                         member.getAddress(), member.getDetailAddress(), member.getStudyType(),
-                                         member.getBirthday(), member.getNickname(), member.getGender(),
-                                         member.getSelfIntro(), member.getProfileImage());
+        Sign sign = rqModifyMember.toEntity();
+        signRepository.updateMemberInfo(sign.getEmailId(), sign.getName(), sign.getPhoneNumber(),
+                                         sign.getAddress(), sign.getDetailAddress(), sign.getStudyType(),
+                                         sign.getBirthday(), sign.getNickname(), sign.getGender(),
+                                         sign.getSelfIntro(), sign.getProfileImage());
     }
 
     public List<Alarm> findEmailId(String emailId) {
@@ -268,17 +268,17 @@ public class MyPageService {
     }
 
     //이메일로 멤버 검색을 위한 메서드
-    public Member returnMember(String emailId) {
+    public Sign returnMember(String emailId) {
         //이메일로 멤버 객체를 리턴
-        return memberRepository.findByEmailId(emailId);
+        return signRepository.findByEmailId(emailId);
     }
 
     //이메일로 멤버 idx 를 검색하는 메서드
     public long returnIdx(String emailId) {
         //이메일로 멤버 객체 리턴
-        Member member = memberRepository.findByEmailId(emailId);
+        Sign sign = signRepository.findByEmailId(emailId);
         //멤버 idx 를 idx 에 저장
-        long idx = member.getIdx();
+        long idx = sign.getIdx();
         //멤버 idx 리턴
         return idx;
     }
@@ -286,7 +286,7 @@ public class MyPageService {
     //닉네임으로 멤버 이메일을 검색하는 메서드
     public String returnEmailId(String nickname) {
         //닉네임으로 멤버 이메일 리턴
-        return memberRepository.findByNickname(nickname).getEmailId();
+        return signRepository.findByNickname(nickname).getEmailId();
     }
 
     //이메일로 현재 진행중인 만남 리스트를 검색하는 메서드

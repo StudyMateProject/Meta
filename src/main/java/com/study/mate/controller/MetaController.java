@@ -1,7 +1,7 @@
 package com.study.mate.controller;
 
 import com.study.mate.entity.Alarm;
-import com.study.mate.entity.Member;
+import com.study.mate.entity.Sign;
 import com.study.mate.entity.Meta;
 import com.study.mate.entity.MetaRoom;
 import com.study.mate.service.MetaService;
@@ -59,7 +59,7 @@ public class MetaController {
                        @RequestParam(value = "err", required = false) String err, // 1-4. URL 파라미터를 통해 넘어오는 에러 메시지가 있는 경우 받아온다.
                        Principal principal, Model model) { // 1. URL 파라미터를 통해 넘어오는 각종 값들을 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
-        Member.rpMetaProfile rpMetaProfile = signUpService.metaProfile(principal.getName());
+        Sign.rpMetaProfile rpMetaProfile = signUpService.metaProfile(principal.getName());
         // 3. 서비스를 통해 현재 생성된 메타 방을 모두 조회해서, List 형태의 DTO로 반환 받아온다.
         List<Meta.rpMetaList> rpMetaList = metaService.metaList();
         // 4. 3에서 반환받은 List 형태의 DTO를 방의 타입별로 나누기 위해 각 방의 타입마다 List 형태의 DTO를 생성한다.
@@ -121,7 +121,7 @@ public class MetaController {
     @GetMapping("/search")
     public String searchMeta(Meta.rqSearchMetaList rqSearchMetaList, Principal principal, Model model) { // 1. 파라미터로 form에서 넘어온 방 검색 DTO를 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
-        Member.rpMetaProfile rpMetaProfile = signUpService.metaProfile(principal.getName());
+        Sign.rpMetaProfile rpMetaProfile = signUpService.metaProfile(principal.getName());
         // 3. 1에서 파라미터로 받아온 방 검색 DTO를 서비스에 전달한다.
         List<Meta.rpSearchMetaList> rpSearchMetaList = metaService.searchMetaList(rqSearchMetaList);
         // 4. 3에서 반환받은 List 형태의 DTO를 방의 타입별로 나누기 위해 각 방의 타입마다 List를 생성한다.
@@ -167,7 +167,7 @@ public class MetaController {
     @GetMapping("/createmetaform")
     public String createMetaForm(Model model, Principal principal) {
         // 1. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
-        Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
+        Sign.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 2. 1에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 바인딩한다.
         model.addAttribute("metaMaster", rpNickImage.getNickname());
         // 3. 방 만들기에 사용할 DTO를 바인딩한다.
@@ -180,7 +180,7 @@ public class MetaController {
     @GetMapping("/createmetaform/createmeta")
     public String createMetaRoom(Meta.rqCreateMeta rqCreateMeta, Principal principal) { // 1. 파라미터로 form에서 넘어온 방 생성 DTO를 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
-        Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
+        Sign.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 3. 1에서 파라미터로 받아온 방 생성 DTO와 2에서 반환받은 로그인 유저 정보 DTO를 서비스에 전달한다.
         Meta.rpCreateMeta rpCreateMeta = metaService.createRoom(rqCreateMeta, rpNickImage);
         // 4. 세션을 사용하기 위하여 위에서 @Autowired로 생성한 HttpServletRequest를 통해 세션 객체를 가져온다.
@@ -209,7 +209,7 @@ public class MetaController {
     @GetMapping("/studyroom") // Principal - 자바의 표준 시큐리티 기술로, 로그인 유저의 정보를 담고 있다.
     public String studyRoom(@RequestParam long idx, Principal principal, Model model) throws UnsupportedEncodingException { // 1. 파라미터로 입장한 방 번호를 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
-        Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
+        Sign.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 3. 세션을 사용하기 위하여 위에서 @Autowired로 생성한 HttpServletRequest를 통해 세션 객체를 가져온다.
         HttpSession session = request.getSession();
         // 4. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값이 존재하는지 체크한다.
@@ -331,7 +331,7 @@ public class MetaController {
     @GetMapping("/caferoom") // Principal - 자바의 표준 시큐리티 기술로, 로그인 유저의 정보를 담고 있다.
     public String cafeRoom(@RequestParam long idx, Principal principal, Model model) throws UnsupportedEncodingException { // 1. 파라미터로 입장한 방 번호를 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
-        Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
+        Sign.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 3. 세션을 사용하기 위하여 위에서 @Autowired로 생성한 HttpServletRequest를 통해 세션 객체를 가져온다.
         HttpSession session = request.getSession();
         // 4. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값이 존재하는지 체크한다.
@@ -453,7 +453,7 @@ public class MetaController {
     @GetMapping("/oneroom") // Principal - 자바의 표준 시큐리티 기술로, 로그인 유저의 정보를 담고 있다.
     public String oneRoom(@RequestParam long idx, Principal principal, Model model) throws InterruptedException { // 1. 파라미터로 입장한 방 번호를 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
-        Member.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
+        Sign.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
         // 3. 세션을 사용하기 위하여 위에서 @Autowired로 생성한 HttpServletRequest를 통해 세션 객체를 가져온다.
         HttpSession session = request.getSession();
         // 4. 3에서 가져온 세션 객체를 통해 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임 키에 해당하는 세션에 값이 존재하는지 체크한다.

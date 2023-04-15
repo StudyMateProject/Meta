@@ -13,8 +13,8 @@ import java.util.Map;
 @AllArgsConstructor // 모든 필드 값을 파라미터로 받는 생성자 어노테이션
 @Builder // 빌더 어노테이션 - 빌더를 통해 해당 객체의 필드 값을 재생성 한다.
 @ToString // 객체를 불러올때 주소값이 아닌 String 타입으로 변경해 주는 어노테이션
-@Entity(name = "Member") // Entity 어노테이션 - 괄호안에는 테이블명과 똑같이 작성한다.
-public class Member {
+@Entity(name = "Sign") // Entity 어노테이션 - 괄호안에는 테이블명과 똑같이 작성한다.
+public class Sign {
     @Id // 기본키 어노테이션 - 기본키 설정 (PRIMARY KEY)
     @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT - MySQL에서 시퀀스 역할을 담당한다.
     // @Column() // 컬럼 어노테이션 - 기본키 제외 나머지 컬럼 설정 - 기본키랑 같이 쓰이면 기본키의 설정값들을 잡아줄 수 있다.
@@ -114,11 +114,11 @@ public class Member {
         private String studyType;
 
         // DTO를 Entity로 변환 (빌더 방식)
-        public Member toEntity(PasswordEncoder passwordEncoder) { // 5. 파라미터로 서비스에서 넘어온 비밀번호 암호화 메소드를 받아온다.
+        public Sign toEntity(PasswordEncoder passwordEncoder) { // 5. 파라미터로 서비스에서 넘어온 비밀번호 암호화 메소드를 받아온다.
             // 6. 비밀번호 암호화
             String enPassword = passwordEncoder.encode(pwd);
             // 7. 변환된 Entity를 반환한다.
-            return Member.builder()
+            return Sign.builder()
                     .idx(null)
                     .emailId(emailId)
                     .pwd(enPassword) // 암호화된 비밀번호 저장
@@ -148,8 +148,8 @@ public class Member {
         private String name;
         private String phoneNumber;
 
-        public Member toEntity() {
-            return Member.builder()
+        public Sign toEntity() {
+            return Sign.builder()
                     .name(name)
                     .phoneNumber(phoneNumber)
                     .build();
@@ -185,8 +185,8 @@ public class Member {
         private String name;
         private String phoneNumber;
 
-        public Member toEntity() {
-            return Member.builder()
+        public Sign toEntity() {
+            return Sign.builder()
                     .emailId(emailId)
                     .name(name)
                     .phoneNumber(phoneNumber)
@@ -205,10 +205,10 @@ public class Member {
         private String emailId;
         private String pwd;
 
-        public Member toEntity(PasswordEncoder passwordEncoder){
+        public Sign toEntity(PasswordEncoder passwordEncoder){
             String enPassword = passwordEncoder.encode(pwd);
             //비밀번호 암호화
-            return Member.builder()
+            return Sign.builder()
                     .emailId(emailId)
                     .pwd(enPassword)
                     .build();
@@ -235,8 +235,8 @@ public class Member {
         private String platform;
 
         // DTO를 Entity로 변환 (빌더 방식)
-        public Member toEntity() {
-            return Member.builder()
+        public Sign toEntity() {
+            return Sign.builder()
                     .idx(null)
                     .emailId(emailId)
                     .name(name)
@@ -265,8 +265,8 @@ public class Member {
         private String errMsg; // 에러 메시지 변수
 
         // Entity를 DTO로 변환 (생성자 방식) - Social 가입자인 경우
-        public rpJoinSocialMember(Member member) {
-            this.idx = member.getIdx();
+        public rpJoinSocialMember(Sign sign) {
+            this.idx = sign.getIdx();
         }
 
         // Entity를 DTO로 변환 (생성자 방식) - 자사 플랫폼의 가입자인 경우
@@ -292,8 +292,8 @@ public class Member {
         private String platform;
 
         // DTO를 Entity로 변환 (빌더 방식)
-        public Member toEntity() {
-            return Member.builder()
+        public Sign toEntity() {
+            return Sign.builder()
                     .emailId(emailId)
                     .name(name)
                     .platform(platform)
@@ -393,12 +393,12 @@ public class Member {
         private String studyType;
         private String profileImage;
 
-        public rpProfile (Member member) {
-            this.emailId = member.getEmailId();
-            this.nickname = member.getNickname();
-            this.selfIntro = member.getSelfIntro();
-            this.studyType = member.getStudyType();
-            this.profileImage = member.getProfileImage();
+        public rpProfile (Sign sign) {
+            this.emailId = sign.getEmailId();
+            this.nickname = sign.getNickname();
+            this.selfIntro = sign.getSelfIntro();
+            this.studyType = sign.getStudyType();
+            this.profileImage = sign.getProfileImage();
         }
     }
 
@@ -425,9 +425,9 @@ public class Member {
         private String profileImage;
         private MultipartFile imageFile;
 
-        public Member toEntity() {
+        public Sign toEntity() {
             //변환된 Entity반환
-            return Member.builder()
+            return Sign.builder()
                     .emailId(emailId)
                     .name(name)
                     .nickname(nickname)
@@ -467,20 +467,20 @@ public class Member {
         private String roleName;
         private String profileImage;
 
-        public rpModifyMember(Member member){
-            this.emailId = member.getEmailId();
-            this.nickname = member.getNickname();
-            this.phoneNumber = member.getPhoneNumber();
-            this.address = member.getAddress();
-            this.detailAddress = member.getDetailAddress();
-            this.studyType = member.getStudyType();
-            this.birthday = member.getBirthday();
-            this.name = member.getName();
-            this.gender = member.getGender();
-            this.selfIntro = member.getSelfIntro();
-            this.platform = member.getPlatform();
-            this.roleName = member.getRoleName();
-            this.profileImage = member.getProfileImage();
+        public rpModifyMember(Sign sign){
+            this.emailId = sign.getEmailId();
+            this.nickname = sign.getNickname();
+            this.phoneNumber = sign.getPhoneNumber();
+            this.address = sign.getAddress();
+            this.detailAddress = sign.getDetailAddress();
+            this.studyType = sign.getStudyType();
+            this.birthday = sign.getBirthday();
+            this.name = sign.getName();
+            this.gender = sign.getGender();
+            this.selfIntro = sign.getSelfIntro();
+            this.platform = sign.getPlatform();
+            this.roleName = sign.getRoleName();
+            this.profileImage = sign.getProfileImage();
         }
     }
 
@@ -494,8 +494,8 @@ public class Member {
         private String nickname;
 
         // Entity를 DTO로 변환 (생성자 방식)
-        public rpNickname(Member member) {
-            this.nickname = member.getNickname();
+        public rpNickname(Sign sign) {
+            this.nickname = sign.getNickname();
         }
     }
 
@@ -510,9 +510,9 @@ public class Member {
         private String profileImage;
 
         // Entity를 DTO로 변환 (생성자 방식)
-        public rpNickImage(Member member) {
-            this.nickname = member.getNickname();
-            this.profileImage = member.getProfileImage();
+        public rpNickImage(Sign sign) {
+            this.nickname = sign.getNickname();
+            this.profileImage = sign.getProfileImage();
         }
     }
 
@@ -528,10 +528,10 @@ public class Member {
         private String studyType;
 
         // Entity를 DTO로 변환 (생성자 방식)
-        public rpMetaProfile(Member member) {
-            this.profileImage = member.getProfileImage();
-            this.nickname = member.getNickname();
-            this.studyType = member.getStudyType();
+        public rpMetaProfile(Sign sign) {
+            this.profileImage = sign.getProfileImage();
+            this.nickname = sign.getNickname();
+            this.studyType = sign.getStudyType();
         }
     }
 }

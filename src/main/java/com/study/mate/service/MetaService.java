@@ -1,6 +1,6 @@
 package com.study.mate.service;
 
-import com.study.mate.entity.Member;
+import com.study.mate.entity.Sign;
 import com.study.mate.entity.Meta;
 import com.study.mate.entity.MetaRoom;
 import com.study.mate.repository.MetaRepository;
@@ -39,7 +39,7 @@ public class MetaService {
     }
 
     // 메타 방 생성 후 바로 입장 - 방장 첫 입장
-    public Meta.rpCreateMeta createRoom(Meta.rqCreateMeta rqCreateMeta, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 생성 DTO와 로그인 유저 정보 DTO를 받아온다.
+    public Meta.rpCreateMeta createRoom(Meta.rqCreateMeta rqCreateMeta, Sign.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 생성 DTO와 로그인 유저 정보 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 생성 DTO 값 중 방 타입이 자습실인지 체크한다.
         // 2-1. 방 타입이 자습실인 경우 - 자습실은 혼자 들어가는 방이기에 방 내부 참여자 명단이 필요하지 않다.
         if ( rqCreateMeta.getMetaType().equals("oneRoom") ) {
@@ -144,7 +144,7 @@ public class MetaService {
     }
 
     // 입장한 메타 방 조회 후 모집된 인원 증가
-    public Meta.rpEntrance newEntrance(long idx, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 로그인 유저 정보 DTO를 받아온다.
+    public Meta.rpEntrance newEntrance(long idx, Sign.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 로그인 유저 정보 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호로 방을 조회하고, 조회된 값을 받아온다.
         Meta meta = metaRepository.findByIdx(idx);
         // 3. 2에서 조회된 값이 존재하는지 체크한다.
@@ -207,7 +207,7 @@ public class MetaService {
     }
 
     // 방 번호에 해당하는 방에 참여중인 참가자 전체 조회
-    public List<MetaRoom.rpMetaRoomIdxList> metaRoomParticipant(Meta.rpEntrance rpEntrance, Member.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 입장한 방 정보 DTO와 로그인 유저 정보 DTO를 받아온다.
+    public List<MetaRoom.rpMetaRoomIdxList> metaRoomParticipant(Meta.rpEntrance rpEntrance, Sign.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 입장한 방 정보 DTO와 로그인 유저 정보 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 로그인 유저 정보 DTO가 존재하는지 체크한다.
         // 2-1. 로그인 유저 정보 DTO가 존재하는 경우
         if ( rpNickImage != null ) {

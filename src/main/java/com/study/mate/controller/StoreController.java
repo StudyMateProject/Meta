@@ -164,9 +164,9 @@ public class StoreController {
         //principal 에 저장된 emailId 값을 따로 변수에 저장한다.
         String emailId = principal.getName();
         //저장한 emailId 값으로 멤버 정보를 가지고 온다.
-        Member member = payService.findAll(emailId);
+        Sign sign = payService.findAll(emailId);
         //다음 팝업 페이지에서 사용할 수 있도록 모델에 Member 객체를 저장한다.
-        model.addAttribute("member", member);
+        model.addAttribute("member", sign);
         return "Store/PayPopup";
     }
 

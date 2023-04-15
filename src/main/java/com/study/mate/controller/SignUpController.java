@@ -1,7 +1,7 @@
 package com.study.mate.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.study.mate.entity.Member;
+import com.study.mate.entity.Sign;
 import com.study.mate.httpclient.GoogleLogin;
 import com.study.mate.httpclient.IamPortPass;
 import com.study.mate.service.SignUpOAuthService;
@@ -54,7 +54,7 @@ public class SignUpController {
     @GetMapping("/joinform")
     public String joinform(Model model) {
         // 1. 회원가입에 사용할 DTO를 바인딩한다.
-        model.addAttribute("memberDTO", new Member.rqJoinMember());
+        model.addAttribute("memberDTO", new Sign.rqJoinMember());
         // 2. 회원가입 페이지로 이동한다.
         return "SignUp/JoinForm";
     }
@@ -62,10 +62,10 @@ public class SignUpController {
     // 이메일 중복체크 & 이메일 전송 SMTP - 신규 가입
     @PostMapping("/joinform/emailsend")
     @ResponseBody
-    public Member.rpCheckEmailId emailSend(String emailId) { // 2. 파라미터로 Ajax를 통해 넘어온 아이디를 받아온다.
+    public Sign.rpCheckEmailId emailSend(String emailId) { // 2. 파라미터로 Ajax를 통해 넘어온 아이디를 받아온다.
         // 3. 2에서 파라미터로 받아온 아이디와 비밀번호 암호화 메소드를 서비스에 전달한다.
         //    이때 SMTP에 사용할 이메일 정보들도 같이 서비스에 전달한다.
-        Member.rpCheckEmailId rpCheckEmailId =  signUpService.checkEmailId(emailId, passwordEncoder, naverId, naverPwd);
+        Sign.rpCheckEmailId rpCheckEmailId =  signUpService.checkEmailId(emailId, passwordEncoder, naverId, naverPwd);
         // 13. 3에서 반환된 DTO를 콜백 메소드에 반환한다.
         return rpCheckEmailId;
     }
@@ -144,7 +144,7 @@ public class SignUpController {
     // 회원가입 진행 URL
     @PostMapping("/joinform/join")
     @ResponseBody
-    public String join(Member.rqJoinMember rqJoinMember, Model model) { // 1. 파라미터로 form을 통해 넘어온 DTO를 받아온다.
+    public String join(Sign.rqJoinMember rqJoinMember, Model model) { // 1. 파라미터로 form을 통해 넘어온 DTO를 받아온다.
         // 2. 1에서 파라미터로 넘어온 DTO와 비밀번호 암호화 메소드를 서비스에 전달한다.
         String res = signUpService.joinMember(rqJoinMember, passwordEncoder);
         // 7. 2에서 반환받은 회원가입 결과 값을 클라이언트로 반환한다.
@@ -203,7 +203,7 @@ public class SignUpController {
         }
 
         // 41. 29-1에서 전달받은 아이디를 서비스에 전달한다.
-        Member.rpJoinSocialMember rpJoinSocialMember = signUpOAuthService.findByJoinGoogleMember(emailId);
+        Sign.rpJoinSocialMember rpJoinSocialMember = signUpOAuthService.findByJoinGoogleMember(emailId);
         // 47. 41에서 반환받은 DTO가 있는지 체크한다.
         // 47-1. 반환받은 DTO가 없는 경우 - 미가입자로 여기서 받아온 구글 유저 정보들을 들고 구글 회원가입 추가입력 페이지로 이동한다.
         if ( rpJoinSocialMember == null ) { // 회원가입
@@ -216,7 +216,7 @@ public class SignUpController {
             // 47-1-4. 40-2에서 전달받은 성별을 바인딩한다.
             model.addAttribute("gender", gender);
             // 47-1-5. 구글 회원가입에 사용할 DTO를 바인딩한다.
-            model.addAttribute("memberDTO", new Member.rqJoinSocialMember());
+            model.addAttribute("memberDTO", new Sign.rqJoinSocialMember());
             // 47-1-6. 구글 회원가입 추가입력 페이지로 이동한다.
             return "SignUp/GoogleJoinForm";
         // 47-2. 반환받은 DTO가 있는 경우 - 구글 가입자 or 타 플랫폼 가입자
@@ -241,7 +241,7 @@ public class SignUpController {
     // 구글 회원가입 URL
     @PostMapping("/loginform/googlejoin")
     @ResponseBody
-    public String googleJoin(Member.rqJoinSocialMember rqJoinSocialMember) { // 1. 파라미터로 form을 통해 넘어온 DTO를 받아온다.
+    public String googleJoin(Sign.rqJoinSocialMember rqJoinSocialMember) { // 1. 파라미터로 form을 통해 넘어온 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 DTO를 서비스에 전달한다.
         String res = signUpOAuthService.socialJoin(rqJoinSocialMember);
         // 7. 2에서 반환받은 회원가입 결과 값을 클라이언트로 반환한다.
@@ -252,7 +252,7 @@ public class SignUpController {
     @GetMapping("/loginform/navercallback")
     public String naverCallback(Model model) {
         // 1. 네이버 유저 정보를 가져올때 사용할 DTO를 바인딩한다.
-        model.addAttribute("memberDTO", new Member.rqJoinSocialMember());
+        model.addAttribute("memberDTO", new Sign.rqJoinSocialMember());
         // 2. 네이버 콜백 페이지로 이동한다.
         return "SignUp/NaverCallback";
     }
@@ -260,9 +260,9 @@ public class SignUpController {
     // 네이버 로그인 인증
     @PostMapping("/loginform/naverauthentication")
     @ResponseBody
-    public String naverAuthentication(Member.rqJoinSocialMember rqJoinSocialMember) { // 1. 파라미터로 네이버 콜백 페에지에서 Ajax를 통해 넘어온 값들을 DTO로 받아온다.
+    public String naverAuthentication(Sign.rqJoinSocialMember rqJoinSocialMember) { // 1. 파라미터로 네이버 콜백 페에지에서 Ajax를 통해 넘어온 값들을 DTO로 받아온다.
         // 2. 1에서 파라미터로 받아온 DTO를 서비스에 전달한다.
-        Member.rpJoinSocialMember rpJoinSocialMember = signUpOAuthService.findByJoinNaverMember(rqJoinSocialMember);
+        Sign.rpJoinSocialMember rpJoinSocialMember = signUpOAuthService.findByJoinNaverMember(rqJoinSocialMember);
         // 9. 반환받은 DTO가 있는지 체크한다.
         // 9-1. 반환받은 DTO가 없는 경우 - 미가입자
         if ( rpJoinSocialMember == null ) { // 회원가입
@@ -285,7 +285,7 @@ public class SignUpController {
 
     // 네이버 회원가입 추가입력 페이지
     @PostMapping("/loginform/naverjoinform")
-    public String naverJoinForm(Member.rqJoinSocialMember rqJoinSocialMember, Model model) { // 1. 파라미터로 form을 통해 넘어온 DTO를 받아온다.
+    public String naverJoinForm(Sign.rqJoinSocialMember rqJoinSocialMember, Model model) { // 1. 파라미터로 form을 통해 넘어온 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 DTO에 들어있는 값들을 하나씩 꺼내서 각각 바인딩한다.
         // 2-1. 1에서 파라미터로 받아온 DTO 값 중 아이디를 바인딩한다.
         model.addAttribute("emailId", rqJoinSocialMember.getEmailId());
@@ -298,7 +298,7 @@ public class SignUpController {
         // 2-5. 1에서 파라미터로 받아온 DTO 값 중 생일을 바인딩한다.
         model.addAttribute("birthday", rqJoinSocialMember.getBirthday());
         // 2-6. 네이버 회원가입에 사용할 DTO를 바인딩한다.
-        model.addAttribute("memberDTO", new Member.rqJoinSocialMember());
+        model.addAttribute("memberDTO", new Sign.rqJoinSocialMember());
         // 2-7. 네이버 회원가입 추가입력 페이지로 이동한다.
         return "SignUp/NaverJoinForm";
     }
@@ -306,7 +306,7 @@ public class SignUpController {
     // 네이버 회원가입 URL
     @PostMapping("/loginform/naverjoin")
     @ResponseBody
-    public String naverJoin(Member.rqJoinSocialMember rqJoinSocialMember) { // 1. 파라미터로 form을 통해 넘어온 DTO를 받아온다.
+    public String naverJoin(Sign.rqJoinSocialMember rqJoinSocialMember) { // 1. 파라미터로 form을 통해 넘어온 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 DTO를 서비스에 전달한다.
         String res = signUpOAuthService.socialJoin(rqJoinSocialMember);
         // 7. 2에서 반환받은 회원가입 결과 값을 클라이언트로 반환한다.
@@ -317,15 +317,15 @@ public class SignUpController {
     @GetMapping("/loginform/findidform")
     public String findIdForm(Model model) {
         //바인딩
-        model.addAttribute("memberDTO", new Member.rqFindId());
+        model.addAttribute("memberDTO", new Sign.rqFindId());
         return "/SignUp/FindId";
     }
 
     //ID 찾기
     @PostMapping("/loginform/findidform/findid")
     @ResponseBody
-    public Member.rpFindId findId(Member.rqFindId rqFindId){
-        Member.rpFindId rpFindId = signUpService.findIdSearch(rqFindId);
+    public Sign.rpFindId findId(Sign.rqFindId rqFindId){
+        Sign.rpFindId rpFindId = signUpService.findIdSearch(rqFindId);
         return rpFindId;
     }
 
@@ -341,17 +341,17 @@ public class SignUpController {
     @GetMapping("/loginform/findpwdform")
     public String findPwdForm(Model model) {
         //바인딩
-        model.addAttribute("memberDTO", new Member.rqFindPwd());
+        model.addAttribute("memberDTO", new Sign.rqFindPwd());
         return "/SignUp/FindPwd";
     }
 
     // 이메일 중복체크 & 이메일 전송 SMTP
     @PostMapping("/loginform/findpwdform/emailsend")
     @ResponseBody
-    public Member.rpCheckEmailId findPwdEmailSend(String emailId) { // 2. 파라미터로 Ajax를 통해 넘어온 아이디를 받아온다.
+    public Sign.rpCheckEmailId findPwdEmailSend(String emailId) { // 2. 파라미터로 Ajax를 통해 넘어온 아이디를 받아온다.
         // 3. 2에서 파라미터로 받아온 아이디와 비밀번호 암호화 메소드를 서비스에 전달한다.
         //    이때 SMTP에 사용할 이메일 정보들도 같이 서비스에 전달한다.
-        Member.rpCheckEmailId rpCheckEmailId =  signUpService.findPwdCheckEmailId(emailId, passwordEncoder, naverId, naverPwd);
+        Sign.rpCheckEmailId rpCheckEmailId =  signUpService.findPwdCheckEmailId(emailId, passwordEncoder, naverId, naverPwd);
         // 13. 3에서 반환된 DTO를 콜백 메소드에 반환한다.
         return rpCheckEmailId;
     }
@@ -359,7 +359,7 @@ public class SignUpController {
     //PW 재설정을 위한 정보확인
     @PostMapping("/loginform/findpwdform/findpwd")
     @ResponseBody
-    public String resetPwd(Member.rqFindPwd rqFindPwd) {
+    public String resetPwd(Sign.rqFindPwd rqFindPwd) {
         String findPwd = signUpService.findPwdSearch(rqFindPwd);
         return findPwd;
     }
@@ -374,7 +374,7 @@ public class SignUpController {
 
     //PWD 재설정
     @PostMapping("/loginform/findpwdform/resetpwdform/resetpwd")
-    public String resetPwd(Member.rqResetPwd rqResetPwd){
+    public String resetPwd(Sign.rqResetPwd rqResetPwd){
         signUpService.resetPwd(rqResetPwd, passwordEncoder);
         return "/Main";
     }

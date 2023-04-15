@@ -33,30 +33,27 @@ public class MyPageController {
     @GetMapping("")
     public String mypageList(Principal principal, Model model) {
         //닉네임 검색
-        Member.rpProfile rpProfile = myPageService.selectProfile(principal);
+        Sign.rpProfile rpProfile = myPageService.selectProfile(principal);
         //본인에게 온 알림 리스트 검색
         List<Alarm> alarmList = myPageService.findEmailId(principal.getName());
-        //멤버 객체 검색
-        Member member = myPageService.returnMember(principal.getName());
 
         model.addAttribute("member", rpProfile);
         model.addAttribute("alarmList", alarmList);
-        model.addAttribute("member", member);
         return "/MyPage/MyPageHome";
     }
 
     // 회원정보 수정 페이지
     @GetMapping("/modifyform")
     public String modifyMemberInfo(Model model, Principal principal){
-        Member.rpModifyMember rpModifyMember = myPageService.selectMember(principal);
+        Sign.rpModifyMember rpModifyMember = myPageService.selectMember(principal);
         model.addAttribute("member", rpModifyMember);
-        model.addAttribute("memberDTO", new Member.rqModifyMember());
+        model.addAttribute("memberDTO", new Sign.rqModifyMember());
         return "MyPage/ModifyMemberInfo";
     }
 
     // 회원정보 수정
     @PostMapping("/modifyform/modify")
-    public String modifyMember(Member.rqModifyMember rqModifyMember){
+    public String modifyMember(Sign.rqModifyMember rqModifyMember){
         myPageService.modify(rqModifyMember);
         return "redirect:/mypage/modifyform";
     }
@@ -64,7 +61,7 @@ public class MyPageController {
     // 비밀번호 변경 페이지
     @GetMapping("/modifyform/editpwd")
     public String findPwdForm(Model model, Principal principal) {
-        Member.rpNickname rpNickname = signUpService.memberNickname(principal.getName());
+        Sign.rpNickname rpNickname = signUpService.memberNickname(principal.getName());
         //바인딩
         model.addAttribute("emailId", principal.getName());
         model.addAttribute("nickname", rpNickname.getNickname());

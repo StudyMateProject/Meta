@@ -16,7 +16,7 @@ public class RecruitMentorService {
     RecruitMentorRepository recruitMentorRepository;
 
     @Autowired
-    MemberRepository memberRepository;
+    SignRepository signRepository;
 
     @Autowired
     RecruitMentorCommentRepository recruitMentorCommentRepository;
@@ -45,7 +45,7 @@ public class RecruitMentorService {
     //닉네임으로 emailId를 검색하는 메서드
     public String returnEmailId(String nickname) {
         //닉네임으로 멤버 객체를 검색한 이후 멤버 객체에서 이메일을 리턴
-        return memberRepository.findByNickname(nickname).getEmailId();
+        return signRepository.findByNickname(nickname).getEmailId();
     }
 
     //페이징 처리를 위한 열 갯수를 반환하는 메서드
@@ -64,9 +64,9 @@ public class RecruitMentorService {
     //이메일로 닉네임을 검색하는 메서드
     public String returnNickname(String emailId){
         //이메일로 멤버 객체 검색
-        Member member = memberRepository.findByEmailId(emailId);
+        Sign sign = signRepository.findByEmailId(emailId);
         //닉네임 변수에 멤버 객체의 닉네임을 저장
-        String nickname = member.getNickname();
+        String nickname = sign.getNickname();
         //닉네임 변수 리턴
         return nickname;
     }
@@ -87,9 +87,9 @@ public class RecruitMentorService {
     //이메일로 멤버 idx 를 반환하는 메서드
     public long returnIdx(String emailId) {
         //멤버 이메일로 멤버 객체 검색
-        Member member = memberRepository.findByEmailId(emailId);
+        Sign sign = signRepository.findByEmailId(emailId);
         //멤버 idx 리턴
-        return member.getIdx();
+        return sign.getIdx();
     }
 
     //멘토구하기 글을 수정하는 메서드
