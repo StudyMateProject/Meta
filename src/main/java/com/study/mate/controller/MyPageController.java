@@ -61,10 +61,10 @@ public class MyPageController {
     // 비밀번호 변경 페이지
     @GetMapping("/modifyform/editpwd")
     public String findPwdForm(Model model, Principal principal) {
-        Sign.rpNickname rpNickname = signUpService.memberNickname(principal.getName());
+        Sign.rpNickPlatform rpNickPlatform = signUpService.memberNickPlatform(principal.getName());
         //바인딩
         model.addAttribute("emailId", principal.getName());
-        model.addAttribute("nickname", rpNickname.getNickname());
+        model.addAttribute("nickPlatform", rpNickPlatform);
         return "/MyPage/ResetMyPwd";
     }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

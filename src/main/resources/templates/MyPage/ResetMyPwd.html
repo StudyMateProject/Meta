@@ -53,7 +53,7 @@
 
                 <div class="headerMenuRight">
                     <div class="whenLogin" sec:authorize="isAuthenticated()">
-                        <div class="welcome" th:text="${nickname} + '님 반갑습니다!'"></div>
+                        <div class="welcome" th:text="${nickPlatform.nickname} + '님 반갑습니다!'"></div>
                         <div class="notificationsMenu">
                             <div class="icon" th:data-number="${alarmCount}">
                                 <i class="ri-notification-4-fill"></i>
@@ -139,8 +139,8 @@
             </div>
         </div>
 
-        <div class="containerRight">
-            <h2 class="modifyTitle">비밀번호 수정</h2>
+        <div class="containerRight" th:if="${nickPlatform.platform == 'mate'}">
+            <h2 class="modifyTitle">비밀번호 변경</h2>
             <form action="/loginform/findpwdform/resetpwdform" method="post">
                 <input type="hidden" name="emailId" th:value="${emailId}">
                 <div class="editPwdForm">
@@ -162,6 +162,11 @@
                 </div>
 
             </form>
+        </div>
+
+        <div class="containerRight" th:if="${nickPlatform.platform != 'mate'}">
+            <h2 class="modifyTitle">비밀번호 수정</h2>
+            <h3 class="editPwdForm">소셜 가입자는 비밀번호를 변경할 수 없습니다.</h3>
         </div>
     </div>
 

@@ -237,6 +237,16 @@ public class SignUpService implements UserDetailsService {
         return rpNickname;
     }
 
+    // 로그인 유저 닉네임 및 플랫폼 조회
+    public Sign.rpNickPlatform memberNickPlatform(String emailId) { // 1. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
+        // 2. 1에서 파라미터로 받아온 아이디로 로그인 유저를 조회하고, 조회된 값을 받아온다.
+        Sign sign = signRepository.findByEmailId(emailId);
+        // 3. 2에서 조회된 Entity를 DTO로 변환한다.
+        Sign.rpNickPlatform rpNickPlatform = new Sign.rpNickPlatform(sign);
+        // 4. 3에서 변환된 DTO를 반환한다.
+        return rpNickPlatform;
+    }
+
     // 로그인 유저 닉네임 및 프로플 사진 조회
     public Sign.rpNickImage memberNickImage(String emailId) { // 1. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
         // 2. 1에서 파라미터로 받아온 아이디로 로그인 유저를 조회하고, 조회된 값을 받아온다.

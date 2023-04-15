@@ -499,6 +499,23 @@ public class Sign {
         }
     }
 
+    // 닉네임 및 플랫폼 Response DTO
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @ToString
+    public static class rpNickPlatform {
+        private String nickname;
+        private String platform;
+
+        // Entity를 DTO로 변환 (생성자 방식)
+        public rpNickPlatform(Sign sign) {
+            this.nickname = sign.getNickname();
+            this.platform = sign.getPlatform();
+        }
+    }
+
     // 닉네임 및 프로필 사진 Response DTO
     @Getter
     @Setter
