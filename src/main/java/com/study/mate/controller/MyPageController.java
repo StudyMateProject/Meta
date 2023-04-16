@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -46,8 +47,12 @@ public class MyPageController {
     @GetMapping("/modifyform")
     public String modifyMemberInfo(Model model, Principal principal){
         Sign.rpModifyMember rpModifyMember = myPageService.selectMember(principal);
+        //본인에게 온 알림 리스트 검색
+        List<Alarm> alarmList = myPageService.findEmailId(principal.getName());
+
         model.addAttribute("member", rpModifyMember);
         model.addAttribute("memberDTO", new Sign.rqModifyMember());
+        model.addAttribute("alarmList", alarmList);
         return "MyPage/ModifyMemberInfo";
     }
 
@@ -62,9 +67,13 @@ public class MyPageController {
     @GetMapping("/modifyform/editpwd")
     public String findPwdForm(Model model, Principal principal) {
         Sign.rpNickPlatform rpNickPlatform = signUpService.memberNickPlatform(principal.getName());
+        //본인에게 온 알림 리스트 검색
+        List<Alarm> alarmList = myPageService.findEmailId(principal.getName());
+
         //바인딩
         model.addAttribute("emailId", principal.getName());
         model.addAttribute("nickPlatform", rpNickPlatform);
+        model.addAttribute("alarmList", alarmList);
         return "/MyPage/ResetMyPwd";
     }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,8 +199,24 @@ public class MyPageController {
     public String Meeting(Principal principal, Model model) {
         //현재 진행중인만남 리스트 검색
         List<Meeting> meetingList = myPageService.meetingList(principal.getName());
+
+        List<Meeting> studyMeetingList = new ArrayList<>();
+        List<Meeting> menteeMeetingList = new ArrayList<>();
+        List<Meeting> mentorMeetingList = new ArrayList<>();
+
+        for ( Meeting meeting : meetingList ) {
+            if ( meeting.getRecruitStudyIdx() != null ) {
+                studyMeetingList.add(meeting);
+            } else if ( meeting.getRecruitMenteeIdx() != null ) {
+                menteeMeetingList.add(meeting);
+            } else if ( meeting.getRecruitMentorIdx() != null ) {
+                mentorMeetingList.add(meeting);
+            }
+        }
         //모델 바인딩
-        model.addAttribute("list", meetingList);
+        model.addAttribute("studyMeetingList", studyMeetingList);
+        model.addAttribute("menteeMeetingList", menteeMeetingList);
+        model.addAttribute("mentorMeetingList", mentorMeetingList);
         return "MyPage/Meeting";
     }
 }

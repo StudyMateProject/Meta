@@ -9,14 +9,11 @@
     <form>
         <input type="hidden" name="writeDate" id="writeDate">
         <ul>
-            <li>
-                <span>작성자 : </span>
-                <input type="text" th:value="${nickname}" name="writer" readonly>
-            </li>
             <li><span>제목 : </span><input type="text" name="title"></li>
+            <li><span>작성자 : </span><input type="text" th:value="${nickname}" name="writer" readonly></li>
             <li><span>분야 : </span>
                 <select name="studyType">
-                    <option value="">선택하던가 말던가</option>
+                    <option value="">분야 선택</option>
                     <option value="computer">컴퓨터</option>
                     <option value="math">수학</option>
                     <option value="management">경영/마케팅</option>

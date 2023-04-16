@@ -11,12 +11,12 @@
     <h1>스터디원 모집</h1>
     <form>
         <input type="hidden" id="writeDate" name="writeDate">
-        <input type="text" name="writer" th:value="${nickname}" readonly>
         <ul>
             <li><span>제목 : </span> <input name="title" type="text"></li>
+            <li><span>작성자 : </span><input type="text" name="writer" th:value="${nickname}" readonly></li>
             <li><span>분야 : </span>
                 <select name="studyType" onchange="showImage();">
-                    <option value="">선택하던가 말던가</option>
+                    <option value="">분야 선택</option>
                     <option value="computer">컴퓨터</option>
                     <option value="math">수학</option>
                     <option value="management">경영/마케팅</option>
@@ -32,7 +32,7 @@
             </li>
             <li><span>인원 : </span>
                 <select name="personnel">
-                    <option value="">선택하던지 말던지</option>
+                    <option value="">인원 선택</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>

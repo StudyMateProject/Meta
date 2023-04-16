@@ -53,7 +53,7 @@ public class RecruitStudyController {
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
         String pageMenu = Paging.getPaging("recruitstudy", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
-        return "Recruit/RecruitStudy";
+        return "Recruit/RecruitStudyList";
     }
 
     @GetMapping("computer")
@@ -82,7 +82,7 @@ public class RecruitStudyController {
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
         String pageMenu = Paging.getPaging("computer", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
-        return "Recruit/RecruitStudy";
+        return "Recruit/RecruitStudyList";
     }
 
     @GetMapping("math")
@@ -110,7 +110,7 @@ public class RecruitStudyController {
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
         String pageMenu = Paging.getPaging("math", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
-        return "Recruit/RecruitStudy";
+        return "Recruit/RecruitStudyList";
     }
 
     @GetMapping("management")
@@ -138,7 +138,7 @@ public class RecruitStudyController {
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
         String pageMenu = Paging.getPaging("management", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
-        return "Recruit/RecruitStudy";
+        return "Recruit/RecruitStudyList";
     }
 
     @GetMapping("design")
@@ -166,7 +166,7 @@ public class RecruitStudyController {
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
         String pageMenu = Paging.getPaging("design", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
-        return "Recruit/RecruitStudy";
+        return "Recruit/RecruitStudyList";
     }
 
     @GetMapping("education")
@@ -194,7 +194,7 @@ public class RecruitStudyController {
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
         String pageMenu = Paging.getPaging("education", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
-        return "Recruit/RecruitStudy";
+        return "Recruit/RecruitStudyList";
     }
 
     @GetMapping("literature")
@@ -222,7 +222,7 @@ public class RecruitStudyController {
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
         String pageMenu = Paging.getPaging("literature", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
-        return "Recruit/RecruitStudy";
+        return "Recruit/RecruitStudyList";
     }
 
     @GetMapping("entrance")
@@ -250,7 +250,7 @@ public class RecruitStudyController {
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
         String pageMenu = Paging.getPaging("entrance", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
-        return "Recruit/RecruitStudy";
+        return "Recruit/RecruitStudyList";
     }
 
     @GetMapping("engineer")
@@ -278,7 +278,7 @@ public class RecruitStudyController {
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
         String pageMenu = Paging.getPaging("engineer", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
-        return "Recruit/RecruitStudy";
+        return "Recruit/RecruitStudyList";
     }
 
     @GetMapping("language")
@@ -306,7 +306,7 @@ public class RecruitStudyController {
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
         String pageMenu = Paging.getPaging("language", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
-        return "Recruit/RecruitStudy";
+        return "Recruit/RecruitStudyList";
     }
 
     @GetMapping("employment")
@@ -334,7 +334,7 @@ public class RecruitStudyController {
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
         String pageMenu = Paging.getPaging("employment", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
-        return "Recruit/RecruitStudy";
+        return "Recruit/RecruitStudyList";
     }
 
     @GetMapping("etc")
@@ -362,7 +362,7 @@ public class RecruitStudyController {
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
         String pageMenu = Paging.getPaging("etc", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
-        return "Recruit/RecruitStudy";
+        return "Recruit/RecruitStudyList";
     }
 
 

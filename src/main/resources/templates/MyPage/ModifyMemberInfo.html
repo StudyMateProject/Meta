@@ -10,6 +10,8 @@
     <link rel="stylesheet" type="text/css" href="/css/footer.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+    <script src="/js/httpRequest.js"></script>
+    <script src="/js/mainAlarm.js"></script>
 </head>
 <body>
     <header>
@@ -28,8 +30,8 @@
                             <span>스터디원</span>
                             <div class="dropTable">
                                 <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
+                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘티 모집</a>
                                 <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
-                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘토 프로필</a>
                             </div>
                         </div>
 
@@ -61,41 +63,28 @@
                             <div class="notiDrop">
                                 <p>최근 알림</p>
                                 <div class="notiList">
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 알림1 </span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2 알림2</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3 알림3</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림4 알림4 알림4 알림4 알림4 알림4 알림4 알림4</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5 알림5</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림6 알림6</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7 알림7</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림8 알림8 알림8 알림8 알림8</span>
-                                    </a>
-                                    <a class="notiDropMenu" href="/">
-                                        <span class="notiCircle"></span>
-                                        <span class="notiText">알림9</span>
+                                    <a class="notiDropMenu" th:each="alarm : ${alarmList}">
+                                        <div th:if="${alarm.alarmType} == '2'">
+                                            <form>
+                                                <span class="notiCircle"></span>
+                                                <span class="notiText" th:text="${alarm.title}"></span><br>
+                                                <input type="hidden" name="idx" th:value="${alarm.idx}">
+                                                <input type="hidden" name="recruitStudyIdx" th:value="${alarm.recruitStudyIdx}">
+                                                <input type="hidden" name="recruitMentorIdx" th:value="${alarm.recruitMentorIdx}">
+                                                <input type="hidden" name="recruitMenteeIdx" th:value="${alarm.recruitMenteeIdx}">
+                                                <input type="hidden" name="nickname" th:value="${alarm.nickname}">
+                                                <input type="button" value="수락" onclick="recruitAccept(this.form);">
+                                                <input type="button" value="거절" onclick="recruitRefuse(this.form);">
+                                            </form>
+                                        </div>
+                                        <div th:if="${alarm.alarmType} != '2'">
+                                            <span class="notiCircle"></span>
+                                            <form>
+                                                <input type="hidden" name="idx" th:value="${alarm.idx}">
+                                                <input type="button" value="X" onclick="deleteAlarm(this.form);"><br>
+                                                <span class="notiText" th:text="${alarm.title}"></span>
+                                            </form>
+                                        </div>
                                     </a>
                                 </div>
                             </div>
