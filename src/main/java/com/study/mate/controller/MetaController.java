@@ -1,9 +1,6 @@
 package com.study.mate.controller;
 
-import com.study.mate.entity.Alarm;
-import com.study.mate.entity.Sign;
-import com.study.mate.entity.Meta;
-import com.study.mate.entity.MetaRoom;
+import com.study.mate.entity.*;
 import com.study.mate.service.MetaService;
 import com.study.mate.service.MyPageService;
 import com.study.mate.service.SignUpService;
@@ -45,7 +42,16 @@ public class MetaController {
     // STOMP Socket에서 메시지를 보낼 때 퇴장 메시지와 재입장(새로고침) 메시지를 구분하기 위한 재입장(새로고침) 체크용 Map
     Map<String, Long> reEnterCheck = new HashMap<>();
 
-    // 방장 혼자일때 퇴장하는 경우 방 삭제 메소드
+    // 방 퇴장 메소드 (방 내부 참여자 명단에서 삭제된다.)
+    public void exitRoom(@RequestParam long idx, @RequestParam String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
+        // 2. 1에서 파라미터로 받아온 방 번호와 닉네임을 서비스에 전달한다.
+        metaService.exit(idx, nickname);
+        // 3. 1에서 파라미터로 받아온 방 번호와 닉네임을 서비스에 전달한다.
+        metaService.recentEnterMeta(idx, nickname);
+        // 4. 2에서 반환받은 방 퇴장 결과 값을 클라이언트로 반환한다.
+    }
+
+    // 방장 혼자일때 퇴장하는 경우 방 삭제 메소드 (방이 삭제된다.)
     public void deleteRoomMaster(@RequestParam long idx) { // 1. 파라미터로 입장한 방 번호를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
         metaService.delete(idx);
@@ -82,6 +88,9 @@ public class MetaController {
         }
 
         // 7. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
+        List<Meta> recentEnterMetaList = metaService.recentEnterMetaList(rpMetaProfile.getNickname());
+
+        // 7. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
         List<Alarm> alarmList = myPageService.findEmailId(principal.getName());
 
         // 8. 5에서 foreach문을 사용하여 방 타입별로 값을 새로 추가해 만든 List 형태의 DTO들을 바인딩한다.
@@ -91,6 +100,8 @@ public class MetaController {
         model.addAttribute("cafeList", cafeList);
         // 9. 2에서 반환받은 로그인 유저 정보 DTO를 바인딩한다.
         model.addAttribute("metaProfile", rpMetaProfile);
+        //
+        model.addAttribute("recentEnterMetaList", recentEnterMetaList);
         // 10. 7에서 반환받은 알람 List를 바인딩한다.
         model.addAttribute("alarmList", alarmList);
         // 11. 검색 체크값을 바인딩한다. - 0 : 검색 안했을 경우
@@ -516,15 +527,17 @@ public class MetaController {
         return res;
     }
 
-    // 타인에 의한 방 퇴장 fetch (방 내부 참여자 명단에서 삭제된다.)
-    @GetMapping("/exit")
-    @ResponseBody // 비동기 통신 fetch를 사용하였기에 필요한 어노테이션
-    public int exitRoom(@RequestParam long idx, @RequestParam String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
-        // 2. 1에서 파라미터로 받아온 방 번호와 닉네임을 서비스에 전달한다.
-        int res = metaService.exit(idx, nickname);
-        // 3. 2에서 반환받은 방 퇴장 결과 값을 클라이언트로 반환한다.
-        return res;
-    }
+//    // 타인에 의한 방 퇴장 fetch (방 내부 참여자 명단에서 삭제된다.)
+//    @GetMapping("/exit")
+//    @ResponseBody // 비동기 통신 fetch를 사용하였기에 필요한 어노테이션
+//    public int exitRoom(@RequestParam long idx, @RequestParam String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
+//        // 2. 1에서 파라미터로 받아온 방 번호와 닉네임을 서비스에 전달한다.
+//        int res = metaService.exit(idx, nickname);
+//        // 3. 1에서 파라미터로 받아온 방 번호와 닉네임을 서비스에 전달한다.
+//        metaService.recentEnterMeta(idx, nickname);
+//        // 4. 2에서 반환받은 방 퇴장 결과 값을 클라이언트로 반환한다.
+//        return res;
+//    }
 
     // 본인에 의한 방 퇴장 (방 내부 참여자 명단에서 삭제된다.)
     @GetMapping("/selfexit")

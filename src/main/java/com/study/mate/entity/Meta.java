@@ -30,7 +30,7 @@ public class Meta {
     @Column(nullable = false)
     private int metaRecruitingPersonnel;
 
-    @Column (length = 20)
+    @Column (length = 20, unique = true, nullable = false)
     private String metaMaster;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // DTO 구역

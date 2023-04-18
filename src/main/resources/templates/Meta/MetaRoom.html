@@ -189,18 +189,20 @@
                     </div>
                     <div class="recentlyRoomListDiv">
                         <div class="recentlyRoomListWrapper">
-                            <div class="recentlyRoomList">목록1</div>
-                            <div class="recentlyRoomList">목록2</div>
-                            <div class="recentlyRoomList">목록3</div>
-                            <div class="recentlyRoomList">목록목록목록목록목록목록 목록목록목 록목록목록목록목록목록목록목록목록</div>
-                            <div class="recentlyRoomList">목록5</div>
-                            <div class="recentlyRoomList">목록6</div>
-                            <div class="recentlyRoomList">목록7</div>
-                            <div class="recentlyRoomList">목록8</div>
-                            <div class="recentlyRoomList">목록9</div>
-                            <div class="recentlyRoomList">목록1111111111111111111111111111111111111111</div>
-                            <div class="recentlyRoomList">목록2222222222222222222222222222222222221</div>
-                            <div class="recentlyRoomList">목록333333333333333333331</div>
+                            <div class="recentlyRoomList" th:each="recentEnterMeta : ${recentEnterMetaList}">
+                                <a th:if="${recentEnterMeta.metaType == 'studyRoom'}" th:href="@{/meta/studyroom(idx=${recentEnterMeta.idx})}" class="metaRoomALink">
+                                    <span>(스터디)</span>
+                                    <span>[[${recentEnterMeta.metaTitle}]]</span>
+                                    <span>([[${recentEnterMeta.metaRecruitingPersonnel}]] / [[${recentEnterMeta.metaPersonnel}]])</span>
+                                    <span>방장 : [[${recentEnterMeta.metaMaster}]]</span>
+                                </a>
+                                <a th:if="${recentEnterMeta.metaType == 'cafeRoom'}" th:href="@{/meta/caferoom(idx=${recentEnterMeta.idx})}" class="metaRoomALink">
+                                    <span>(카페)</span>
+                                    <span>[[${recentEnterMeta.metaTitle}]]</span>
+                                    <span>([[${recentEnterMeta.metaRecruitingPersonnel}]] / [[${recentEnterMeta.metaPersonnel}]])</span>
+                                    <span>방장 : [[${recentEnterMeta.metaMaster}]]</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

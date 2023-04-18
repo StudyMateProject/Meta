@@ -1,29 +1,36 @@
 package com.study.mate.service;
 
+import com.study.mate.entity.EnterMeta;
 import com.study.mate.entity.Sign;
 import com.study.mate.entity.Meta;
 import com.study.mate.entity.MetaRoom;
+import com.study.mate.repository.EnterMetaRepository;
 import com.study.mate.repository.MetaRepository;
 import com.study.mate.repository.MetaRoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class MetaService {
-    // 메타 DB
+    // 메타 방 DB
     @Autowired
     MetaRepository metaRepository;
 
     // 메타 방 내부 DB
     @Autowired
     MetaRoomRepository metaRoomRepository;
+
+    // 최근 입장한 메타 방 DB
+    @Autowired
+    EnterMetaRepository enterMetaRepository;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 생성된 메타 방 모두 조회
     public List<Meta.rpMetaList> metaList() {
-        // 2. 현재 생성된 메타 방 중에 모집된 인원이 0인 방을 모두 삭제한다.
+        // 2. 현재 생성된 메타 방 중에 모집된 인원이 0인 방을 모두 삭제한다. (@Query 어노테이션 사용)
         metaRepository.deleteByMetaRecruitingPersonnel(0);
         // 3. 현재 생성된 메타 방을 모두 조회하고, 조회된 값을 받아온다.
         List<Meta> metaList = metaRepository.findAll();
@@ -38,6 +45,24 @@ public class MetaService {
         return rpMetaList;
     }
 
+    // 최근 입장한 방 모두 조회
+    public List<Meta> recentEnterMetaList(String nickname) { // 1. 파라미터로 컨트롤러에서 넘어온 닉네임을 받아온다.
+        // 2. 1에서 파라미터로 받아온 닉네임으로 최근 입장한 방 본인 목록을 모두 조회하고, 조회된 값을 받아온다.
+        List<Meta> recentEnterMetaList = metaRepository.findByRecentEnterMetaList(nickname);
+        // 3. 2에서 조회된 값의 길이가 10을 넘는지 체크한다.
+        // 3-1. 길이가 10을 넘지 않는 경우
+        if ( recentEnterMetaList.size() <= 10 ) {
+            // 3-1-1. 추가 작업 없이 2에서 조회한 List를 반환한다.
+            return recentEnterMetaList;
+        // 3-2. 길이가 10을 넘는 경우
+        } else {
+            // 3-2-1. 2에서 조회된 List를 0번 배열부터 9번 배열까지 잘라낸다.
+            recentEnterMetaList = recentEnterMetaList.subList(0, 10);
+            // 3-2-2. 3-2-1에서 잘라낸 List를 반환한다.
+            return recentEnterMetaList;
+        }
+    }
+
     // 메타 방 생성 후 바로 입장 - 방장 첫 입장
     public Meta.rpCreateMeta createRoom(Meta.rqCreateMeta rqCreateMeta, Sign.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 생성 DTO와 로그인 유저 정보 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 생성 DTO 값 중 방 타입이 자습실인지 체크한다.
@@ -45,34 +70,34 @@ public class MetaService {
         if ( rqCreateMeta.getMetaType().equals("oneRoom") ) {
             // 2-1-1. 1에서 파라미터로 받아온 방 생성 DTO를 Entity로 변환한다.
             Meta meta = rqCreateMeta.toOneRoom();
-            // 3. 2에서 변환된 Entity로 방을 저장하고, 저장된 값을 받아온다.
+            // 2-1-2. 2-1-1에서 변환된 Entity로 방을 저장하고, 저장된 값을 받아온다.
             Meta createMeta = metaRepository.save(meta);
-            // 4. 3에서 저장하고 받아온 Entity를 DTO로 변환한다.
+            // 2-1-3. 2-1-2에서 저장하고 받아온 Entity를 DTO로 변환한다.
             Meta.rpCreateMeta rpCreateMeta = new Meta.rpCreateMeta(createMeta);
-            // 5. 4에서 변환된 DTO를 반환한다.
+            // 2-1-4. 2-1-3에서 변환된 DTO를 반환한다.
             return rpCreateMeta;
         // 2-2. 방 타입이 자습실이 아닌 경우 - 스터디룸, 카페룸은 여러명이 들어가는 방이기에 방 내부 참여자 명단이 필요하다.
         } else {
             // 2-2-1. 1에서 파라미터로 받아온 방 생성 DTO를 Entity로 변환한다.
             Meta meta = rqCreateMeta.toEntity();
-            // 3. 2에서 변환된 Entity로 방을 저장하고, 저장된 값을 받아온다.
+            // 2-2-2. 2-2-1에서 변환된 Entity로 방을 저장하고, 저장된 값을 받아온다.
             Meta createMeta = metaRepository.save(meta);
-            // 4. 3에서 저장하고 받아온 Entity와 1에서 파라미터로 받아온 로그인 유저 정보 DTO를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
+            // 2-2-3. 1에서 파라미터로 받아온 로그인 유저 정보 DTO와 2-2-2에서 저장하고 받아온 Entity를 MetaRoom에 전달하기위해 MetaRoom을 생성한다.
             MetaRoom metaRoomParticipate = new MetaRoom(); // 방 내부 참여자 명단
-            // 5. 3에서 저장하고 받아온 Entity와 1에서 파라미터로 받아온 로그인 유저 정보 DTO를 setter를 통하여 MetaRoom에 전달한다.
-            // 5-1. 3에서 저장하고 받아온 Entity 값 중 방 번호를 setter를 통하여 MetaRoom에 전달한다.
+            // 2-2-4. 1에서 파라미터로 받아온 로그인 유저 정보 DTO와 2-2-2에서 저장하고 받아온 Entity를 setter를 통하여 MetaRoom에 전달한다.
+            // 2-2-4-1. 2-2-2에서 저장하고 받아온 Entity 값 중 방 번호를 setter를 통하여 MetaRoom에 전달한다.
             metaRoomParticipate.setMetaIdx(createMeta.getIdx());
-            // 5-2. 1에서 파라미터로 받아온 로그인 유저 정보 DTO 값 중 닉네임을 setter를 통하여 MetaRoom에 전달한다.
+            // 2-2-4-2. 1에서 파라미터로 받아온 로그인 유저 정보 DTO 값 중 닉네임을 setter를 통하여 MetaRoom에 전달한다.
             metaRoomParticipate.setMetaNickname(rpNickImage.getNickname());
-            // 5-3. 1에서 파라미터로 받아온 로그인 유저 정보 DTO 값 중 프로필 이미지를 setter를 통하여 MetaRoom에 전달한다.
+            // 2-2-4-3. 1에서 파라미터로 받아온 로그인 유저 정보 DTO 값 중 프로필 이미지를 setter를 통하여 MetaRoom에 전달한다.
             metaRoomParticipate.setMetaProfileImage(rpNickImage.getProfileImage());
-            // 5-4. 3에서 저장하고 받아온 Entity 값 중 방장 닉네임을 setter를 통하여 MetaRoom에 전달한다.
+            // 2-2-4-4. 2-2-2에서 저장하고 받아온 Entity 값 중 방장 닉네임을 setter를 통하여 MetaRoom에 전달한다.
             metaRoomParticipate.setMetaMaster(createMeta.getMetaMaster());
-            // 6. 5에서 값들이 전달된 Entity를 방 내부 참여자 명단에 저장한다.
+            // 2-2-5. 2-2-4에서 값들이 전달된 Entity를 방 내부 참여자 명단에 저장한다.
             metaRoomRepository.save(metaRoomParticipate);
-            // 7. 3에서 저장하고 받아온 Entity를 DTO로 변환한다.
+            // 2-2-6. 2-2-2에서 저장하고 받아온 Entity를 DTO로 변환한다.
             Meta.rpCreateMeta rpCreateMeta = new Meta.rpCreateMeta(createMeta);
-            // 8. 7에서 변환된 DTO를 반환한다.
+            // 2-2-7. 2-2-6에서 변환된 DTO를 반환한다.
             return rpCreateMeta;
         }
     }
@@ -182,7 +207,9 @@ public class MetaService {
                 Meta metaIncrease = metaRepository.findByIdx(idx);
                 // 4-2-6. 4-2-5에서 조회하고 받아온 Entity를 DTO로 변환한다.
                 Meta.rpEntrance rpEntrance = new Meta.rpEntrance(metaIncrease);
-                // 4-2-7. 4-2-6에서 변환된 DTO를 반환한다.
+                // 4-2-7. 1에서 파라미터로 받아온 닉네임과 방 번호로 최근 입장한 방 본인 목록에서 현재 입장하는 방을 삭제한다. (@Query 어노테이션 사용)
+                enterMetaRepository.deleteByNicknameMetaIdx(rpNickImage.getNickname(), idx);
+                // 4-2-8. 4-2-6에서 변환된 DTO를 반환한다.
                 return rpEntrance;
             }
         }
@@ -256,9 +283,17 @@ public class MetaService {
         return res;
     }
 
+    // 최근 입장한 방 본인 목록에 퇴장하는 방 추가
+    public void recentEnterMeta(long idx, String nickname) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호와 닉네임을 받아온다.
+        // 2. 1에서 파라미터로 받아온 닉네임과 방 번호를 EnterMeta의 RequestDTO로 전달해 EnterMeta의 Entity로 변환한다.
+        EnterMeta recentEnterMeta = new EnterMeta.rqEnterMeta().toEntity(nickname, idx);
+        // 3. 2에서 변환된 Entity로 최근 입장한 방 본인 목록에 저장한다.
+        enterMetaRepository.save(recentEnterMeta);
+    }
+
     // 방 삭제
     public void delete(long idx) { // 1. 파라미터로 컨트롤러에서 넘어온 방 번호를 받아온다.
-        // 2. 1에서 파라미터로 받아온 방 번호에 해당하는 방을 삭제한다. (@Query 어노테이션 사용)
+        // 2. 1에서 파라미터로 받아온 방 번호로 메타 방에서 해당 방을 삭제한다. (@Query 어노테이션 사용)
         metaRepository.deleteByIdx(idx);
     }
 }

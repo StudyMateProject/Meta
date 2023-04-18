@@ -19,7 +19,7 @@ public class MetaRoom {
     @Column(nullable = false)
     private long metaIdx;
 
-    @Column(length = 20)
+    @Column(length = 10)
     private String metaNickname;
 
     @Column(length = 100)

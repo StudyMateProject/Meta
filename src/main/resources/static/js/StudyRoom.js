@@ -396,29 +396,6 @@ stomp.connect({}, function () {
             ////////////////////////////////////////////// 방장 퇴장 //////////////////////////////////////////////
             // 10-7. 메시지 타입이 "delete"일 경우
             if ( metaType == "delete" ) {
-                // fetch를 사용하여 방 퇴장 URL에 파라미터로 방 번호와 작성자 닉네임을 가져가 퇴장 처리한다.
-                // fetch(url, { options: value }) - 브라우저에서 제공하는 API 중 하나로, 네트워크 요청을 보내고 응답을 받아오는 메소드이다.
-                //                       fetch() 메소드는 첫 번째 인자로 서버에 데이터를 요청할 URL을 전달받고, 두 번째 인자로 선택적으로 HTTP 요청과 관련된 다양한 옵션을 설정하는 객체를 전달받는다.
-                //                       여기서 옵션 객체는 HTTP 요청에 대한 옵션을 설정할 수 있는 여러 가지 속성을 가지고 있는데,
-                //                       예를 들어 method 속성을 이용하여 HTTP 요청 메소드(GET, POST, PUT, DELETE 등)를 지정할 수 있으며,
-                //                       method 속성을 지정하지 않으면 기본적으로 HTTP 요청 메서드는 GET이 된다.
-                //                       그러기에 두 번째 인자로 옵션 객체를 전달하지 않으면 기본적으로 HTTP 요청 메서드는 GET으로 지정된다.
-                //                       또 다른 속성으로는 headers, mode, cache, credentials 등이 있다.
-                //                       fetch() 메소드는 Promise 객체를 반환하며, 이를 통해 비동기적으로 서버로부터 데이터를 받아올 수 있다.
-                //                       응답을 받아오는 데 성공하면 Response 객체를 반환하고, 실패하면 Error 객체를 반환한다.
-                // 예시 - 아래와 같이 fetch 메소드를 사용하여 JSON 데이터를 요청할 수 있다.
-                // fetch("/meta/exit?idx=" + metaIdx + "&nickname=" + writer)
-                //     .then(response => response.json()) // JSON 형식으로 파싱
-                //     .then(data => { console.log(data) }) // 응답 데이터 처리
-                //     .catch(error => console.error(error)); // 오류 처리
-                // fetch 메소드는 Promise를 반환하기 때문에, then 메서드를 사용하여 비동기 처리를 할 수 있다.
-                // fetch 메소드를 사용하여 "/meta/exit?idx=방 번호&nickname=작성자" 주소로 GET 요청을 보내고,
-                // then() 메소드를 사용하여 요청이 성공했을 때 반환된 Response 객체를 json() 메소드를 통해 JSON 형식으로 변환한다.
-                // 그리고 다시 then() 메소드를 사용하여 변환된 JSON 데이터를 콘솔에 출력한다.
-                // 만약 요청이 실패하면 catch 메소드에서 에러를 출력한다.
-                fetch("/meta/exit?idx=" + metaIdx + "&nickname=" + writer);
-                // 여기서는 fetch를 사용하여 서버에서 퇴장 유저를 처리한 뒤, 클라이언트에서는 추가로 더 할 일이 없기에 then() 메소드를 사용하지 않는다.
-
                 // 메시지 코드를 작성한다.
                 str = '<div style="text-align: left; color: red;">';
                 str += '<b>' + '방장이 탈주하여 1분뒤 방이 터집니다' + '</b>';
@@ -478,43 +455,6 @@ stomp.connect({}, function () {
             ////////////////////////////////////////////// 유저 퇴장 //////////////////////////////////////////////
             // 10-9. 메시지 타입이 "exit"일 경우
             if ( metaType == "exit" ) {
-                // 작성자 닉네임과 로그인 유저 닉네임이 같은 경우 (본인)
-                if ( writer === metaNickname ) {
-                    // 작성자가 에러로 인해 퇴장할 때는 경고창 없이 즉시 나가지도록 이벤트 핸들러를 비활성화한다.
-                    // beforeunload 이벤트 핸들러를 비활성화한다.
-                    window.removeEventListener("beforeunload", handleBeforeUnload);
-                    // onunload 이벤트 핸들러를 비활성화한다.
-                    document.body.removeAttribute("onunload");
-                    // 메타 메인 페이지 URL에 파라미터로 방 번호와 닉네임 그리고 에러 메시지를 가져가 알람으로 에러 메시지를 띄우고 퇴장시킨다.
-                    location.href = "/meta?idx=" + metaIdx + "&nickname=" + writer + "&errRoom=" + "알수없는 이유로 방에서 탈주되었습니다.";
-                } // writer === metaNickname
-
-                // 방장 닉네임과 로그인 유저 닉네임이 같은 경우 - 방장이 퇴장 유저를 처리한다.
-                if ( metaMaster == metaNickname ) {
-                    // fetch를 사용하여 방 퇴장 URL에 파라미터로 방 번호와 작성자 닉네임을 가져가 퇴장 처리한다.
-                    // fetch(url, { options: value }) - 브라우저에서 제공하는 API 중 하나로, 네트워크 요청을 보내고 응답을 받아오는 메소드이다.
-                    //                                  fetch() 메소드는 첫 번째 인자로 서버에 데이터를 요청할 URL을 전달받고, 두 번째 인자로 선택적으로 HTTP 요청과 관련된 다양한 옵션을 설정하는 객체를 전달받는다.
-                    //                                  여기서 옵션 객체는 HTTP 요청에 대한 옵션을 설정할 수 있는 여러 가지 속성을 가지고 있는데,
-                    //                                  예를 들어 method 속성을 이용하여 HTTP 요청 메소드(GET, POST, PUT, DELETE 등)를 지정할 수 있으며,
-                    //                                  method 속성을 지정하지 않으면 기본적으로 HTTP 요청 메서드는 GET이 된다.
-                    //                                  그러기에 두 번째 인자로 옵션 객체를 전달하지 않으면 기본적으로 HTTP 요청 메서드는 GET으로 지정된다.
-                    //                                  또 다른 속성으로는 headers, mode, cache, credentials 등이 있다.
-                    //                                  fetch() 메소드는 Promise 객체를 반환하며, 이를 통해 비동기적으로 서버로부터 데이터를 받아올 수 있다.
-                    //                                  응답을 받아오는 데 성공하면 Response 객체를 반환하고, 실패하면 Error 객체를 반환한다.
-                    // 예시 - 아래와 같이 fetch 메소드를 사용하여 JSON 데이터를 요청할 수 있다.
-                    // fetch("/meta/exit?idx=" + metaIdx + "&nickname=" + writer)
-                    //     .then(response => response.json()) // JSON 형식으로 파싱
-                    //     .then(data => { console.log(data) }) // 응답 데이터 처리
-                    //     .catch(error => console.error(error)); // 오류 처리
-                    // fetch 메소드는 Promise를 반환하기 때문에, then 메서드를 사용하여 비동기 처리를 할 수 있다.
-                    // fetch 메소드를 사용하여 "/meta/exit?idx=방 번호&nickname=작성자" 주소로 GET 요청을 보내고,
-                    // then() 메소드를 사용하여 요청이 성공했을 때 반환된 Response 객체를 json() 메소드를 통해 JSON 형식으로 변환한다.
-                    // 그리고 다시 then() 메소드를 사용하여 변환된 JSON 데이터를 콘솔에 출력한다.
-                    // 만약 요청이 실패하면 catch 메소드에서 에러를 출력한다.
-                    fetch("/meta/exit?idx=" + metaIdx + "&nickname=" + writer);
-                    // 여기서는 fetch를 사용하여 서버에서 퇴장 유저를 처리한 뒤, 클라이언트에서는 추가로 더 할 일이 없기에 then() 메소드를 사용하지 않는다.
-                } // metaMaster
-
                 // 메시지 코드를 작성한다.
                 str = '<div style="text-align: left; color: purple;">';
                 str += '<b>' + message + '</b>';
