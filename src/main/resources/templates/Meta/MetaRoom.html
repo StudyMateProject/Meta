@@ -176,7 +176,7 @@
             </div>
 
             <div class="roomContainer">
-                <form class="createRoomDiv" action="/meta/createmetaform/createmeta" method="GET">
+                <form class="createRoomDiv" action="/meta/createmetaform/createmeta" method="post">
                     <input class="createRoomBtn" type="button" value="방 만들기" onclick="location.href='/meta/createmetaform'">
                     <input name="metaType" type="hidden" value="oneRoom">
                     <input name="metaMaster" type="hidden" th:value="${metaProfile.nickname}"></li>

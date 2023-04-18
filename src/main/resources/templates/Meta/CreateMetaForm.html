@@ -12,7 +12,7 @@
             <span>방 만들기</span>
         </div>
         <!-- th:object="${바인딩한 객체의 변수명}" - 모델로 바인딩한 객체를 가져온다. -->
-        <form class="createForm" action="/meta/createmetaform/createmeta" method="get" th:object="${metaDTO}">
+        <form class="createForm" action="/meta/createmetaform/createmeta" method="post" th:object="${metaDTO}">
             <!-- th:for="th:field에 작성한 변수명" - label과 input을 연결 해준다. -->
             <!-- th:field="*{th:object로 가져온 객체의 내부 변수명}" - 모델로 바인딩한 객체의 내부 변수들을 가져와 id, name, value 속성을 자동으로 처리 해준다. -->
             <div class="RoomForm">

@@ -7,10 +7,7 @@ import com.study.mate.service.SignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -43,7 +40,7 @@ public class MetaController {
     Map<String, Long> reEnterCheck = new HashMap<>();
 
     // 방 퇴장 메소드 (방 내부 참여자 명단에서 삭제된다.)
-    public void exitRoom(@RequestParam long idx, @RequestParam String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
+    public void exitRoom(long idx, String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호와 닉네임을 서비스에 전달한다.
         metaService.exit(idx, nickname);
         // 3. 1에서 파라미터로 받아온 방 번호와 닉네임을 서비스에 전달한다.
@@ -51,8 +48,8 @@ public class MetaController {
         // 4. 2에서 반환받은 방 퇴장 결과 값을 클라이언트로 반환한다.
     }
 
-    // 방장 혼자일때 퇴장하는 경우 방 삭제 메소드 (방이 삭제된다.)
-    public void deleteRoomMaster(@RequestParam long idx) { // 1. 파라미터로 입장한 방 번호를 받아온다.
+    // 방 삭제 메소드 ((방장 혼자일때 퇴장하는 경우 / 방장이 퇴장한 지 1분이 경과한 경우) 방이 삭제된다.)
+    public void deleteRoom(long idx) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
         // 2. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
         metaService.delete(idx);
     }
@@ -188,7 +185,7 @@ public class MetaController {
     }
 
     // 방 만들기
-    @GetMapping("/createmetaform/createmeta")
+    @PostMapping("/createmetaform/createmeta")
     public String createMetaRoom(Meta.rqCreateMeta rqCreateMeta, Principal principal) { // 1. 파라미터로 form에서 넘어온 방 생성 DTO를 받아온다.
         // 2. Principal을 사용하여 로그인 유저의 아이디를 서비스에 전달한다.
         Sign.rpNickImage rpNickImage = signUpService.memberNickImage(principal.getName());
@@ -552,16 +549,16 @@ public class MetaController {
         return "redirect:/meta";
     }
 
-    // 방 삭제 (방이 삭제된다.)
-    @GetMapping("/delete")
-    public String deleteRoom(@RequestParam long idx, @RequestParam String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
-        // 2. 세션을 사용하기 위하여 위에서 @Autowired로 생성한 HttpServletRequest를 통해 세션 객체를 가져온다.
-        HttpSession session = request.getSession();
-        // 3. 2에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
-        session.removeAttribute(nickname);
-        // 4. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
-        metaService.delete(idx);
-        // 5. 메타 메인 페이지로 리다이렉트한다.
-        return "redirect:/meta";
-    }
+//    // 방 삭제 (방이 삭제된다.)
+//    @GetMapping("/delete")
+//    public String deleteRoom(@RequestParam long idx, @RequestParam String nickname) { // 1. 파라미터로 입장한 방 번호와 닉네임을 받아온다.
+//        // 2. 세션을 사용하기 위하여 위에서 @Autowired로 생성한 HttpServletRequest를 통해 세션 객체를 가져온다.
+//        HttpSession session = request.getSession();
+//        // 3. 2에서 가져온 세션 객체를 통해 1에서 파라미터로 받아온 닉네임 키에 해당하는 세션을 제거한다.
+//        session.removeAttribute(nickname);
+//        // 4. 1에서 파라미터로 받아온 방 번호를 서비스에 전달한다.
+//        metaService.delete(idx);
+//        // 5. 메타 메인 페이지로 리다이렉트한다.
+//        return "redirect:/meta";
+//    }
 }

@@ -398,7 +398,7 @@ stomp.connect({}, function () {
             if ( metaType == "delete" ) {
                 // 메시지 코드를 작성한다.
                 str = '<div style="text-align: left; color: red;">';
-                str += '<b>' + '방장이 탈주하여 1분뒤 방이 터집니다' + '</b>';
+                str += '<b>' + message + '</b>';
                 str += '</div>'
                 // 작성한 메시지 코드를 채팅 구역에 올린다.
                 // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
@@ -415,31 +415,13 @@ stomp.connect({}, function () {
                 var mtr = document.getElementById(writer);
                 // 가져온 방장 id를 이용하여 방장을 참가자 구역에서 제거한다.
                 mtr.remove();
-
-                // 방장 퇴장 후 방 삭제 메시지를 채팅 구역에 올리고, 방장을 참가자 구역에서 제거한 뒤,
-                // setTimeout 메소드를 사용하여 방장이 퇴장한지 1분이 경과하면 방이 삭제되도록 한다.
-                // 그리고 boomTimeoutId 변수에 setTimeout 메소드로 반환된 타이머 ID를 저장하여,
-                // 1분이 경과되기 전에 방장이 재입장하면 boomTimeoutId로 타이머를 취소해 방이 삭제되지 안되도록 한다.
-                // 이는 방장이 퇴장 후 1분이내 재입장 할 경우를 대비해 1분 대기하는 것이다.
-                boomTimeoutId = setTimeout(function() {
-                    // 방이 삭제될 때는 경고창 없이 즉시 나가지도록 이벤트 핸들러를 비활성화한다.
-                    // beforeunload 이벤트 핸들러를 비활성화한다.
-                    window.removeEventListener("beforeunload", handleBeforeUnload);
-                    // onunload 이벤트 핸들러를 비활성화한다.
-                    document.body.removeAttribute("onunload");
-                    // 방 삭제 URL에 파라미터로 방 번호와 닉네임을 가져가 방 삭제 후 바로 퇴장한다.
-                    location.href = "/meta/delete?idx=" + metaIdx + "&nickname=" + metaNickname;
-                }, 60000); // setTimeout
             } // delete
             ////////////////////////////////////// 방장 퇴장 후 1분 이내 재입장 //////////////////////////////////////
             // 10-8. 메시지 타입이 "cancel"일 경우
             if ( metaType == "cancel" ) {
-                // boomTimeoutId에 저장된 setTimeout ID를 사용하여 실행 중인 타이머를 취소한다.
-                clearTimeout(boomTimeoutId);
-
                 // 메시지 코드를 작성한다.
                 str = '<div style="text-align: left; color: blue;">';
-                str += '<b>' + '방장이 다시 입장하여 방이 유지됩니다.' + '</b>';
+                str += '<b>' + message + '</b>';
                 str += '</div>'
                 // 작성한 메시지 코드를 채팅 구역에 올린다.
                 // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
@@ -452,6 +434,18 @@ stomp.connect({}, function () {
                 // 메시지가 구역을 넘어간다면 해당 구역에 스크롤이 생성되는데 스크롤을 언제나 가장 아래에 위치하게 만든다.
                 chatArea.scrollTop = chatArea.scrollHeight - chatArea.clientHeight;
             } // cancel
+            ////////////////////////////////////// 방장 퇴장 후 1분 이후 방 삭제 //////////////////////////////////////
+            if ( metaType == "boom" ) {
+                // 방 삭제 알림창을 띄운다.
+                alert(message);
+                // 방이 삭제될 때는 경고창 없이 즉시 나가지도록 이벤트 핸들러를 비활성화한다.
+                // beforeunload 이벤트 핸들러를 비활성화한다.
+                window.removeEventListener("beforeunload", handleBeforeUnload);
+                // onunload 이벤트 핸들러를 비활성화한다.
+                document.body.removeAttribute("onunload");
+                // 방 퇴장 URL에 파라미터로 방 번호와 닉네임을 가져가 방에서 퇴장한다.
+                location.href = "/meta/selfexit?idx=" + metaIdx + "&nickname=" + metaNickname;
+            }
             ////////////////////////////////////////////// 유저 퇴장 //////////////////////////////////////////////
             // 10-9. 메시지 타입이 "exit"일 경우
             if ( metaType == "exit" ) {
