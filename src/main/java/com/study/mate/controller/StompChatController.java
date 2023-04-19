@@ -123,9 +123,7 @@ public class StompChatController {
     // 스터디룸 첫 입장 이후 재입장 - 첫 입장 이후 모든 재입장은 이곳으로 들어온다.
     @MessageMapping(value = "/meta/studyroom/reenter")
     public void reEnterStudyRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 재입장(새로고침) 정보들을 DTO로 받아온다.
-        // 2. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
-        message.setParticipant(message.getWriter());
-        // 3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+        // 2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
         //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
         //    "/sub" + "/meta/studyroom/" + metaIdx = "/sub/meta/studyroom/1"
         template.convertAndSend("/sub/meta/studyroom/" + message.getMetaIdx(), message);
@@ -780,9 +778,7 @@ public class StompChatController {
     // 카페룸 첫 입장 이후 재입장 - 첫 입장 이후 모든 재입장은 이곳으로 들어온다.
     @MessageMapping(value = "/meta/caferoom/reenter")
     public void reEnterCafeRoom(ChatMessageDTO message) { // 1. 클라이언트로부터 전송된 재입장(새로고침) 정보들을 DTO로 받아온다.
-        // 2. 1에서 파라미터로 받아온 DTO 값 중 작성자(재입장자)를 가져와 DTO 값 중 참가자에 setter를 통해 전달한다.
-        message.setParticipant(message.getWriter());
-        // 3. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
+        // 2. SimpMessagingTemplate를 통해 해당 path를 SUBSCRIBE하는 Client에게 1에서 파라미터로 받아온 DTO를 다시 전달한다.
         //    path : StompWebSocketConfig에서 설정한 enableSimpleBroker와 DTO를 전달할 경로와 1에서 파라미터로 받아온 DTO 값 중 방 번호가 병합된다.
         //    "/sub" + "/meta/caferoom/" + metaIdx = "/sub/meta/caferoom/1"
         template.convertAndSend("/sub/meta/caferoom/" + message.getMetaIdx(), message);
