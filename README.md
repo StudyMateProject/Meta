@@ -1167,3 +1167,12 @@
 		CONSTRAINT fk_storeLikeIdx FOREIGN KEY(likeIdx) REFERENCES Store(storeIdx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
 		memberIdx BIGINT NOT NULL
 	);
+
+#
+
+### 📌 04/19
+#### ✔ 재입장(새로고침) 하는 경우 참가자란에 새로 참가자 정보를 작성하던 것을 첫 입장때 작성한 참가자 정보를 유지하는 것으로 변경
+##### 재입장(새로고침)을 할 때마다 서버에서는 db에 새로 참가자 정보를 저장하였고, 클라이언트에서는 참가자란에 새로 참가자 정보 작성하여서, 재입장(새로고침)도 새로 입장한 것처럼 보이도록 하였다.
+##### 하지만 재입장(새로고침)을 할 때는 굳이 그렇게까지 할 필요가 없어 보여 첫 입장 때 작성한 정보를 그대로 유지하도록 변경하였다.
+
+#
