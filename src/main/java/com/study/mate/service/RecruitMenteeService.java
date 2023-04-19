@@ -57,7 +57,7 @@ public class RecruitMenteeService {
     //페이징 처리를 하는 메서드(메인 페이지)
     public List<RecruitMentee> recruitMenteeListAll(int start, int end) {
         //페이징 처리를 위해서 start 숫자와 end 숫자를 보내 그 길이 안에 맞는 리스트 검색 후 리턴
-        return recruitMenteeRepository.findRecruitMenteeList(start, end);
+        return recruitMenteeRepository.findRecruitMenteeListRanking(start, end);
     }
 
     //페이징 처리를 하는 메서드(멘토프로필 페이지)
