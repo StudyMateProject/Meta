@@ -140,7 +140,7 @@ stomp.connect({}, function () {
                     ptr.remove();
                 }
 
-                // 0. id를 통해 참가자가 작성될 구역을 가져와 profileArea 변수에 저장한다.
+                // 0. id를 통해 참가자가 작성될 참가자 구역을 가져와 profileArea 변수에 저장한다.
                 var profileArea = document.getElementById("profileArea");
 
                 // document.createElement()를 사용하여, 참가자 코드를 작성해 참가자 구역에 올린다.
@@ -311,52 +311,34 @@ stomp.connect({}, function () {
                 // 전역 변수에 선언되어 있는 위임 전 방장 닉네임을 위임 후 방장 닉네임으로 변경한다.
                 metaMaster = master;
 
-                // 현재 작성되어 있는 위임 전 방장과 위임 후 방장을 제거하고 다시 올린다.
+                // 현재 작성되어 있는 방장 타이틀을 위임 전 방장에서 제거하고 위임 후 방장에 추가한다.
 
-                // 작성자(위임 전 방장) 닉네임 id를 통해 참가자 구역에 작성되어 있는 작성자(위임 전 방장)를 가져와 beforeMaster 변수에 저장한다.
-                var beforeMaster = document.getElementById(writer);
-                // 방장(위임 후 방장) 닉네임 id를 통해 참가자 구역에 작성되어 있는 방장(위임 후 방장)을 가져와 afterMaster 변수에 저장한다.
-                var afterMaster = document.getElementById(master);
-                // beforeMaster에 저장된 작성자(위임 전 방장) id를 사용하여 해당 참가자를 제거한다.
-                beforeMaster.remove();
-                // afterMaster에 저장된 방장(위임 후 방장) id를 사용하여 해당 참가자를 제거한다.
-                afterMaster.remove();
-
-                // id를 통해 작성자(위임 전 방장)와 방장(위임 후 방장)이 작성될 구역을 가져와 profileArea 변수에 저장한다.
+                // id를 통해 작성자(위임 전 방장)와 방장(위임 후 방장)이 작성될 참가자 구역을 가져와 profileArea 변수에 저장한다.
                 var profileArea = document.getElementById("profileArea");
 
-                // 작성자(위임 전 방장) 코드를 작성한다.
-                var beforeMasterCode = '<div class="participant participantDiv" id="' + writer + '">';
-                beforeMasterCode += '<img class="participantImg" src="/imagePath/' + profileImage + '">';
-                beforeMasterCode += '<div class="participantInfo">';
-                beforeMasterCode += '<b class="participantNickname">' + writer + '</b>';
-                beforeMasterCode += '</div>';
-                beforeMasterCode += '</div>';
-                // 작성한 작성자(위임 전 방장) 코드를 참가자 구역에 올린다.
-                // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
-                // position에는 총 4가지의 옵션이 있다.
-                // 1. beforebegin : 타겟 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
-                // 2. afterbegin : 타겟 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
-                // 3. beforeend : 타겟 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
-                // 4. afterend : 타겟 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
-                profileArea.insertAdjacentHTML("beforeend", beforeMasterCode);
+                // 작성자(위임 전 방장) 닉네임 id를 통해 참가자 구역에 작성되어 있는 작성자(위임 전 방장)를 가져와 beforeMasterArea 변수에 저장한다.
+                var beforeMasterArea = document.getElementById(writer);
+                // class를 통해 참가자 구역에서 가져온 작성자(위임 전 방장)에 작성되어 있는 작성자(위임 전 방장) 정보 구역을 beforeMasterInfoArea 변수에 저장한다.
+                var beforeMasterInfoArea = beforeMasterArea.getElementsByClassName("participantInfo")[0];
+                // class를 통해 작성자(위임 전 방장)에서 가져온 작성자(위임 전 방장) 정보에 들어있는 방장 타이틀을 가져와 beforeMasterInfoArea 변수에 저장한다.
+                var beforeMaster = beforeMasterArea.getElementsByClassName("participantMaster")[0];
 
-                // 방장(위임 후 방장) 코드를 작성한다.
-                var afterMasterCode = '<div class="participant participantDiv" id="' + master + '">';
-                afterMasterCode += '<img class="participantImg" src="' + masterProfileImage + '">';
-                afterMasterCode += '<div class="participantInfo">';
-                afterMasterCode += '<b class="participantNickname">' + master + '</b>';
-                afterMasterCode += '<b class="participantMaster">' + '방장' + '</b>';
-                afterMasterCode += '</div>';
-                afterMasterCode += '</div>';
-                // 작성한 방장(위임 후 방장) 코드를 참가자 구역에 올린다.
-                // insertAdjacentHTML( position, html ) - position에 따른 위치에 html 요소를 추가 한다.
-                // position에는 총 4가지의 옵션이 있다.
-                // 1. beforebegin : 타겟 요소 전(형제 요소)에 생성한다. - 시작 태그의 앞 (형제 요소)
-                // 2. afterbegin : 타겟 요소 다음(자식 요소)에 생성한다. - 시작 태그의 뒤 (자식 요소)
-                // 3. beforeend : 타겟 요소 '끝나는 태그' 바로 직전(자식 요소)에 요소를 생성한다. - 종료 태그 앞 (자식 요소)
-                // 4. afterend : 타겟 요소의 '끝나는 태그' 바로 다음(형제 요소)에 요소를 생성한다. - 종료 태그 뒤 (형제 요소)
-                profileArea.insertAdjacentHTML("beforeend", afterMasterCode);
+                beforeMasterInfoArea.removeChild(beforeMaster);
+
+                // 방장(위임 후 방장) 닉네임 id를 통해 참가자 구역에 작성되어 있는 방장(위임 후 방장)를 가져와 afterMasterArea 변수에 저장한다.
+                var afterMasterArea = document.getElementById(master);
+                // class를 통해 참가자 구역에서 가져온 방장(위임 후 방장)에 작성되어 있는 방장(위임 후 방장) 정보 구역을 afterMasterInfoArea 변수에 저장한다.
+                var afterMasterInfoArea = afterMasterArea.getElementsByClassName("participantInfo")[0];
+                // 방장 타이틀 div 태그를 생성한다.
+                var afterMasterDiv = document.createElement("div");
+                // 방장 타이틀 div 태그에 작성할 방장 타이틀을 TextNode로 생성한다.
+                var afterMasterDivContent = document.createTextNode("방장");
+                // 방장 타이틀 div 태그에 style 속성 class를 추가한다.
+                afterMasterDiv.setAttribute("class", "participantMaster");
+                // 방장 타이틀 div 태그에 TextNode로 생성한 방장 타이틀을 전달한다.
+                afterMasterDiv.appendChild(afterMasterDivContent);
+                // 방장(위임 후 방장) 정보 구역에 방장 타이틀 div 태그를 올린다.
+                afterMasterInfoArea.appendChild(afterMasterDiv);
             } // DelegateMaster
             ////////////////////////////////////////////// 유저 강퇴 //////////////////////////////////////////////
             // 10-6. 메시지 타입이 "KickOut"일 경우
@@ -650,7 +632,7 @@ stomp.connect({}, function () {
                             }); // addEventListener
 
                             // id를 통해 상세 프로필 버튼 구역에 올라가 있는 강퇴 버튼을 가져와 detailProfileNicknameArea 변수에 저장한다.
-                            var btnDetailProfileKickOut = document.getElementById("#btnDetailProfileKickOut");
+                            var btnDetailProfileKickOut = document.getElementById("btnDetailProfileKickOut");
                             // 강퇴 버튼에서 "click" 이벤트가 발생하면 해당 이벤트를 처리하는 콜백 메소드를 등록한다.
                             // click - 마우스나 터치 디바이스의 클릭이나 탭을 할 때 발생하는 이벤트이다.
                             btnDetailProfileKickOut.addEventListener("click", () => {
