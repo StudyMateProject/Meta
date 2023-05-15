@@ -1,16 +1,13 @@
 package com.study.mate.service;
 
-import com.study.mate.entity.EnterMeta;
-import com.study.mate.entity.Sign;
-import com.study.mate.entity.Meta;
-import com.study.mate.entity.MetaRoom;
+import com.study.mate.entity.*;
+import com.study.mate.repository.CheckListRepository;
 import com.study.mate.repository.EnterMetaRepository;
 import com.study.mate.repository.MetaRepository;
 import com.study.mate.repository.MetaRoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +24,9 @@ public class MetaService {
     // 최근 입장한 메타 방 DB
     @Autowired
     EnterMetaRepository enterMetaRepository;
+
+    @Autowired
+    CheckListRepository checkListRepository;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 생성된 메타 방 모두 조회
     public List<Meta.rpMetaList> metaList() {
@@ -60,6 +60,38 @@ public class MetaService {
             recentEnterMetaList = recentEnterMetaList.subList(0, 10);
             // 3-2-2. 3-2-1에서 잘라낸 List를 반환한다.
             return recentEnterMetaList;
+        }
+    }
+
+    // 로그인 유저에 해당하는 체크리스트 모두 조회
+    public List<CheckList> checkList(String emailId) {
+        List<CheckList> checkList = checkListRepository.findByEmailId(emailId);
+        if ( checkList == null ) {
+            return null;
+        } else {
+            return checkList;
+        }
+    }
+
+    // 체크리스트 작성
+    public void writeCheckList(CheckList.rqWriteCheckList rqWriteCheckList, String emailId) {
+        CheckList checkList = rqWriteCheckList.toEntity(emailId);
+        checkListRepository.save(checkList);
+    }
+
+    // 체크리스트 체크
+    public String checkCheckList(long idx, String emailId) {
+        CheckList checkList = checkListRepository.findByIdxEmailId(idx, emailId);
+        if ( checkList == null ) {
+            return null;
+        } else {
+            if ( checkList.getListCheck() == 0 ) {
+                checkListRepository.updateByListCheck(idx, emailId, 1);
+                return "1";
+            } else {
+                checkListRepository.updateByListCheck(idx, emailId, 0);
+                return "0";
+            }
         }
     }
 

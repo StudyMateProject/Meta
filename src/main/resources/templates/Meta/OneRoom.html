@@ -124,14 +124,15 @@
 
                 <div class="checkListDiv">
                     <!-- 여기서부터 리스트로 돌리면 됨 -->
-                    <div class="checkListOne">
+                    <div class="checkListOne" th:each="checkList : ${checkList}">
                         <div class="checkList">
                             <div class="checkListCheckbox">
-                                <input type="checkbox">
+                                <input th:if="${checkList.listCheck == 0}" th:id="${checkList.idx}" class="listCheck" th:value="${checkList.listCheck}" type="checkbox">
+                                <input th:if="${checkList.listCheck == 1}" th:id="${checkList.idx}" class="listCheck" th:value="${checkList.listCheck}" type="checkbox" checked>
                             </div>
 
                             <div class="checkListText">
-                                <span>오늘 이거 끝내기!</span>
+                                <span th:text="${checkList.content}"></span>
                             </div>
                         </div>
 
@@ -162,6 +163,56 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <!-- Ajax 사용을 위한 js를 추가 -->
     <script src="/js/httpRequest.js"></script>
+
+    <script>
+        let listChecks = document.querySelectorAll(".listCheck");
+        listChecks.forEach(listCheck => {
+            listCheck.addEventListener("click", () => {
+                let checkListIdx = document.getElementsByClassName("checkListIdx");
+                if ( listCheck.value == "0" ) {
+                    if ( confirm("체크리스트에 체크를 하시겠습니까?") ) {
+                        fetch("/meta/checklist/check?idx=" + listCheck.id)
+                            .then(response => response.json())
+                            .then(data => {
+                                if ( data == null ) {
+                                    alert("잘못된 경로입니다.\n새로고침 후 다시 시도해주시기 바랍니다.");
+                                    return;
+                                } else {
+                                    listCheck.checked = true;
+                                    listCheck.value = "1";
+                                    alert("체크가 완료되었습니다.");
+                                    return;
+                                }
+                            })
+                            .catch(error => console.error(error)); // fetch
+                    } else {
+                        listCheck.checked = false;
+                        return;
+                    }
+                } else {
+                    if ( confirm("체크리스트에 체크를 해제하시겠습니까?") ) {
+                        fetch("/meta/checklist/check?idx=" + listCheck.id)
+                            .then(response => response.json())
+                            .then(data => {
+                                if ( data == null ) {
+                                    alert("잘못된 경로입니다.\n새로고침 후 다시 시도해주시기 바랍니다.");
+                                    return;
+                                } else {
+                                    listCheck.checked = false;
+                                    listCheck.value = "0";
+                                    alert("체크 해제가 완료되었습니다.");
+                                    return;
+                                }
+                            })
+                            .catch(error => console.error(error)); // fetch
+                    } else {
+                        listCheck.checked = true;
+                        return;
+                    }
+                }
+            });
+        });
+    </script>
 
     <script>
         let isWatch = false; //타이머로 설정되었는지 스톱워치로 설정되었는지 확인

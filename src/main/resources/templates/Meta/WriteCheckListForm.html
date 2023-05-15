@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    체크리스트 작성
+    <form th:object="${checkListDTO}">
+        <input th:field="*{content}" type="text">
+        <input type="button" value="작성하기" onclick="writeCheckList(this.form)">
+    </form>
+
+    <script>
+        function writeCheckList(f) {
+            let content = f.content.value;
+
+            if ( content == "" ) {
+                alert("내용을 작성해주시기 바랍니다.");
+                return;
+            }
+
+            f.action = "/meta/checklist/writeform/write";
+            f.method = "post";
+            f.submit();
+        }
+    </script>
+</body>
+</html>

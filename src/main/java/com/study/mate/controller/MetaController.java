@@ -171,6 +171,40 @@ public class MetaController {
         return "Meta/MetaRoom";
     }
 
+    // 체크리스트
+    @GetMapping("/checklist")
+    public String checkList(Model model, Principal principal) {
+        List<CheckList> checkList = metaService.checkList(principal.getName());
+        if ( checkList == null ) {
+            model.addAttribute("checkList", null);
+        } else {
+            model.addAttribute("checkList", checkList);
+        }
+        return "Meta/CheckList";
+    }
+
+    // 체크리스트 작성 페이지
+    @GetMapping("/checklist/writeform")
+    public String writeCheckListForm(Model model) {
+        model.addAttribute("checkListDTO", new CheckList.rqWriteCheckList());
+        return "Meta/WriteCheckListForm";
+    }
+
+    // 체크리스트 작성
+    @PostMapping("/checklist/writeform/write")
+    public String writeCheckList(CheckList.rqWriteCheckList rqWriteCheckList, Principal principal) {
+        metaService.writeCheckList(rqWriteCheckList, principal.getName());
+        return "redirect:/meta/checklist";
+    }
+
+    // 체크리스트 체크
+    @GetMapping("/checklist/check")
+    @ResponseBody
+    public String checkCheckList(long idx, Principal principal) {
+        String checkList = metaService.checkCheckList(idx, principal.getName());
+        return checkList;
+    }
+
     // 방 만들기 페이지
     @GetMapping("/createmetaform")
     public String createMetaForm(Model model, Principal principal) {
@@ -485,6 +519,12 @@ public class MetaController {
                 model.addAttribute("entryCheck", session.getAttribute(rpNickImage.getNickname()));
                 // 5-2-4. 2에서 반환받은 로그인 유저 정보 DTO 값 중 닉네임을 키로 사용하고, 1에서 받아온 방 번호를 값으로 사용하여, 위에서 생성한 재입장(새로고침) 체크용 Map에 추가한다.
                 reEnterCheck.put(rpNickImage.getNickname(), idx);
+                List<CheckList> checkList = metaService.checkList(principal.getName());
+                if ( checkList == null ) {
+                    model.addAttribute("checkList", null);
+                } else {
+                    model.addAttribute("checkList", checkList);
+                }
                 // 5-2-5. 5-2-1에서 반환받은 입장한 방 정보 DTO가 존재하는지 체크한다.
                 // 5-2-5-1. 반환받은 입장한 방 정보 DTO가 존재하지 않는 경우
                 if ( rpReEntrance == null ) {
@@ -509,6 +549,12 @@ public class MetaController {
             model.addAttribute("nickImage", rpNickImage);
             // 4-2-4. 4-2-2에서 반환받은 입장한 방 정보 DTO를 바인딩한다.
             model.addAttribute("metaRoom", rpMasterEntrance);
+            List<CheckList> checkList = metaService.checkList(principal.getName());
+            if ( checkList == null ) {
+                model.addAttribute("checkList", null);
+            } else {
+                model.addAttribute("checkList", checkList);
+            }
             // 4-2-5. 자습실 페이지로 이동한다.
             return "Meta/OneRoom";
         } // session.getAttribute(rpNickImage.getNickname()) != null

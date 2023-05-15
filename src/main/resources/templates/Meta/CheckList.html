@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <input type="button" value="체크리스트 작성" onclick="location.href='/meta/checklist/writeform'">
+    <div th:if="${checkList == null}">체크리스트를 작성해주세요!</div>
+    <div th:if="${checkList != null}">
+        <ol>
+            <li th:each="checkList : ${checkList}">
+                <input th:if="${checkList.listCheck == 0}" th:id="${checkList.idx}" class="listCheck" th:value="${checkList.listCheck}" type="checkbox">
+                <input th:if="${checkList.listCheck == 1}" th:id="${checkList.idx}" class="listCheck" th:value="${checkList.listCheck}" type="checkbox" checked>
+                <span th:text="${checkList.content}"></span>
+                <span th:text="${checkList.checkDate}"></span>
+            </li>
+        </ol>
+    </div>
+<!-------------------------------------------------------js 구역-------------------------------------------------------->
+    <script>
+        let listChecks = document.querySelectorAll(".listCheck");
+        listChecks.forEach(listCheck => {
+            listCheck.addEventListener("click", () => {
+                let checkListIdx = document.getElementsByClassName("checkListIdx");
+                if ( listCheck.value == "0" ) {
+                    if ( confirm("체크리스트에 체크를 하시겠습니까?") ) {
+                        fetch("/meta/checklist/check?idx=" + listCheck.id)
+                            .then(response => response.json())
+                            .then(data => {
+                                if ( data == null ) {
+                                    alert("잘못된 경로입니다.\n새로고침 후 다시 시도해주시기 바랍니다.");
+                                    return;
+                                } else {
+                                    listCheck.checked = true;
+                                    listCheck.value = "1";
+                                    alert("체크가 완료되었습니다.");
+                                    return;
+                                }
+                            })
+                            .catch(error => console.error(error)); // fetch
+                    } else {
+                        listCheck.checked = false;
+                        return;
+                    }
+                } else {
+                    if ( confirm("체크리스트에 체크를 해제하시겠습니까?") ) {
+                        fetch("/meta/checklist/check?idx=" + listCheck.id)
+                            .then(response => response.json())
+                            .then(data => {
+                                if ( data == null ) {
+                                    alert("잘못된 경로입니다.\n새로고침 후 다시 시도해주시기 바랍니다.");
+                                    return;
+                                } else {
+                                    listCheck.checked = false;
+                                    listCheck.value = "0";
+                                    alert("체크 해제가 완료되었습니다.");
+                                    return;
+                                }
+                            })
+                            .catch(error => console.error(error)); // fetch
+                    } else {
+                        listCheck.checked = true;
+                        return;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
