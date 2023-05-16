@@ -205,6 +205,29 @@ public class MetaController {
         return checkList;
     }
 
+    // 체크리스트 수정 페이지
+    @GetMapping("/checklist/updatechecklistform")
+    public String updateCheckListForm(long idx, Principal principal, Model model) {
+        CheckList.rpUpdateCheckList rpUpdateCheckList = metaService.updateCheckListForm(idx, principal.getName());
+        model.addAttribute("checkList", rpUpdateCheckList);
+        model.addAttribute("checkListDTO", new CheckList.rqUpdateCheckList());
+        return "Meta/UpdateCheckListForm";
+    }
+
+    // 체크리스트 수정
+    @GetMapping("/checklist/updatechecklistform/update")
+    public String updateCheckList(CheckList.rqUpdateCheckList rqUpdateCheckList, Principal principal) {
+        metaService.updateCheckList(rqUpdateCheckList, principal.getName());
+        return "redirect:/meta/checklist";
+    }
+
+    // 체크리스트 삭제
+    @GetMapping("/checklist/delete")
+    public String deleteCheckList(long idx, Principal principal) {
+        metaService.deleteCheckList(idx, principal.getName());
+        return "redirect:/meta/checklist";
+    }
+
     // 방 만들기 페이지
     @GetMapping("/createmetaform")
     public String createMetaForm(Model model, Principal principal) {

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form th:object="${checkListDTO}">
+        <input name="idx" type="hidden" th:value="${checkList.idx}">
+        <input name="content" type="text" th:value="${checkList.content}">
+        <input type="button" value="수정" onclick="updateCheckList(this.form)">
+    </form>
+<!-------------------------------------------------------js 구역-------------------------------------------------------->
+    <script>
+        function updateCheckList(f) {
+            let idx = f.idx.value;
+            let content = f.content.value;
+
+            if ( content == "" ) {
+                alert("체크리스트를 작성해주세요.");
+                return;
+            }
+
+            f.action = "/meta/checklist/updatechecklistform/update";
+            f.method = "get";
+            f.submit();
+        }
+    </script>
+</body>
+</html>

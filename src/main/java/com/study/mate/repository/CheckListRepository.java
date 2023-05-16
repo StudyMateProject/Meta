@@ -21,4 +21,12 @@ public interface CheckListRepository extends JpaRepository<CheckList, Object> {
     @Modifying(clearAutomatically = true)
     @Query("UPDATE CheckList cl SET cl.listCheck = :listCheck WHERE cl.idx = :idx AND cl.emailId = :emailId")
     void updateByListCheck(@Param("idx") long idx, @Param("emailId") String emailId, @Param("listCheck") int listCheck);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE CheckList cl SET cl.content = :content WHERE cl.idx = :idx AND cl.emailId = :emailId")
+    void updateByIdxEmailId(@Param("idx") long idx, @Param("emailId") String emailId);
+
+    @Modifying(clearAutomatically = true)
+    @Query("DELETE FROM CheckList cl WHERE cl.idx = :idx AND cl.emailId = :emailId")
+    void deleteByIdxEmailId(@Param("idx") long idx, @Param("emailId") String emailId);
 }

@@ -95,6 +95,24 @@ public class MetaService {
         }
     }
 
+    // 체크리스트 수정 페이지
+    public CheckList.rpUpdateCheckList updateCheckListForm(long idx, String emailId) {
+        CheckList checkList = checkListRepository.findByIdxEmailId(idx, emailId);
+        CheckList.rpUpdateCheckList rpUpdateCheckList = new CheckList.rpUpdateCheckList(checkList);
+        return rpUpdateCheckList;
+    }
+
+    // 체크리스트 수정
+    public void updateCheckList(CheckList.rqUpdateCheckList rqUpdateCheckList, String emailId) {
+        CheckList checkList = rqUpdateCheckList.toEntity(emailId);
+        checkListRepository.save(checkList);
+    }
+
+    // 체크리스트 삭제
+    public void deleteCheckList(long idx, String emailId) {
+        checkListRepository.deleteByIdxEmailId(idx, emailId);
+    }
+
     // 메타 방 생성 후 바로 입장 - 방장 첫 입장
     public Meta.rpCreateMeta createRoom(Meta.rqCreateMeta rqCreateMeta, Sign.rpNickImage rpNickImage) { // 1. 파라미터로 컨트롤러에서 넘어온 방 생성 DTO와 로그인 유저 정보 DTO를 받아온다.
         // 2. 1에서 파라미터로 받아온 방 생성 DTO 값 중 방 타입이 자습실인지 체크한다.

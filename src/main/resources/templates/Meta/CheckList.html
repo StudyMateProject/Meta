@@ -14,6 +14,8 @@
                 <input th:if="${checkList.listCheck == 1}" th:id="${checkList.idx}" class="listCheck" th:value="${checkList.listCheck}" type="checkbox" checked>
                 <span th:text="${checkList.content}"></span>
                 <span th:text="${checkList.checkDate}"></span>
+                <input th:id="${checkList.idx}" class="updateCheckList" type="button" value="수정">
+                <input th:id="${checkList.idx}" class="deleteCheckList" type="button" value="삭제">
             </li>
         </ol>
     </div>
@@ -22,7 +24,6 @@
         let listChecks = document.querySelectorAll(".listCheck");
         listChecks.forEach(listCheck => {
             listCheck.addEventListener("click", () => {
-                let checkListIdx = document.getElementsByClassName("checkListIdx");
                 if ( listCheck.value == "0" ) {
                     if ( confirm("체크리스트에 체크를 하시겠습니까?") ) {
                         fetch("/meta/checklist/check?idx=" + listCheck.id)
@@ -64,6 +65,24 @@
                         return;
                     }
                 }
+            });
+        });
+    </script>
+
+    <script>
+        let updateCheckLists = document.querySelectorAll(".updateCheckList");
+        updateCheckLists.forEach(updateCheckList => {
+            updateCheckList.addEventListener("click", () => {
+                location.href = "/meta/checklist/updatechecklistform?idx=" + updateCheckList.id;
+            });
+        });
+    </script>
+
+    <script>
+        let deleteCheckLists = document.querySelectorAll(".deleteCheckList");
+        deleteCheckLists.forEach(deleteCheckList => {
+            deleteCheckList.addEventListener("click", () => {
+                location.href = "/meta/checklist/delete?idx=" + deleteCheckList.id;
             });
         });
     </script>

@@ -48,9 +48,51 @@ public class CheckList {
             Date currentDate = new Date();
             SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd. a hh:mm:ss");
             String checkDate = formatDate.format(currentDate);
-            System.out.println("ssssssssssssssssssssssssss : " + checkDate);
             return CheckList.builder()
                     .idx(null) // MySQL에서 AUTO_INCREMENT를 사용하면 null값이 들어가야 자동으로 숫자가 올라간다.
+                    .emailId(emailId)
+                    .checkDate(checkDate)
+                    .content(content)
+                    .listCheck(0)
+                    .build();
+        }
+    }
+
+    // 체크리스트 수정 조회 ResponseDTO
+    @Getter // getter 어노테이션
+    @Setter // setter 어노테이션
+    @NoArgsConstructor // 파라미터가 없는 기본 생성자 어노테이션
+    @AllArgsConstructor // 모든 필드 값을 파라미터로 받는 생성자 어노테이션
+    @Builder // 빌더 사용 어노테이션
+    @ToString // 객체를 불러올때 주솟값이 아닌 String 타입으로 변경해주는 어노테이션
+    public static class rpUpdateCheckList {
+        private long idx;
+        private String content;
+
+        // Entity를 DTO로 변환 (생성자 방식)
+        public rpUpdateCheckList(CheckList checkList) {
+            this.idx = checkList.getIdx();
+            this.content = checkList.getContent();
+        }
+    }
+
+    // 체크리스트 수정 RequestDTO
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @ToString
+    public static class rqUpdateCheckList {
+        private long idx;
+        private String content;
+
+        // DTO를 Entity로 변환 (빌더 방식) - 스터디룸, 카페룸
+        public CheckList toEntity(String emailId) {
+            Date currentDate = new Date();
+            SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd. a hh:mm:ss");
+            String checkDate = formatDate.format(currentDate);
+            return CheckList.builder()
+                    .idx(idx) // MySQL에서 AUTO_INCREMENT를 사용하면 null값이 들어가야 자동으로 숫자가 올라간다.
                     .emailId(emailId)
                     .checkDate(checkDate)
                     .content(content)
