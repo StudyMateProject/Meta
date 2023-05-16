@@ -919,11 +919,11 @@
 #### ✔ 테이블 추가
 ##### 최근 입장한 방을 체크하고 보여줄 EnterMeta 테이블을 추가하였다.
 
-##### 데이터베이스 : MySQL - Mate
+##### ~~데이터베이스 : MySQL - Mate~~ (아래 수정된 테이블 사용)
 	CREATE DATABASE Mate DEFAULT CHARACTER SET utf8; #default character set - 한글 깨짐 방지 기능
 	USE Mate;
 
-##### 테이블 : Sign, Meta, MetaRoom, EnterMeta, RecruitStudy, RecruitStudyComment, RecruitStudyLike, RecruitMentee, RecruitMenteeComment, RecruitMenteeLike, RecruitMentor, RecruitMentorComment, RecruitMentorLike, Alarm, Meeting, Pay, Store, StoreComment, StoreLike
+##### ~~테이블 : Sign, Meta, MetaRoom, EnterMeta, RecruitStudy, RecruitStudyComment, RecruitStudyLike, RecruitMentee, RecruitMenteeComment, RecruitMenteeLike, RecruitMentor, RecruitMentorComment, RecruitMentorLike, Alarm, Meeting, Pay, Store, StoreComment, StoreLike~~ (아래 수정된 테이블 사용)
 	#멤버
 	CREATE TABLE Sign(
 		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #유저 번호 - 기본키, 시퀀스
@@ -1174,5 +1174,276 @@
 #### ✔ 재입장(새로고침) 하는 경우 참가자란에 새로 참가자 정보를 작성하던 것을 첫 입장때 작성한 참가자 정보를 유지하는 것으로 변경
 ##### 재입장(새로고침)을 할 때마다 서버에서는 db에 새로 참가자 정보를 저장하였고, 클라이언트에서는 참가자란에 새로 참가자 정보 작성하여서, 재입장(새로고침)도 새로 입장한 것처럼 보이도록 하였다.
 ##### 하지만 재입장(새로고침)을 할 때는 굳이 그렇게까지 할 필요가 없어 보여 첫 입장 때 작성한 정보를 그대로 유지하도록 변경하였다.
+
+#
+
+### 📌 05/15
+#### ✔ 체크리스트 작성 및 체크 기능 구현
+#### ✔ 테이블 추가
+##### 체크리스트를 작성하고 체크할 CheckList 테이블을 추가하였다.
+
+##### 데이터베이스 : MySQL - Mate
+	CREATE DATABASE Mate DEFAULT CHARACTER SET utf8; #default character set - 한글 깨짐 방지 기능
+	USE Mate;
+
+##### 테이블 : Sign, Meta, MetaRoom, EnterMeta, CheckList, RecruitStudy, RecruitStudyComment, RecruitStudyLike, RecruitMentee, RecruitMenteeComment, RecruitMenteeLike, RecruitMentor, RecruitMentorComment, RecruitMentorLike, Alarm, Meeting, Pay, Store, StoreComment, StoreLike
+	#멤버
+	CREATE TABLE Sign(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #유저 번호 - 기본키, 시퀀스
+		##################회원가입 전 입력##################
+		emailId VARCHAR(50) UNIQUE NOT NULL, #이메일 형식 아이디
+		pwd VARCHAR(255), #비밀번호
+		name VARCHAR(10) NOT NULL, #이름
+		nickname VARCHAR(10) UNIQUE NOT NULL, #닉네임
+		birthday DATE NOT NULL, #생년월일
+		gender VARCHAR(1) NOT NULL, #성별
+		phoneNumber VARCHAR(15) UNIQUE NOT NULL, #핸드폰 번호
+		address VARCHAR(100) NOT NULL, #주소
+		detailAddress VARCHAR(100) NOT NULL, #상세주소
+		studyType VARCHAR(11) NOT NULL, #관심있는 분야
+		platform VARCHAR(10) NOT NULL, #플랫폼
+		roleName VARCHAR(100) NOT NULL, #Spring Security 권한   
+		##################회원가입 후 입력##################
+		profileImage VARCHAR(100), #프로필 사진
+		selfIntro VARCHAR(255) #자기소개
+	);
+
+	#메타버스 방
+	CREATE TABLE Meta(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #방 번호 - 기본키, 시퀀스
+		metaTitle VARCHAR(50) NOT NULL, #방 제목
+		metaType VARCHAR(10) NOT NULL, #방 분야
+		metaPersonnel INT NOT NULL, #방 모집 인원
+		metaRecruitingPersonnel INT NOT NULL, #방 참여중인 인원
+		metaMaster VARCHAR(20) UNIQUE #방장 닉네임
+	);
+
+	#메타버스 방 내부
+	CREATE TABLE MetaRoom(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #방 입장 번호(순서) - 기본키, 시퀀스
+		metaIdx BIGINT NOT NULL, #방 번호
+		CONSTRAINT fk_metaRoomIdx FOREIGN KEY(metaIdx) REFERENCES Meta(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		metaNickname VARCHAR(20) UNIQUE NOT NULL, #닉네임
+		CONSTRAINT fk_metaRoomNickname FOREIGN KEY(metaNickname) REFERENCES Sign(nickname) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		metaProfileImage VARCHAR(100), #프로필 사진
+		metaMaster VARCHAR(20), #방장 닉네임
+		CONSTRAINT fk_metaRoomMaster FOREIGN KEY(metaMaster) REFERENCES Meta(metaMaster) ON DELETE CASCADE ON UPDATE CASCADE #포린키 연결
+	);
+	
+	#메타버스 최근 입장 방
+	CREATE TABLE EnterMeta(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #최근 방 입장 번호 - 기본키, 시퀀스
+		metaNickname VARCHAR(10) NOT NULL, #이메일 아이디
+		CONSTRAINT fk_enterMetaNickname FOREIGN KEY(metaNickname) REFERENCES Sign(nickname) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		metaIdx BIGINT NOT NULL, #방 번호
+		CONSTRAINT fk_enterMetaIdx FOREIGN KEY(metaIdx) REFERENCES Meta(idx) ON DELETE CASCADE ON UPDATE CASCADE #포린키 연결
+	);
+	
+	#체크리스트
+	CREATE TABLE CheckList(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #순서 번호 - 기본키, 시퀀스
+		emailId VARCHAR(50) NOT NULL, #이메일 아이디
+		CONSTRAINT fk_checkListEmailId FOREIGN KEY(emailId) REFERENCES Sign(emailId) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		checkDate VARCHAR(25) NOT NULL, #체크리스트 작성 날짜
+		content VARCHAR(255) NOT NULL, #체크리스트 작성 내용
+		listCheck INT(2) NOT NULL #체크리스트 체크 여부
+	);
+
+	#스터디원 모집
+	CREATE TABLE RecruitStudy(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #게시글 번호 - 기본키, 시퀀스
+		title VARCHAR(100) NOT NULL, #제목
+		writeDate VARCHAR(20) NOT NULL, #작성일자
+		writer VARCHAR(20) NOT NULL, #작성자
+		CONSTRAINT fk_recruitStudyNickname FOREIGN KEY(writer) REFERENCES Sign(nickname) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		studyType VARCHAR(20) NOT NULL, #분야
+		personnel INT NOT NULL, #모집인원
+		recruitingPersonnel INT NOT NULL, #모집된 인원
+		recruiting INT NOT NULL, #모집 상태
+		image VARCHAR(50) NOT NULL, #모집 사진
+		studyIntro VARCHAR(500) NOT NULL, #스터디원 소개글
+		studyLike INT NOT NULL, #찜 숫자
+		studyLikeCheck INT NOT NULL # 찜 체크
+	);
+
+	#스터디원 모집 댓글
+	CREATE TABLE RecruitStudyComment(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #댓글 번호 - 기본키, 시퀀스
+		commentIdx BIGINT NOT NULL, #게시글 번호
+		CONSTRAINT fk_recruitStudyCommentIdx FOREIGN KEY(commentIdx) REFERENCES RecruitStudy(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		writeDate VARCHAR(50) NOT NULL, #작성일자
+		writer VARCHAR(20) NOT NULL, #댓글 작성자
+		CONSTRAINT fk_recruitStudyCommentNickname FOREIGN KEY(writer) REFERENCES Sign(nickname) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		comment VARCHAR(100) NOT NULL, #댓글 내용
+		deleteCheck INT(2) NOT NULL
+	);
+
+	#스터지원 모집 찜
+	CREATE TABLE RecruitStudyLike(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #좋아요 번호 - 기본키, 시퀀스
+		likeIdx BIGINT NOT NULL, #게시글 번호
+		CONSTRAINT fk_recruitStudyLikeIdx FOREIGN KEY(likeIdx) REFERENCES RecruitStudy(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		memberIdx BIGINT NOT NULL #유저 IDX
+	);
+	
+	#멘티 모집
+	CREATE TABLE RecruitMentee(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #게시글 번호 - 기본키, 시퀀스
+		title VARCHAR(100), #제목
+		writeDate VARCHAR(50), #작성일자
+		writer VARCHAR(20), #작성자
+		CONSTRAINT fk_recruitMenteeNickname FOREIGN KEY(writer) REFERENCES Sign(nickname) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		studyType VARCHAR(20), #분야
+		image VARCHAR(50), #대표 사진
+		studyIntro VARCHAR(500), #본인 소개글
+		recruiting INT, #모집 상태
+		studyLike INT NOT NULL, #찜 숫자
+		studyLikeCheck INT NOT NULL # 찜 확인
+	);
+
+	#멘티 모집 댓글
+	CREATE TABLE RecruitMenteeComment(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #댓글 번호 - 기본키, 시퀀스
+		commentIdx BIGINT NOT NULL, #게시글 번호
+		CONSTRAINT fk_recruitMenteeCommentIdx FOREIGN KEY(commentIdx) REFERENCES RecruitMentee(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		writeDate VARCHAR(50) NOT NULL, #작성일자
+		writer VARCHAR(20) NOT NULL, #댓글 작성자
+		CONSTRAINT fk_recruitMenteeCommentNickname FOREIGN KEY(writer) REFERENCES Sign(nickname) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		comment VARCHAR(100) NOT NULL, #댓글 내용
+		deleteCheck INT(2) NOT NULL
+	);
+
+	#멘티 모집 찜
+	CREATE TABLE RecruitMenteeLike(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #좋아요 번호 - 기본키, 시퀀스
+		likeIdx BIGINT NOT NULL, #게시글 번호
+		CONSTRAINT fk_recruitMenteeLikeIdx FOREIGN KEY(likeIdx) REFERENCES RecruitMentee(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		memberIdx BIGINT NOT NULL
+	);
+
+	#멘토 모집
+	CREATE TABLE RecruitMentor(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #게시글 번호 - 기본키, 시퀀스
+		title VARCHAR(100) NOT NULL, #제목
+		writeDate VARCHAR(50) NOT NULL, #작성일자
+		writer VARCHAR(20) NOT NULL, #작성자
+		CONSTRAINT fk_recruitMentorNickname FOREIGN KEY(writer) REFERENCES Sign(nickname) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		studyType VARCHAR(20) NOT NULL, #분야
+		studyIntro VARCHAR(500) NOT NULL, #멘토 소개글
+		recruiting INT NOT NULL, #모집 상태
+		studyLike INT NOT NULL, #찜 숫자
+		studyLikeCheck INT NOT NULL # 찜 체크
+	);
+
+	#멘토 모집 댓글
+	CREATE TABLE RecruitMentorComment(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #댓글 번호 - 기본키, 시퀀스
+		commentIdx BIGINT NOT NULL, #게시글 번호
+		CONSTRAINT fk_recruitMentorCommentIdx FOREIGN KEY(commentIdx) REFERENCES RecruitMentor(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		writeDate VARCHAR(50) NOT NULL, #작성일자 
+		writer VARCHAR(20) NOT NULL, #댓글 작성자 
+		CONSTRAINT fk_recruitMentorCommentNickname FOREIGN KEY(writer) REFERENCES Sign(nickname) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		comment VARCHAR(100) NOT NULL, #댓글 내용
+		deleteCheck INT(2) NOT NULL
+	);
+
+	#멘토 모집 찜
+	CREATE TABLE RecruitMentorLike(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #좋아요 번호 - 기본키, 시퀀스
+		likeIdx BIGINT NOT NULL, #게시글 번호
+		CONSTRAINT fk_recruitMentorLikeIdx FOREIGN KEY(likeIdx) REFERENCES RecruitMentor(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		memberIdx BIGINT NOT NULL #유저 IDX
+	);
+
+	#진행중인 소중한 만남
+	CREATE TABLE Meeting(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #진행 번호 - 기본키, 시퀀스
+		emailId VARCHAR(50) NOT NULL, #이메일 아이디 연결
+		CONSTRAINT fk_meetingEmailId FOREIGN KEY(emailId) REFERENCES Sign(emailId) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		recruitStudyIdx BIGINT, #RecruitStudy idx 연결
+		CONSTRAINT fk_meetingRecruitStudyIdx FOREIGN KEY(recruitStudyIdx) REFERENCES RecruitStudy(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		recruitStudyImage VARCHAR(50), #RecruitStudy 대표 사진
+		recruitStudyTitle VARCHAR(100), #RecruitStudy 제목
+		recruitMentorIdx BIGINT, #RecruitMentor idx 연결
+		CONSTRAINT fk_meetingRecruitMentorIdx FOREIGN KEY(recruitMentorIdx) REFERENCES RecruitMentor(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		recruitMentorTitle VARCHAR(100), #RecruitMentor 제목
+		recruitMentorWriter VARCHAR(20), #RecruitMentor 닉네임
+		recruitMenteeIdx BIGINT, #MentorProfile idx 연결
+		CONSTRAINT fk_meetingRecruitMenteeIdx FOREIGN KEY(recruitMenteeIdx) REFERENCES RecruitMentee(idx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		recruitMenteeImage VARCHAR(50), #MentorProfile 프로필 사진
+		recruitMenteeTitle VARCHAR(100), #MentorProfile 제목
+		recruitMenteeWriter VARCHAR(20) #MentorProfile 닉네임
+	);
+
+	#알람
+	CREATE TABLE Alarm(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #알람 번호 - 기본키, 시퀀스
+		emailId VARCHAR(50) NOT NULL, #수신자
+		CONSTRAINT fk_alarmEmailId FOREIGN KEY(emailId) REFERENCES Sign(emailId) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		alarmType int(20) NOT NULL, #알람 타입(DTO에서 구분)
+		nickname VARCHAR(20) NOT NULL, #발신자
+		CONSTRAINT fk_alarmNickname FOREIGN KEY(nickname) REFERENCES Sign(nickname) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		title VARCHAR(100), #제목
+		recruitStudyIdx BIGINT,
+		CONSTRAINT fk_alarmRecruitStudyIdx FOREIGN KEY(recruitStudyIdx) REFERENCES RecruitStudy(idx) ON DELETE CASCADE ON UPDATE CASCADE, # 스터디원 포린키 연결
+		recruitMentorIdx BIGINT,
+		CONSTRAINT fk_alarmRecruitMentorIdx FOREIGN KEY(recruitMentorIdx) REFERENCES RecruitMentor(idx) ON DELETE CASCADE ON UPDATE CASCADE, # 멘토 포린키 연결
+		recruitMenteeIdx BIGINT,
+		CONSTRAINT fk_alarmLiketRecruitMenteeIdx FOREIGN KEY(recruitMenteeIdx) REFERENCES RecruitMentee(idx) ON DELETE CASCADE ON UPDATE CASCADE # 멘토 프로필 포린키 연결
+	);
+
+	#결제
+	CREATE TABLE Pay(
+		impUid VARCHAR(200) PRIMARY KEY, #결제 고유번호 - 기본키
+		merchantUid VARCHAR(200) NOT NULL,
+		PGName VARCHAR(50) NOT NULL, 
+		payMethod VARCHAR(300),
+		itemName VARCHAR(50) NOT NULL,
+		price INT NOT NULL,
+		buyerEmail VARCHAR(50) NOT NULL,
+		CONSTRAINT fk_payEmailId FOREIGN KEY(buyerEmail) REFERENCES Sign(emailId) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		buyerName VARCHAR(20) NOT NULL,
+		buyerTel VARCHAR(20) NOT NULL,
+		buyerAddress VARCHAR(50),
+		buyerPostNum VARCHAR(50),
+		itemCount INT NOT NULL,
+		isPaid INT NOT NULL
+	);
+
+	#스토어
+	CREATE TABLE Store(
+		storeIdx BIGINT PRIMARY KEY AUTO_INCREMENT, #스토어 번호 - 기본키, 시퀀스
+		goods VARCHAR(50) NOT NULL,
+		category VARCHAR(50) NOT NULL,
+		price INT NOT NULL,
+		introduce VARCHAR(500),
+		stock INT(10) NOT NULL,
+		goodsLike INT NOT NULL,
+		itemName VARCHAR(50) NOT NULL,
+		image VARCHAR(50) NOT NULL
+	);
+
+	#스토어 댓글
+	CREATE TABLE StoreComment(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #댓글 번호 - 기본키, 시퀀스
+		commentIdx BIGINT,
+		CONSTRAINT fk_storeCommentIdx FOREIGN KEY(commentIdx) REFERENCES Store(storeIdx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		writer VARCHAR(20),
+		comment VARCHAR(100),
+		deleteCheck INT(2)
+	);
+
+	#스토어 좋아요
+	CREATE TABLE StoreLike(
+		idx BIGINT PRIMARY KEY AUTO_INCREMENT, #좋아요 번호 - 기본키, 시퀀스
+		likeIdx BIGINT NOT NULL,
+		CONSTRAINT fk_storeLikeIdx FOREIGN KEY(likeIdx) REFERENCES Store(storeIdx) ON DELETE CASCADE ON UPDATE CASCADE, #포린키 연결
+		memberIdx BIGINT NOT NULL
+	);
+
+#
+
+### 📌 05/16
+#### ✔ 체크리스트 수정 및 삭제 기능 구현
 
 #
