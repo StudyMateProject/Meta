@@ -1,9 +1,7 @@
 package com.study.mate.controller;
 
-import com.study.mate.entity.Alarm;
-import com.study.mate.entity.RecruitStudy;
-import com.study.mate.entity.RecruitStudyComment;
-import com.study.mate.entity.RecruitStudyLike;
+import com.study.mate.entity.*;
+import com.study.mate.service.MyPageService;
 import com.study.mate.service.RecruitStudyService;
 import com.study.mate.util.PageSetup;
 import com.study.mate.util.Paging;
@@ -22,15 +20,23 @@ import java.util.List;
 @Controller
 @RequestMapping("/recruitstudy")
 public class RecruitStudyController {
-
     @Autowired
     RecruitStudyService recruitStudyService;
-
+    @Autowired
+    MyPageService myPageService;
 
     //스터디원 모집 메인페이지
     @GetMapping("")
     //value 에 페이지 라는 파라미터를 url 에서 가져온다. 만약 그 값이 없다면 0 으로 기본값을 잡아준다. 그값은 int 타입의 page 에 넣어준다.
-    public String recruitStudy(Model model, @RequestParam(value="page", defaultValue="0") int page) {
+    public String recruitStudy(Model model, @RequestParam(value="page", defaultValue="0") int page, Principal principal) {
+        //닉네임 검색
+        Sign.rpProfile rpProfile = myPageService.selectProfile(principal);
+        //본인에게 온 알림 리스트 검색
+        List<Alarm> alarmList = myPageService.findEmailId(principal.getName());
+
+        model.addAttribute("member", rpProfile);
+        model.addAttribute("alarmList", alarmList);
+
         //현재 페이지의 숫자를 가지고 그 값에 맞는 리스트를 끌어온다.
         //페이징 처리
         int nowPage = 1;

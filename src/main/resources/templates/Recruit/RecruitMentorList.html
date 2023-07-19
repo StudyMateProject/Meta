@@ -1,34 +1,133 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>멘토 모집</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" type="text/css" href="/css/Recruit.css">
 </head>
 <body>
-    <h1>멘토모집</h1>
-    <ul>
-        <li><a href="recruitmentorlist/writeform">글쓰기</a></li>
-        <li><a href="/">메인으로</a> </li>
-    </ul>
-    <!-- 멘토구하기리스트 -->
-    <div style="border: 1px solid black" th:each="recruitMentor : ${list}">
-        <form>
-            <input type="hidden" th:value="${recruitMentor.idx}" name="idx">
-            <span th:text="${recruitMentor.studyType}"></span>
-            <span> | </span>
-            <span th:if="${recruitMentor.recruiting} == '0'">모집중</span>
-            <span th:if="${recruitMentor.recruiting} != '0'">모집완료</span>
-            <span> | </span>
-            <span th:text="${recruitMentor.title}"></span>
-            <span> | </span>
-            <span th:text="${recruitMentor.writer}"></span>
-            <span> | </span>
-            <span><input type="button" value="상세보기" onclick="change(this.form);"></span>
-        </form>
-    </div>
-    <!-- 페이징처리를 자바에서 처리해 넘어올 객체 -->
-    <div th:utext="${pageMenu}">
+    <header>
+        <nav class="headerContainer">
+            <div class="headerMenu">
+                <div class="headerMenuLeft">
 
+                    <div class="headerImg">
+                        <a href="/" alt="SOJU">
+                            <img src="/img/logo_mate.png" class="mainLogo">
+                        </a>
+                    </div>
+
+                    <div class="menuContainer">
+                        <div class="categoryMenu">
+                            <span>스터디원</span>
+                            <div class="dropTable">
+                                <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
+                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘티 모집</a>
+                                <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
+                            </div>
+                        </div>
+
+                        <div class="categoryMenu">
+                            <a href="/meta">
+                                <span>스터디룸</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/store">
+                                <span>스토어</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/mypage">
+                                <span>마이페이지</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="headerMenuRight">
+                    <div class="whenLogin" sec:authorize="isAuthenticated()">
+                        <div class="welcome" th:text="${member.nickname} + '님 반갑습니다!'"></div>
+                        <div class="notificationsMenu">
+                            <div class="icon">
+                                <i class="ri-notification-4-fill"></i>
+                            </div>
+                            <div class="notiDrop">
+                                <p>최근 알림</p>
+                                <div class="notiList">
+                                    <a class="notiDropMenu" th:each="alarm : ${alarmList}">
+                                        <div th:if="${alarm.alarmType} == '2'">
+                                            <form>
+                                                <span class="notiCircle"></span>
+                                                <span class="notiText" th:text="${alarm.title}"></span><br>
+                                                <input type="hidden" name="idx" th:value="${alarm.idx}">
+                                                <input type="hidden" name="recruitStudyIdx" th:value="${alarm.recruitStudyIdx}">
+                                                <input type="hidden" name="recruitMentorIdx" th:value="${alarm.recruitMentorIdx}">
+                                                <input type="hidden" name="recruitMenteeIdx" th:value="${alarm.recruitMenteeIdx}">
+                                                <input type="hidden" name="nickname" th:value="${alarm.nickname}">
+                                                <input type="button" value="수락" onclick="recruitAccept(this.form);">
+                                                <input type="button" value="거절" onclick="recruitRefuse(this.form);">
+                                            </form>
+                                        </div>
+                                        <div th:if="${alarm.alarmType} != '2'">
+                                            <span class="notiCircle"></span>
+                                            <form>
+                                                <input type="hidden" name="idx" th:value="${alarm.idx}">
+                                                <input type="button" value="X" onclick="deleteAlarm(this.form);"><br>
+                                                <span class="notiText" th:text="${alarm.title}"></span>
+                                            </form>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="whenLogin" sec:authorize="isAnonymous()">
+                        <div class="welcome"></div>
+                        <div class="notificationsMenu" onclick="location.href='/mypage/alarm'" style="visibility: hidden;">
+                            <div class="icon" th:data-number="${alarmCount}">
+                                <i class="ri-notification-4-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btnLogin">
+                        <input class="inputButtonLogin" sec:authorize="isAnonymous()" type="button" value="로그인" onclick="location.href='/loginform'">
+                        <input class="inputButtonLogin" sec:authorize="isAuthenticated()" type="button" value="로그아웃" onclick="location.href='/logout'">
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>멘토모집</h1>
+        <ul>
+            <li><a href="recruitmentorlist/writeform">글쓰기</a></li>
+            <li><a href="/">메인으로</a> </li>
+        </ul>
+        <!-- 멘토구하기리스트 -->
+        <div class="recruitListArea" th:each="recruitMentor : ${list}">
+            <form>
+                <input type="hidden" th:value="${recruitMentor.idx}" name="idx">
+                <span th:text="${recruitMentor.studyType}"></span>
+                <span> | </span>
+                <span th:if="${recruitMentor.recruiting} == '0'" class="recruitListStatus0">모집중</span>
+                <span th:if="${recruitMentor.recruiting} != '0'" class="recruitListStatus1">모집완료</span>
+                <span> | </span>
+                <span th:text="${recruitMentor.title}"></span>
+                <span> | </span>
+                <span th:text="${recruitMentor.writer}"></span>
+                <span> | </span>
+                <span><input type="button" value="상세보기" onclick="change(this.form);"></span>
+            </form>
+        </div>
+        <!-- 페이징처리를 자바에서 처리해 넘어올 객체 -->
+        <div class="pagingBtn" th:utext="${pageMenu}"></div>
     </div>
 </body>
 <script>

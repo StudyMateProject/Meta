@@ -1,0 +1,153 @@
+.container{
+    width: 100%;
+    height: auto;
+    padding-top: 100px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+ul li {
+    margin-right: 10px;
+}
+
+ul li a {
+    text-decoration: none;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+ul li a:hover {
+    background-color: #555;
+}
+
+.recruitListArea {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    padding: 10px;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.recruitListArea .recruitListStatus0 {
+    display: inline-block;
+    background-color: green;
+    margin-bottom: 10px;
+    padding: 10px;
+    color: white;
+}
+
+.recruitListArea .recruitListStatus1 {
+    display: inline-block;
+    background-color: red;
+    margin-bottom: 10px;
+    padding: 10px;
+    color: white;
+}
+
+.recruitListArea .recruitListImg {
+    width: 150px;
+    height: 150px;
+}
+
+.recruitListArea .recruitListImgAndContentArea {
+    display: flex;
+}
+
+.recruitListArea .recruitListImgAndContentArea .recruitListImgArea {
+    margin-right: 5%;
+}
+
+.recruitListArea .recruitListImgAndContentArea .recruitListContentArea .recruitListTitle {
+    font-size: x-large;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.recruitListArea .recruitListImgAndContentArea .recruitListContentArea .recruitListNickname {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.recruitListArea .recruitListImgAndContentArea .recruitListContentArea .recruitListContent {
+    margin-bottom: 10px;
+}
+
+.recruitListArea .recruitListImgAndContentArea .recruitListContentArea:last-child {
+    margin-bottom: 0;
+}
+
+.board-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.board-item span {
+    margin-right: 5px;
+    color: #333;
+}
+
+.board-item .status {
+    font-weight: bold;
+}
+
+.board-item button {
+    padding: 5px 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.board-item button:hover {
+    background-color: #555;
+}
+
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination a {
+    display: inline-block;
+    text-decoration: none;
+    padding: 5px 10px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #555;
+}
+
+.pagination .active {
+    background-color: #555;
+}
+
+.pagingBtn {
+    margin-top: 1%;
+    text-align: center;
+}

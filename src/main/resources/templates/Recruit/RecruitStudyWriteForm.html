@@ -1,55 +1,105 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <style>
-
-    </style>
+    <title>스터디원 모집 작성</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" type="text/css" href="/css/RecruitWrite.css">
 </head>
 <body>
-    <h1>스터디원 모집</h1>
-    <form>
-        <input type="hidden" id="writeDate" name="writeDate">
-        <ul>
-            <li><span>제목 : </span> <input name="title" type="text"></li>
-            <li><span>작성자 : </span><input type="text" name="writer" th:value="${nickname}" readonly></li>
-            <li><span>분야 : </span>
-                <select name="studyType" onchange="showImage();">
-                    <option value="">분야 선택</option>
-                    <option value="computer">컴퓨터</option>
-                    <option value="math">수학</option>
-                    <option value="management">경영/마케팅</option>
-                    <option value="design">디자인</option>
-                    <option value="education">교육</option>
-                    <option value="literature">문학</option>
-                    <option value="entrance">입시</option>
-                    <option value="engineer">공학</option>
-                    <option value="language">언어</option>
-                    <option value="employment">취업</option>
-                    <option value="etc">기타</option>
-                </select>
-            </li>
-            <li><span>인원 : </span>
-                <select name="personnel">
-                    <option value="">인원 선택</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                </select></li>
-            <li><span>사진 : </span><div id="test1"></div></li>
-            <li><span>스터디소개 : </span><textarea name="studyIntro"></textarea></li>
-            <li><input type="button" value="작성 완료" onclick="studyWrite(this.form)"></li>
-        </ul>
-    </form>
-    <input type="button" value="뒤로가기" onclick="location.href='/recruitstudy'">
+    <header>
+        <nav class="headerContainer">
+            <div class="headerMenu">
+                <div class="headerMenuLeft">
+
+                    <div class="headerImg">
+                        <a href="/" alt="SOJU">
+                            <img src="/img/logo_mate.png" class="mainLogo">
+                        </a>
+                    </div>
+
+                    <div class="menuContainer">
+                        <div class="categoryMenu">
+                            <span>스터디원</span>
+                            <div class="dropTable">
+                                <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
+                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘티 모집</a>
+                                <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
+                            </div>
+                        </div>
+
+                        <div class="categoryMenu">
+                            <a href="/meta">
+                                <span>스터디룸</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/store">
+                                <span>스토어</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/mypage">
+                                <span>마이페이지</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>스터디원 모집 작성</h1>
+        <form>
+            <input type="hidden" id="writeDate" name="writeDate">
+            <ul>
+                <li><span>제목 : </span> <input name="title" type="text"></li>
+                <li><span>작성자 : </span><input type="text" name="writer" th:value="${nickname}" readonly></li>
+                <li><span>분야 : </span>
+                    <select name="studyType" onchange="showImage();">
+                        <option value="">분야 선택</option>
+                        <option value="computer">컴퓨터</option>
+                        <option value="math">수학</option>
+                        <option value="management">경영/마케팅</option>
+                        <option value="design">디자인</option>
+                        <option value="education">교육</option>
+                        <option value="literature">문학</option>
+                        <option value="entrance">입시</option>
+                        <option value="engineer">공학</option>
+                        <option value="language">언어</option>
+                        <option value="employment">취업</option>
+                        <option value="etc">기타</option>
+                    </select>
+                </li>
+                <li><span>인원 : </span>
+                    <select name="personnel">
+                        <option value="">인원 선택</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select></li>
+                <li class="imgList">
+                    <span>이미지 : </span><div id="test1"></div>
+                </li>
+                <li class="contentList">
+                    <span>스터디소개 : </span><textarea class="recruitWriteContent" name="studyIntro"></textarea>
+                </li>
+                <li class="btnList">
+                    <input type="button" value="작성 완료" onclick="studyWrite(this.form)">
+                    <input type="button" value="뒤로가기" onclick="location.href='/recruitstudy'">
+                </li>
+            </ul>
+        </form>
+    </div>
+</body>
 <script>
     //현재 시간을 설정하는 변수
     const TIME_ZONE = 3240 * 10000; // 현재 시간을 설정하는 변수
@@ -92,12 +142,11 @@
         let selectElement = document.querySelector("select");
         let selectedValue = selectElement.value;
         if (selectedValue) {
-            test1.innerHTML = '<img src="/img/' + selectedValue + '.png"  style="width: 50px; height: 50px;">' +
+            test1.innerHTML = '<img class="img" src="/img/' + selectedValue + '.png">' +
                               '<input type="hidden" name="image" value="/img/' + selectedValue + '.png">';
         } else {
             test1.innerHTML = '';
         }
     }
 </script>
-</body>
 </html>

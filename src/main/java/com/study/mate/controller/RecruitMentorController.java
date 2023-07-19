@@ -1,9 +1,7 @@
 package com.study.mate.controller;
 
-import com.study.mate.entity.Alarm;
-import com.study.mate.entity.RecruitMentor;
-import com.study.mate.entity.RecruitMentorComment;
-import com.study.mate.entity.RecruitMentorLike;
+import com.study.mate.entity.*;
+import com.study.mate.service.MyPageService;
 import com.study.mate.service.RecruitMentorService;
 import com.study.mate.util.PageSetup;
 import com.study.mate.util.Paging;
@@ -22,13 +20,22 @@ import java.util.List;
 @Controller
 @RequestMapping("/recruitmentorlist")
 public class RecruitMentorController {
-
     @Autowired
     RecruitMentorService recruitMentorService;
+    @Autowired
+    MyPageService myPageService;
 
     //멘토모집 메인페이지
     @GetMapping("")
-    public String recruitMentorList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+    public String recruitMentorList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, Principal principal) {
+        //닉네임 검색
+        Sign.rpProfile rpProfile = myPageService.selectProfile(principal);
+        //본인에게 온 알림 리스트 검색
+        List<Alarm> alarmList = myPageService.findEmailId(principal.getName());
+
+        model.addAttribute("member", rpProfile);
+        model.addAttribute("alarmList", alarmList);
+
         //현재 페이지의 숫자를 가지고 그 값에 맞는 리스트를 끌어온다.
         //페이징 처리
         int nowPage = 1;
