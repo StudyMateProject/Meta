@@ -85,6 +85,9 @@ public class RecruitMentorController {
     //멘토모집 글 상세보기
     @GetMapping("/post")
     public String postForm(Long idx, Model model, Principal principal){
+        //본인에게 온 알림 리스트 검색
+        List<Alarm> alarmList = myPageService.findEmailId(principal.getName());
+        model.addAttribute("alarmList", alarmList);
         //사용자의 이메일 검색
         String emailId = principal.getName();
         //사용자의 닉네임 검색

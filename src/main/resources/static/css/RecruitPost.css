@@ -1,0 +1,218 @@
+.container{
+    width: 100%;
+    height: 100%;
+    padding-top: 100px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/*contentArea*/
+.contentArea ul {
+    margin: 0 auto;
+    width: inherit;
+    height: 800px;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.contentArea .recruitListStatus0 {
+    display: inline-block;
+    background-color: green;
+    margin-left: 10px;
+    padding: 10px;
+    color: white;
+    font-size: 16px;
+}
+
+.contentArea .recruitListStatus1 {
+    display: inline-block;
+    background-color: red;
+    margin-left: 10px;
+    padding: 10px;
+    color: white;
+}
+
+.contentArea ul .contentList {
+    display: flex;
+}
+
+.contentArea ul .listCenter {
+    display: flex;
+    align-items: center; /* 수직 가운데 정렬 */
+}
+
+.contentArea ul li .spanArea {
+    width: 100px;
+    font-weight: bold;
+    display: inline-flex;
+    justify-content: space-between;
+}
+
+.contentArea ul li input[type="text"] {
+    height: 20px;
+    margin-left: 10px;
+    font-size: 16px;
+    border: none; /* 기본 테두리 없애기 */
+    outline: none; /* 포커스시 생기는 테두리 없애기 */
+    resize: none;
+    background-color: #f9f9f9;
+}
+
+.contentArea ul li select {
+    width: 100%;
+    height: 40px;
+    padding: 5px;
+    font-size: 16px;
+}
+
+.contentArea ul li .recruitContent {
+    margin-left: 10px;
+    font-size: 16px;
+    border: none; /* 기본 테두리 없애기 */
+    outline: none; /* 포커스시 생기는 테두리 없애기 */
+    width: 880px;
+    height: 300px;
+    resize: none;
+    background-color: #f9f9f9;
+}
+
+.contentArea .likeBtnList {
+    justify-content: flex-end;
+}
+
+.contentArea .btnList {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.contentArea .masterBtnList {
+    justify-content: flex-end;
+}
+
+.contentArea ul li input[type="button"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 20px;
+    width: 200px;
+    height: 50px;
+    font-size: 16px;
+}
+
+.contentArea ul li input[type="button"]:hover {
+    background-color: #45a049;
+}
+
+.contentArea .img {
+    width: 50px;
+    height: 50px;
+    margin-left: 10px;
+}
+
+h3 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/*commentArea*/
+/* 댓글 작성 영역 스타일 */
+.commentWriteArea {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 10px;
+    border: 2px solid #ccc; /* 사용자 정의 스타일의 테두리 생성 */
+    margin-bottom: 10px;
+}
+
+.commentWriteArea .commentWriteNickname {
+    height: 25px;
+    margin-bottom: 5px;
+    border: none; /* 기본 테두리 없애기 */
+    outline: none; /* 포커스시 생기는 테두리 없애기 */
+}
+
+.commentWriteArea .commentWriteText {
+    width: 100%;
+    height: 50px;
+    font-size: 16px;
+    box-sizing: border-box;
+    border: none; /* 기본 테두리 없애기 */
+    outline: none; /* 포커스 시 생기는 테두리 없애기 */
+    resize: none; /* textarea의 크기 조정 비활성화 */
+}
+
+.commentWriteArea .commentWriteBtn {
+    height: 50px;
+    font-size: 16px;
+    margin-left: auto;
+    box-sizing: border-box;
+    background-color: #4CAF50;
+    justify-content: flex-end;
+}
+
+/* 댓글 구역 전체의 스타일 */
+.commentArea {
+    width: inherit;
+    height: 400px;
+    background-color: #f0f0f0;
+    overflow-y: auto; /* 댓글이 넘칠 경우 스크롤 표시 */
+}
+
+/* 댓글 리스트 영역 스타일 */
+.commentArea {
+    /* 총 크기를 400px로 고정, 스크롤이 생성되도록 설정 */
+    width: inherit;
+    height: 400px;
+    overflow-y: auto;
+}
+
+.commentArea ul {
+    /* 각 ul 요소의 크기를 100px로 고정 */
+    height: 100px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+.commentArea li {
+    /* 각 li 요소의 크기를 25px로 고정, 4개의 li가 총 100px가 됨 */
+    height: 25px;
+    box-sizing: border-box; /* padding이 높이에 영향을 미치도록 설정 */
+}
+
+.commentArea li input[type="text"],
+.commentArea li textarea {
+    /* 내부 요소들이 100px 안에 들어가도록 설정 */
+    width: calc(100% - 120px); /* 수정, 삭제 버튼을 제외한 너비 조정 */
+    height: 100%; /* 높이를 100%로 설정하여 li 높이에 맞춤 */
+    background-color: #f0f0f0;
+    resize: none; /* textarea의 크기 조정 비활성화 */
+    border: none; /* 기본 테두리 없애기 */
+    outline: none; /* 포커스시 생기는 테두리 없애기 */
+}
+
+.commentArea li button {
+  /* 버튼들의 크기 설정 */
+  width: 50px;
+  height: 20px;
+}

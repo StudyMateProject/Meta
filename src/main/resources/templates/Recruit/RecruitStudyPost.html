@@ -1,90 +1,209 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>스터디원 모집 공고</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" type="text/css" href="/css/RecruitPost.css">
 </head>
 <body>
-    <h1>스터디원 모집</h1>
-    <input type="hidden" id="idx" th:value="${recruitStudy.idx}">
-    <ul>
-        <li>
-            <span th:if="${recruitStudy.recruiting} == '0'">모집중</span>
-            <span th:if="${recruitStudy.recruiting} != '0'">모집완료</span>
-        </li>
-        <li>
-            <span>제목 : </span>
-            <input type="text" th:value="${recruitStudy.title}" readonly>
-        </li>
-        <li>
-            <span>작성자 : </span>
-            <input type="text" th:value="${recruitStudy.writer}" readonly>
-        </li>
-        <li>
-            <div>분야</div>
-            <input type="text" th:value="${recruitStudy.studyType}" readonly>
-        </li>
-        <li>
-            <div>모집인원</div>
-            <input type="text" name="personnel" th:value="${recruitStudy.personnel} + 명" readonly>
-        </li>
-        <li>
-            <div>스터디소개</div>
-            <textarea th:text="${recruitStudy.studyIntro}" readonly></textarea>
-        </li>
-        <li>
-            <form>
-                <input type="button" value="찜하기" onclick="like(this.form);">
-                <input type="hidden" id="studyLikeCheck" name="studyLikeCheck" th:value="${recruitStudy.studyLikeCheck}">
-                <input type="hidden" id="studyLike" name="studyLike" th:value="${recruitStudy.studyLike}">
-                <span id="studyLikeView" th:text="${recruitStudy.studyLike}">숫자</span>
-            </form>
-        </li>
-        <li th:if="${nickname} == ${recruitStudy.writer}">
-            <input type="button" value="글 수정" th:onclick="|location.href='@{post/modifyform(idx=${recruitStudy.idx})}'|">
-            <input type="button" value="글 삭제" onclick="writeDelete();">
-        </li>
-        <li th:if="${nickname} != ${recruitStudy.writer}">
-            <input type="button" value="신청하기" onclick="studyRequest();">
-        </li>
-        <li>
-            <a href="/recruitstudy">뒤로가기</a>
-        </li>
-        <li>
-            <input type="text" id="comment">
-            <input type="button" value="댓글작성" onclick="writeComment();">
-        </li>
-    </ul>
-    <h2>댓글 나오는데</h2>
-    <ul th:each="comment : ${list}" style="border:2px solid black;">
-        <div th:if="${comment.deleteCheck} == '0'">
-            <form>
-                <input type="hidden" name="idx" th:value="${comment.idx}">
-                <li>
-                    <span>작성일자 : </span>
-                    <input type="text" name="writeDate" th:value="${comment.writeDate}" readonly>
+    <header>
+        <nav class="headerContainer">
+            <div class="headerMenu">
+                <div class="headerMenuLeft">
+
+                    <div class="headerImg">
+                        <a href="/" alt="SOJU">
+                            <img src="/img/logo_mate.png" class="mainLogo">
+                        </a>
+                    </div>
+
+                    <div class="menuContainer">
+                        <div class="categoryMenu">
+                            <span>스터디원</span>
+                            <div class="dropTable">
+                                <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
+                                <a class="dropRecruitMentee dropMenu" href="/recruitmenteelist">멘티 모집</a>
+                                <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
+                            </div>
+                        </div>
+
+                        <div class="categoryMenu">
+                            <a href="/meta">
+                                <span>스터디룸</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/store">
+                                <span>스토어</span>
+                            </a>
+                        </div>
+                        <div class="categoryMenu">
+                            <a href="/mypage">
+                                <span>마이페이지</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="headerMenuRight">
+                    <div class="whenLogin" sec:authorize="isAuthenticated()">
+                        <div class="welcome" th:text="${nickname} + '님 반갑습니다!'"></div>
+                        <div class="notificationsMenu">
+                            <div class="icon">
+                                <i class="ri-notification-4-fill"></i>
+                            </div>
+                            <div class="notiDrop">
+                                <p>최근 알림</p>
+                                <div class="notiList">
+                                    <a class="notiDropMenu" th:each="alarm : ${alarmList}">
+                                        <div th:if="${alarm.alarmType} == '2'">
+                                            <form>
+                                                <span class="notiCircle"></span>
+                                                <span class="notiText" th:text="${alarm.title}"></span><br>
+                                                <input type="hidden" name="idx" th:value="${alarm.idx}">
+                                                <input type="hidden" name="recruitStudyIdx" th:value="${alarm.recruitStudyIdx}">
+                                                <input type="hidden" name="recruitMentorIdx" th:value="${alarm.recruitMentorIdx}">
+                                                <input type="hidden" name="recruitMenteeIdx" th:value="${alarm.recruitMenteeIdx}">
+                                                <input type="hidden" name="nickname" th:value="${alarm.nickname}">
+                                                <input type="button" value="수락" onclick="recruitAccept(this.form);">
+                                                <input type="button" value="거절" onclick="recruitRefuse(this.form);">
+                                            </form>
+                                        </div>
+                                        <div th:if="${alarm.alarmType} != '2'">
+                                            <span class="notiCircle"></span>
+                                            <form>
+                                                <input type="hidden" name="idx" th:value="${alarm.idx}">
+                                                <input type="button" value="X" onclick="deleteAlarm(this.form);"><br>
+                                                <span class="notiText" th:text="${alarm.title}"></span>
+                                            </form>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="whenLogin" sec:authorize="isAnonymous()">
+                        <div class="welcome"></div>
+                        <div class="notificationsMenu" onclick="location.href='/mypage/alarm'" style="visibility: hidden;">
+                            <div class="icon" th:data-number="${alarmCount}">
+                                <i class="ri-notification-4-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btnLogin">
+                        <input class="inputButtonLogin" sec:authorize="isAnonymous()" type="button" value="로그인" onclick="location.href='/loginform'">
+                        <input class="inputButtonLogin" sec:authorize="isAuthenticated()" type="button" value="로그아웃" onclick="location.href='/logout'">
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>스터디원 모집 공고</h1>
+        <div class="contentArea">
+            <input type="hidden" id="idx" th:value="${recruitStudy.idx}">
+            <ul>
+                <li class="listCenter">
+                    <div class="spanArea">
+                        <span>모집 상태</span> <span>:</span>
+                    </div>
+                    <div th:if="${recruitStudy.recruiting} == '0'" class="recruitListStatus0">
+                        모집중
+                    </div>
+                    <div th:if="${recruitStudy.recruiting} != '0'" class="recruitListStatus1">
+                        모집완료
+                    </div>
                 </li>
-                <li>
-                    <span>작성자 : </span>
-                    <input type="text" name="writer" th:value="${comment.writer}" readonly>
+                <li class="listCenter">
+                    <div class="spanArea">
+                        <span>제목</span> <span>:</span>
+                    </div>
+                    <input type="text" th:value="${recruitStudy.title}" readonly>
                 </li>
-                <li>
-                    <span>내용 : </span>
-                    <textarea name="comment" th:text="${comment.comment}" readonly></textarea>
+                <li class="listCenter">
+                    <div class="spanArea">
+                        <span>작성자</span> <span>:</span>
+                    </div>
+                    <input type="text" th:value="${recruitStudy.writer}" readonly>
                 </li>
-                <li th:if="${nickname} == ${comment.writer}">
-                    <input name="beforeModify" type="button" value="수정" onclick="commentModifyForm(this.form);">
-                    <input name="modify" style="display:none;" type="button" value="수정하기" onclick="commentModify(this.form);">
-                    <input type="button" value="삭제" onclick="commentDelete(this.form);">
+                <li class="listCenter">
+                    <div class="spanArea">
+                        <span>분야</span> <span>:</span>
+                    </div>
+                    <img class="img" th:src="${recruitStudy.image}">
+                    <input type="text" th:value="${recruitStudy.studyType}" readonly>
                 </li>
-            </form>
+                <li class="listCenter">
+                    <div class="spanArea">
+                        <span>모집 인원</span> <span>:</span>
+                    </div>
+                    <input type="text" name="personnel" th:value="${recruitStudy.recruitingPersonnel} + ' / ' + ${recruitStudy.personnel} + 명" readonly>
+                </li>
+                <li class="contentList">
+                    <div class="spanArea">
+                        <span>스터디 소개</span> <span>:</span>
+                    </div>
+                    <textarea class="recruitContent" th:text="${recruitStudy.studyIntro}" readonly></textarea>
+                </li>
+                <li class="btnList">
+                    <form>
+                        <input type="button" value="찜하기" onclick="like(this.form);">
+                        <input type="hidden" id="studyLikeCheck" name="studyLikeCheck" th:value="${recruitStudy.studyLikeCheck}">
+                        <input type="hidden" id="studyLike" name="studyLike" th:value="${recruitStudy.studyLike}">
+                        <span id="studyLikeView" th:text="${recruitStudy.studyLike}">숫자</span>
+                    </form>
+                    <div th:if="${nickname} == ${recruitStudy.writer}">
+                        <input type="button" value="글 수정" th:onclick="|location.href='@{post/modifyform(idx=${recruitStudy.idx})}'|">
+                        <input type="button" value="글 삭제" onclick="writeDelete();">
+                    </div>
+                    <input th:if="${nickname} != ${recruitStudy.writer}" type="button" value="신청하기" onclick="studyRequest();">
+                    <input type="button" value="뒤로가기" onclick="location.href='/recruitstudy'">
+                </li>
+            </ul>
         </div>
-        <div th:if="${comment.deleteCheck} == '1'">
-            <li>
-                <span>삭제된 댓글입니다.</span>
-            </li>
+
+        <h3>댓글</h3>
+        <div class="commentWriteArea">
+            <input class="commentWriteNickname" type="text" th:value="${nickname}" readonly>
+            <textarea class="commentWriteText" type="text" id="comment" placeholder="댓글을 남겨보세요."></textarea>
+            <input class="commentWriteBtn" type="button" value="댓글작성" onclick="writeComment();">
         </div>
-    </ul>
+        <div class="commentArea">
+            <!-- 멘토프로필 댓글 리스트 -->
+            <ul th:each="comment : ${list}">
+                <div class="commentDiv" th:if="${comment.deleteCheck} == '0'">
+                    <form class="commentForm">
+                        <input type="hidden" name="idx" th:value="${comment.idx}">
+                        <li class="commentList">
+                            <input type="text" name="writer" th:value="${comment.writer}" readonly>
+                        </li>
+                        <li class="commentList">
+                            <textarea name="comment" th:text="${comment.comment}" readonly></textarea>
+                        </li>
+                        <li class="commentList">
+                            <input type="text" name="writeDate" th:value="${comment.writeDate}" readonly>
+                        </li>
+                        <li th:if="${nickname} == ${comment.writer}">
+                            <input name="beforeModify" type="button" value="수정" onclick="commentModifyForm(this.form);">
+                            <input name="modify" style="display:none;" type="button" value="수정하기" onclick="commentModify(this.form);">
+                            <input type="button" value="삭제" onclick="commentDelete(this.form);">
+                        </li>
+                    </form>
+                </div>
+                <div th:if="${comment.deleteCheck} == '1'">
+                    <li style="display: flex; align-items: center; height: 100px;">
+                        <span style="color: red; font-size: 20px;">삭제된 댓글입니다.</span>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </div>
 </body>
 <script src="/js/httpRequest.js"></script>
 <script th:inline="javascript">
