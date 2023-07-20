@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>멘티 모집 작성</title>
@@ -23,7 +23,7 @@
                             <span>스터디원</span>
                             <div class="dropTable">
                                 <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
-                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘티 모집</a>
+                                <a class="dropRecruitMentee dropMenu" href="/recruitmenteelist">멘티 모집</a>
                                 <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
                             </div>
                         </div>
@@ -54,9 +54,14 @@
         <form>
             <input type="hidden" id="writeDate" name="writeDate">
             <ul>
-                <li><span>제목 : </span> <input name="title" type="text"></li>
-                <li><span>작성자 : </span> <input type="text" name="writer" th:value="${nickname}" readonly></li>
-                <li><span>분야 : </span>
+                <li>
+                    <span>제목 : </span> <input name="title" type="text">
+                </li>
+                <li>
+                    <span>작성자 : </span> <input type="text" name="writer" th:value="${nickname}" readonly>
+                </li>
+                <li>
+                    <span>분야 : </span>
                     <select name="studyType" onchange="showImage();">
                         <option value="">분야 선택</option>
                         <option value="computer">컴퓨터</option>
@@ -73,14 +78,14 @@
                     </select>
                 </li>
                 <li class="imgList">
-                    <span>사진 : </span><div id="test1"></div>
+                    <span>아이콘 : </span> <div id="test1"></div>
                 </li>
                 <li class="contentList">
-                    <span>본인소개 : </span><textarea class="recruitWriteContent" name="studyIntro"></textarea>
+                    <span>멘토 소개 : </span> <textarea class="recruitWriteContent" name="studyIntro"></textarea>
                 </li>
                 <li class="btnList">
                     <input type="button" value="작성 완료" onclick="menteeWrite(this.form)">
-                    <input type="button" value="뒤로가기" onclick="location.href='/mentorprofilelist'">
+                    <input type="button" value="뒤로가기" onclick="location.href='/recruitmenteelist'">
                 </li>
             </ul>
         </form>
@@ -112,7 +117,7 @@
             alert('설명을 작성하세요');
             return;
         }
-        f.action = '/mentorprofilelist/writeform/write';
+        f.action = '/recruitmenteelist/writeform/write';
         f.method = "GET";
         f.submit();
     }

@@ -23,7 +23,7 @@
                             <span>스터디원</span>
                             <div class="dropTable">
                                 <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
-                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘티 모집</a>
+                                <a class="dropRecruitMentee dropMenu" href="/recruitmenteelist">멘티 모집</a>
                                 <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
                             </div>
                         </div>
@@ -56,10 +56,10 @@
             <input type="hidden" name="idx" id="idx" th:value="${recruitMentor.idx}">
             <ul>
                 <li>
-                    <span>제목 : </span><input type="text" name="title" th:value="${recruitMentor.title}">
+                    <span>제목 : </span> <input type="text" name="title" th:value="${recruitMentor.title}">
                 </li>
                 <li>
-                    <span>작성자 : </span><input type="text" name="writer" th:value="${recruitMentor.writer}" readonly>
+                    <span>작성자 : </span> <input type="text" name="writer" th:value="${recruitMentor.writer}" readonly>
                 </li>
                 <li>
                     <span>분야 : </span>
@@ -90,7 +90,7 @@
                     </select>
                 </li>
                 <li class="contentList">
-                    <span>멘토 소개 : </span><textarea class="mentorWriteContent" name="studyIntro" th:text="${recruitMentor.studyIntro}"></textarea>
+                    <span>스터디 소개 : </span> <textarea class="mentorWriteContent" name="studyIntro" th:text="${recruitMentor.studyIntro}"></textarea>
                 </li>
                 <li class="btnList">
                     <input type="button" value="수정하기" onclick="mentorModify(this.form);">

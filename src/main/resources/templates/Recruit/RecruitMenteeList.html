@@ -23,7 +23,7 @@
                             <span>스터디원</span>
                             <div class="dropTable">
                                 <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
-                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘티 모집</a>
+                                <a class="dropRecruitMentee dropMenu" href="/recruitmenteelist">멘티 모집</a>
                                 <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
                             </div>
                         </div>
@@ -107,7 +107,7 @@
     <div class="container">
         <h1>멘티모집</h1>
         <ul>
-            <li><a href="mentorprofilelist/writeform">글쓰기</a></li>
+            <li><a href="/recruitmenteelist/writeform">글쓰기</a></li>
             <li><a href="/">메인으로</a> </li>
         </ul>
         <!-- 멘토프로필 리스트 -->
@@ -145,7 +145,7 @@
 <script>
     //상세보기페이지로 이동하는 메서드
     function change(f){
-        f.action = '/mentorprofilelist/post';
+        f.action = '/recruitmenteelist/post';
         f.method = "GET";
         f.submit();
     }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>멘티 모집 수정</title>
@@ -23,7 +23,7 @@
                             <span>스터디원</span>
                             <div class="dropTable">
                                 <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
-                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘티 모집</a>
+                                <a class="dropRecruitMentee dropMenu" href="/recruitmenteelist">멘티 모집</a>
                                 <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
                             </div>
                         </div>
@@ -56,10 +56,10 @@
             <input type="hidden" name="idx" id="idx" th:value="${recruitMentee.idx}">
             <ul>
                 <li>
-                    <span>제목 : </span><input type="text" name="title" th:value="${recruitMentee.title}" >
+                    <span>제목 : </span> <input type="text" name="title" th:value="${recruitMentee.title}" >
                 </li>
                 <li>
-                    <span>작성자 : </span><input type="text" name="writer" th:value="${recruitMentee.writer}" readonly>
+                    <span>작성자 : </span> <input type="text" name="writer" th:value="${recruitMentee.writer}" readonly>
                 </li>
                 <li>
                     <span>분야 : </span>
@@ -90,18 +90,18 @@
                     </select>
                 </li>
                 <li class="imgList">
-                    <span>사진 : </span>
+                    <span>아이콘 : </span>
                     <div id="test1">
                         <img class="img" th:src="${recruitMentee.image}">
                         <input type="hidden" name="image" th:value="${recruitMentee.image}">
                     </div>
                 </li>
                 <li class="contentList">
-                    <span>본인소개 : </span><textarea class="recruitWriteContent" name="studyIntro" th:text="${recruitMentee.studyIntro}"></textarea>
+                    <span>멘토 소개 : </span> <textarea class="recruitWriteContent" name="studyIntro" th:text="${recruitMentee.studyIntro}"></textarea>
                 </li>
                 <li class="btnList">
                     <input type="button" value="수정하기" onclick="menteeModify(this.form);">
-                    <input type="button" value="뒤로가기" onclick="location.href='/mentorprofilelist'">
+                    <input type="button" value="뒤로가기" onclick="location.href='/recruitmenteelist'">
                 </li>
             </ul>
         </form>
@@ -137,7 +137,7 @@
             alert('설명을 작성하세요');
             return;
         }
-        let url = '/mentorprofilelist/post/modifyform/modify';
+        let url = '/recruitmenteelist/post/modifyform/modify';
         let param = "idx=" + idx +
                     "&title=" + title +
                     "&studyType=" + studyType +

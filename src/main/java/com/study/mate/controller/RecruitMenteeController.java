@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Controller
-@RequestMapping("/mentorprofilelist")
+@RequestMapping("/recruitmenteelist")
 public class RecruitMenteeController {
     @Autowired
     RecruitMenteeService recruitMenteeService;
@@ -56,7 +56,7 @@ public class RecruitMenteeController {
         List<RecruitMentee> recruitMenteeList = recruitMenteeService.recruitMenteeListAll(map);
         model.addAttribute("list", recruitMenteeList);
         //페이징 처리를 위해 url, 이동할 페이지번호, 전체 열의 갯수, 페이징을 위해 설정을 잡아둔 값들을 가지고 HTML 에 작성해줄 내용을 생성한다.
-        String pageMenu = Paging.getPaging("mentorprofilelist", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
+        String pageMenu = Paging.getPaging("recruitmenteelist", nowPage, rowTotal, PageSetup.BLOCKLIST, PageSetup.BLOCKPAGE);
         model.addAttribute("pageMenu", pageMenu);
         return "Recruit/RecruitMenteeList";
     }
@@ -79,7 +79,7 @@ public class RecruitMenteeController {
         //서비스에 있는 메서드를 사용하기 위해서 멘티 객체를 파라미터로 전달 이후 저장
         recruitMenteeService.writeRecruitMentee(recruitMentee);
         //다시 메인 창으로 돌아갈때 리스트를 들고 가야되기때문에 리다이렉트로 변경
-        return "redirect:/mentorprofilelist";
+        return "redirect:/recruitmenteelist";
     }
 
     //멘티 글 상세보기

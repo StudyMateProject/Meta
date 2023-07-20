@@ -26,10 +26,6 @@ form ul {
     justify-content: space-between;
 }
 
-.writeArea {
-    flex-grow: 1;
-}
-
 form ul li {
     display: flex;
     margin-bottom: 10px;

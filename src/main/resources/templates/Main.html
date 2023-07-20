@@ -28,7 +28,7 @@
                             <span>스터디원</span>
                             <div class="dropTable">
                                 <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
-                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘티 모집</a>
+                                <a class="dropRecruitMentee dropMenu" href="/recruitmenteelist">멘티 모집</a>
                                 <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
                             </div>
                         </div>
@@ -246,7 +246,7 @@
             <ul class="bestStudyInner">
                 <li class="bestStudyElement" th:each="recruitMentee : ${menteeList}">
                     <div class="bestStudyA">
-                        <a th:href="@{/mentorprofilelist/post(idx = ${recruitMentee.idx})}">
+                        <a th:href="@{/recruitmenteelist/post(idx = ${recruitMentee.idx})}">
                             <img th:src="${recruitMentee.image}" class="bestStudyImg">
                             <div class="status"><span>모집중</span></div>
                             <p class="bestStudyTitle" th:text="${recruitMentee.title}">백엔드 공부할 사람 구합니다 @@@@</p>

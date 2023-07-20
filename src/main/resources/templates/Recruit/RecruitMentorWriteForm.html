@@ -23,7 +23,7 @@
                             <span>스터디원</span>
                             <div class="dropTable">
                                 <a class="dropRecruitStudy dropMenu" href="/recruitstudy">스터디원 모집</a>
-                                <a class="dropMentorProfile dropMenu" href="/mentorprofilelist">멘티 모집</a>
+                                <a class="dropRecruitMentee dropMenu" href="/recruitmenteelist">멘티 모집</a>
                                 <a class="dropRecruitMentor dropMenu" href="/recruitmentorlist">멘토 모집</a>
                             </div>
                         </div>
@@ -54,30 +54,32 @@
         <form>
             <input type="hidden" name="writeDate" id="writeDate">
             <ul>
-                <div class="writeArea">
-                    <li><span>제목 : </span><input type="text" name="title"></li>
-                    <li><span>작성자 : </span><input type="text" th:value="${nickname}" name="writer" readonly></li>
-                    <li><span>분야 : </span>
-                        <select name="studyType">
-                            <option value="">분야 선택</option>
-                            <option value="computer">컴퓨터</option>
-                            <option value="math">수학</option>
-                            <option value="management">경영/마케팅</option>
-                            <option value="design">디자인</option>
-                            <option value="education">교육</option>
-                            <option value="literature">문학</option>
-                            <option value="entrance">입시</option>
-                            <option value="engineer">공학</option>
-                            <option value="language">언어</option>
-                            <option value="employment">취업</option>
-                            <option value="etc">기타</option>
-                        </select>
-                    </li>
-                    <li class="contentList">
-                        <span>스터디 소개 : </span>
-                        <textarea class="mentorWriteContent" name="studyIntro"></textarea>
-                    </li>
-                </div>
+                <li>
+                    <span>제목 : </span> <input type="text" name="title">
+                </li>
+                <li>
+                    <span>작성자 : </span> <input type="text" th:value="${nickname}" name="writer" readonly>
+                </li>
+                <li>
+                    <span>분야 : </span>
+                    <select name="studyType">
+                        <option value="">분야 선택</option>
+                        <option value="computer">컴퓨터</option>
+                        <option value="math">수학</option>
+                        <option value="management">경영/마케팅</option>
+                        <option value="design">디자인</option>
+                        <option value="education">교육</option>
+                        <option value="literature">문학</option>
+                        <option value="entrance">입시</option>
+                        <option value="engineer">공학</option>
+                        <option value="language">언어</option>
+                        <option value="employment">취업</option>
+                        <option value="etc">기타</option>
+                    </select>
+                </li>
+                <li class="contentList">
+                    <span>스터디 소개 : </span> <textarea class="mentorWriteContent" name="studyIntro"></textarea>
+                </li>
                 <li class="btnList">
                     <input type="button" value="작성하기" onclick="mentorWrite(this.form);">
                     <input type="button" value="뒤로가기" onclick="location.href='/recruitmentorlist'">
