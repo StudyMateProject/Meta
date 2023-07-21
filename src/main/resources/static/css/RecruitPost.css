@@ -166,38 +166,72 @@ h3 {
     box-sizing: border-box;
     background-color: #4CAF50;
     justify-content: flex-end;
+    border: none;
 }
 
 /* 댓글 구역 전체의 스타일 */
+/* 총 크기를 600px로 고정, 스크롤이 생성되도록 설정 */
 .commentArea {
     width: inherit;
-    height: 400px;
+    height: 600px;
     background-color: #f0f0f0;
     overflow-y: auto; /* 댓글이 넘칠 경우 스크롤 표시 */
 }
 
-/* 댓글 리스트 영역 스타일 */
-.commentArea {
-    /* 총 크기를 400px로 고정, 스크롤이 생성되도록 설정 */
-    width: inherit;
-    height: 400px;
-    overflow-y: auto;
-}
-
 .commentArea ul {
+    /*box-sizing: border-box;  padding이 높이에 영향을 미치도록 설정 */
     /* 각 ul 요소의 크기를 100px로 고정 */
     height: 100px;
-    list-style: none;
-    padding: 0;
+    padding: 10px;
     margin: 0;
+    list-style: none;
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
 }
 
-.commentArea li {
+.commentArea form li {
     /* 각 li 요소의 크기를 25px로 고정, 4개의 li가 총 100px가 됨 */
     height: 25px;
-    box-sizing: border-box; /* padding이 높이에 영향을 미치도록 설정 */
+}
+
+.commentArea .commentWriter,
+.commentArea .commentDate,
+.commentArea .commentWriter div,
+.commentArea .commentDate div,
+.commentArea .commentWriter input,
+.commentArea .commentDate input{
+     /* li 요소와 내부 div의 크기를 30px로 고정 */
+     height: 30px;
+     font-size: 16px;
+     display: flex;
+     align-items: center;
+}
+
+.commentArea .commentBtn {
+    justify-content: flex-end;
+    margin-left: auto;
+    display: flex;
+}
+
+.commentArea .commentBtn input:first-child {
+    background-color: green;
+    color: white;
+    margin-right: 10px;
+    border: none;
+}
+
+.commentArea .commentBtn input:last-child {
+    margin-right: 0px;
+    background-color: red;
+    color: white;
+    border: none;
+}
+
+.commentArea .commentContent,
+.commentArea .commentContent textarea {
+     /* li 요소와 내부 div의 크기를 40px로 고정 */
+     height: 40px;
+     font-size: 16px;
 }
 
 .commentArea li input[type="text"],
@@ -209,6 +243,7 @@ h3 {
     resize: none; /* textarea의 크기 조정 비활성화 */
     border: none; /* 기본 테두리 없애기 */
     outline: none; /* 포커스시 생기는 테두리 없애기 */
+    overflow-y: auto; /* 댓글이 넘칠 경우 스크롤 표시 */
 }
 
 .commentArea li button {

@@ -59,7 +59,7 @@
                     <span>제목 : </span> <input type="text" name="title" th:value="${recruitMentee.title}" >
                 </li>
                 <li>
-                    <span>작성자 : </span> <input type="text" name="writer" th:value="${recruitMentee.writer}" readonly>
+                    <span>작성자 : </span> <input class="recruitWriter" type="text" name="writer" th:value="${recruitMentee.writer}" readonly>
                 </li>
                 <li>
                     <span>분야 : </span>
@@ -144,7 +144,7 @@
                     "&image=" + image +
                     "&writer=" + writer +
                     "&writeDate=" + today +
-                    "&studyIntro=" + studyIntro;
+                    "&studyIntro=" + encodeURIComponent(studyIntro);
         sendRequest(url, param, res, "GET");
     }
     function res() {

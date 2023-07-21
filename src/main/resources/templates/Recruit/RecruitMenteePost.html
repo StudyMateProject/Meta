@@ -168,38 +168,67 @@
             <textarea class="commentWriteText" type="text" id="comment" placeholder="댓글을 남겨보세요."></textarea>
             <input class="commentWriteBtn" type="button" value="댓글작성" onclick="writeComment();">
         </div>
-        <div class="commentArea">
+        <div id="commentList" class="commentArea">
             <!-- 멘토프로필 댓글 리스트 -->
-            <ul th:each="comment : ${list}">
-                <div class="commentDiv" th:if="${comment.deleteCheck} == '0'">
-                    <form class="commentForm">
-                        <input type="hidden" name="idx" th:value="${comment.idx}">
-                        <li class="commentList">
-                            <input type="text" name="writer" th:value="${comment.writer}" readonly>
+            <div th:each="comment : ${list}">
+                <ul th:if="${nickname} == ${comment.writer}">
+                    <div th:if="${comment.deleteCheck} == '0'">
+                        <form>
+                            <input type="hidden" name="idx" th:value="${comment.idx}">
+                            <li class="commentWriter">
+                                <input type="text" name="writer" th:value="${comment.writer}" readonly>
+                            </li>
+                            <li class="commentContent">
+                                <textarea name="comment" th:text="${comment.comment}" readonly></textarea>
+                            </li>
+                            <li class="commentDate">
+                                <input type="text" name="writeDate" th:value="${comment.writeDate}" readonly>
+                                <span class="commentBtn">
+                                    <input name="beforeModify" type="button" value="수정" onclick="commentModifyForm(this.form);">
+                                    <input name="modify" style="display:none;" type="button" value="수정하기" onclick="commentModify(this.form);">
+                                    <input type="button" value="삭제" onclick="commentDelete(this.form);">
+                                </span>
+                            </li>
+                        </form>
+                    </div>
+                    <div th:if="${comment.deleteCheck} == '1'">
+                        <li style="display: flex; align-items: center; height: 100px;">
+                            <span style="color: red; font-size: 20px;">삭제된 댓글입니다.</span>
                         </li>
-                        <li class="commentList">
-                            <textarea name="comment" th:text="${comment.comment}" readonly></textarea>
+                    </div>
+                </ul>
+                <ul th:if="${nickname} != ${comment.writer}">
+                    <div th:if="${comment.deleteCheck} == '0'">
+                        <div>
+                            <li class="commentWriter">
+                                <div th:text="${comment.writer}"></div>
+                            </li>
+                            <li class="commentContent">
+                                <textarea th:text="${comment.comment}" readonly></textarea>
+                            </li>
+                            <li class="commentDate">
+                                <div th:text="${comment.writeDate}"></div>
+                            </li>
+                        </div>
+                    </div>
+                    <div th:if="${comment.deleteCheck} == '1'">
+                        <li style="display: flex; align-items: center; height: 100px;">
+                            <span style="color: red; font-size: 20px;">삭제된 댓글입니다.</span>
                         </li>
-                        <li class="commentList">
-                            <input type="text" name="writeDate" th:value="${comment.writeDate}" readonly>
-                        </li>
-                        <li th:if="${nickname} == ${comment.writer}">
-                            <input name="beforeModify" type="button" value="수정" onclick="commentModifyForm(this.form);">
-                            <input name="modify" style="display:none;" type="button" value="수정하기" onclick="commentModify(this.form);">
-                            <input type="button" value="삭제" onclick="commentDelete(this.form);">
-                        </li>
-                    </form>
-                </div>
-                <div th:if="${comment.deleteCheck} == '1'">
-                    <li style="display: flex; align-items: center; height: 100px;">
-                        <span style="color: red; font-size: 20px;">삭제된 댓글입니다.</span>
-                    </li>
-                </div>
-            </ul>
+                    </div>
+                </ul>
+            </div>
         </div>
     </div>
 </body>
 <script src="/js/httpRequest.js"></script>
+<script>
+    function onLoadFunction() {
+        const element = document.getElementById("commentList");
+        element.scrollTop = element.scrollHeight;
+    }
+    document.addEventListener("DOMContentLoaded", onLoadFunction);
+</script>
 <script th:inline="javascript">
 //////////////////////////////////////////////////////스터디 신청//////////////////////////////////////////////////////////
     function menteeRequest() {
@@ -240,7 +269,7 @@
         }
         let url = "/recruitmenteelist/post/comment/modify"
         let param = "idx=" + idx +
-                    "&comment=" + comment +
+                    "&comment=" + encodeURIComponent(comment) +
                     "&writeDate=" + today;
         sendRequest(url, param, commentModifyRes, "GET");
     }
@@ -297,7 +326,7 @@
         let param = "commentIdx=" + idx +
                     "&writeDate=" + today +
                     "&writer=" + [[${nickname}]] +
-                    "&comment=" + comment;
+                    "&comment=" + encodeURIComponent(comment);
         sendRequest(url, param, commentRes, "GET");
     }
     function commentRes(){

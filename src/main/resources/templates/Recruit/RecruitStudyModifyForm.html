@@ -59,7 +59,7 @@
                     <span>제목 : </span> <input type="text" name="title" th:value="${recruitStudy.title}" >
                 </li>
                 <li>
-                    <span>작성자 : </span> <input type="text" name="writer" th:value="${recruitStudy.writer}" readonly>
+                    <span>작성자 : </span> <input class="recruitWriter" type="text" name="writer" th:value="${recruitStudy.writer}" readonly>
                 </li>
                 <li>
                     <span>분야 : </span>
@@ -123,7 +123,7 @@
                     </div>
                 </li>
                 <li class="contentList">
-                    <span>스터디 소개 : </span><textarea class="recruitWriteContent" name="studyIntro" th:text="${recruitStudy.studyIntro}"></textarea>
+                    <span>스터디 소개 : </span> <textarea class="recruitWriteContent" name="studyIntro" th:text="${recruitStudy.studyIntro}"></textarea>
                 </li>
                 <li class="btnList">
                     <input type="button" value="수정하기" onclick="studyModify(this.form);">
@@ -173,7 +173,7 @@
                     "&studyType=" + studyType +
                     "&image=" + image +
                     "&personnel=" + personnel +
-                    "&studyIntro=" + studyIntro;
+                    "&studyIntro=" + encodeURIComponent(studyIntro);
         sendRequest(url, param, res, "GET");
     }
     function res() {
