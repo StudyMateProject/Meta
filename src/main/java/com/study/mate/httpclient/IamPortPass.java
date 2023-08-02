@@ -18,15 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IamPortPass {
-    public static JsonNode getToken() {
+    public static JsonNode getToken(String impKey, String impSecret) {
         // 6. access_token을 받아오는 IamPort 서버 URL을 작성한다.
         final String RequestUrl = "https://api.iamport.kr/users/getToken";
 
         // 7. POST 방식은 데이터를 URL에 직접적으로 담아서 같이 보낼 수 없기에, 따로 List를 만들어 같이 보낼 수 있도록 만든다.
         final List<NameValuePair> postParams = new ArrayList<NameValuePair>();
         // 7-1. 7에서 만든 List에 URL을 통해 같이 가져가야 할 데이터들을 name/value 쌍으로 담아준다.
-        postParams.add(new BasicNameValuePair("imp_key", "4623303517205650"));
-        postParams.add(new BasicNameValuePair("imp_secret", "QAU7SorhdVjluWumDn0SzHuKelzHKL2uYD9KmUMNT6eyjTtpFGVB5qeGYhWF2sul8aLu9V2ufpsLFF6h"));
+        postParams.add(new BasicNameValuePair("imp_key", impKey));
+        postParams.add(new BasicNameValuePair("imp_secret", impSecret));
 
         // 9. 외부 서버와 통신을 맡아줄 HttpClient를 생성한다.
         final HttpClient client = HttpClientBuilder.create().build();

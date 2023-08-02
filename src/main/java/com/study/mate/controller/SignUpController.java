@@ -39,6 +39,12 @@ public class SignUpController {
     private String naverId;
     @Value("${naverPwd:naverPwd}")
     private String naverPwd;
+
+    // properties - IamPortPass
+    @Value("${impKey:impKey}")
+    private String impKey;
+    @Value("${impSecret:impSecret}")
+    private String impSecret;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 로그인 진행 URL
     @PostMapping("/loginform/login")
@@ -100,7 +106,7 @@ public class SignUpController {
     @ResponseBody
     public HashMap<String, String> certifications(String impUid) { // 4. 파라미터로 Ajax를 통해 넘어온 imp_uid를 받아온다.
         // 5. IamPort로부터 access_token을 받아와야 하기에 IamPort 서버와 통신하는 메소드를 실행한다.
-        JsonNode jsonToken = IamPortPass.getToken();
+        JsonNode jsonToken = IamPortPass.getToken(impKey, impSecret);
         // 5에서 받환받은 값에 어떤것들이 들어있는지 조회 및 체크
         //System.out.println(jsonToken);
         // 17. 5에서 반환받은 값에서 필요한 access_token을 가져와 토큰 변수에 전달한다.
