@@ -7,6 +7,7 @@ import com.study.mate.service.PayService;
 import com.study.mate.util.PageSetup;
 import com.study.mate.util.Paging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,12 @@ public class StoreController {
 
     @Autowired
     PayService payService;
-
+    // properties - IamPortPass
+    @Value("${impKey:impKey}")
+    private String impKey;
+    @Value("${impSecret:impSecret}")
+    private String impSecret;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //스토어 메인페이지
     @GetMapping("")
     public String store(){
@@ -176,7 +182,7 @@ public class StoreController {
     //ResponseBody 라는 어노테이션으로 방금 받아온 값들을 처리해서 결과값을 다시 이전 페이지로 보내준다.
     @ResponseBody
     public String payComplete(Pay pay){
-        JsonNode jsonToken = IamPortPass.getToken(); //서버로 부터 토큰값 받아옴 (Json 형식)
+        JsonNode jsonToken = IamPortPass.getToken(impKey, impSecret); //서버로 부터 토큰값 받아옴 (Json 형식)
         String accessToken = jsonToken.get("response").get("access_token").asText(); //서버로 부터 토큰값 받아옴 (Text)
 
         JsonNode payment = IamPortPass.getUserInfo(pay.getImpUid(), accessToken);
